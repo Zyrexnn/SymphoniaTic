@@ -2,114 +2,87 @@
 
 @layer base {
   :root {
-    --color-canvas: #ffffff;
-    --color-surface-card: #fafafa;
-    --color-surface-soft: #f7f7f7;
-    --color-surface-dark: #1a2129;
-    --color-primary: #1c69d4;
-    --color-primary-active: #0653b6;
-    --color-ink: #262626;
-    --color-body: #3c3c3c;
-    --color-muted: #6b6b6b;
-    --color-hairline: #e6e6e6;
-    --color-hairline-strong: #cccccc;
+    --color-raw-bg: #070709;
+    --color-raw-surface: #101014;
+    --color-raw-crimson: #ff1e42;
+    --color-raw-yellow: #f5f0db;
+    --color-raw-ink: #f4f4f6;
+    --color-raw-muted: #71717a;
+    --color-raw-border: rgba(255, 30, 66, 0.2);
   }
 
   body {
-    background-color: var(--color-canvas);
-    color: var(--color-ink);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--color-raw-bg);
+    color: var(--color-raw-ink);
+    font-family: 'Space Grotesk', -apple-system, sans-serif;
   }
 }
 
-/* Custom BMW-Style Hairline Utility */
-.hairline-bottom {
-  border-bottom: 1px solid #e6e6e6;
+/* Industrial Grain Overlay */
+.grain-overlay {
+  background-image: radial-gradient(rgba(255, 30, 66, 0.06) 1px, transparent 0);
+  background-size: 16px 16px;
 }
 
-.hairline-border {
-  border: 1px solid #e6e6e6;
+/* Marquee Animation */
+@keyframes marquee-fast {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee-fast {
+  animation: marquee-fast 18s linear infinite;
 }
 
-/* Corporate Rectangular Buttons (0px radius) */
-.btn-bmw-primary {
-  background-color: #1c69d4;
-  color: #ffffff;
-  font-weight: 700;
-  font-size: 14px;
-  letter-spacing: 0.5px;
-  border-radius: 0px;
-  padding: 14px 32px;
+/* Raw Cutout Buttons */
+.btn-raw-crimson {
+  background-color: #ff1e42;
+  color: #070709;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 16px 36px;
+  clip-path: polygon(0 0, 100% 0, 95% 100%, 0% 100%);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s ease;
 }
-.btn-bmw-primary:hover {
-  background-color: #0653b6;
+.btn-raw-crimson:hover {
+  background-color: #ffffff;
+  color: #070709;
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px #ff1e42;
 }
 
-.btn-bmw-secondary {
+.btn-raw-outline {
   background-color: transparent;
-  color: #ffffff;
-  font-weight: 700;
-  font-size: 14px;
-  letter-spacing: 0.5px;
-  border: 1px solid #ffffff;
-  border-radius: 0px;
-  padding: 14px 32px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
-.btn-bmw-secondary:hover {
-  background-color: #ffffff;
-  color: #1a2129;
-}
-
-.btn-bmw-outline-dark {
-  background-color: #ffffff;
-  color: #262626;
-  font-weight: 700;
-  font-size: 14px;
-  letter-spacing: 0.5px;
-  border: 1px solid #cccccc;
-  border-radius: 0px;
-  padding: 14px 32px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: border-color 0.2s ease;
-}
-.btn-bmw-outline-dark:hover {
-  border-color: #262626;
-}
-
-.uppercase-link {
+  color: #f4f4f6;
+  font-family: 'Space Grotesk', sans-serif;
   font-weight: 700;
   font-size: 13px;
-  letter-spacing: 1.5px;
+  letter-spacing: 2px;
   text-transform: uppercase;
-  color: #1c69d4;
+  border: 1px solid rgba(244, 244, 246, 0.3);
+  padding: 16px 36px;
+  transition: all 0.2s ease;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  justify-content: center;
 }
-.uppercase-link:hover {
-  color: #0653b6;
+.btn-raw-outline:hover {
+  border-color: #ff1e42;
+  color: #ff1e42;
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #ffffff;
+  background: #070709;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cccccc;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #1c69d4;
+  background: #ff1e42;
 }

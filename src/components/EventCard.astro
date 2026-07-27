@@ -1,52 +1,55 @@
 ---
-// BMW Corporate Style Model Card Component (4-up / 5-up Grid pattern)
+// Editorial Brutalism Event Card Component
 interface Props {
   title: string;
-  tagline: string;
-  price: string;
+  artist: string;
   date: string;
   venue: string;
+  price: string;
   image: string;
+  index: string;
 }
 
-const { title, tagline, price, date, venue, image } = Astro.props;
+const { title, artist, date, venue, price, image, index } = Astro.props;
 ---
 
-<div class="bg-white flex flex-col justify-between h-full group cursor-pointer">
-  <!-- Photo Plate (Surface Card #fafafa background, 0px radius, 16:10 aspect ratio) -->
-  <div class="bg-[#fafafa] aspect-[16/10] overflow-hidden relative">
+<div class="group relative bg-[#101014] border border-[#ff1e42]/20 hover:border-[#ff1e42] transition-all duration-300 flex flex-col justify-between h-full p-6">
+  <!-- Top Meta Bar -->
+  <div class="flex items-center justify-between font-mono text-xs text-[#ff1e42] mb-4 pb-3 border-b border-zinc-800">
+    <span>// EVENT_{index}</span>
+    <span class="px-2 py-0.5 bg-[#ff1e42]/10 border border-[#ff1e42]/30 text-white font-bold">{date}</span>
+  </div>
+
+  <!-- Poster Container -->
+  <div class="relative aspect-[4/5] overflow-hidden bg-zinc-950 mb-6">
     <img 
       src={image} 
       alt={title} 
-      class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" 
+      class="w-full h-full object-cover filter grayscale contrast-125 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" 
       loading="lazy"
     />
-    <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 text-[11px] font-bold tracking-wider uppercase text-[#262626]">
-      {date}
+    <div class="absolute inset-0 bg-gradient-to-t from-[#101014] via-transparent to-transparent opacity-80"></div>
+    <div class="absolute bottom-3 left-3 text-xs font-mono text-zinc-300 bg-black/80 px-2.5 py-1">
+      📍 {venue}
     </div>
   </div>
 
-  <!-- Model Content Area (Padding 24px) -->
-  <div class="py-6 flex flex-col justify-between flex-1">
-    <div>
-      <!-- Model Title (18px / 700 / Weight 700) -->
-      <h3 class="font-bold text-[18px] text-[#262626] leading-snug mb-1 group-hover:text-[#1c69d4] transition-colors">
-        {title}
-      </h3>
-      <!-- One-line Tagline (14px / 300 / Light Body) -->
-      <p class="font-light text-[14px] text-[#3c3c3c] mb-2">{tagline}</p>
-      <div class="text-[12px] font-normal text-[#6b6b6b] mb-4">{venue}</div>
-    </div>
+  <!-- Content -->
+  <div>
+    <h3 class="font-display font-black text-2xl text-white group-hover:text-[#ff1e42] transition-colors leading-none uppercase mb-2">
+      {title}
+    </h3>
+    <p class="font-mono text-xs text-zinc-400 uppercase tracking-wide mb-6">{artist}</p>
+  </div>
 
-    <div class="pt-4 border-t border-[#e6e6e6] flex items-center justify-between mt-auto">
-      <div>
-        <span class="text-[11px] uppercase tracking-wider text-[#6b6b6b] block">Starting From</span>
-        <span class="font-bold text-[16px] text-[#1a1a1a]">{price}</span>
-      </div>
-      <!-- Uppercase Inline Link with Chevron -->
-      <span class="uppercase-link">
-        Configure <span class="text-base font-bold">›</span>
-      </span>
+  <!-- Bottom Action -->
+  <div class="pt-4 border-t border-zinc-800 flex items-center justify-between mt-auto">
+    <div>
+      <span class="text-[10px] font-mono text-zinc-500 uppercase block">PRICE</span>
+      <span class="font-display font-bold text-lg text-white">{price}</span>
     </div>
+    <a href="/login" class="px-4 py-2 bg-white text-black font-mono font-bold text-xs uppercase hover:bg-[#ff1e42] hover:text-white transition-colors">
+      RESERVE TICKET
+    </a>
   </div>
 </div>

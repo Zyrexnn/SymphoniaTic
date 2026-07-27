@@ -1,35 +1,35 @@
 ---
-// BMW Corporate Style Top Navigation Bar (64px, White Canvas, Hairline Bottom)
+// Editorial Brutalism Navigation Bar
 ---
-<header class="fixed top-0 inset-x-0 z-50 bg-white h-[64px] hairline-bottom flex items-center">
-  <div class="max-w-[1440px] mx-auto px-6 sm:px-12 w-full flex items-center justify-between">
+<header class="fixed top-0 inset-x-0 z-50 bg-[#070709]/90 backdrop-blur-md border-b border-[#ff1e42]/20 h-20 flex items-center">
+  <div class="max-w-7xl mx-auto px-6 w-full flex items-center justify-between">
     <!-- Brand Logo -->
-    <div class="flex items-center gap-12">
-      <a href="/" class="flex items-center gap-3 group">
-        <div class="w-8 h-8 rounded-full bg-[#1a2129] flex items-center justify-center text-white font-bold text-sm tracking-tighter">
-          ST
-        </div>
-        <span class="font-bold text-lg tracking-tight text-[#262626] uppercase">
-          SYMPHONIA<span class="text-[#1c69d4]">TIC</span>
+    <a href="/" class="flex items-center gap-3 group">
+      <div class="w-9 h-9 bg-[#ff1e42] text-black font-display font-black text-lg flex items-center justify-center transform -rotate-3 group-hover:rotate-0 transition-transform">
+        S
+      </div>
+      <div class="flex flex-col">
+        <span class="font-display font-black text-xl tracking-tighter text-white leading-none">
+          SYMPHONIA<span class="text-[#ff1e42]">TIC</span>
         </span>
-      </a>
+        <span class="text-[9px] font-mono tracking-widest text-[#ff1e42] uppercase">Underground Access</span>
+      </div>
+    </a>
 
-      <!-- Primary Horizontal Navigation (Weight 400, 14px, 0.3px tracking) -->
-      <nav class="hidden md:flex items-center gap-8 text-[14px] font-normal text-[#3c3c3c] tracking-[0.3px]">
-        <a href="#featured" class="hover:text-[#1c69d4] transition-colors">Featured Shows</a>
-        <a href="#models" class="hover:text-[#1c69d4] transition-colors">Event Categories</a>
-        <a href="#system" class="hover:text-[#1c69d4] transition-colors">Verification System</a>
-        <a href="#dealers" class="hover:text-[#1c69d4] transition-colors">Official Venues</a>
-      </nav>
-    </div>
+    <!-- Nav Menu -->
+    <nav class="hidden md:flex items-center gap-10 text-xs font-mono tracking-widest text-zinc-400 uppercase">
+      <a href="#lineup" class="hover:text-[#ff1e42] transition-colors">01. LINEUP</a>
+      <a href="#manifesto" class="hover:text-[#ff1e42] transition-colors">02. MANIFESTO</a>
+      <a href="#system" class="hover:text-[#ff1e42] transition-colors">03. ATOMIC SYSTEM</a>
+    </nav>
 
-    <!-- Right Utility Links & Rectangular Primary Action Button -->
-    <div class="flex items-center gap-6">
-      <a href="/login" class="text-[14px] font-bold text-[#262626] hover:text-[#1c69d4] transition-colors hidden sm:block">
-        Sign In
+    <!-- CTAs -->
+    <div class="flex items-center gap-4">
+      <a href="/login" class="text-xs font-mono uppercase tracking-widest text-zinc-400 hover:text-white px-3 py-2 hidden sm:block">
+        [ SIGN IN ]
       </a>
-      <a href="/register" class="btn-bmw-primary">
-        BOOK TICKETS
+      <a href="/register" class="btn-raw-crimson">
+        GET PASS
       </a>
     </div>
   </div>
