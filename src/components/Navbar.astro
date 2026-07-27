@@ -1,33 +1,36 @@
 ---
-// Minimalist Floating Pill Navigation
+// BMW Corporate Style Top Navigation Bar (64px, White Canvas, Hairline Bottom)
 ---
-<div class="fixed top-6 inset-x-0 z-50 flex justify-center px-4">
-  <header class="floating-glass rounded-full px-6 py-3 flex items-center justify-between gap-8 max-w-4xl w-full shadow-2xl transition-all duration-300">
+<header class="fixed top-0 inset-x-0 z-50 bg-white h-[64px] hairline-bottom flex items-center">
+  <div class="max-w-[1440px] mx-auto px-6 sm:px-12 w-full flex items-center justify-between">
     <!-- Brand Logo -->
-    <a href="/" class="flex items-center gap-2 group">
-      <div class="w-8 h-8 rounded-full bg-[#e5fe40] text-black font-display font-black text-sm flex items-center justify-center group-hover:scale-110 transition-transform">
-        S
-      </div>
-      <span class="font-display font-black text-lg tracking-wider text-white">
-        SYMPHONIA<span class="text-[#e5fe40]">TIC</span>
-      </span>
-    </a>
+    <div class="flex items-center gap-12">
+      <a href="/" class="flex items-center gap-3 group">
+        <div class="w-8 h-8 rounded-full bg-[#1a2129] flex items-center justify-center text-white font-bold text-sm tracking-tighter">
+          ST
+        </div>
+        <span class="font-bold text-lg tracking-tight text-[#262626] uppercase">
+          SYMPHONIA<span class="text-[#1c69d4]">TIC</span>
+        </span>
+      </a>
 
-    <!-- Nav Items -->
-    <nav class="hidden md:flex items-center gap-8 text-xs font-semibold uppercase tracking-widest text-zinc-400">
-      <a href="#events" class="hover:text-[#e5fe40] transition-colors">Shows</a>
-      <a href="#about" class="hover:text-[#e5fe40] transition-colors">Manifesto</a>
-      <a href="#features" class="hover:text-[#e5fe40] transition-colors">System</a>
-    </nav>
+      <!-- Primary Horizontal Navigation (Weight 400, 14px, 0.3px tracking) -->
+      <nav class="hidden md:flex items-center gap-8 text-[14px] font-normal text-[#3c3c3c] tracking-[0.3px]">
+        <a href="#featured" class="hover:text-[#1c69d4] transition-colors">Featured Shows</a>
+        <a href="#models" class="hover:text-[#1c69d4] transition-colors">Event Categories</a>
+        <a href="#system" class="hover:text-[#1c69d4] transition-colors">Verification System</a>
+        <a href="#dealers" class="hover:text-[#1c69d4] transition-colors">Official Venues</a>
+      </nav>
+    </div>
 
-    <!-- Action Buttons -->
-    <div class="flex items-center gap-3">
-      <a href="/login" class="text-xs font-bold uppercase tracking-wider text-zinc-300 hover:text-white px-3 py-1.5 transition-colors hidden sm:block">
+    <!-- Right Utility Links & Rectangular Primary Action Button -->
+    <div class="flex items-center gap-6">
+      <a href="/login" class="text-[14px] font-bold text-[#262626] hover:text-[#1c69d4] transition-colors hidden sm:block">
         Sign In
       </a>
-      <a href="/register" class="bg-[#e5fe40] hover:bg-white text-black font-black text-[11px] uppercase tracking-widest px-5 py-2.5 rounded-full transition-all duration-300 hover:scale-105 active:scale-95">
-        Get Access
+      <a href="/register" class="btn-bmw-primary">
+        BOOK TICKETS
       </a>
     </div>
-  </header>
-</div>
+  </div>
+</header>

@@ -1,73 +1,52 @@
 ---
-// Event Card Component in DICE.fm bold style
+// BMW Corporate Style Model Card Component (4-up / 5-up Grid pattern)
 interface Props {
   title: string;
-  artist: string;
-  venue: string;
-  date: string;
+  tagline: string;
   price: string;
-  category: string;
+  date: string;
+  venue: string;
   image: string;
-  quotaLeft: number;
 }
 
-const { title, artist, venue, date, price, category, image, quotaLeft } = Astro.props;
+const { title, tagline, price, date, venue, image } = Astro.props;
 ---
 
-<div class="group relative bg-[#141418] rounded-2xl overflow-hidden border border-zinc-800/80 hover:border-zinc-700 transition-all duration-300 flex flex-col h-full ticket-card-glow">
-  <!-- Poster Image Container -->
-  <div class="relative aspect-[4/5] overflow-hidden bg-zinc-900">
+<div class="bg-white flex flex-col justify-between h-full group cursor-pointer">
+  <!-- Photo Plate (Surface Card #fafafa background, 0px radius, 16:10 aspect ratio) -->
+  <div class="bg-[#fafafa] aspect-[16/10] overflow-hidden relative">
     <img 
       src={image} 
       alt={title} 
       class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" 
       loading="lazy"
     />
-    <div class="absolute inset-0 bg-gradient-to-t from-[#141418] via-transparent to-black/30"></div>
-    
-    <!-- Top Badges -->
-    <div class="absolute top-3 left-3 right-3 flex items-center justify-between">
-      <span class="px-3 py-1 rounded-full text-[10px] font-extrabold tracking-wider uppercase bg-black/70 backdrop-blur-md text-white border border-white/10">
-        {category}
-      </span>
-      {quotaLeft < 50 && (
-        <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-red-500/90 text-white shadow-lg animate-pulse">
-          Low Stock: {quotaLeft} left
-        </span>
-      )}
-    </div>
-
-    <!-- Quick Purchase Button on Hover -->
-    <div class="absolute inset-x-3 bottom-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-      <a href="/login" class="w-full py-3 bg-[#e5fe40] hover:bg-[#d2ec2f] text-black font-extrabold text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 shadow-xl transition-transform active:scale-95">
-        <span>Get Ticket</span>
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-      </a>
+    <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 text-[11px] font-bold tracking-wider uppercase text-[#262626]">
+      {date}
     </div>
   </div>
 
-  <!-- Event Info Content -->
-  <div class="p-5 flex flex-col justify-between flex-1">
+  <!-- Model Content Area (Padding 24px) -->
+  <div class="py-6 flex flex-col justify-between flex-1">
     <div>
-      <div class="text-[#e5fe40] text-xs font-bold uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-        <span class="w-1.5 h-1.5 rounded-full bg-[#e5fe40]"></span>
-        {date}
-      </div>
-      <h3 class="font-display font-extrabold text-xl text-white group-hover:text-[#e5fe40] transition-colors leading-tight mb-1">
+      <!-- Model Title (18px / 700 / Weight 700) -->
+      <h3 class="font-bold text-[18px] text-[#262626] leading-snug mb-1 group-hover:text-[#1c69d4] transition-colors">
         {title}
       </h3>
-      <p class="text-zinc-400 text-xs font-semibold mb-3">{artist}</p>
+      <!-- One-line Tagline (14px / 300 / Light Body) -->
+      <p class="font-light text-[14px] text-[#3c3c3c] mb-2">{tagline}</p>
+      <div class="text-[12px] font-normal text-[#6b6b6b] mb-4">{venue}</div>
     </div>
 
-    <div class="pt-4 border-t border-zinc-800/60 flex items-center justify-between mt-auto">
-      <div class="flex items-center gap-1.5 text-zinc-400 text-xs truncate max-w-[60%]">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 text-zinc-500"><path d="M20 10c0 6-8 12-8 12s-8-6-8-10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-        <span class="truncate">{venue}</span>
+    <div class="pt-4 border-t border-[#e6e6e6] flex items-center justify-between mt-auto">
+      <div>
+        <span class="text-[11px] uppercase tracking-wider text-[#6b6b6b] block">Starting From</span>
+        <span class="font-bold text-[16px] text-[#1a1a1a]">{price}</span>
       </div>
-      <div class="text-right">
-        <span class="text-xs text-zinc-500 block text-[10px] uppercase font-bold">From</span>
-        <span class="text-white font-extrabold text-base font-display">{price}</span>
-      </div>
+      <!-- Uppercase Inline Link with Chevron -->
+      <span class="uppercase-link">
+        Configure <span class="text-base font-bold">›</span>
+      </span>
     </div>
   </div>
 </div>

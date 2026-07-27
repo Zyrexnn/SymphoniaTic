@@ -2,29 +2,102 @@
 
 @layer base {
   :root {
-    --bg-main: #0a0a0d;
-    --accent-yellow: #e5fe40;
-    --border-subtle: rgba(255, 255, 255, 0.08);
+    --color-canvas: #ffffff;
+    --color-surface-card: #fafafa;
+    --color-surface-soft: #f7f7f7;
+    --color-surface-dark: #1a2129;
+    --color-primary: #1c69d4;
+    --color-primary-active: #0653b6;
+    --color-ink: #262626;
+    --color-body: #3c3c3c;
+    --color-muted: #6b6b6b;
+    --color-hairline: #e6e6e6;
+    --color-hairline-strong: #cccccc;
   }
 
   body {
-    background-color: var(--bg-main);
-    color: #ffffff;
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
 }
 
-/* Custom Noise Overlay */
-.noise-overlay {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0);
-  background-size: 24px 24px;
+/* Custom BMW-Style Hairline Utility */
+.hairline-bottom {
+  border-bottom: 1px solid #e6e6e6;
 }
 
-/* Glass Floating Navbar */
-.floating-glass {
-  background: rgba(14, 14, 18, 0.65);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+.hairline-border {
+  border: 1px solid #e6e6e6;
+}
+
+/* Corporate Rectangular Buttons (0px radius) */
+.btn-bmw-primary {
+  background-color: #1c69d4;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  border-radius: 0px;
+  padding: 14px 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+.btn-bmw-primary:hover {
+  background-color: #0653b6;
+}
+
+.btn-bmw-secondary {
+  background-color: transparent;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  border: 1px solid #ffffff;
+  border-radius: 0px;
+  padding: 14px 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.btn-bmw-secondary:hover {
+  background-color: #ffffff;
+  color: #1a2129;
+}
+
+.btn-bmw-outline-dark {
+  background-color: #ffffff;
+  color: #262626;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  border: 1px solid #cccccc;
+  border-radius: 0px;
+  padding: 14px 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s ease;
+}
+.btn-bmw-outline-dark:hover {
+  border-color: #262626;
+}
+
+.uppercase-link {
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #1c69d4;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.uppercase-link:hover {
+  color: #0653b6;
 }
 
 /* Custom Scrollbar */
@@ -32,22 +105,11 @@
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0a0a0d;
+  background: #ffffff;
 }
 ::-webkit-scrollbar-thumb {
-  background: #22222a;
-  border-radius: 3px;
+  background: #cccccc;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #e5fe40;
-}
-
-/* Text stroke effect for mega typography */
-.text-stroke {
-  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.25);
-  color: transparent;
-}
-.text-stroke-yellow {
-  -webkit-text-stroke: 1.5px #e5fe40;
-  color: transparent;
+  background: #1c69d4;
 }
