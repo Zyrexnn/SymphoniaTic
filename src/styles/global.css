@@ -1,56 +1,57 @@
 @import "tailwindcss";
 
 @layer base {
-  :root {
-    --color-bg: #0d0d0f;
-    --color-surface: #141418;
-    --color-surface-hover: #1e1e24;
-    --color-accent: #e5fe40; /* DICE signature neon yellow/lime */
-    --color-accent-hover: #d2ec2f;
-    --color-text-main: #ffffff;
-    --color-text-muted: #9ca3af;
+  html {
+    font-family: 'Helvetica Regular', Helvetica, Arial, sans-serif;
+    scroll-behavior: smooth;
   }
-
   body {
-    background-color: var(--color-bg);
-    color: var(--color-text-main);
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    margin: 0;
+    padding: 0;
     overflow-x: hidden;
+    background-color: #050505;
+    color: #ffffff;
   }
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
+.liquid-glass {
+  background: rgba(255, 255, 255, 0.01);
+  background-blend-mode: luminosity;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: none;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.12);
+  position: relative;
+  overflow: hidden;
 }
-::-webkit-scrollbar-track {
-  background: #0d0d0f;
-}
-::-webkit-scrollbar-thumb {
-  background: #27272a;
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
-}
-
-.glass-nav {
-  background: rgba(13, 13, 15, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.ticket-card-glow {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.ticket-card-glow:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 30px -10px rgba(229, 254, 64, 0.15);
+.liquid-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.4px;
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.15) 20%,
+    rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%,
+    rgba(255,255,255,0.15) 80%, rgba(255,255,255,0.45) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
-.badge-tag {
-  background: rgba(229, 254, 64, 0.1);
-  color: #e5fe40;
-  border: 1px solid rgba(229, 254, 64, 0.25);
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: none; }
+}
+.animate-fade-up {
+  animation: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.25s; }
+.delay-3 { animation-delay: 0.4s; }
+.delay-4 { animation-delay: 0.55s; }
+.delay-5 { animation-delay: 0.75s; }
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up { animation: none; }
 }
