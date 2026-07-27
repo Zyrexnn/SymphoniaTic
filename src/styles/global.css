@@ -2,87 +2,101 @@
 
 @layer base {
   :root {
-    --color-raw-bg: #070709;
-    --color-raw-surface: #101014;
-    --color-raw-crimson: #ff1e42;
-    --color-raw-yellow: #f5f0db;
-    --color-raw-ink: #f4f4f6;
-    --color-raw-muted: #71717a;
-    --color-raw-border: rgba(255, 30, 66, 0.2);
+    /* Palette Inspired by BMW Luxury Minimal palette extracted from DESIGN.md */
+    --color-bmw-canvas: #ffffff;
+    --color-bmw-card: #fafafa;
+    --color-bmw-soft: #f7f7f7;
+    --color-bmw-dark: #1a2129;
+    --color-bmw-primary: #1c69d4;
+    --color-bmw-active: #0653b6;
+    --color-bmw-ink: #262626;
+    --color-bmw-body: #3c3c3c;
+    --color-bmw-muted: #6b6b6b;
+    --color-bmw-border: #e6e6e6;
   }
 
   body {
-    background-color: var(--color-raw-bg);
-    color: var(--color-raw-ink);
-    font-family: 'Space Grotesk', -apple-system, sans-serif;
+    background-color: var(--color-bmw-canvas);
+    color: var(--color-bmw-ink);
+    font-family: 'Outfit', sans-serif;
   }
 }
 
-/* Industrial Grain Overlay */
-.grain-overlay {
-  background-image: radial-gradient(rgba(255, 30, 66, 0.06) 1px, transparent 0);
-  background-size: 16px 16px;
+/* Hairline border utilities */
+.hairline-b {
+  border-bottom: 1px solid var(--color-bmw-border);
+}
+.hairline-all {
+  border: 1px solid var(--color-bmw-border);
 }
 
-/* Marquee Animation */
-@keyframes marquee-fast {
-  0% { transform: translateX(0%); }
-  100% { transform: translateX(-50%); }
-}
-.animate-marquee-fast {
-  animation: marquee-fast 18s linear infinite;
-}
-
-/* Raw Cutout Buttons */
-.btn-raw-crimson {
-  background-color: #ff1e42;
-  color: #070709;
+/* Precise 0px Radius Corporate CTA Buttons */
+.btn-concert-primary {
+  background-color: #1c69d4;
+  color: #ffffff;
   font-family: 'Syne', sans-serif;
   font-weight: 800;
   font-size: 13px;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
   text-transform: uppercase;
-  padding: 16px 36px;
-  clip-path: polygon(0 0, 100% 0, 95% 100%, 0% 100%);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 14px 32px;
+  border-radius: 0px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  transition: background-color 0.2s ease;
 }
-.btn-raw-crimson:hover {
-  background-color: #ffffff;
-  color: #070709;
-  transform: translate(-2px, -2px);
-  box-shadow: 4px 4px 0px #ff1e42;
+.btn-concert-primary:hover {
+  background-color: #0653b6;
 }
 
-.btn-raw-outline {
+.btn-concert-secondary {
   background-color: transparent;
-  color: #f4f4f6;
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 700;
+  color: #ffffff;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
   font-size: 13px;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
   text-transform: uppercase;
-  border: 1px solid rgba(244, 244, 246, 0.3);
-  padding: 16px 36px;
-  transition: all 0.2s ease;
+  border: 1px solid #ffffff;
+  border-radius: 0px;
+  padding: 14px 32px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.2s ease;
 }
-.btn-raw-outline:hover {
-  border-color: #ff1e42;
-  color: #ff1e42;
+.btn-concert-secondary:hover {
+  background-color: #ffffff;
+  color: #1a2129;
+}
+
+.link-uppercase-chevron {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #1c69d4;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.2s ease;
+}
+.link-uppercase-chevron:hover {
+  color: #0653b6;
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 5px;
+  width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #070709;
+  background: #ffffff;
 }
 ::-webkit-scrollbar-thumb {
-  background: #ff1e42;
+  background: #cccccc;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #1c69d4;
 }
