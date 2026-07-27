@@ -1,33 +1,43 @@
 ---
-// Floating Glass Pill Navbar per design-taste-frontend spec
+// Header / Navigation bar component in DICE.fm style
 ---
-<div class="fixed top-6 inset-x-0 z-50 flex justify-center px-4">
-  <header class="glass-pill-nav rounded-full px-8 py-3.5 flex items-center justify-between gap-10 max-w-5xl w-full">
-    <!-- Brand Logo -->
-    <a href="/" class="flex items-center gap-3 group">
-      <div class="w-9 h-9 rounded-full bg-[#e5fe40] text-black font-display font-black text-base flex items-center justify-center group-hover:scale-110 transition-transform">
-        S
-      </div>
-      <span class="font-display font-black text-xl tracking-tight text-white">
-        SYMPHONIA<span class="text-[#e5fe40]">TIC</span>
-      </span>
-    </a>
-
-    <!-- Nav Items -->
-    <nav class="hidden md:flex items-center gap-8 text-xs font-semibold uppercase tracking-widest text-zinc-400">
-      <a href="#lineup" class="hover:text-[#e5fe40] transition-colors">Lineup</a>
-      <a href="#architecture" class="hover:text-[#e5fe40] transition-colors">System Core</a>
-      <a href="#manifesto" class="hover:text-[#e5fe40] transition-colors">Manifesto</a>
-    </nav>
-
-    <!-- CTAs -->
-    <div class="flex items-center gap-4">
-      <a href="/login" class="text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-white px-3 py-1.5 transition-colors hidden sm:block">
-        Log In
+<header class="fixed top-0 left-0 right-0 z-50 glass-nav transition-all duration-300">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+    <!-- Logo & Brand -->
+    <div class="flex items-center gap-8">
+      <a href="/" class="flex items-center gap-2.5 group">
+        <div class="w-10 h-10 rounded-xl bg-[#e5fe40] flex items-center justify-center text-black font-black text-xl font-display transform group-hover:rotate-12 transition-transform duration-300">
+          S
+        </div>
+        <span class="font-display font-extrabold text-2xl tracking-wider text-white">
+          SYMPHONIA<span class="text-[#e5fe40]">TIC</span>
+        </span>
       </a>
-      <a href="/register" class="bg-[#e5fe40] hover:bg-white text-black font-display font-black text-xs uppercase tracking-wider px-6 py-2.5 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-[#e5fe40]/15">
-        Get Access
+
+      <!-- Desktop Nav items -->
+      <nav class="hidden md:flex items-center gap-6 text-sm font-semibold">
+        <a href="#events" class="text-zinc-300 hover:text-[#e5fe40] transition-colors">Events</a>
+        <a href="#artists" class="text-zinc-300 hover:text-[#e5fe40] transition-colors">Artists</a>
+        <a href="#venues" class="text-zinc-300 hover:text-[#e5fe40] transition-colors">Venues</a>
+        <a href="#about" class="text-zinc-300 hover:text-[#e5fe40] transition-colors">About Us</a>
+      </nav>
+    </div>
+
+    <!-- Right Actions -->
+    <div class="flex items-center gap-4">
+      <!-- Search Trigger Button -->
+      <button class="p-2.5 rounded-full bg-zinc-900/80 border border-zinc-800 text-zinc-300 hover:text-white hover:border-zinc-700 transition-all flex items-center gap-2 px-4 text-xs font-medium">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <span class="hidden sm:inline">Search concerts, artists...</span>
+      </button>
+
+      <a href="/login" class="text-sm font-bold text-zinc-300 hover:text-white px-3 py-2 transition-colors hidden sm:block">
+        Log in
+      </a>
+
+      <a href="/register" class="bg-[#e5fe40] hover:bg-[#d2ec2f] text-black font-extrabold text-xs uppercase tracking-wider px-5 py-3 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-[#e5fe40]/10">
+        Get App / Tickets
       </a>
     </div>
-  </header>
-</div>
+  </div>
+</header>

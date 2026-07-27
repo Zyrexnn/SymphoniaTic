@@ -2,68 +2,55 @@
 
 @layer base {
   :root {
-    --bg-dark: #08080a;
-    --surface-card: #121216;
-    --accent-electric: #e5fe40;
-    --accent-glow: rgba(229, 254, 64, 0.15);
-    --text-primary: #ffffff;
-    --text-secondary: #a1a1aa;
-    --border-glass: rgba(255, 255, 255, 0.08);
+    --color-bg: #0d0d0f;
+    --color-surface: #141418;
+    --color-surface-hover: #1e1e24;
+    --color-accent: #e5fe40; /* DICE signature neon yellow/lime */
+    --color-accent-hover: #d2ec2f;
+    --color-text-main: #ffffff;
+    --color-text-muted: #9ca3af;
   }
 
   body {
-    background-color: var(--bg-dark);
-    color: var(--text-primary);
-    font-family: 'Cabinet Grotesk', 'Outfit', sans-serif;
+    background-color: var(--color-bg);
+    color: var(--color-text-main);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     overflow-x: hidden;
   }
 }
 
-/* Ambient Radial Mesh Gradient */
-.ambient-radial-glow {
-  background: radial-gradient(circle at 50% 20%, rgba(229, 254, 64, 0.08) 0%, transparent 60%),
-              radial-gradient(circle at 80% 60%, rgba(120, 50, 255, 0.06) 0%, transparent 50%);
-}
-
-/* Floating Glass Pill Navbar */
-.glass-pill-nav {
-  background: rgba(18, 18, 22, 0.7);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
-}
-
-/* Hover Scale and Glow Physics */
-.card-hover-physics {
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease, box-shadow 0.4s ease;
-}
-.card-hover-physics:hover {
-  transform: translateY(-6px) scale(1.01);
-  border-color: rgba(229, 254, 64, 0.4);
-  box-shadow: 0 24px 48px -12px rgba(229, 254, 64, 0.12);
-}
-
-/* Marquee Smooth Continuous Motion */
-@keyframes marquee-continuous {
-  0% { transform: translateX(0%); }
-  100% { transform: translateX(-50%); }
-}
-.animate-marquee-continuous {
-  animation: marquee-continuous 30s linear infinite;
-}
-
-/* Custom Scrollbar */
+/* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #08080a;
+  background: #0d0d0f;
 }
 ::-webkit-scrollbar-thumb {
   background: #27272a;
-  border-radius: 3px;
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #e5fe40;
+  background: #3f3f46;
+}
+
+.glass-nav {
+  background: rgba(13, 13, 15, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ticket-card-glow {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.ticket-card-glow:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px -10px rgba(229, 254, 64, 0.15);
+}
+
+.badge-tag {
+  background: rgba(229, 254, 64, 0.1);
+  color: #e5fe40;
+  border: 1px solid rgba(229, 254, 64, 0.25);
 }
