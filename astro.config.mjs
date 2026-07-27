@@ -8,6 +8,11 @@ import node from '@astrojs/node';
 export default defineConfig({
   output: 'server',
 
+  server: {
+    host: '127.0.0.1',
+    port: 4321,
+  },
+
   integrations: [react()],
 
   vite: {

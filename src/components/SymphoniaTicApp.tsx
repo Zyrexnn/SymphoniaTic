@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ShoppingCart, Menu, X, BarChart3, Heart, Ticket, Calendar, 
   MapPin, CheckCircle2, QrCode, User, Mail, ChevronRight,
   Pause, Sparkles, ShieldCheck, Flame, ArrowDown,
   Layers, Lock, Search, Info, Clock, AlertCircle, Share2,
-  Music, HelpCircle, ChevronDown, Radio, Volume2
+  Music, HelpCircle, ChevronDown, Radio, Volume2, VolumeX, Play,
+  SkipForward, SkipBack, ListMusic, Disc, Maximize2, Minimize2
 } from 'lucide-react';
 import { BoomerangVideoBg } from './BoomerangVideoBg';
 
@@ -36,6 +37,7 @@ interface EventItem {
   category: string;
   categoryBadgeColor: string;
   image: string;
+  audioUrl: string;
   organizer: string;
   description: string;
   rundown: RundownItem[];
@@ -45,8 +47,8 @@ interface EventItem {
 const CONCERT_EVENTS: EventItem[] = [
   {
     id: 1,
-    title: "Symphony No. 9 in D minor",
-    subtitle: "Opus 125 — Ode to Joy Choral Masterpiece",
+    title: "Symphony No. 5 in C minor",
+    subtitle: "Opus 67 — I. Allegro con brio Masterpiece",
     artist: "Royal Philharmonic Orchestra & Jakarta Choral Society",
     conductor: "Maestro Alexander Vance",
     venue: "Aula Simfonia Jakarta",
@@ -57,14 +59,15 @@ const CONCERT_EVENTS: EventItem[] = [
     category: "SIMFONI",
     categoryBadgeColor: "bg-amber-500/20 text-amber-300 border-amber-500/40",
     image: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&w=1200&q=80",
+    audioUrl: "/audio/Ludwig van Beethoven - Symphony n.5 in C minor, Op.67, I.Allegro con brio.mp3",
     organizer: "Royal Philharmonic Foundation & SymphoniaTic Events",
-    description: "Mahakarya simfoni terakhir Ludwig van Beethoven yang legendaris. Menampilkan gerakan pamungkas 'Ode to Joy' dengan kolaborasi megah 90 musisi orkestra simfoni dan 80 penyanyi paduan suara profesional. Pengalaman akustik tak tertandingi di hall bertaraf internasional.",
+    description: "Mahakarya simfoni Ludwig van Beethoven yang sangat terkenal. Menampilkan irama 4 ketukan ikonik Allegro con brio dengan kolaborasi 90 musisi orkestra simfoni profesional.",
     rundown: [
       { time: "18:00 WIB", activity: "Pemeriksaan E-Ticket & Registrasi Open Gate" },
       { time: "19:00 WIB", activity: "Pintu Main Hall Dibuka & Pre-Concert Presentation" },
-      { time: "19:30 WIB", activity: "Babak I: Movement I (Allegro) & Movement II (Molto vivace)" },
+      { time: "19:30 WIB", activity: "Babak I: Movement I (Allegro con brio)" },
       { time: "20:30 WIB", activity: "Istirahat / Intermission (20 Menit)" },
-      { time: "20:50 WIB", activity: "Babak II: Movement III (Adagio) & Movement IV (Ode to Joy Finale)" },
+      { time: "20:50 WIB", activity: "Babak II: Movement II & III Finale" },
       { time: "21:45 WIB", activity: "Selesai & Sesi Foto Konduktor" }
     ],
     categories: [
@@ -93,9 +96,9 @@ const CONCERT_EVENTS: EventItem[] = [
   },
   {
     id: 2,
-    title: "The Four Seasons: Recomposed",
-    subtitle: "Mahakarya Antonio Vivaldi Diberi Sentuhan Neoklasik Modern",
-    artist: "Vivaldi & Max Richter Ensemble",
+    title: "Viva La Vida (Orchestra Festa)",
+    subtitle: "Coldplay & Oasis Band Music Orchestra Celebration",
+    artist: "Vivaldi & Band Orchestra Ensemble",
     conductor: "Violinis Utama Iskandar Widjaja",
     venue: "TIM Concert Hall (Taman Ismail Marzuki)",
     address: "Jl. Cikini Raya No.73, Menteng, Jakarta Pusat",
@@ -105,13 +108,14 @@ const CONCERT_EVENTS: EventItem[] = [
     category: "KAMAR MUSIK",
     categoryBadgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
     image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1200&q=80",
-    organizer: "Jakarta Chamber Society & Max Richter Music",
-    description: "Reinterpretasi kontemporer atas karya abad ke-18 Vivaldi oleh komposer ternama Max Richter. Perpaduan harmonis antara gesekan biola klasik yang dramatis dengan elemen synthesizer ambient modern.",
+    audioUrl: "/audio/coldplay - Viva La Vida I COLDPLAY & OASIS AND BAND MUSIC ORCHESTRA FESTA.mp3",
+    organizer: "Jakarta Chamber Society & Modern Orchestra",
+    description: "Reinterpretasi megah lagu hit Viva La Vida yang dibawakan oleh gabungan tim orkestra simfoni dan ansambel string modern.",
     rundown: [
       { time: "18:30 WIB", activity: "Open Gate & Registrasi Ulang E-Ticket" },
       { time: "19:30 WIB", activity: "Pengenalan Karya & Pengantar Neoklasik" },
-      { time: "20:00 WIB", activity: "Pertunjukan Musim Semi & Musim Panas" },
-      { time: "21:00 WIB", activity: "Pertunjukan Musim Gugur & Musim Dingin" },
+      { time: "20:00 WIB", activity: "Pertunjukan Utama Viva La Vida Orchestra" },
+      { time: "21:00 WIB", activity: "Pertunjukan Sesi II Band Symphony" },
       { time: "22:00 WIB", activity: "Penutupan & Sesi Tanya Jawab Musik" }
     ],
     categories: [
@@ -133,8 +137,8 @@ const CONCERT_EVENTS: EventItem[] = [
   },
   {
     id: 3,
-    title: "Swan Lake & Nutcracker Suite",
-    subtitle: "Pertunjukan Balet Simfoni Kolosal Pyotr Tchaikovsky",
+    title: "The Winner Takes It All (Epic Orchestra)",
+    subtitle: "Pertunjukan Balet & Orkestra Epik Mahakarya ABBA",
     artist: "Grand Opera Orchestra & Jakarta Ballet Company",
     conductor: "Maestro David Chen",
     venue: "JIExpo Symphony Hall",
@@ -145,13 +149,14 @@ const CONCERT_EVENTS: EventItem[] = [
     category: "BALET & OPERA",
     categoryBadgeColor: "bg-purple-500/20 text-purple-300 border-purple-500/40",
     image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80",
+    audioUrl: "/audio/ABBA - The Winner Takes It All  Epic Orchestra (2020).mp3",
     organizer: "Indonesian Classical Ballet Theatre",
-    description: "Nikmati keindahan tarian balet anggun diiringi live orchestra penuh membawakan lagu-lagu abadi Tchaikovsky seperti Danau Angsa dan Tarian Peri Gula.",
+    description: "Aransemen epik orkestra dari lagu legendaris ABBA 'The Winner Takes It All' diiringi koreografi tarian balet simfoni kolosal.",
     rundown: [
       { time: "17:30 WIB", activity: "Open Gate & Booth Merchandise Balet" },
-      { time: "19:00 WIB", activity: "Babak I: Swan Lake Act 1 & 2" },
+      { time: "19:00 WIB", activity: "Babak I: Epic Orchestra Suite Act 1" },
       { time: "20:15 WIB", activity: "Istirahat (15 Menit)" },
-      { time: "20:30 WIB", activity: "Babak II: Nutcracker Suite Highlights" },
+      { time: "20:30 WIB", activity: "Babak II: Winner Takes It All Highlights" },
       { time: "21:30 WIB", activity: "Penutupan & Curtain Call" }
     ],
     categories: [
@@ -173,118 +178,42 @@ const CONCERT_EVENTS: EventItem[] = [
   },
   {
     id: 4,
-    title: "Requiem in D minor, K. 626",
-    subtitle: "Misa Pemakaman Suci Wolfgang Amadeus Mozart",
-    artist: "Vienna Choir Soloists & Nusantara Philharmonic",
-    conductor: "Conductor Dr. Helena Sutanto",
+    title: "Laskar Pelangi (TRUST Symphony)",
+    subtitle: "Konser Simfoni Mahakarya Kebangsaan Indonesia",
+    artist: "TRUST (Trinity Youth Symphony Orchestra)",
+    conductor: "Dr. Nathania Karina",
     venue: "Aula Simfonia Jakarta",
     address: "Jl. Industri Blok B14 No.1, Kemayoran, Jakarta Pusat",
-    date: "Sabtu, 25 April 2026",
-    time: "21:00 WIB",
-    openGate: "19:30 WIB",
-    category: "PADUAN SUARA",
+    date: "Sabtu, 2 Mei 2026",
+    time: "19:00 WIB",
+    openGate: "17:30 WIB",
+    category: "NUSANTARA SYMPHONY",
     categoryBadgeColor: "bg-blue-500/20 text-blue-300 border-blue-500/40",
     image: "https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?auto=format&fit=crop&w=1200&q=80",
-    organizer: "Nusantara Classical Arts",
-    description: "Karya sakral terakhir Mozart yang penuh misteri dan keagungan spiritual. Dibawakan oleh 4 solois vokal internasional, paduan suara koral megah, dan orkestra kamar.",
+    audioUrl: "/audio/Laskar Pelangi  TRUST (Trinity Youth Symphony Orchestra).mp3",
+    organizer: "TRUST Orchestra & SymphoniaTic Events",
+    description: "Aransemen orkestra simfoni memukau dari lagu kebangsaan legendaris Laskar Pelangi karya Nidji, dibawakan secara megah oleh Trinity Youth Symphony Orchestra.",
     rundown: [
-      { time: "19:30 WIB", activity: "Open Gate & Suasana Hening Hall" },
-      { time: "21:00 WIB", activity: "Introitus, Kyrie, & Sequentia (Dies Irae)" },
-      { time: "21:50 WIB", activity: "Offertorium, Sanctus, Benedictus, & Agnus Dei" },
-      { time: "22:45 WIB", activity: "Selesai" }
+      { time: "17:30 WIB", activity: "Open Gate & Booth Merchandise Nusantara" },
+      { time: "19:00 WIB", activity: "Babak I: Simfoni Pemuda & Lagu Nusantara" },
+      { time: "20:15 WIB", activity: "Istirahat (15 Menit)" },
+      { time: "20:30 WIB", activity: "Babak II: Pertunjukan Utama Laskar Pelangi Symphony" },
+      { time: "21:45 WIB", activity: "Selesai & Sesi Foto Musisi" }
     ],
     categories: [
       { 
         id: "c4-vip", 
-        name: "Chamber VIP", 
-        price: 700000, 
-        quota: 15,
-        benefits: ["Baris VIP Akustik Murni", "Souvenir Booklet Edisi Terbatas"]
+        name: "VIP Nusantara Pit", 
+        price: 650000, 
+        quota: 10,
+        benefits: ["Baris VIP Depan Panggung", "Buku Program & Tanda Tangan Konduktor"]
       },
       { 
         id: "c4-cat1", 
-        name: "CAT 1 Circle", 
+        name: "CAT 1 Main Tier", 
         price: 400000, 
-        quota: 45,
-        benefits: ["Area Samping Melingkar", "Pengalaman Suara Mendalam"]
-      },
-    ]
-  },
-  {
-    id: 5,
-    title: "Piano Concerto No. 2 in C minor",
-    subtitle: "Opus 18 — Konser Piano Romantis Sergei Rachmaninoff",
-    artist: "Concertgebouw Soloists & Pianis Ananda Sukarlan",
-    conductor: "Maestro Julian Rossi",
-    venue: "Balai Sarbini Concert Hall",
-    address: "Plaza Semanggi, Jl. Jend. Sudirman Kav 50, Jakarta Selatan",
-    date: "Minggu, 26 April 2026",
-    time: "19:30 WIB",
-    openGate: "18:00 WIB",
-    category: "RESITAL PIANO",
-    categoryBadgeColor: "bg-rose-500/20 text-rose-300 border-rose-500/40",
-    image: "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&w=1200&q=80",
-    organizer: "Steinway Society Indonesia",
-    description: "Salah satu konser piano paling emosional dan penuh keahlian teknis tinggi di dunia. Dimainkan di atas piano Steinway & Sons Concert Grand Model D terbaru.",
-    rundown: [
-      { time: "18:00 WIB", activity: "Registrasi Ulang & Open Lounge" },
-      { time: "19:30 WIB", activity: "Pembuka: Prelude in C-sharp minor" },
-      { time: "20:00 WIB", activity: "Piano Concerto No. 2 (Movement 1, 2, & 3)" },
-      { time: "21:30 WIB", activity: "Selesai & Sesi CD Signing" }
-    ],
-    categories: [
-      { 
-        id: "c5-vip", 
-        name: "Stage VIP", 
-        price: 650000, 
-        quota: 10,
-        benefits: ["Posisi Tangan Pianis Terlihat Jelas", "Buku Foto Pianis Tanda Tangan"]
-      },
-      { 
-        id: "c5-cat1", 
-        name: "CAT 1 Seats", 
-        price: 375000, 
-        quota: 18,
-        benefits: ["Area Tengah Balai Sarbini", "Pemandangan Nyaman"]
-      },
-    ]
-  },
-  {
-    id: 6,
-    title: "Scheherazade Op. 35",
-    subtitle: "Suite Simfoni 1001 Malam Karya Nikolai Rimsky-Korsakov",
-    artist: "London Symphony Orchestra",
-    conductor: "Conductor Elena Rostova",
-    venue: "Bengkel Symphony Space Bali",
-    address: "Kawasan Pariwisata ITDC Nusa Dua, Lot 5, Bali",
-    date: "Kamis, 30 April 2026",
-    time: "20:30 WITA",
-    openGate: "19:00 WITA",
-    category: "PHILHARMONIC",
-    categoryBadgeColor: "bg-cyan-500/20 text-cyan-300 border-cyan-500/40",
-    image: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&w=1200&q=80",
-    organizer: "Bali International Philharmonic Festival",
-    description: "Petualangan kisah dongeng 1001 Malam yang disajikan dalam balutan alunan instrumen orkestra mewah di auditorium terbuka berlatar pemandangan alam Nusa Dua.",
-    rundown: [
-      { time: "19:00 WITA", activity: "Open Gate & Sunset Welcoming Music" },
-      { time: "20:30 WITA", activity: "Babak I: Lautan & Kapal Sinbad" },
-      { time: "21:30 WITA", activity: "Babak II: Pangeran Kalendar & Pesta Baghdad" },
-      { time: "22:30 WITA", activity: "Selesai" }
-    ],
-    categories: [
-      { 
-        id: "c6-vip", 
-        name: "VIP Amphitheater", 
-        price: 550000, 
-        quota: 20,
-        benefits: ["Tempat Duduk Terdepan Undercover", "Welcome Wine / Juice"]
-      },
-      { 
-        id: "c6-cat1", 
-        name: "CAT 1 Open Lawn", 
-        price: 325000, 
-        quota: 60,
-        benefits: ["Tikar Karpet Sintetis Nyaman", "Suasana Konser Terbuka"]
+        quota: 30,
+        benefits: ["Balkon Akustik Jernih", "Tempat Duduk Bernomor"]
       },
     ]
   }
@@ -355,8 +284,118 @@ interface OrderRecord {
 export const SymphoniaTicApp: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
-  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+
+  // REAL AUDIO PLAYER STATE & REF
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [currentTrackIndex, setCurrentTrackIndex] = useState<number>(0);
+  const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
+  const [currentTime, setCurrentTime] = useState<number>(0);
+  const [duration, setDuration] = useState<number>(0);
+  const [volume, setVolume] = useState<number>(0.8);
+  const [isMuted, setIsMuted] = useState<boolean>(false);
+  const [isPlayerMinimized, setIsPlayerMinimized] = useState(false);
+  const [showPlaylistDrawer, setShowPlaylistDrawer] = useState<boolean>(false);
+
+  // Current Active Playing Event Track
+  const activeTrack = CONCERT_EVENTS[currentTrackIndex];
+
+  // Initialize and handle Audio player events
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handleTimeUpdate = () => setCurrentTime(audio.currentTime);
+    const handleLoadedMetadata = () => setDuration(audio.duration);
+    const handleEnded = () => {
+      // Auto play next track
+      setCurrentTrackIndex((prev) => (prev + 1) % CONCERT_EVENTS.length);
+    };
+
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('ended', handleEnded);
+
+    return () => {
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, []);
+
+  // Update track source when track index changes
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    audio.src = activeTrack.audioUrl;
+    audio.load();
+    if (isPlayingAudio) {
+      audio.play().catch(() => setIsPlayingAudio(false));
+    }
+  }, [currentTrackIndex]);
+
+  // Handle Play/Pause
+  const togglePlayAudio = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (isPlayingAudio) {
+      audio.pause();
+      setIsPlayingAudio(false);
+    } else {
+      audio.play().then(() => setIsPlayingAudio(true)).catch((err) => {
+        console.log('Audio autoplay prevented:', err);
+        setIsPlayingAudio(false);
+      });
+    }
+  };
+
+  const playSpecificEventTrack = (eventIndex: number) => {
+    if (currentTrackIndex === eventIndex) {
+      togglePlayAudio();
+    } else {
+      setCurrentTrackIndex(eventIndex);
+      setIsPlayingAudio(true);
+      setTimeout(() => {
+        if (audioRef.current) {
+          audioRef.current.play().catch(() => {});
+        }
+      }, 100);
+    }
+  };
+
+  const playNextTrack = () => {
+    setCurrentTrackIndex((prev) => (prev + 1) % CONCERT_EVENTS.length);
+    setIsPlayingAudio(true);
+  };
+
+  const playPrevTrack = () => {
+    setCurrentTrackIndex((prev) => (prev - 1 + CONCERT_EVENTS.length) % CONCERT_EVENTS.length);
+    setIsPlayingAudio(true);
+  };
+
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const targetTime = parseFloat(e.target.value);
+    if (audioRef.current) {
+      audioRef.current.currentTime = targetTime;
+      setCurrentTime(targetTime);
+    }
+  };
+
+  const toggleMute = () => {
+    if (audioRef.current) {
+      audioRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
+  };
+
+  const formatTime = (secs: number) => {
+    if (isNaN(secs) || secs === 0) return '0:00';
+    const mins = Math.floor(secs / 60);
+    const remainingSecs = Math.floor(secs % 60);
+    return `${mins}:${remainingSecs < 10 ? '0' : ''}${remainingSecs}`;
+  };
 
   // Track scroll for navbar header styling
   useEffect(() => {
@@ -450,7 +489,10 @@ export const SymphoniaTicApp: React.FC = () => {
 
   return (
     <div className="relative min-h-screen w-full bg-[#07080c] text-white select-none">
-      {/* -------------------- FIXED STICKY HEADER (FOLLOWS USER ON ALL DEVICES) -------------------- */}
+      {/* HIDDEN HTML5 AUDIO ELEMENT FOR REAL CLASSICAL MUSIC PLAYBACK */}
+      <audio ref={audioRef} preload="metadata" />
+
+      {/* -------------------- FIXED STICKY HEADER -------------------- */}
       <header className={`fixed top-0 left-0 right-0 z-40 px-4 py-3 sm:px-6 sm:py-4 transition-all duration-300 ${
         isScrolled || isMenuOpen 
           ? 'bg-[#07080c]/90 backdrop-blur-xl border-b border-white/10 shadow-2xl' 
@@ -505,7 +547,7 @@ export const SymphoniaTicApp: React.FC = () => {
               </span>
             </button>
 
-            {/* Mobile Menu Toggle (ALWAYS VISIBLE & STICKY ON MOBILE) */}
+            {/* Mobile Menu Toggle */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="liquid-glass h-9 w-9 rounded-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-200 cursor-pointer md:hidden border border-white/20"
@@ -566,7 +608,7 @@ export const SymphoniaTicApp: React.FC = () => {
         <div className="absolute inset-0 z-5 bg-gradient-to-b from-black/70 via-black/40 to-[#07080c]" />
 
         {/* Hero Content */}
-        <main className="relative z-10 flex flex-col items-center text-center pt-16 sm:pt-24 md:pt-28 px-4 sm:px-6 max-w-4xl mx-auto my-auto pb-24 sm:pb-28">
+        <main className="relative z-10 flex flex-col items-center text-center pt-16 sm:pt-24 md:pt-28 px-4 sm:px-6 max-w-4xl mx-auto my-auto pb-28 sm:pb-32">
           {/* Status Badge */}
           <div
             className="liquid-glass rounded-full px-4 py-1.5 text-xs text-white mb-5 animate-fade-up delay-1 flex items-center gap-2 border border-white/20 shadow-lg"
@@ -609,40 +651,198 @@ export const SymphoniaTicApp: React.FC = () => {
           </div>
         </main>
 
-        {/* Audio Player Floating Widget (MOBILE RESPONSIVE & COLLAPSIBLE) */}
-        <div className="fixed sm:absolute bottom-4 right-4 left-4 sm:left-auto sm:right-6 md:right-10 z-20 w-auto sm:w-80 animate-fade-up delay-5">
-          <div className="rounded-2xl bg-white/95 backdrop-blur-md p-2.5 sm:p-3 pr-4 shadow-2xl flex items-center gap-3 border border-white/50">
+        {/* -------------------- SPOTIFY-STYLE AUDIO PLAYER FLOATING WIDGET -------------------- */}
+        {isPlayerMinimized ? (
+          /* MINIMIZED SPOTIFY PILL BADGE */
+          <div className="fixed bottom-4 right-4 z-30 animate-fade-up">
             <button
-              onClick={() => setIsPlayingAudio(!isPlayingAudio)}
-              className="h-10 w-10 sm:h-11 sm:w-11 shrink-0 rounded-xl bg-blue-600 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-200 cursor-pointer shadow-md"
+              onClick={() => setIsPlayerMinimized(false)}
+              className="bg-[#121212]/95 backdrop-blur-xl border border-white/20 p-2 sm:p-2.5 rounded-full shadow-2xl flex items-center gap-2.5 hover:scale-105 active:scale-95 transition-all text-white cursor-pointer group"
+              title="Buka Pemutar Spotify"
             >
-              {isPlayingAudio ? (
-                <Pause className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-              ) : (
-                <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5 text-white" strokeWidth={2.5} />
-              )}
-            </button>
-            <div className="flex-1 min-w-0 flex flex-col justify-center">
-              <p className="text-xs font-bold text-gray-900 truncate">
-                Beethoven — Symphony No. 9
-              </p>
-              <p className="text-[10px] text-blue-700 font-semibold truncate">Cuplikan Pre-Show Resital</p>
-              <div className="mt-1 h-1 w-full rounded-full bg-gray-200 overflow-hidden">
-                <div className={`h-full bg-blue-600 rounded-full transition-all duration-300 ${isPlayingAudio ? 'w-[75%]' : 'w-[25%]'}`} />
+              <div className="relative w-9 h-9 rounded-full overflow-hidden shrink-0 border border-emerald-500/40">
+                <img src={activeTrack.image} alt={activeTrack.title} className={`w-full h-full object-cover ${isPlayingAudio ? 'animate-spin-slow' : ''}`} />
+                <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                  <Music className="w-3.5 h-3.5 text-emerald-400 drop-shadow" />
+                </div>
               </div>
-            </div>
-            <button
-              onClick={() => setIsLiked(!isLiked)}
-              className="h-8 w-8 shrink-0 rounded-full bg-gray-100 flex items-center justify-center hover:scale-110 active:scale-95 transition-transform duration-200 cursor-pointer"
-            >
-              <Heart
-                className={`w-3.5 h-3.5 text-blue-600 transition-colors ${
-                  isLiked ? 'fill-blue-600' : ''
-                }`}
-              />
+              <div className="text-left pr-1 max-w-[130px] sm:max-w-[180px]">
+                <p className="text-xs font-bold text-white truncate leading-tight">{activeTrack.title}</p>
+                <p className="text-[10px] text-emerald-400 font-medium truncate mt-0.5">
+                  {isPlayingAudio ? '● Memutar Musik' : 'Dipause'}
+                </p>
+              </div>
+              <div
+                onClick={(e) => { e.stopPropagation(); togglePlayAudio(); }}
+                className="w-8 h-8 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black flex items-center justify-center font-bold transition-transform shrink-0"
+              >
+                {isPlayingAudio ? <Pause className="w-4 h-4 fill-black text-black" /> : <Play className="w-4 h-4 fill-black text-black ml-0.5" />}
+              </div>
+              <div className="p-1 text-gray-400 hover:text-white">
+                <Maximize2 className="w-4 h-4" />
+              </div>
             </button>
           </div>
-        </div>
+        ) : (
+          /* EXPANDED SPOTIFY PLAYER BAR */
+          <div className="fixed bottom-4 right-4 left-4 sm:left-auto sm:right-6 md:right-10 z-30 w-auto sm:w-[380px] animate-fade-up">
+            <div className="rounded-2xl bg-[#121212]/95 backdrop-blur-2xl p-4 shadow-2xl border border-white/20 space-y-3">
+              
+              {/* Header: Spotify Badge & Controls */}
+              <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center">
+                    <Music className="w-3 h-3 text-black" />
+                  </div>
+                  <span className="text-[11px] font-bold text-white tracking-wider uppercase">Spotify Player</span>
+                </div>
+
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setShowPlaylistDrawer(!showPlaylistDrawer)}
+                    className="p-1.5 text-gray-400 hover:text-emerald-400 transition-colors"
+                    title="Daftar Putar (3 Lagu Asli)"
+                  >
+                    <ListMusic className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setIsPlayerMinimized(true)}
+                    className="p-1.5 text-gray-400 hover:text-white transition-colors rounded-lg bg-white/5 hover:bg-white/10"
+                    title="Minimize Pemutar"
+                  >
+                    <Minimize2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Middle Row: Album Cover & Track Name */}
+              <div className="flex items-center gap-3">
+                <div className="relative w-12 h-12 shrink-0 rounded-xl overflow-hidden shadow-lg border border-white/10">
+                  <img src={activeTrack.image} alt={activeTrack.title} className="w-full h-full object-cover" />
+                  {isPlayingAudio && (
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                      <BarChart3 className="w-5 h-5 text-emerald-400 animate-pulse" />
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-xs sm:text-sm font-bold text-white truncate leading-snug">{activeTrack.title}</h4>
+                  <p className="text-[11px] text-gray-400 truncate mt-0.5">{activeTrack.artist}</p>
+                </div>
+
+                <button
+                  onClick={() => setIsLiked(!isLiked)}
+                  className="p-2 text-gray-400 hover:text-emerald-400 transition-colors shrink-0"
+                >
+                  <Heart className={`w-4 h-4 ${isLiked ? 'fill-emerald-400 text-emerald-400' : ''}`} />
+                </button>
+              </div>
+
+              {/* Controls Row: Prev, Play/Pause, Next */}
+              <div className="flex items-center justify-center gap-4 py-0.5">
+                <button
+                  onClick={playPrevTrack}
+                  className="text-gray-400 hover:text-white transition-colors p-1.5"
+                  title="Sebelumnya"
+                >
+                  <SkipBack className="w-5 h-5" />
+                </button>
+
+                <button
+                  onClick={togglePlayAudio}
+                  className="w-10 h-10 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-transform cursor-pointer"
+                  title={isPlayingAudio ? "Jeda" : "Putar Musik"}
+                >
+                  {isPlayingAudio ? <Pause className="w-5 h-5 fill-black text-black" /> : <Play className="w-5 h-5 fill-black text-black ml-0.5" />}
+                </button>
+
+                <button
+                  onClick={playNextTrack}
+                  className="text-gray-400 hover:text-white transition-colors p-1.5"
+                  title="Selanjutnya"
+                >
+                  <SkipForward className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Seekbar Progress Slider */}
+              <div className="space-y-1">
+                <div className="relative flex items-center">
+                  <input
+                    type="range"
+                    min="0"
+                    max={duration || 100}
+                    value={currentTime}
+                    onChange={handleSeek}
+                    className="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                  />
+                </div>
+
+                <div className="flex items-center justify-between text-[9px] font-mono text-gray-400">
+                  <span>{formatTime(currentTime)}</span>
+                  <span className="text-emerald-400 font-semibold">{isPlayingAudio ? '● MEMUTAR' : 'PAUSED'}</span>
+                  <span>{formatTime(duration)}</span>
+                </div>
+              </div>
+
+              {/* Volume Slider & Mute Toggle */}
+              <div className="flex items-center gap-2 pt-1 border-t border-white/5">
+                <button onClick={toggleMute} className="text-gray-400 hover:text-white shrink-0">
+                  {isMuted ? <VolumeX className="w-3.5 h-3.5 text-red-400" /> : <Volume2 className="w-3.5 h-3.5" />}
+                </button>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value={isMuted ? 0 : volume}
+                  onChange={(e) => {
+                    const v = parseFloat(e.target.value);
+                    setVolume(v);
+                    if (audioRef.current) audioRef.current.volume = v;
+                  }}
+                  className="w-20 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                />
+              </div>
+
+              {/* Playlist Drawer (3 Real Tracks Only) */}
+              <AnimatePresence>
+                {showPlaylistDrawer && (
+                  <motion.div 
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="pt-2 border-t border-white/10 space-y-1.5 max-h-40 overflow-y-auto"
+                  >
+                    <span className="text-[10px] text-gray-400 font-bold block px-1 uppercase tracking-wider">Daftar Putar (3 Lagu Asli):</span>
+                    {CONCERT_EVENTS.map((evt, idx) => (
+                      <button
+                        key={evt.id}
+                        onClick={() => playSpecificEventTrack(idx)}
+                        className={`w-full text-left p-2 rounded-xl text-xs flex items-center justify-between transition-all cursor-pointer ${
+                          currentTrackIndex === idx
+                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-semibold'
+                            : 'bg-white/5 text-gray-300 hover:bg-white/10'
+                        }`}
+                      >
+                        <div className="truncate pr-2">
+                          <div className="truncate text-xs font-medium">{evt.title}</div>
+                          <div className="text-[9px] text-gray-400 truncate">{evt.artist}</div>
+                        </div>
+                        {currentTrackIndex === idx && isPlayingAudio ? (
+                          <BarChart3 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                        ) : (
+                          <Play className="w-3 h-3 text-gray-400 shrink-0" />
+                        )}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* -------------------- 2. LANDING PAGE SECTIONS -------------------- */}
@@ -659,7 +859,7 @@ export const SymphoniaTicApp: React.FC = () => {
               Katalog Konser Simfoni & Tiket
             </h2>
             <p className="text-gray-400 text-xs sm:text-base mt-1.5 sm:mt-2 max-w-xl">
-              Pilih pertunjukan favorit Anda. Setiap kuota tempat duduk dialokasikan secara transparan dan terverifikasi instan.
+              Pilih pertunjukan favorit Anda. Klik tombol 'Info Detail' untuk melihat jadwal lengkap atau 'Beli Tiket' untuk memesan.
             </p>
           </div>
 
@@ -676,7 +876,7 @@ export const SymphoniaTicApp: React.FC = () => {
           </div>
         </div>
 
-        {/* Category Filters (Mobile Smooth Scrollable Pills) */}
+        {/* Category Filters */}
         <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-6 sm:mb-8 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
           {[
             { id: 'SEMUA', label: 'Semua Kategori' },
@@ -710,9 +910,10 @@ export const SymphoniaTicApp: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredEvents.map((event) => {
+            {filteredEvents.map((event, eventIdx) => {
               const minPrice = event.categories[0].price;
               const totalQuotaLeft = event.categories.reduce((acc, c) => acc + c.quota, 0);
+              const isEventPlaying = currentTrackIndex === eventIdx && isPlayingAudio;
 
               return (
                 <motion.div 
@@ -959,7 +1160,7 @@ export const SymphoniaTicApp: React.FC = () => {
         </div>
       </footer>
 
-      {/* -------------------- 3. MODAL DETAIL CONCERT (MOBILE RESPONSIVE & FULLSCREEN OVERLAY) -------------------- */}
+      {/* -------------------- 3. MODAL DETAIL CONCERT -------------------- */}
       <AnimatePresence>
         {detailEvent && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-md overflow-y-auto">
@@ -1481,7 +1682,7 @@ export const SymphoniaTicApp: React.FC = () => {
                 onClick={() => setActiveDrawer(null)}
                 className="liquid-glass p-2 rounded-xl text-white/80 hover:text-white"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
