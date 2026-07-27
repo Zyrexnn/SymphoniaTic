@@ -1,287 +1,292 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Navbar from '../components/Navbar.astro';
-import EventCard from '../components/EventCard.astro';
 
-// Sample events matching SymphoniaTic PRD structure
-const featuredEvents = [
+// Structured Event Data
+const shows = [
   {
-    id: 1,
-    title: "Echoes of Tomorrow 2026",
-    artist: "KSHMR & Anyma",
-    venue: "GBK Stadium, Jakarta",
-    date: "SAT, 15 AUG 2026",
-    price: "Rp 450.000",
-    category: "Electronic",
+    id: "01",
+    title: "ECHOES OF TOMORROW",
+    artist: "KSHMR & ANYMA",
+    date: "15 AUG 2026",
+    venue: "GBK STADIUM, JAKARTA",
+    price: "IDR 450.000",
+    tag: "ELECTRONIC",
     image: "/poster_1.jpg",
-    quotaLeft: 24,
+    span: "col-span-1 md:col-span-2 row-span-2", // Bento Grid Span
+    featured: true
   },
   {
-    id: 2,
-    title: "Midnight Resonance Live",
-    artist: "The Underground Orchestra",
-    venue: "JIExpo Hall C1, Jakarta",
-    date: "FRI, 28 AUG 2026",
-    price: "Rp 350.000",
-    category: "Indie Rock",
+    id: "02",
+    title: "MIDNIGHT RESONANCE",
+    artist: "UNDERGROUND ORCHESTRA",
+    date: "28 AUG 2026",
+    venue: "JIEXPO HALL C1, JAKARTA",
+    price: "IDR 350.000",
+    tag: "INDIE ROCK",
     image: "/poster_2.jpg",
-    quotaLeft: 120,
+    span: "col-span-1 md:col-span-1 row-span-1",
+    featured: false
   },
   {
-    id: 3,
-    title: "Sub-Zero Warehouse Rave",
-    artist: "Charlotte de Witte & Amelie Lens",
-    venue: "Bengal Culture Center, Bali",
-    date: "SAT, 12 SEP 2026",
-    price: "Rp 600.000",
-    category: "Techno",
+    id: "03",
+    title: "SUB-ZERO WAREHOUSE RAVE",
+    artist: "CHARLOTTE DE WITTE",
+    date: "12 SEP 2026",
+    venue: "BENGKEL SPACE, BALI",
+    price: "IDR 600.000",
+    tag: "TECHNO",
     image: "/poster_3.jpg",
-    quotaLeft: 12,
+    span: "col-span-1 md:col-span-1 row-span-1",
+    featured: false
   }
 ];
 
-const genres = ["All Shows", "Electronic", "Indie Rock", "Techno", "Hip Hop", "Pop & R&B", "Jazz & Soul"];
+const partners = ["BOILER ROOM", "RESIDENT ADVISOR", "SPOTIFY", "PIONEER DJ", "NATIVE INSTRUMENTS", "SPLICE", "ABLETON"];
 ---
 
-<Layout title="SymphoniaTic — Get Tickets to the Best Live Shows & Concerts">
+<Layout>
   <Navbar />
 
-  <!-- HERO SECTION -->
-  <section class="relative min-h-[92vh] flex items-center justify-center pt-24 pb-16 overflow-hidden">
-    <!-- Background Media with Dark Overlays -->
-    <div class="absolute inset-0 z-0">
-      <img 
-        src="/hero_banner.jpg" 
-        alt="Live concert crowd" 
-        class="w-full h-full object-cover object-center opacity-40 scale-105 filter brightness-90 animate-pulse-slow"
-      />
-      <div class="absolute inset-0 bg-gradient-to-t from-[#0d0d0f] via-[#0d0d0f]/70 to-transparent"></div>
-      <div class="absolute inset-0 bg-gradient-to-r from-[#0d0d0f] via-transparent to-[#0d0d0f]"></div>
-    </div>
-
-    <!-- Glowing Accent Circles -->
-    <div class="absolute top-1/3 left-1/4 w-96 h-96 bg-[#e5fe40]/10 rounded-full blur-[140px] pointer-events-none"></div>
-    <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-[160px] pointer-events-none"></div>
-
-    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <!-- Top Pill Tag -->
-      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full badge-tag mb-8 text-xs font-extrabold uppercase tracking-widest animate-bounce">
-        <span class="w-2 h-2 rounded-full bg-[#e5fe40] animate-ping"></span>
-        No Resellers • Locked Prices • Verified QR Tickets
+  <main class="overflow-x-hidden w-full max-w-full noise-overlay">
+    <!-- ========================================== -->
+    <!-- ATTENTION: CINEMATIC WIDE HERO SECTION     -->
+    <!-- ========================================== -->
+    <section class="relative min-h-screen flex flex-col justify-between pt-36 pb-20 px-4 sm:px-6 lg:px-12 overflow-hidden border-b border-white/5">
+      <!-- Ambient Background & Lights -->
+      <div class="absolute inset-0 z-0">
+        <img 
+          src="/hero_bg_mono.jpg" 
+          alt="Atmospheric concert" 
+          class="w-full h-full object-cover opacity-25 filter grayscale contrast-150 scale-105"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0d] via-[#0a0a0d]/60 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-[#0a0a0d] via-transparent to-[#0a0a0d]"></div>
       </div>
 
-      <!-- Main Headline -->
-      <h1 class="font-display font-extrabold text-5xl sm:text-7xl lg:text-8xl tracking-tight leading-[0.95] text-white max-w-5xl mx-auto mb-6">
-        NEVER MISS A <br />
-        <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#e5fe40] via-yellow-200 to-white">
-          LIVE SHOW AGAIN.
-        </span>
-      </h1>
+      <!-- Hero Main Content Box -->
+      <div class="relative z-10 max-w-6xl mx-auto w-full text-center my-auto">
+        <!-- Headline with Inline Typography Images -->
+        <h1 class="hero-title font-display font-black text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight leading-[1.05] uppercase text-white mb-8 max-w-5xl mx-auto">
+          CULTURE IS <span class="inline-block w-14 sm:w-20 lg:w-28 h-8 sm:h-12 lg:h-16 rounded-full align-middle bg-cover bg-center border border-white/30 transition-transform hover:scale-110 duration-500" style="background-image: url('/pill_artist_1.jpg')"></span> ALIVE
+          IN THE <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#e5fe40] via-yellow-200 to-white">UNDERGROUND</span> <span class="inline-block w-14 sm:w-20 lg:w-28 h-8 sm:h-12 lg:h-16 rounded-full align-middle bg-cover bg-center border border-[#e5fe40]/40 transition-transform hover:scale-110 duration-500" style="background-image: url('/pill_artist_2.jpg')"></span>
+        </h1>
 
-      <p class="text-zinc-400 text-lg sm:text-xl max-w-2xl mx-auto font-normal mb-10 leading-relaxed">
-        SymphoniaTic connects fans with unforgettable live music experiences. Secure, transparent, and fair tickets right at your fingertips.
-      </p>
+        <p class="hero-sub text-zinc-400 text-base sm:text-lg md:text-xl max-w-2xl mx-auto font-light leading-relaxed mb-10">
+          Direct-access ticketing for real music lovers. Zero scalper markups, locked face-value prices, and instant encrypted QR passes.
+        </p>
 
-      <!-- CTA Buttons & Search Bar -->
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-xl mx-auto">
-        <a 
-          href="#events" 
-          class="w-full sm:w-auto px-8 py-4 bg-[#e5fe40] hover:bg-[#d2ec2f] text-black font-extrabold text-sm uppercase tracking-wider rounded-full transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-xl shadow-[#e5fe40]/15 flex items-center justify-center gap-3"
-        >
-          <span>Explore Upcoming Concerts</span>
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
-        </a>
+        <!-- High-Contrast CTAs -->
+        <div class="hero-buttons flex flex-col sm:flex-row items-center justify-center gap-4 max-w-md mx-auto">
+          <a 
+            href="#events" 
+            class="w-full sm:w-auto px-9 py-4 bg-[#e5fe40] hover:bg-white text-black font-black text-xs uppercase tracking-widest rounded-full transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-xl shadow-[#e5fe40]/10 flex items-center justify-center gap-3"
+          >
+            <span>Explore Lineup</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
+          </a>
 
-        <a 
-          href="/register" 
-          class="w-full sm:w-auto px-8 py-4 bg-zinc-900/90 hover:bg-zinc-800 text-white border border-zinc-700 font-extrabold text-sm uppercase tracking-wider rounded-full transition-all duration-300 flex items-center justify-center gap-2"
-        >
-          Create Account
-        </a>
-      </div>
-
-      <!-- Stats Bar -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto mt-16 pt-12 border-t border-zinc-800/60 text-left">
-        <div>
-          <div class="font-display font-extrabold text-3xl text-[#e5fe40]">100%</div>
-          <div class="text-zinc-400 text-xs font-semibold uppercase tracking-wider mt-1">Verified Tickets</div>
-        </div>
-        <div>
-          <div class="font-display font-extrabold text-3xl text-white">4 MAX</div>
-          <div class="text-zinc-400 text-xs font-semibold uppercase tracking-wider mt-1">Per Transaction</div>
-        </div>
-        <div>
-          <div class="font-display font-extrabold text-3xl text-white">QR-SYM</div>
-          <div class="text-zinc-400 text-xs font-semibold uppercase tracking-wider mt-1">Instant Entry Code</div>
-        </div>
-        <div>
-          <div class="font-display font-extrabold text-3xl text-[#e5fe40]">0%</div>
-          <div class="text-zinc-400 text-xs font-semibold uppercase tracking-wider mt-1">Hidden Scalper Fees</div>
+          <a 
+            href="/register" 
+            class="w-full sm:w-auto px-9 py-4 bg-zinc-900/90 hover:bg-zinc-800 text-white border border-zinc-700 font-bold text-xs uppercase tracking-widest rounded-full transition-all duration-300"
+          >
+            Join Membership
+          </a>
         </div>
       </div>
-    </div>
-  </section>
 
-  <!-- EVENT LISTINGS SECTION -->
-  <section id="events" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <!-- Section Header -->
-    <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
-      <div>
-        <span class="text-[#e5fe40] font-extrabold text-xs uppercase tracking-widest block mb-2">Live Music & Events</span>
-        <h2 class="font-display font-extrabold text-4xl sm:text-5xl text-white tracking-tight">
-          HOTTEST CONCERTS NEAR YOU
-        </h2>
+      <!-- Ticker Footer Bar -->
+      <div class="relative z-10 max-w-6xl mx-auto w-full pt-12 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-semibold text-zinc-500 uppercase tracking-widest border-t border-white/5">
+        <div>LIVE IN JAKARTA • BALI • SURABAYA</div>
+        <div class="flex items-center gap-2 text-[#e5fe40]">
+          <span class="w-2 h-2 rounded-full bg-[#e5fe40] animate-ping"></span>
+          NEXT DROP: 20:00 WIB
+        </div>
       </div>
+    </section>
 
-      <!-- Genre Pills filter -->
-      <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-        {genres.map((genre, idx) => (
-          <button class={`px-4 py-2 rounded-full text-xs font-extrabold whitespace-nowrap transition-all ${
-            idx === 0 
-              ? 'bg-[#e5fe40] text-black shadow-md' 
-              : 'bg-zinc-900/90 text-zinc-400 hover:text-white border border-zinc-800 hover:border-zinc-700'
-          }`}>
-            {genre}
-          </button>
+    <!-- ========================================== -->
+    <!-- INFINITE MARQUEE (PARTNERS)                -->
+    <!-- ========================================== -->
+    <div class="py-8 bg-black/40 border-b border-white/5 overflow-hidden whitespace-nowrap">
+      <div class="inline-flex gap-16 animate-marquee">
+        {partners.concat(partners).map((partner) => (
+          <span class="font-display font-black text-xl text-zinc-700 hover:text-white transition-colors uppercase tracking-widest cursor-default">
+            {partner}
+          </span>
         ))}
       </div>
     </div>
 
-    <!-- Event Cards Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {featuredEvents.map((evt) => (
-        <EventCard 
-          title={evt.title}
-          artist={evt.artist}
-          venue={evt.venue}
-          date={evt.date}
-          price={evt.price}
-          category={evt.category}
-          image={evt.image}
-          quotaLeft={evt.quotaLeft}
-        />
-      ))}
-    </div>
-  </section>
-
-  <!-- FEATURES / WHY SYMPHONIATIC (DICE.fm VIBE) -->
-  <section class="py-24 bg-[#141418] border-y border-zinc-800/80">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center max-w-3xl mx-auto mb-16">
-        <h2 class="font-display font-extrabold text-4xl sm:text-5xl text-white tracking-tight mb-4">
-          BUILT FOR TRUE MUSIC FANS
-        </h2>
-        <p class="text-zinc-400 text-base sm:text-lg">
-          SymphoniaTic eliminates ticket scalping, fake passes, and unfair pricing through smart verification.
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <!-- Feature 1 -->
-        <div class="p-8 rounded-3xl bg-[#0d0d0f] border border-zinc-800/80 hover:border-[#e5fe40]/40 transition-all group">
-          <div class="w-14 h-14 rounded-2xl bg-[#e5fe40]/10 border border-[#e5fe40]/30 text-[#e5fe40] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
-          </div>
-          <h3 class="font-display font-bold text-2xl text-white mb-3">100% Anti-Scalping Quota</h3>
-          <p class="text-zinc-400 text-sm leading-relaxed">
-            Atomic quota deduction engine guarantees strict maximum 4 tickets per transaction. No bots buying out whole venues.
-          </p>
-        </div>
-
-        <!-- Feature 2 -->
-        <div class="p-8 rounded-3xl bg-[#0d0d0f] border border-zinc-800/80 hover:border-[#e5fe40]/40 transition-all group">
-          <div class="w-14 h-14 rounded-2xl bg-[#e5fe40]/10 border border-[#e5fe40]/30 text-[#e5fe40] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 7h.01"/><path d="M17 7h.01"/><path d="M7 17h.01"/><path d="M17 17h.01"/><path d="M7 12h10"/><path d="M12 7v10"/></svg>
-          </div>
-          <h3 class="font-display font-bold text-2xl text-white mb-3">Dynamic QR-SYM Pass</h3>
-          <p class="text-zinc-400 text-sm leading-relaxed">
-            Your e-ticket is encrypted with a unique QR code generated directly upon admin payment verification.
-          </p>
-        </div>
-
-        <!-- Feature 3 -->
-        <div class="p-8 rounded-3xl bg-[#0d0d0f] border border-zinc-800/80 hover:border-[#e5fe40]/40 transition-all group">
-          <div class="w-14 h-14 rounded-2xl bg-[#e5fe40]/10 border border-[#e5fe40]/30 text-[#e5fe40] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-          </div>
-          <h3 class="font-display font-bold text-2xl text-white mb-3">Instant Mobile Entry</h3>
-          <p class="text-zinc-400 text-sm leading-relaxed">
-            Fast-track venue entry with one-tap digital pass display. No physical paper printing required.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA BANNER -->
-  <section class="py-20 relative overflow-hidden">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="relative rounded-3xl bg-gradient-to-r from-[#e5fe40] to-yellow-300 p-10 sm:p-16 text-black overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl">
-        <div class="max-w-2xl z-10">
-          <h2 class="font-display font-extrabold text-4xl sm:text-6xl tracking-tight leading-tight mb-4">
-            READY FOR YOUR NEXT SHOW?
+    <!-- ========================================== -->
+    <!-- INTEREST: GAPLESS BENTO GRID SHOWS         -->
+    <!-- ========================================== -->
+    <section id="events" class="py-32 md:py-48 px-4 sm:px-6 lg:px-12 max-w-7xl mx-auto">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+        <div>
+          <h2 class="font-display font-black text-4xl sm:text-6xl text-white uppercase tracking-tight">
+            CURATED SHOWS
           </h2>
-          <p class="font-medium text-black/80 text-lg">
-            Create your account today and get early access to upcoming concert ticket drops.
-          </p>
         </div>
-        <div class="shrink-0 z-10">
-          <a href="/register" class="px-8 py-4 bg-black text-white hover:bg-zinc-900 font-extrabold text-sm uppercase tracking-wider rounded-full transition-transform hover:scale-105 active:scale-95 inline-block shadow-2xl">
-            Get Started Now
-          </a>
+        <div class="text-zinc-500 text-xs font-bold uppercase tracking-widest">
+          LIMITED QUOTA • STRICT 4 TICKET MAX
         </div>
       </div>
-    </div>
-  </section>
 
-  <!-- FOOTER -->
-  <footer class="bg-[#0d0d0f] border-t border-zinc-800/80 pt-16 pb-12 text-zinc-400 text-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
-        <div class="md:col-span-2">
-          <a href="/" class="flex items-center gap-2 mb-4">
-            <div class="w-8 h-8 rounded-lg bg-[#e5fe40] flex items-center justify-center text-black font-black text-lg font-display">
-              S
+      <!-- Mathematically Interlocking Bento Grid with grid-flow-dense -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 grid-flow-dense">
+        {shows.map((show) => (
+          <div class={`group relative bg-[#121216] rounded-3xl overflow-hidden border border-white/10 hover:border-[#e5fe40]/50 transition-all duration-500 flex flex-col ${show.span}`}>
+            <!-- Image Background -->
+            <div class="relative w-full h-full min-h-[380px] overflow-hidden bg-zinc-900">
+              <img 
+                src={show.image} 
+                alt={show.title} 
+                class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 filter grayscale group-hover:grayscale-0"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0d] via-[#0a0a0d]/40 to-transparent"></div>
+              
+              <!-- Top Badge -->
+              <div class="absolute top-4 left-4 right-4 flex items-center justify-between">
+                <span class="px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-black/80 backdrop-blur-md text-white border border-white/10">
+                  {show.tag}
+                </span>
+                <span class="text-xs font-mono font-bold text-[#e5fe40]">
+                  #{show.id}
+                </span>
+              </div>
+
+              <!-- Bottom Content Overlay -->
+              <div class="absolute inset-x-0 bottom-0 p-6 sm:p-8 flex flex-col justify-end">
+                <div class="text-[#e5fe40] text-xs font-mono uppercase tracking-wider mb-2">
+                  {show.date} • {show.venue}
+                </div>
+                <h3 class="font-display font-black text-2xl sm:text-4xl text-white group-hover:text-[#e5fe40] transition-colors leading-none mb-2">
+                  {show.title}
+                </h3>
+                <p class="text-zinc-400 text-sm font-medium mb-6">{show.artist}</p>
+
+                <div class="flex items-center justify-between pt-4 border-t border-white/10">
+                  <div class="font-display font-bold text-lg text-white">
+                    {show.price}
+                  </div>
+                  <a 
+                    href="/login" 
+                    class="px-5 py-2.5 bg-[#e5fe40] hover:bg-white text-black font-black text-[10px] uppercase tracking-widest rounded-full transition-transform active:scale-95"
+                  >
+                    Get Pass
+                  </a>
+                </div>
+              </div>
             </div>
-            <span class="font-display font-extrabold text-xl tracking-wider text-white">
-              SYMPHONIA<span class="text-[#e5fe40]">TIC</span>
-            </span>
-          </a>
-          <p class="text-zinc-500 max-w-sm text-xs leading-relaxed mb-6">
-            SymphoniaTic is the premier ticket booking platform built for live music lovers, artists, and event organizers.
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- DESIRE: GSAP PINNED MANIFESTO SECTION      -->
+    <!-- ========================================== -->
+    <section id="about" class="pinned-manifesto py-32 md:py-48 px-4 sm:px-6 lg:px-12 max-w-7xl mx-auto border-t border-white/5">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-12 items-start">
+        <!-- Title Left Column -->
+        <div class="md:col-span-4">
+          <h2 class="font-display font-black text-4xl sm:text-5xl text-white uppercase tracking-tight sticky top-32">
+            OUR <br />
+            <span class="text-stroke-yellow">SYSTEM.</span>
+          </h2>
+        </div>
+
+        <!-- Descriptive Right Column -->
+        <div class="md:col-span-8 space-y-12 text-zinc-400 text-lg sm:text-2xl font-light leading-relaxed">
+          <p class="reveal-text text-white font-normal">
+            Ticketing shouldn't feel like a war against bots and scalpers. SymphoniaTic rebuilds live event access from the ground up.
           </p>
-          <div class="flex items-center gap-4 text-xs">
-            <a href="https://github.com/Zyrexnn/SymphoniaTic" target="_blank" class="hover:text-white transition-colors">GitHub Repository</a>
-            <span>•</span>
-            <a href="/PRD.md" target="_blank" class="hover:text-white transition-colors">PRD Documentation</a>
+          <div class="p-8 rounded-3xl bg-[#121216] border border-white/10 space-y-4">
+            <div class="font-display font-bold text-xl text-[#e5fe40]">01 / ATOMIC QUOTA ENGINE</div>
+            <p class="text-sm text-zinc-400">
+              Database-level transactions guarantee that no single user can bypass ticket limits. Every transaction is isolated and verified.
+            </p>
+          </div>
+          <div class="p-8 rounded-3xl bg-[#121216] border border-white/10 space-y-4">
+            <div class="font-display font-bold text-xl text-white">02 / DYNAMIC QR-SYM DUPLEX</div>
+            <p class="text-sm text-zinc-400">
+              Passes are generated dynamically upon admin payment clearance. Anti-screenshot verification prevents ticket duplication.
+            </p>
           </div>
         </div>
+      </div>
+    </section>
 
-        <div>
-          <h4 class="text-white font-bold text-xs uppercase tracking-wider mb-4 font-display">Explore</h4>
-          <ul class="space-y-2.5 text-xs">
-            <li><a href="#events" class="hover:text-[#e5fe40] transition-colors">Upcoming Concerts</a></li>
-            <li><a href="#artists" class="hover:text-[#e5fe40] transition-colors">Featured Artists</a></li>
-            <li><a href="#venues" class="hover:text-[#e5fe40] transition-colors">Partner Venues</a></li>
-            <li><a href="/login" class="hover:text-[#e5fe40] transition-colors">Admin Dashboard</a></li>
-          </ul>
-        </div>
+    <!-- ========================================== -->
+    <!-- ACTION: MASSIVE HIGH-CONTRAST FOOTER CTA   -->
+    <!-- ========================================== -->
+    <section class="py-32 bg-[#e5fe40] text-black overflow-hidden relative">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 text-center">
+        <h2 class="font-display font-black text-5xl sm:text-7xl lg:text-9xl tracking-tight leading-none uppercase mb-8">
+          STEP INSIDE.
+        </h2>
+        <p class="font-semibold text-lg sm:text-xl max-w-xl mx-auto mb-10 text-black/80">
+          Create your account today for exclusive lineup drops and instant ticket access.
+        </p>
+        <a 
+          href="/register" 
+          class="inline-block px-12 py-5 bg-black text-white hover:bg-zinc-900 font-black text-xs uppercase tracking-widest rounded-full transition-transform hover:scale-105 active:scale-95 shadow-2xl"
+        >
+          Create Account Now
+        </a>
+      </div>
+    </section>
 
-        <div>
-          <h4 class="text-white font-bold text-xs uppercase tracking-wider mb-4 font-display">Legal & Trust</h4>
-          <ul class="space-y-2.5 text-xs">
-            <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
-            <li><a href="#" class="hover:text-white transition-colors">Terms of Service</a></li>
-            <li><a href="#" class="hover:text-white transition-colors">Fair Ticketing Guarantee</a></li>
-            <li><a href="#" class="hover:text-white transition-colors">Help Center</a></li>
-          </ul>
+    <!-- FOOTER LINKS -->
+    <footer class="py-12 px-4 sm:px-6 lg:px-12 bg-[#0a0a0d] border-t border-white/10 text-zinc-600 text-xs font-mono">
+      <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>© 2026 SYMPHONIATIC INC. ALL RIGHTS RESERVED.</div>
+        <div class="flex items-center gap-6">
+          <a href="https://github.com/Zyrexnn/SymphoniaTic" target="_blank" class="hover:text-white transition-colors">GITHUB REPO</a>
+          <a href="/PRD.md" target="_blank" class="hover:text-white transition-colors">PRD SPEC</a>
         </div>
       </div>
+    </footer>
+  </main>
 
-      <div class="pt-8 border-t border-zinc-900 flex flex-col sm:flex-row items-center justify-between text-xs text-zinc-600 gap-4">
-        <div>© 2026 SymphoniaTic Inc. All rights reserved.</div>
-        <div>Inspired by DICE.fm aesthetics & built with Astro SSR + Go Fiber.</div>
-      </div>
-    </div>
-  </footer>
+  <!-- GSAP Animation Client Script -->
+  <script>
+    import { gsap } from "gsap";
+
+    // Hero Entry Animation
+    gsap.from(".hero-title", {
+      opacity: 0,
+      y: 40,
+      duration: 1,
+      ease: "power3.out",
+      delay: 0.2
+    });
+
+    gsap.from(".hero-sub", {
+      opacity: 0,
+      y: 30,
+      duration: 1,
+      ease: "power3.out",
+      delay: 0.4
+    });
+
+    gsap.from(".hero-buttons", {
+      opacity: 0,
+      y: 20,
+      duration: 1,
+      ease: "power3.out",
+      delay: 0.6
+    });
+  </script>
 </Layout>
+
+<style>
+  @keyframes marquee {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-50%); }
+  }
+  .animate-marquee {
+    animation: marquee 25s linear infinite;
+  }
+</style>

@@ -2,55 +2,52 @@
 
 @layer base {
   :root {
-    --color-bg: #0d0d0f;
-    --color-surface: #141418;
-    --color-surface-hover: #1e1e24;
-    --color-accent: #e5fe40; /* DICE signature neon yellow/lime */
-    --color-accent-hover: #d2ec2f;
-    --color-text-main: #ffffff;
-    --color-text-muted: #9ca3af;
+    --bg-main: #0a0a0d;
+    --accent-yellow: #e5fe40;
+    --border-subtle: rgba(255, 255, 255, 0.08);
   }
 
   body {
-    background-color: var(--color-bg);
-    color: var(--color-text-main);
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    overflow-x: hidden;
+    background-color: var(--bg-main);
+    color: #ffffff;
   }
 }
 
-/* Custom scrollbar */
+/* Custom Noise Overlay */
+.noise-overlay {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+/* Glass Floating Navbar */
+.floating-glass {
+  background: rgba(14, 14, 18, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0d0d0f;
+  background: #0a0a0d;
 }
 ::-webkit-scrollbar-thumb {
-  background: #27272a;
-  border-radius: 4px;
+  background: #22222a;
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
+  background: #e5fe40;
 }
 
-.glass-nav {
-  background: rgba(13, 13, 15, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+/* Text stroke effect for mega typography */
+.text-stroke {
+  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.25);
+  color: transparent;
 }
-
-.ticket-card-glow {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.ticket-card-glow:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 30px -10px rgba(229, 254, 64, 0.15);
-}
-
-.badge-tag {
-  background: rgba(229, 254, 64, 0.1);
-  color: #e5fe40;
-  border: 1px solid rgba(229, 254, 64, 0.25);
+.text-stroke-yellow {
+  -webkit-text-stroke: 1.5px #e5fe40;
+  color: transparent;
 }
