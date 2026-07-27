@@ -2,89 +2,55 @@
 
 @layer base {
   :root {
-    /* Palette Inspired by BMW Luxury Minimal palette extracted from DESIGN.md */
-    --color-bmw-canvas: #ffffff;
-    --color-bmw-card: #fafafa;
-    --color-bmw-soft: #f7f7f7;
-    --color-bmw-dark: #1a2129;
-    --color-bmw-primary: #1c69d4;
-    --color-bmw-active: #0653b6;
-    --color-bmw-ink: #262626;
-    --color-bmw-body: #3c3c3c;
-    --color-bmw-muted: #6b6b6b;
-    --color-bmw-border: #e6e6e6;
+    --bg-dark: #08080a;
+    --surface-card: #121216;
+    --accent-electric: #e5fe40;
+    --accent-glow: rgba(229, 254, 64, 0.15);
+    --text-primary: #ffffff;
+    --text-secondary: #a1a1aa;
+    --border-glass: rgba(255, 255, 255, 0.08);
   }
 
   body {
-    background-color: var(--color-bmw-canvas);
-    color: var(--color-bmw-ink);
-    font-family: 'Outfit', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    font-family: 'Cabinet Grotesk', 'Outfit', sans-serif;
+    overflow-x: hidden;
   }
 }
 
-/* Hairline border utilities */
-.hairline-b {
-  border-bottom: 1px solid var(--color-bmw-border);
-}
-.hairline-all {
-  border: 1px solid var(--color-bmw-border);
+/* Ambient Radial Mesh Gradient */
+.ambient-radial-glow {
+  background: radial-gradient(circle at 50% 20%, rgba(229, 254, 64, 0.08) 0%, transparent 60%),
+              radial-gradient(circle at 80% 60%, rgba(120, 50, 255, 0.06) 0%, transparent 50%);
 }
 
-/* Precise 0px Radius Corporate CTA Buttons */
-.btn-concert-primary {
-  background-color: #1c69d4;
-  color: #ffffff;
-  font-family: 'Syne', sans-serif;
-  font-weight: 800;
-  font-size: 13px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  padding: 14px 32px;
-  border-radius: 0px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.2s ease;
-}
-.btn-concert-primary:hover {
-  background-color: #0653b6;
+/* Floating Glass Pill Navbar */
+.glass-pill-nav {
+  background: rgba(18, 18, 22, 0.7);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
 }
 
-.btn-concert-secondary {
-  background-color: transparent;
-  color: #ffffff;
-  font-family: 'Syne', sans-serif;
-  font-weight: 800;
-  font-size: 13px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  border: 1px solid #ffffff;
-  border-radius: 0px;
-  padding: 14px 32px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
+/* Hover Scale and Glow Physics */
+.card-hover-physics {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease, box-shadow 0.4s ease;
 }
-.btn-concert-secondary:hover {
-  background-color: #ffffff;
-  color: #1a2129;
+.card-hover-physics:hover {
+  transform: translateY(-6px) scale(1.01);
+  border-color: rgba(229, 254, 64, 0.4);
+  box-shadow: 0 24px 48px -12px rgba(229, 254, 64, 0.12);
 }
 
-.link-uppercase-chevron {
-  font-family: 'Syne', sans-serif;
-  font-weight: 800;
-  font-size: 12px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: #1c69d4;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  transition: color 0.2s ease;
+/* Marquee Smooth Continuous Motion */
+@keyframes marquee-continuous {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
 }
-.link-uppercase-chevron:hover {
-  color: #0653b6;
+.animate-marquee-continuous {
+  animation: marquee-continuous 30s linear infinite;
 }
 
 /* Custom Scrollbar */
@@ -92,11 +58,12 @@
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #ffffff;
+  background: #08080a;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cccccc;
+  background: #27272a;
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #1c69d4;
+  background: #e5fe40;
 }

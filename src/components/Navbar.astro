@@ -1,33 +1,33 @@
 ---
-// Luxury Minimal Header Navigation (64px height, hairline bottom, crisp zero-radius typography)
+// Floating Glass Pill Navbar per design-taste-frontend spec
 ---
-<header class="fixed top-0 inset-x-0 z-50 bg-white/90 backdrop-blur-md h-[64px] hairline-b flex items-center">
-  <div class="max-w-[1440px] mx-auto px-6 sm:px-12 w-full flex items-center justify-between">
+<div class="fixed top-6 inset-x-0 z-50 flex justify-center px-4">
+  <header class="glass-pill-nav rounded-full px-8 py-3.5 flex items-center justify-between gap-10 max-w-5xl w-full">
     <!-- Brand Logo -->
     <a href="/" class="flex items-center gap-3 group">
-      <div class="w-8 h-8 rounded-none bg-[#1a2129] flex items-center justify-center text-white font-display font-black text-xs">
-        ST
+      <div class="w-9 h-9 rounded-full bg-[#e5fe40] text-black font-display font-black text-base flex items-center justify-center group-hover:scale-110 transition-transform">
+        S
       </div>
-      <span class="font-display font-black text-lg tracking-tight text-[#262626]">
-        SYMPHONIA<span class="text-[#1c69d4]">TIC</span>
+      <span class="font-display font-black text-xl tracking-tight text-white">
+        SYMPHONIA<span class="text-[#e5fe40]">TIC</span>
       </span>
     </a>
 
-    <!-- Navigation Menu (Syne Bold 12px, Uppercase 1.5px tracking) -->
-    <nav class="hidden md:flex items-center gap-10 font-display font-bold text-[12px] uppercase tracking-[1.5px] text-[#3c3c3c]">
-      <a href="#featured" class="hover:text-[#1c69d4] transition-colors">Concerts</a>
-      <a href="#manifesto" class="hover:text-[#1c69d4] transition-colors">System Core</a>
-      <a href="#venues" class="hover:text-[#1c69d4] transition-colors">Venues</a>
+    <!-- Nav Items -->
+    <nav class="hidden md:flex items-center gap-8 text-xs font-semibold uppercase tracking-widest text-zinc-400">
+      <a href="#lineup" class="hover:text-[#e5fe40] transition-colors">Lineup</a>
+      <a href="#architecture" class="hover:text-[#e5fe40] transition-colors">System Core</a>
+      <a href="#manifesto" class="hover:text-[#e5fe40] transition-colors">Manifesto</a>
     </nav>
 
     <!-- CTAs -->
-    <div class="flex items-center gap-6">
-      <a href="/login" class="font-display font-bold text-[12px] uppercase tracking-[1.5px] text-[#262626] hover:text-[#1c69d4] transition-colors hidden sm:block">
-        Sign In
+    <div class="flex items-center gap-4">
+      <a href="/login" class="text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-white px-3 py-1.5 transition-colors hidden sm:block">
+        Log In
       </a>
-      <a href="/register" class="btn-concert-primary">
-        GET ACCESS
+      <a href="/register" class="bg-[#e5fe40] hover:bg-white text-black font-display font-black text-xs uppercase tracking-wider px-6 py-2.5 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-[#e5fe40]/15">
+        Get Access
       </a>
     </div>
-  </div>
-</header>
+  </header>
+</div>

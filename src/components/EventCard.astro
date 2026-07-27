@@ -1,5 +1,5 @@
 ---
-// Luxury Minimal Event Card Component
+// Bento Card Component styled with hover physics
 interface Props {
   index: string;
   title: string;
@@ -8,49 +8,52 @@ interface Props {
   venue: string;
   price: string;
   image: string;
+  spanClass: string;
 }
 
-const { index, title, artist, date, venue, price, image } = Astro.props;
+const { index, title, artist, date, venue, price, image, spanClass } = Astro.props;
 ---
 
-<div class="bg-white flex flex-col justify-between h-full group cursor-pointer border border-[#e6e6e6] hover:border-[#1c69d4] transition-all duration-300">
-  <!-- Photo Plate (#fafafa background plate, 0px radius, 16:10 ratio) -->
-  <div class="bg-[#fafafa] aspect-[16/10] overflow-hidden relative border-b border-[#e6e6e6]">
+<div class={`group relative bg-[#121216] rounded-3xl overflow-hidden border border-white/10 card-hover-physics flex flex-col justify-between ${spanClass}`}>
+  <!-- Image Container -->
+  <div class="relative w-full h-full min-h-[360px] overflow-hidden bg-zinc-950">
     <img 
       src={image} 
       alt={title} 
       class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 filter grayscale group-hover:grayscale-0" 
       loading="lazy"
     />
-    <div class="absolute top-3 left-3 bg-[#1a2129] text-white px-3 py-1 font-display font-bold text-[10px] tracking-widest uppercase">
-      {date}
-    </div>
-    <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-[#1c69d4] px-2.5 py-1 font-mono font-bold text-[10px]">
-      #{index}
-    </div>
-  </div>
+    <div class="absolute inset-0 bg-gradient-to-t from-[#121216] via-[#121216]/30 to-transparent"></div>
 
-  <!-- Content (Padding 24px) -->
-  <div class="p-6 flex flex-col justify-between flex-1">
-    <div>
-      <div class="text-[11px] font-display font-bold tracking-[1.5px] uppercase text-[#1c69d4] mb-1">
-        LIVE CONCERT
+    <!-- Top Overlay Badge -->
+    <div class="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
+      <span class="px-3 py-1 rounded-full text-[10px] font-display font-black uppercase tracking-widest bg-black/80 backdrop-blur-md text-[#e5fe40] border border-[#e5fe40]/30">
+        {date}
+      </span>
+      <span class="font-mono text-xs font-bold text-zinc-400">
+        #{index}
+      </span>
+    </div>
+
+    <!-- Bottom Content Overlay -->
+    <div class="absolute inset-x-0 bottom-0 p-6 sm:p-8 flex flex-col justify-end z-10">
+      <div class="text-zinc-400 text-xs font-medium uppercase tracking-wider mb-2">
+        📍 {venue}
       </div>
-      <h3 class="font-display font-extrabold text-[20px] text-[#262626] leading-snug mb-2 group-hover:text-[#1c69d4] transition-colors">
+      <h3 class="font-display font-black text-2xl sm:text-4xl text-white group-hover:text-[#e5fe40] transition-colors leading-none uppercase mb-2">
         {title}
       </h3>
-      <p class="font-light text-[14px] text-[#3c3c3c] mb-2">{artist}</p>
-      <div class="text-[12px] text-[#6b6b6b] mb-4">📍 {venue}</div>
-    </div>
+      <p class="text-zinc-400 text-sm font-light mb-6">{artist}</p>
 
-    <div class="pt-4 border-t border-[#e6e6e6] flex items-center justify-between mt-auto">
-      <div>
-        <span class="text-[10px] uppercase font-display font-bold tracking-wider text-[#6b6b6b] block">STARTING FROM</span>
-        <span class="font-display font-bold text-[17px] text-[#1a1a1a]">{price}</span>
+      <div class="flex items-center justify-between pt-4 border-t border-white/10">
+        <div>
+          <span class="text-[10px] uppercase tracking-wider text-zinc-500 font-semibold block">Pass Tier</span>
+          <span class="font-display font-extrabold text-lg text-white">{price}</span>
+        </div>
+        <a href="/login" class="px-6 py-2.5 bg-[#e5fe40] hover:bg-white text-black font-display font-black text-xs uppercase tracking-widest rounded-full transition-transform active:scale-95">
+          Reserve Pass
+        </a>
       </div>
-      <span class="link-uppercase-chevron">
-        RESERVE <span class="font-bold">›</span>
-      </span>
     </div>
   </div>
 </div>
