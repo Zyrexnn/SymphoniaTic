@@ -5,7 +5,7 @@ import {
   MapPin, CheckCircle2, QrCode, User, Mail, ChevronRight,
   Pause, Sparkles, ShieldCheck, Flame, ArrowDown,
   Layers, Lock, Search, Info, Clock, AlertCircle, Share2,
-  Music, ExternalLink, Filter, HelpCircle
+  Music, ExternalLink, Filter, HelpCircle, Disc, Check, Radio
 } from 'lucide-react';
 import { BoomerangVideoBg } from './BoomerangVideoBg';
 
@@ -34,6 +34,7 @@ interface EventItem {
   time: string;
   openGate: string;
   category: string;
+  categoryBadgeColor: string;
   image: string;
   organizer: string;
   description: string;
@@ -54,6 +55,7 @@ const CONCERT_EVENTS: EventItem[] = [
     time: "19:30 WIB",
     openGate: "18:00 WIB",
     category: "SIMFONI",
+    categoryBadgeColor: "bg-amber-500/20 text-amber-300 border-amber-500/30",
     image: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&w=1200&q=80",
     organizer: "Royal Philharmonic Foundation & SymphoniaTic Events",
     description: "Mahakarya simfoni terakhir Ludwig van Beethoven yang legendaris. Menampilkan gerakan pamungkas 'Ode to Joy' dengan kolaborasi megah 90 musisi orkestra simfoni dan 80 penyanyi paduan suara profesional. Pengalaman akustik tak tertandingi di hall bertaraf internasional.",
@@ -101,6 +103,7 @@ const CONCERT_EVENTS: EventItem[] = [
     time: "20:00 WIB",
     openGate: "18:30 WIB",
     category: "KAMAR MUSIK",
+    categoryBadgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
     image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1200&q=80",
     organizer: "Jakarta Chamber Society & Max Richter Music",
     description: "Reinterpretasi kontemporer atas karya abad ke-18 Vivaldi oleh komposer ternama Max Richter. Perpaduan harmonis antara gesekan biola klasik yang dramatis dengan elemen synthesizer ambient modern.",
@@ -140,6 +143,7 @@ const CONCERT_EVENTS: EventItem[] = [
     time: "19:00 WIB",
     openGate: "17:30 WIB",
     category: "BALET & OPERA",
+    categoryBadgeColor: "bg-purple-500/20 text-purple-300 border-purple-500/30",
     image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80",
     organizer: "Indonesian Classical Ballet Theatre",
     description: "Nikmati keindahan tarian balet anggun diiringi live orchestra penuh membawakan lagu-lagu abadi Tchaikovsky seperti Danau Angsa dan Tarian Peri Gula.",
@@ -179,6 +183,7 @@ const CONCERT_EVENTS: EventItem[] = [
     time: "21:00 WIB",
     openGate: "19:30 WIB",
     category: "PADUAN SUARA",
+    categoryBadgeColor: "bg-blue-500/20 text-blue-300 border-blue-500/30",
     image: "https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?auto=format&fit=crop&w=1200&q=80",
     organizer: "Nusantara Classical Arts",
     description: "Karya sakral terakhir Mozart yang penuh misteri dan keagungan spiritual. Dibawakan oleh 4 solois vokal internasional, paduan suara koral megah, dan orkestra kamar.",
@@ -217,9 +222,10 @@ const CONCERT_EVENTS: EventItem[] = [
     time: "19:30 WIB",
     openGate: "18:00 WIB",
     category: "RESITAL PIANO",
+    categoryBadgeColor: "bg-rose-500/20 text-rose-300 border-rose-500/30",
     image: "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&w=1200&q=80",
     organizer: "Steinway Society Indonesia",
-    description: "Salah satu konser piano paling emosional dan penuh keahlian teknis tinggi di dunia. Dimaikan di atas piano Steinway & Sons Concert Grand Model D terbaru.",
+    description: "Salah satu konser piano paling emosional dan penuh keahlian teknis tinggi di dunia. Dimainkan di atas piano Steinway & Sons Concert Grand Model D terbaru.",
     rundown: [
       { time: "18:00 WIB", activity: "Registrasi Ulang & Open Lounge" },
       { time: "19:30 WIB", activity: "Pembuka: Prelude in C-sharp minor" },
@@ -255,6 +261,7 @@ const CONCERT_EVENTS: EventItem[] = [
     time: "20:30 WITA",
     openGate: "19:00 WITA",
     category: "PHILHARMONIC",
+    categoryBadgeColor: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
     image: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&w=1200&q=80",
     organizer: "Bali International Philharmonic Festival",
     description: "Petualangan kisah dongeng 1001 Malam yang disajikan dalam balutan alunan instrumen orkestra mewah di auditorium terbuka berlatar pemandangan alam Nusa Dua.",
@@ -355,7 +362,7 @@ export const SymphoniaTicApp: React.FC = () => {
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('SEMUA');
 
   // Modals & Drawers
-  const [activeDrawer, setActiveDrawer] = useState<'SHELVES' | 'ORDERS' | 'ADMIN' | null>(null);
+  const [activeDrawer, setActiveDrawer] = useState<'ORDERS' | 'ADMIN' | null>(null);
   const [detailEvent, setDetailEvent] = useState<EventItem | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
   const [selectedCat, setSelectedCat] = useState<TicketCategory | null>(null);
@@ -375,7 +382,7 @@ export const SymphoniaTicApp: React.FC = () => {
     { label: 'Artis & Lineup', href: '#lineup' },
     { label: 'Sistem Kuota', href: '#ticket-war' },
     { label: 'Panduan E-Ticket', href: '#guide' },
-    { label: 'Tanya Jawab', href: '#faq' },
+    { label: 'FAQ', href: '#faq' },
   ];
 
   // Filtering Logic
@@ -428,58 +435,62 @@ export const SymphoniaTicApp: React.FC = () => {
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-black text-white select-none">
+    <div className="relative min-h-screen w-full bg-[#07080c] text-white select-none">
       {/* -------------------- 1. HERO VIEWPORT SECTION -------------------- */}
       <div className="relative h-screen w-full overflow-hidden flex flex-col justify-between">
         {/* Background Boomerang Video */}
         <BoomerangVideoBg />
 
+        {/* Gradient Overlay for Crisp Text Readability */}
+        <div className="absolute inset-0 z-5 bg-gradient-to-b from-black/60 via-black/30 to-[#07080c]" />
+
         {/* Header Navigation */}
         <header className="absolute top-0 left-0 right-0 z-20 p-4 sm:p-6 md:p-8">
           <div className="flex items-center justify-between max-w-7xl mx-auto">
             {/* Brand Logo */}
-            <a href="#" className="flex items-center gap-2.5 group">
-              <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+            <a href="#" className="flex items-center gap-3 group">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform border border-blue-400/30">
                 <Music className="w-4 h-4 text-white" />
               </div>
               <div className="flex flex-col">
                 <span className="text-lg font-bold tracking-tight text-white leading-none">
                   SymphoniaTic
                 </span>
-                <span className="text-[10px] text-blue-400 font-mono">Tiket Konser Resmi</span>
+                <span className="text-[10px] text-blue-400 font-mono tracking-wider">PLATFORM TIKET RESMI</span>
               </div>
             </a>
 
             {/* Desktop Nav links */}
-            <nav className="hidden md:flex items-center gap-7">
+            <nav className="hidden md:flex items-center gap-2 liquid-glass px-4 py-1.5 rounded-full border border-white/10">
               {navPages.map((page) => (
                 <a
                   key={page.label}
                   href={page.href}
-                  className="text-sm text-white/90 hover:text-white transition-colors duration-200 font-medium"
+                  className="text-xs font-medium text-gray-300 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5 transition-all"
                 >
                   {page.label}
                 </a>
               ))}
-              <button 
-                onClick={() => setActiveDrawer('ADMIN')}
-                className="text-xs text-blue-400 border border-blue-500/40 px-3.5 py-1.5 rounded-full hover:bg-blue-950/60 transition-all cursor-pointer flex items-center gap-1.5"
-              >
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>Portal Metrik</span>
-              </button>
             </nav>
 
-            {/* Right Action */}
+            {/* Right Actions */}
             <div className="flex items-center gap-3">
               <button 
-                onClick={() => setActiveDrawer('ORDERS')}
-                className="rounded-xl bg-white p-1 pr-3.5 sm:pr-4 flex items-center gap-2.5 hover:scale-105 active:scale-95 transition-transform duration-200 cursor-pointer shadow-lg"
+                onClick={() => setActiveDrawer('ADMIN')}
+                className="hidden sm:flex text-xs text-blue-300 border border-blue-500/30 px-3.5 py-1.5 rounded-xl hover:bg-blue-950/60 transition-all cursor-pointer items-center gap-1.5"
               >
-                <div className="h-7 w-7 rounded-lg bg-blue-700 flex items-center justify-center shrink-0">
+                <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
+                <span>Metrik Admin</span>
+              </button>
+
+              <button 
+                onClick={() => setActiveDrawer('ORDERS')}
+                className="rounded-xl bg-white p-1 pr-3.5 sm:pr-4 flex items-center gap-2.5 hover:scale-105 active:scale-95 transition-transform duration-200 cursor-pointer shadow-xl"
+              >
+                <div className="h-7 w-7 rounded-lg bg-blue-600 flex items-center justify-center shrink-0">
                   <ShoppingCart className="w-3.5 h-3.5 text-white" strokeWidth={2} />
                 </div>
-                <span className="text-xs sm:text-sm font-medium text-gray-900">
+                <span className="text-xs sm:text-sm font-semibold text-gray-900">
                   <span className="hidden sm:inline">E-Ticket </span>({orders.length})
                 </span>
               </button>
@@ -501,7 +512,7 @@ export const SymphoniaTicApp: React.FC = () => {
 
           {/* Mobile Nav Dropdown */}
           {isMenuOpen && (
-            <div className="mt-3 md:hidden liquid-glass mx-4 rounded-2xl p-2.5 flex flex-col gap-1 z-30">
+            <div className="mt-3 md:hidden liquid-glass mx-4 rounded-2xl p-2.5 flex flex-col gap-1 z-30 border border-white/10 shadow-2xl">
               {navPages.map((page) => (
                 <a
                   key={page.label}
@@ -520,7 +531,7 @@ export const SymphoniaTicApp: React.FC = () => {
                 className="rounded-xl px-4 py-3 text-sm text-blue-400 hover:bg-blue-950/40 text-left font-semibold flex items-center gap-2"
               >
                 <ShieldCheck className="w-4 h-4" />
-                <span>Metrik Admin & Proteksi Kuota</span>
+                <span>Portal Metrik Admin</span>
               </button>
             </div>
           )}
@@ -528,32 +539,32 @@ export const SymphoniaTicApp: React.FC = () => {
 
         {/* Hero Content */}
         <main className="relative z-10 flex flex-col items-center text-center pt-28 sm:pt-36 md:pt-40 px-4 sm:px-6 max-w-4xl mx-auto">
-          {/* Tag Badge */}
+          {/* Status Badge */}
           <div
-            className="liquid-glass rounded-full px-4 py-1.5 text-xs sm:text-sm text-white mb-5 sm:mb-6 animate-fade-up delay-1 flex items-center gap-2 border border-white/20 shadow-lg"
-            style={{ background: 'rgba(255, 255, 255, 0.16)' }}
+            className="liquid-glass rounded-full px-4 py-1.5 text-xs text-white mb-6 animate-fade-up delay-1 flex items-center gap-2 border border-white/20 shadow-lg"
+            style={{ background: 'rgba(255, 255, 255, 0.08)' }}
           >
-            <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-            <span className="font-medium">Musim Konser Simfoni 2026 • Tiket Resmi Terverifikasi</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="font-medium tracking-wide">Penjualan Tiket Konser Musim Semi 2026 Resmi Dibuka</span>
           </div>
 
-          {/* Headline (Indonesian) */}
-          <h1 className="max-w-3xl text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.15] text-white tracking-tight animate-fade-up delay-2 font-normal">
+          {/* Headline */}
+          <h1 className="max-w-3xl text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.12] text-white tracking-tight animate-fade-up delay-2 font-normal">
             Nikmati Harmoni Konser
             <br />
             Orkestra & Simfoni Terbaik.
           </h1>
 
-          {/* Subtext (Indonesian) */}
-          <p className="mt-5 sm:mt-6 max-w-xl text-sm sm:text-base md:text-lg leading-relaxed text-gray-200 animate-fade-up delay-3 font-normal">
-            Platform resmi pemesanan tiket pertunjukan simfoni, orkestra philharmonic, dan opera klasik di Indonesia. Dapatkan kepastian nomor kursi dan akses E-Ticket QR Code instan.
+          {/* Subtext */}
+          <p className="mt-6 max-w-xl text-sm sm:text-base md:text-lg leading-relaxed text-gray-200 animate-fade-up delay-3 font-normal">
+            SymphoniaTic adalah platform pemesanan tiket resmi untuk pertunjukan simfoni, orkestra philharmonic, opera, dan resital klasik di Indonesia. Dapatkan kepastian nomor kursi dan akses E-Ticket QR Code instan.
           </p>
 
           {/* Action Buttons */}
           <div className="mt-8 flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full sm:w-auto animate-fade-up delay-4">
             <a 
               href="#concerts"
-              className="rounded-xl bg-white px-8 py-3 text-sm text-gray-900 font-semibold hover:scale-105 active:scale-95 transition-transform duration-200 w-full sm:w-auto text-center cursor-pointer shadow-xl flex items-center justify-center gap-2"
+              className="rounded-xl bg-white px-8 py-3 text-sm text-gray-900 font-semibold hover:scale-105 active:scale-95 transition-transform duration-200 w-full sm:w-auto text-center cursor-pointer shadow-2xl flex items-center justify-center gap-2"
             >
               <span>Jelajahi Konser & Beli Tiket</span>
               <ArrowDown className="w-4 h-4" />
@@ -562,7 +573,7 @@ export const SymphoniaTicApp: React.FC = () => {
               onClick={() => {
                 setDetailEvent(CONCERT_EVENTS[0]);
               }}
-              className="liquid-glass rounded-xl px-7 py-3 text-sm text-white font-medium hover:scale-105 active:scale-95 transition-transform duration-200 w-full sm:w-auto text-center cursor-pointer flex items-center justify-center gap-2"
+              className="liquid-glass rounded-xl px-7 py-3 text-sm text-white font-medium hover:scale-105 active:scale-95 transition-transform duration-200 w-full sm:w-auto text-center cursor-pointer flex items-center justify-center gap-2 border border-white/20"
             >
               <Info className="w-4 h-4 text-blue-400" />
               <span>Detail Konser Beethoven</span>
@@ -570,26 +581,28 @@ export const SymphoniaTicApp: React.FC = () => {
           </div>
         </main>
 
-        {/* Audio Player Widget */}
-        <div className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 md:bottom-8 md:right-10 z-20 w-[280px] sm:w-80 animate-fade-up delay-5">
-          <div className="rounded-2xl bg-white p-3 pr-4 shadow-2xl flex items-center gap-3">
-            <button
-              onClick={() => setIsPlayingAudio(!isPlayingAudio)}
-              className="h-11 w-11 shrink-0 rounded-xl bg-blue-700 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-200 cursor-pointer shadow-md"
-            >
-              {isPlayingAudio ? (
-                <Pause className="w-5 h-5 text-white" />
-              ) : (
-                <BarChart3 className="w-5 h-5 text-white" strokeWidth={2.5} />
-              )}
-            </button>
+        {/* Audio Player Floating Widget */}
+        <div className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 md:bottom-8 md:right-10 z-20 w-[290px] sm:w-80 animate-fade-up delay-5">
+          <div className="rounded-2xl bg-white/95 backdrop-blur-md p-3 pr-4 shadow-2xl flex items-center gap-3 border border-white/40">
+            <div className="relative">
+              <button
+                onClick={() => setIsPlayingAudio(!isPlayingAudio)}
+                className="h-11 w-11 shrink-0 rounded-xl bg-blue-600 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-200 cursor-pointer shadow-md"
+              >
+                {isPlayingAudio ? (
+                  <Pause className="w-5 h-5 text-white" />
+                ) : (
+                  <BarChart3 className="w-5 h-5 text-white" strokeWidth={2.5} />
+                )}
+              </button>
+            </div>
             <div className="flex-1 min-w-0 flex flex-col justify-center">
-              <p className="text-xs font-semibold text-gray-900 truncate">
+              <p className="text-xs font-bold text-gray-900 truncate">
                 Beethoven — Symphony No. 9
               </p>
-              <p className="text-[10px] text-blue-700 font-medium truncate">Cuplikan Audio Resital</p>
-              <div className="mt-1 h-1 w-full rounded-full bg-gray-200 overflow-hidden">
-                <div className={`h-full bg-blue-700 rounded-full transition-all duration-300 ${isPlayingAudio ? 'w-[65%]' : 'w-[25%]'}`} />
+              <p className="text-[10px] text-blue-700 font-semibold truncate">Cuplikan Pre-Show Resital</p>
+              <div className="mt-1.5 h-1 w-full rounded-full bg-gray-200 overflow-hidden">
+                <div className={`h-full bg-blue-600 rounded-full transition-all duration-300 ${isPlayingAudio ? 'w-[75%]' : 'w-[25%]'}`} />
               </div>
             </div>
             <button
@@ -597,8 +610,8 @@ export const SymphoniaTicApp: React.FC = () => {
               className="h-8 w-8 shrink-0 rounded-full bg-gray-100 flex items-center justify-center hover:scale-110 active:scale-95 transition-transform duration-200 cursor-pointer"
             >
               <Heart
-                className={`w-4 h-4 text-blue-700 transition-colors ${
-                  isLiked ? 'fill-blue-700' : ''
+                className={`w-4 h-4 text-blue-600 transition-colors ${
+                  isLiked ? 'fill-blue-600' : ''
                 }`}
               />
             </button>
@@ -606,21 +619,21 @@ export const SymphoniaTicApp: React.FC = () => {
         </div>
       </div>
 
-      {/* -------------------- 2. LANDING PAGE CONTENT -------------------- */}
+      {/* -------------------- 2. LANDING PAGE SECTIONS -------------------- */}
 
-      {/* SECTION A: PENCARIAN & KATALOG KONSER */}
+      {/* SECTION A: KATALOG KONSER */}
       <section id="concerts" className="relative z-10 py-24 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
           <div>
-            <div className="liquid-glass inline-flex items-center gap-2 px-3 py-1 rounded-lg text-xs text-blue-400 mb-3 border border-blue-500/20">
+            <div className="liquid-glass inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs text-blue-400 mb-3 border border-blue-500/30 font-medium">
               <Ticket className="w-3.5 h-3.5" />
-              <span>JADWAL PERTUNJUKAN RESMI</span>
+              <span>JADWAL PERTUNJUKAN RESMI 2026</span>
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-normal tracking-tight text-white">
-              Jadwal & Tiket Konser Simfoni
+              Katalog Konser Simfoni & Tiket
             </h2>
             <p className="text-gray-400 text-sm sm:text-base mt-2 max-w-xl">
-              Pilih pertunjukan favorit Anda. Setiap kuota tempat duduk dialokasikan secara riil dan terlindungi dari klaim ganda.
+              Pilih pertunjukan favorit Anda. Setiap kuota tempat duduk dialokasikan secara transparan dan terverifikasi instan.
             </p>
           </div>
 
@@ -629,16 +642,16 @@ export const SymphoniaTicApp: React.FC = () => {
             <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5" />
             <input
               type="text"
-              placeholder="Cari konser, artis, atau lokasi..."
+              placeholder="Cari nama konser, artis, atau lokasi venue..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-all"
+              className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-all shadow-inner"
             />
           </div>
         </div>
 
-        {/* Filter Categories */}
-        <div className="flex flex-wrap items-center gap-2 mb-8">
+        {/* Category Filters */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 no-scrollbar">
           {[
             { id: 'SEMUA', label: 'Semua Kategori' },
             { id: 'SIMFONI', label: 'Simfoni Utama' },
@@ -651,10 +664,10 @@ export const SymphoniaTicApp: React.FC = () => {
             <button
               key={cat.id}
               onClick={() => setSelectedCategoryFilter(cat.id)}
-              className={`px-4 py-2 rounded-xl text-xs font-medium transition-all cursor-pointer ${
+              className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer shrink-0 ${
                 selectedCategoryFilter === cat.id
-                  ? 'bg-blue-600 text-white shadow-lg font-semibold'
-                  : 'liquid-glass text-gray-300 hover:text-white'
+                  ? 'bg-blue-600 text-white shadow-lg'
+                  : 'liquid-glass text-gray-300 hover:text-white border border-white/10'
               }`}
             >
               {cat.label}
@@ -662,12 +675,12 @@ export const SymphoniaTicApp: React.FC = () => {
           ))}
         </div>
 
-        {/* Concert Grid */}
+        {/* Concert Cards Grid */}
         {filteredEvents.length === 0 ? (
           <div className="liquid-glass rounded-3xl p-12 text-center text-gray-400 my-8">
             <AlertCircle className="w-12 h-12 text-gray-500 mx-auto mb-3" />
             <p className="text-base font-semibold text-white">Konser Tidak Ditemukan</p>
-            <p className="text-xs text-gray-400 mt-1">Coba gunakan kata kunci pencarian lain atau pilih kategori lain.</p>
+            <p className="text-xs text-gray-400 mt-1">Coba kata kunci lain atau pilih kategori lain.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -681,35 +694,35 @@ export const SymphoniaTicApp: React.FC = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   key={event.id}
-                  className="liquid-glass rounded-3xl overflow-hidden border border-white/10 flex flex-col justify-between hover:border-blue-500/50 transition-all group shadow-xl"
+                  className="liquid-glass liquid-glass-card rounded-3xl overflow-hidden border border-white/10 flex flex-col justify-between group shadow-xl"
                 >
-                  {/* Concert Poster Banner */}
-                  <div className="relative h-52 w-full overflow-hidden">
+                  {/* Concert Banner */}
+                  <div className="relative aspect-[16/10] w-full overflow-hidden">
                     <img 
                       src={event.image} 
                       alt={event.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/40 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f121d] via-[#0f121d]/40 to-transparent" />
                     
-                    <div className="absolute top-3 left-3">
-                      <span className="bg-blue-900/80 backdrop-blur-md text-blue-200 text-[10px] font-bold px-2.5 py-1 rounded-full border border-blue-400/30 uppercase tracking-wider">
+                    <div className="absolute top-3.5 left-3.5">
+                      <span className={`text-[10px] font-bold px-3 py-1 rounded-full border backdrop-blur-md uppercase tracking-wider ${event.categoryBadgeColor}`}>
                         {event.category}
                       </span>
                     </div>
 
                     {totalQuotaLeft <= 20 && (
-                      <div className="absolute top-3 right-3 bg-red-950/80 backdrop-blur-md text-red-300 text-[10px] font-semibold px-2.5 py-1 rounded-full border border-red-500/40 flex items-center gap-1">
+                      <div className="absolute top-3.5 right-3.5 bg-red-950/80 backdrop-blur-md text-red-300 text-[10px] font-semibold px-2.5 py-1 rounded-full border border-red-500/40 flex items-center gap-1">
                         <Flame className="w-3 h-3 text-red-400 animate-pulse" />
                         <span>Sisa {totalQuotaLeft} Tiket</span>
                       </div>
                     )}
                   </div>
 
-                  {/* Concert Info Details */}
-                  <div className="p-5 flex-1 flex flex-col justify-between">
+                  {/* Concert Info */}
+                  <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                     <div>
-                      <h3 className="text-xl font-medium text-white group-hover:text-blue-400 transition-colors leading-snug">
+                      <h3 className="text-xl font-normal text-white group-hover:text-blue-400 transition-colors leading-snug">
                         {event.title}
                       </h3>
                       <p className="text-xs text-gray-300 mt-1 font-medium">{event.artist}</p>
@@ -726,9 +739,9 @@ export const SymphoniaTicApp: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between gap-2">
+                    <div className="pt-4 border-t border-white/10 flex items-center justify-between gap-2">
                       <div>
-                        <span className="text-[10px] text-gray-400 uppercase tracking-wider block">Harga Mulai</span>
+                        <span className="text-[10px] text-gray-400 uppercase tracking-wider block font-medium">Harga Mulai</span>
                         <span className="text-base font-bold text-white">
                           {formatIDR(minPrice)}
                         </span>
@@ -737,7 +750,7 @@ export const SymphoniaTicApp: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <button 
                           onClick={() => setDetailEvent(event)}
-                          className="liquid-glass p-2.5 rounded-xl text-gray-300 hover:text-white transition-all cursor-pointer"
+                          className="liquid-glass p-2.5 rounded-xl text-gray-300 hover:text-white transition-all cursor-pointer border border-white/10"
                           title="Lihat Detail Acara"
                         >
                           <Info className="w-4 h-4 text-blue-400" />
@@ -748,7 +761,7 @@ export const SymphoniaTicApp: React.FC = () => {
                             setSelectedEvent(event);
                             setSelectedCat(event.categories[0]);
                           }}
-                          className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition-all shadow-md active:scale-95 cursor-pointer flex items-center gap-1"
+                          className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition-all shadow-lg active:scale-95 cursor-pointer flex items-center gap-1"
                         >
                           <span>Beli Tiket</span>
                           <ChevronRight className="w-3.5 h-3.5" />
@@ -763,18 +776,18 @@ export const SymphoniaTicApp: React.FC = () => {
         )}
       </section>
 
-      {/* SECTION B: ARTIS & KONDUKTOR */}
+      {/* SECTION B: ARTIS & LINEUP */}
       <section id="lineup" className="relative z-10 py-20 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto border-t border-white/10">
         <div className="text-center max-w-2xl mx-auto mb-14">
-          <div className="liquid-glass inline-flex items-center gap-2 px-3 py-1 rounded-lg text-xs text-blue-400 mb-3 border border-blue-500/20">
+          <div className="liquid-glass inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs text-blue-400 mb-3 border border-blue-500/30 font-medium">
             <Layers className="w-3.5 h-3.5" />
-            <span>SOLOIS & KONDUKTOR DUKUNGAN</span>
+            <span>SOLOIS & ORKESTRA RESMI</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-normal tracking-tight text-white">
-            Jajaran Orkestra & Musikus Dunia
+            Jajaran Musikus & Orkestra Dunia
           </h2>
           <p className="text-sm text-gray-400 mt-2">
-            Pertunjukan resmi diisi oleh konduktor ternama, solois bertalenta tinggi, dan kelompok orkestra simfoni kaliber internasional.
+            Diisi oleh konduktor ternama, solois biola/piano bertalenta tinggi, serta himpunan simfoni papan atas.
           </p>
         </div>
 
@@ -794,38 +807,38 @@ export const SymphoniaTicApp: React.FC = () => {
         </div>
       </section>
 
-      {/* SECTION C: SISTEM METRIK & ATOMIC ROW LOCKING */}
+      {/* SECTION C: METRIK PROTEKSI TRANSAKSI */}
       <section id="ticket-war" className="relative z-10 py-20 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto border-t border-white/10">
-        <div className="liquid-glass rounded-3xl p-8 md:p-12 border border-blue-500/30 bg-gradient-to-r from-blue-950/40 via-gray-950 to-gray-950">
+        <div className="liquid-glass liquid-glass-accent rounded-3xl p-8 md:p-12 border border-blue-500/40">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-6 space-y-4">
               <div className="inline-flex items-center gap-2 bg-blue-900/60 text-blue-300 text-xs px-3 py-1 rounded-full border border-blue-700/40 font-semibold">
                 <Lock className="w-3.5 h-3.5" />
-                <span>PROTEKSI PERTRANSAKSI KELAS ENTERPRISE</span>
+                <span>TRANSAKSI ATOMIC DENGAN ROW LOCKING</span>
               </div>
               <h2 className="text-3xl sm:text-4xl font-normal text-white">
                 Keamanan & Kepastian Kuota Tiket
               </h2>
               <p className="text-sm text-gray-300 leading-relaxed">
-                SymphoniaTic mengintegrasikan transaksi ACID dengan proteksi <code className="text-blue-400 font-mono">FOR UPDATE</code> row locking di tingkat basis data Go-Fiber. Setiap kuota yang Anda pesan dijamin tidak akan mengalami pesanan ganda (*overbooking*) meskipun terjadi lonjakan pemesan simultan.
+                SymphoniaTic mengintegrasikan transaksi basis data Go-Fiber dengan mekanisme penguncian <code className="text-blue-400 font-mono">FOR UPDATE</code>. Setiap kuota yang dibeli dijamin tidak mengalami alokasi ganda (*overbooking*) walaupun dipesan bersamaan.
               </p>
             </div>
 
             <div className="lg:col-span-6 grid grid-cols-2 gap-4">
               <div className="bg-white/5 rounded-2xl p-5 border border-white/10 text-center">
-                <span className="text-[10px] text-gray-400 uppercase tracking-wider block">Total Pendapatan Terverifikasi</span>
+                <span className="text-[10px] text-gray-400 uppercase tracking-wider block font-medium">Total Pendapatan Terverifikasi</span>
                 <span className="text-xl sm:text-2xl font-bold text-emerald-400 mt-1 block">Rp 485.500.000</span>
               </div>
               <div className="bg-white/5 rounded-2xl p-5 border border-white/10 text-center">
-                <span className="text-[10px] text-gray-400 uppercase tracking-wider block">Tiket Terjual</span>
+                <span className="text-[10px] text-gray-400 uppercase tracking-wider block font-medium">Tiket Terjual</span>
                 <span className="text-xl sm:text-2xl font-bold text-white mt-1 block">1.420 / 1.708 Tiket</span>
               </div>
               <div className="bg-white/5 rounded-2xl p-5 border border-white/10 text-center">
-                <span className="text-[10px] text-gray-400 uppercase tracking-wider block">Sisa Kuota Aktif</span>
+                <span className="text-[10px] text-gray-400 uppercase tracking-wider block font-medium">Sisa Kuota Aktif</span>
                 <span className="text-xl sm:text-2xl font-bold text-blue-400 mt-1 block">288 Kursi</span>
               </div>
               <div className="bg-white/5 rounded-2xl p-5 border border-white/10 text-center">
-                <span className="text-[10px] text-gray-400 uppercase tracking-wider block">Tingkat Pemindaian Gate</span>
+                <span className="text-[10px] text-gray-400 uppercase tracking-wider block font-medium">Tingkat Pemindaian Gate</span>
                 <span className="text-xl sm:text-2xl font-bold text-purple-400 mt-1 block">99,8% Akurat</span>
               </div>
             </div>
@@ -837,7 +850,7 @@ export const SymphoniaTicApp: React.FC = () => {
       <section id="guide" className="relative z-10 py-20 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto border-t border-white/10">
         <div className="text-center max-w-2xl mx-auto mb-14">
           <h2 className="text-3xl font-normal tracking-tight text-white">Panduan Pemesanan & Akses Masuk</h2>
-          <p className="text-sm text-gray-400 mt-2">Alur praktis dari pemilihan tempat duduk hingga akses pintu gate konser.</p>
+          <p className="text-sm text-gray-400 mt-2">3 langkah mudah mendapatkan tiket resmi hingga memasuki hall konser.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -876,7 +889,7 @@ export const SymphoniaTicApp: React.FC = () => {
       {/* SECTION E: FAQ / TANYA JAWAB */}
       <section id="faq" className="relative z-10 py-20 px-4 sm:px-6 md:px-12 max-w-5xl mx-auto border-t border-white/10">
         <div className="text-center max-w-xl mx-auto mb-12">
-          <div className="liquid-glass inline-flex items-center gap-2 px-3 py-1 rounded-lg text-xs text-blue-400 mb-3 border border-blue-500/20">
+          <div className="liquid-glass inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs text-blue-400 mb-3 border border-blue-500/20">
             <HelpCircle className="w-3.5 h-3.5" />
             <span>PERTANYAAN UMUM</span>
           </div>
@@ -899,11 +912,11 @@ export const SymphoniaTicApp: React.FC = () => {
       </section>
 
       {/* FOOTER */}
-      <footer className="relative z-10 py-12 px-4 sm:px-6 md:px-12 border-t border-white/10 bg-gray-950 text-xs text-gray-400">
+      <footer className="relative z-10 py-12 px-4 sm:px-6 md:px-12 border-t border-white/10 bg-[#050609] text-xs text-gray-400">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-2.5">
-            <div className="w-6 h-6 rounded-lg bg-blue-600 flex items-center justify-center">
-              <Music className="w-3.5 h-3.5 text-white" />
+          <div className="flex items-center gap-3">
+            <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center">
+              <Music className="w-4 h-4 text-white" />
             </div>
             <span className="text-sm font-semibold text-white">SymphoniaTic</span>
           </div>
@@ -928,12 +941,12 @@ export const SymphoniaTicApp: React.FC = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-3xl bg-gray-950 text-white rounded-3xl overflow-hidden border border-white/10 shadow-2xl my-8 relative flex flex-col max-h-[90vh]"
+              className="w-full max-w-3xl bg-[#0f121d] text-white rounded-3xl overflow-hidden border border-white/15 shadow-2xl my-8 relative flex flex-col max-h-[90vh]"
             >
               {/* Close Button */}
               <button 
                 onClick={() => setDetailEvent(null)}
-                className="absolute top-4 right-4 z-20 liquid-glass p-2.5 rounded-full text-white hover:bg-white/20 transition-all cursor-pointer"
+                className="absolute top-4 right-4 z-20 liquid-glass p-2.5 rounded-full text-white hover:bg-white/20 transition-all cursor-pointer border border-white/20"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -945,10 +958,10 @@ export const SymphoniaTicApp: React.FC = () => {
                   alt={detailEvent.title} 
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/60 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0f121d] via-[#0f121d]/60 to-transparent" />
                 
                 <div className="absolute bottom-6 left-6 right-6">
-                  <span className="bg-blue-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                  <span className={`text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider border backdrop-blur-md ${detailEvent.categoryBadgeColor}`}>
                     {detailEvent.category}
                   </span>
                   <h2 className="text-2xl sm:text-3xl font-bold text-white mt-2 leading-tight">
@@ -961,11 +974,11 @@ export const SymphoniaTicApp: React.FC = () => {
               </div>
 
               {/* Navigation Tabs in Detail Modal */}
-              <div className="flex border-b border-white/10 px-6 bg-gray-900/60 shrink-0 overflow-x-auto">
+              <div className="flex border-b border-white/10 px-6 bg-gray-950/60 shrink-0 overflow-x-auto no-scrollbar">
                 {[
                   { id: 'INFO', label: 'Informasi & Lokasi' },
                   { id: 'RUNDOWN', label: 'Rangkaian Acara' },
-                  { id: 'BENEFITS', label: 'Kategori & Fasilitas' },
+                  { id: 'BENEFITS', label: 'Kategori & Benefit' },
                   { id: 'TERMS', label: 'Syarat & Ketentuan' },
                 ].map((tab) => (
                   <button
@@ -988,7 +1001,7 @@ export const SymphoniaTicApp: React.FC = () => {
                 {detailTab === 'INFO' && (
                   <div className="space-y-6">
                     <div>
-                      <h4 className="text-sm font-semibold text-white mb-2">Tentang Pertunjukan</h4>
+                      <h4 className="text-sm font-semibold text-white mb-2">Deskripsi Mahakarya</h4>
                       <p className="text-gray-300 leading-relaxed text-xs">
                         {detailEvent.description}
                       </p>
@@ -996,19 +1009,19 @@ export const SymphoniaTicApp: React.FC = () => {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-white/5 p-4 rounded-2xl border border-white/10">
                       <div className="space-y-1">
-                        <span className="text-[10px] text-gray-400 block uppercase">Penyelenggara</span>
+                        <span className="text-[10px] text-gray-400 block uppercase font-medium">Penyelenggara</span>
                         <span className="text-white font-medium block">{detailEvent.organizer}</span>
                       </div>
                       <div className="space-y-1">
-                        <span className="text-[10px] text-gray-400 block uppercase">Konduktor & Solois</span>
+                        <span className="text-[10px] text-gray-400 block uppercase font-medium">Konduktor & Solois</span>
                         <span className="text-white font-medium block">{detailEvent.conductor}</span>
                       </div>
                       <div className="space-y-1">
-                        <span className="text-[10px] text-gray-400 block uppercase">Jadwal Tanggal</span>
+                        <span className="text-[10px] text-gray-400 block uppercase font-medium">Jadwal Tanggal</span>
                         <span className="text-white font-medium block">{detailEvent.date}</span>
                       </div>
                       <div className="space-y-1">
-                        <span className="text-[10px] text-gray-400 block uppercase">Waktu Konser</span>
+                        <span className="text-[10px] text-gray-400 block uppercase font-medium">Waktu Konser</span>
                         <span className="text-white font-medium block">{detailEvent.time} (Open Gate {detailEvent.openGate})</span>
                       </div>
                     </div>
@@ -1018,7 +1031,7 @@ export const SymphoniaTicApp: React.FC = () => {
                         <MapPin className="w-4 h-4 text-blue-400" />
                         <span>Detail Lokasi Venue</span>
                       </h4>
-                      <p className="text-white font-medium text-xs">{detailEvent.venue}</p>
+                      <p className="text-white font-semibold text-xs">{detailEvent.venue}</p>
                       <p className="text-gray-400 text-xs mt-0.5">{detailEvent.address}</p>
                     </div>
                   </div>
@@ -1034,16 +1047,16 @@ export const SymphoniaTicApp: React.FC = () => {
 
                     <div className="space-y-3">
                       {detailEvent.rundown.map((item, idx) => (
-                        <div key={idx} className="flex items-start gap-4 p-3 rounded-xl bg-white/5 border border-white/10">
-                          <span className="font-mono text-blue-400 font-bold shrink-0 w-20">{item.time}</span>
-                          <span className="text-gray-200 font-medium">{item.activity}</span>
+                        <div key={idx} className="flex items-start gap-4 p-3.5 rounded-xl bg-white/5 border border-white/10">
+                          <span className="font-mono text-blue-400 font-bold shrink-0 w-20 text-xs">{item.time}</span>
+                          <span className="text-gray-200 font-medium text-xs">{item.activity}</span>
                         </div>
                       ))}
                     </div>
                   </div>
                 )}
 
-                {/* TAB 3: KATEGORI & FASILITAS */}
+                {/* TAB 3: KATEGORI & BENEFIT */}
                 {detailTab === 'BENEFITS' && (
                   <div className="space-y-4">
                     <h4 className="text-sm font-semibold text-white mb-2">Pilihan Kategori Tiket & Benefit Kursi</h4>
@@ -1056,10 +1069,10 @@ export const SymphoniaTicApp: React.FC = () => {
                             <span className="font-bold text-blue-400 text-sm">{formatIDR(cat.price)}</span>
                           </div>
 
-                          <span className="text-[10px] text-emerald-400 block font-medium">Sisa Kuota: {cat.quota} Tempat Duduk</span>
+                          <span className="text-[10px] text-emerald-400 block font-semibold">Sisa Kuota: {cat.quota} Tempat Duduk</span>
 
                           <div className="pt-2 border-t border-white/5 space-y-1">
-                            <span className="text-[10px] text-gray-400 block">Fasilitas Termasuk:</span>
+                            <span className="text-[10px] text-gray-400 block font-medium">Fasilitas Termasuk:</span>
                             <div className="flex flex-wrap gap-1.5 mt-1">
                               {cat.benefits.map((b, i) => (
                                 <span key={i} className="bg-blue-950/60 text-blue-200 text-[10px] px-2.5 py-0.5 rounded-full border border-blue-800/40">
@@ -1089,10 +1102,10 @@ export const SymphoniaTicApp: React.FC = () => {
                 )}
               </div>
 
-              {/* Modal Footer Action */}
-              <div className="p-4 sm:p-6 bg-gray-900 border-t border-white/10 flex items-center justify-between shrink-0">
+              {/* Modal Footer */}
+              <div className="p-4 sm:p-6 bg-gray-950 border-t border-white/10 flex items-center justify-between shrink-0">
                 <div>
-                  <span className="text-[10px] text-gray-400 block">Harga Mulai Dari</span>
+                  <span className="text-[10px] text-gray-400 block font-medium">Harga Mulai Dari</span>
                   <span className="text-base font-bold text-white">
                     {formatIDR(detailEvent.categories[0].price)}
                   </span>
@@ -1123,10 +1136,14 @@ export const SymphoniaTicApp: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* -------------------- 4. MODAL FORM PEMESANAN TIKET -------------------- */}
+      {/* -------------------- 4. SEAT SELECTION & BOOKING MODAL -------------------- */}
       {selectedEvent && selectedCat && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="w-full max-w-md bg-gray-900 text-white rounded-3xl p-6 border border-white/10 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="w-full max-w-lg bg-[#0f121d] text-white rounded-3xl p-6 border border-white/15 shadow-2xl relative my-6"
+          >
             <button 
               onClick={() => {
                 setSelectedEvent(null);
@@ -1139,14 +1156,60 @@ export const SymphoniaTicApp: React.FC = () => {
 
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-blue-500" />
-              <h3 className="text-lg font-semibold">Formulir Pesanan Tiket</h3>
+              <h3 className="text-lg font-bold">Pilih Tempat Duduk & Tiket</h3>
             </div>
-            <p className="text-xs text-gray-300 mt-1 font-medium">{selectedEvent.title}</p>
+            <p className="text-xs text-blue-300 mt-1 font-semibold">{selectedEvent.title}</p>
 
-            <form onSubmit={handleBookingSubmit} className="mt-5 flex flex-col gap-4">
+            {/* SEAT MAP PREVIEW WIDGET */}
+            <div className="my-4 p-4 rounded-2xl bg-white/5 border border-white/10 space-y-3">
+              <div className="text-center bg-blue-600/30 text-blue-300 py-1.5 rounded-lg border border-blue-500/40 text-[10px] font-bold tracking-widest uppercase">
+                ▲ STAGE / PANGGUNG UTAMA ORKESTRA ▲
+              </div>
+
+              {/* Seating Layout Visual */}
+              <div className="grid grid-cols-3 gap-2 text-center text-[10px] font-semibold">
+                <div 
+                  onClick={() => setSelectedCat(selectedEvent.categories[0])}
+                  className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
+                    selectedCat.name === selectedEvent.categories[0]?.name
+                      ? 'border-blue-500 bg-blue-600/30 text-white shadow-lg'
+                      : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/20'
+                  }`}
+                >
+                  <div className="font-bold">VIP Pit</div>
+                  <div className="text-[9px] text-blue-400 mt-0.5">Depan Tengah</div>
+                </div>
+
+                <div 
+                  onClick={() => setSelectedCat(selectedEvent.categories[1] || selectedEvent.categories[0])}
+                  className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
+                    selectedCat.name === selectedEvent.categories[1]?.name
+                      ? 'border-blue-500 bg-blue-600/30 text-white shadow-lg'
+                      : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/20'
+                  }`}
+                >
+                  <div className="font-bold">CAT 1</div>
+                  <div className="text-[9px] text-blue-400 mt-0.5">Balkon Utama</div>
+                </div>
+
+                <div 
+                  onClick={() => setSelectedCat(selectedEvent.categories[2] || selectedEvent.categories[0])}
+                  className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
+                    selectedCat.name === selectedEvent.categories[2]?.name
+                      ? 'border-blue-500 bg-blue-600/30 text-white shadow-lg'
+                      : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/20'
+                  }`}
+                >
+                  <div className="font-bold">Festival</div>
+                  <div className="text-[9px] text-blue-400 mt-0.5">Lantai Utama</div>
+                </div>
+              </div>
+            </div>
+
+            <form onSubmit={handleBookingSubmit} className="space-y-4">
               {/* Category Select */}
               <div>
-                <label className="text-xs text-gray-300 font-medium block mb-1.5">Pilih Kategori Tempat Duduk</label>
+                <label className="text-xs text-gray-300 font-medium block mb-1.5">Kategori Yang Dipilih</label>
                 <div className="grid grid-cols-1 gap-2">
                   {selectedEvent.categories.map((cat) => (
                     <button
@@ -1155,13 +1218,13 @@ export const SymphoniaTicApp: React.FC = () => {
                       onClick={() => setSelectedCat(cat)}
                       className={`p-3 rounded-xl border text-left text-xs transition-all flex items-center justify-between cursor-pointer ${
                         selectedCat.id === cat.id
-                          ? 'border-blue-500 bg-blue-950/50 text-white'
+                          ? 'border-blue-500 bg-blue-950/50 text-white shadow-md'
                           : 'border-white/10 bg-white/5 text-gray-300 hover:border-white/20'
                       }`}
                     >
                       <div>
-                        <div className="font-semibold text-white">{cat.name}</div>
-                        <div className="text-[10px] text-blue-400 mt-0.5">Sisa {cat.quota} kursi kuota</div>
+                        <div className="font-bold text-white">{cat.name}</div>
+                        <div className="text-[10px] text-emerald-400 mt-0.5">Sisa {cat.quota} kursi kuota</div>
                       </div>
                       <div className="font-bold text-white">{formatIDR(cat.price)}</div>
                     </button>
@@ -1173,7 +1236,7 @@ export const SymphoniaTicApp: React.FC = () => {
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="text-xs text-gray-300 font-medium">Jumlah Tiket</label>
-                  <span className="text-[10px] text-blue-400 font-medium">Aturan: Maks. 4 tiket/transaksi</span>
+                  <span className="text-[10px] text-blue-400 font-semibold">Batas PRD: Maks. 4 tiket/transaksi</span>
                 </div>
                 <div className="flex items-center gap-2">
                   {[1, 2, 3, 4].map((num) => (
@@ -1183,7 +1246,7 @@ export const SymphoniaTicApp: React.FC = () => {
                       onClick={() => setQuantity(num)}
                       className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                         quantity === num
-                          ? 'bg-blue-600 text-white border-blue-500'
+                          ? 'bg-blue-600 text-white border-blue-500 shadow-md'
                           : 'bg-white/5 text-gray-300 border-white/10 hover:border-white/20'
                       }`}
                     >
@@ -1198,14 +1261,14 @@ export const SymphoniaTicApp: React.FC = () => {
                 <div>
                   <label className="text-xs text-gray-300 font-medium block mb-1">Nama Lengkap Pemesan</label>
                   <div className="relative">
-                    <User className="w-4 h-4 text-gray-500 absolute left-3 top-3" />
+                    <User className="w-4 h-4 text-gray-500 absolute left-3.5 top-3" />
                     <input
                       type="text"
                       required
                       placeholder="Contoh: Budi Santoso"
                       value={userName}
                       onChange={(e) => setUserName(e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-3 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-3 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
                     />
                   </div>
                 </div>
@@ -1213,14 +1276,14 @@ export const SymphoniaTicApp: React.FC = () => {
                 <div>
                   <label className="text-xs text-gray-300 font-medium block mb-1">Alamat Email Aktif</label>
                   <div className="relative">
-                    <Mail className="w-4 h-4 text-gray-500 absolute left-3 top-3" />
+                    <Mail className="w-4 h-4 text-gray-500 absolute left-3.5 top-3" />
                     <input
                       type="email"
                       required
                       placeholder="budi@example.com"
                       value={userEmail}
                       onChange={(e) => setUserEmail(e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-3 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-3 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
                     />
                   </div>
                 </div>
@@ -1229,7 +1292,7 @@ export const SymphoniaTicApp: React.FC = () => {
               {/* Order Total & Submit */}
               <div className="mt-2 pt-3 border-t border-white/10 flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] text-gray-400 block uppercase">Total Tagihan</span>
+                  <span className="text-[10px] text-gray-400 block uppercase font-medium">Total Pembayaran</span>
                   <span className="text-base font-bold text-white">
                     {formatIDR(selectedCat.price * quantity)}
                   </span>
@@ -1239,18 +1302,22 @@ export const SymphoniaTicApp: React.FC = () => {
                   type="submit"
                   className="bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs px-6 py-2.5 rounded-xl transition-all shadow-lg active:scale-95 cursor-pointer"
                 >
-                  Konfirmasi & Bayar
+                  Konfirmasi & Terbitkan Pass
                 </button>
               </div>
             </form>
-          </div>
+          </motion.div>
         </div>
       )}
 
       {/* -------------------- 5. E-TICKET CONFIRMATION RESULT -------------------- */}
       {activeSuccessOrder && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="w-full max-w-sm bg-gray-900 text-white rounded-3xl p-6 border border-blue-500/40 shadow-2xl text-center relative animate-fade-up">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="w-full max-w-sm bg-[#0f121d] text-white rounded-3xl p-6 border border-blue-500/40 shadow-2xl text-center relative"
+          >
             <button 
               onClick={() => setActiveSuccessOrder(null)}
               className="absolute top-4 right-4 liquid-glass p-2 rounded-xl text-white/80 hover:text-white"
@@ -1258,17 +1325,17 @@ export const SymphoniaTicApp: React.FC = () => {
               <X className="w-4 h-4" />
             </button>
 
-            <div className="w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center mx-auto text-emerald-400">
+            <div className="w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center mx-auto text-emerald-400 shadow-lg">
               <CheckCircle2 className="w-6 h-6" />
             </div>
 
             <h3 className="text-lg font-bold text-white mt-3">E-Ticket Resmi Terbit!</h3>
-            <p className="text-xs text-gray-400 mt-0.5">Kode Transaksi: <span className="font-mono text-blue-400 font-bold">{activeSuccessOrder.orderCode}</span></p>
+            <p className="text-xs text-gray-400 mt-0.5">Kode Order: <span className="font-mono text-blue-400 font-bold">{activeSuccessOrder.orderCode}</span></p>
 
             {/* QR Code Container */}
             <div className="my-5 p-4 bg-white rounded-2xl max-w-[200px] mx-auto shadow-inner flex flex-col items-center">
               <QrCode className="w-32 h-32 text-gray-900" />
-              <span className="text-[10px] font-mono text-gray-700 mt-2 font-bold tracking-wider">
+              <span className="text-[10px] font-mono text-gray-800 mt-2 font-bold tracking-wider">
                 {activeSuccessOrder.qrCode}
               </span>
             </div>
@@ -1276,32 +1343,37 @@ export const SymphoniaTicApp: React.FC = () => {
             <div className="text-left bg-white/5 rounded-2xl p-3.5 border border-white/10 space-y-1.5 text-xs">
               <div className="flex justify-between text-gray-400">
                 <span>Nama Konser:</span>
-                <span className="text-white font-medium truncate max-w-[170px]">{activeSuccessOrder.eventTitle}</span>
+                <span className="text-white font-semibold truncate max-w-[170px]">{activeSuccessOrder.eventTitle}</span>
               </div>
               <div className="flex justify-between text-gray-400">
-                <span>Kategori Tempat Duduk:</span>
-                <span className="text-white font-medium">{activeSuccessOrder.categoryName} ({activeSuccessOrder.quantity}x)</span>
+                <span>Kategori Kursi:</span>
+                <span className="text-white font-semibold">{activeSuccessOrder.categoryName} ({activeSuccessOrder.quantity}x)</span>
               </div>
               <div className="flex justify-between text-gray-400">
-                <span>Total Pembayaran:</span>
+                <span>Total Bayar:</span>
                 <span className="text-emerald-400 font-bold">{formatIDR(activeSuccessOrder.totalPrice)}</span>
               </div>
             </div>
 
             <button
               onClick={() => setActiveSuccessOrder(null)}
-              className="mt-5 w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs py-2.5 rounded-xl transition-all cursor-pointer"
+              className="mt-5 w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs py-2.5 rounded-xl transition-all cursor-pointer shadow-lg"
             >
               Simpan & Selesai
             </button>
-          </div>
+          </motion.div>
         </div>
       )}
 
       {/* -------------------- 6. MY E-TICKETS DRAWER -------------------- */}
       {activeDrawer === 'ORDERS' && (
         <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-md">
-          <div className="w-full max-w-md bg-gray-950/95 text-white h-full flex flex-col p-6 overflow-y-auto border-l border-white/10 shadow-2xl">
+          <motion.div 
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            className="w-full max-w-md bg-[#0f121d] text-white h-full flex flex-col p-6 overflow-y-auto border-l border-white/10 shadow-2xl"
+          >
             <div className="flex items-center justify-between pb-4 border-b border-white/10">
               <div className="flex items-center gap-2">
                 <QrCode className="w-5 h-5 text-blue-500" />
@@ -1361,14 +1433,19 @@ export const SymphoniaTicApp: React.FC = () => {
                 ))}
               </div>
             )}
-          </div>
+          </motion.div>
         </div>
       )}
 
       {/* -------------------- 7. ADMIN METRICS DRAWER -------------------- */}
       {activeDrawer === 'ADMIN' && (
         <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-md">
-          <div className="w-full max-w-md bg-gray-950/95 text-white h-full flex flex-col p-6 overflow-y-auto border-l border-white/10 shadow-2xl">
+          <motion.div 
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            className="w-full max-w-md bg-[#0f121d] text-white h-full flex flex-col p-6 overflow-y-auto border-l border-white/10 shadow-2xl"
+          >
             <div className="flex items-center justify-between pb-4 border-b border-white/10">
               <div className="flex items-center gap-2">
                 <BarChart3 className="w-5 h-5 text-blue-500" />
@@ -1384,25 +1461,25 @@ export const SymphoniaTicApp: React.FC = () => {
 
             <div className="mt-4 space-y-4 text-xs">
               <div className="p-4 rounded-2xl bg-blue-950/40 border border-blue-500/30 space-y-1">
-                <span className="text-gray-400">Rest API Endpoint:</span>
+                <span className="text-gray-400 font-medium">Rest API Endpoint:</span>
                 <p className="font-mono text-blue-400 font-semibold">GET /api/v1/admin/dashboard</p>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-3.5 rounded-xl bg-white/5 border border-white/10">
-                  <span className="text-[10px] text-gray-400 block">Total Pendapatan</span>
+                  <span className="text-[10px] text-gray-400 block font-medium">Total Pendapatan</span>
                   <span className="text-base font-bold text-emerald-400">Rp 485.500.000</span>
                 </div>
                 <div className="p-3.5 rounded-xl bg-white/5 border border-white/10">
-                  <span className="text-[10px] text-gray-400 block">Tiket Terjual</span>
+                  <span className="text-[10px] text-gray-400 block font-medium">Tiket Terjual</span>
                   <span className="text-base font-bold text-white">1.420</span>
                 </div>
                 <div className="p-3.5 rounded-xl bg-white/5 border border-white/10">
-                  <span className="text-[10px] text-gray-400 block">Sisa Kuota Kursi</span>
+                  <span className="text-[10px] text-gray-400 block font-medium">Sisa Kuota Kursi</span>
                   <span className="text-base font-bold text-blue-400">288</span>
                 </div>
                 <div className="p-3.5 rounded-xl bg-white/5 border border-white/10">
-                  <span className="text-[10px] text-gray-400 block">Perlu Verifikasi</span>
+                  <span className="text-[10px] text-gray-400 block font-medium">Perlu Verifikasi</span>
                   <span className="text-base font-bold text-amber-400">12 Order</span>
                 </div>
               </div>
@@ -1414,7 +1491,7 @@ export const SymphoniaTicApp: React.FC = () => {
                 </p>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
     </div>
