@@ -46,6 +46,7 @@ export const SymphoniaTicApp: React.FC = () => {
   }, []);
 
   const displayEvents = liveEvents.length > 0 ? liveEvents : CONCERT_EVENTS;
+  const activeTrack = displayEvents[currentTrackIndex] || CONCERT_EVENTS[0];
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -65,12 +66,11 @@ export const SymphoniaTicApp: React.FC = () => {
 
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio) return;
-    const track = displayEvents[currentTrackIndex] || CONCERT_EVENTS[0];
-    audio.src = track.audioUrl;
+    if (!audio || !activeTrack) return;
+    audio.src = activeTrack.audioUrl;
     audio.load();
     if (isPlayingAudio) audio.play().catch(() => setIsPlayingAudio(false));
-  }, [currentTrackIndex, displayEvents, isPlayingAudio]);
+  }, [currentTrackIndex, activeTrack]);
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 40);
