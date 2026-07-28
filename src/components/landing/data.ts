@@ -259,6 +259,21 @@ export const getApiBaseUrl = () => {
   return 'http://localhost:8082/api/v1';
 };
 
+const LOCAL_AUDIO_MAP: { pattern: RegExp; path: string }[] = [
+  { pattern: /beethoven|symphony\s*n?\.?\s*5|symfoni.*beethoven/i, path: '/audio/Ludwig van Beethoven - Symphony n.5 in C minor, Op.67, I.Allegro con brio.mp3' },
+  { pattern: /coldplay|viva\s*la\s*vida/i, path: '/audio/coldplay - Viva La Vida I COLDPLAY & OASIS AND BAND MUSIC ORCHESTRA FESTA.mp3' },
+  { pattern: /abba|winner\s*takes/i, path: '/audio/ABBA - The Winner Takes It All  Epic Orchestra (2020).mp3' },
+  { pattern: /laskar\s*pelangi|trust.*symphony|trinity.*youth/i, path: '/audio/Laskar Pelangi  TRUST (Trinity Youth Symphony Orchestra).mp3' },
+];
+
+const resolveAudioUrl = (title: string, apiAudioUrl?: string): string => {
+  if (apiAudioUrl && apiAudioUrl.startsWith('/audio/')) return apiAudioUrl;
+  for (const entry of LOCAL_AUDIO_MAP) {
+    if (entry.pattern.test(title)) return entry.path;
+  }
+  return '';
+};
+
 export const fetchEventsAPI = async (): Promise<EventItem[]> => {
   try {
     const res = await fetch(`${getApiBaseUrl()}/events`);
@@ -278,7 +293,7 @@ export const fetchEventsAPI = async (): Promise<EventItem[]> => {
         category: evt.category || 'SIMFONI UTAMA',
         categoryBadgeColor: evt.categoryBadgeColor || 'bg-blue-900/80 text-blue-200 border-blue-500/40',
         image: evt.image || 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?q=80&w=1000&auto=format&fit=crop',
-        audioUrl: evt.audioUrl || '',
+        audioUrl: resolveAudioUrl(evt.title, evt.audioUrl),
         organizer: evt.organizer || 'SymphoniaTic Production',
         description: evt.description,
         rundown: Array.isArray(evt.rundown) && evt.rundown.length > 0
