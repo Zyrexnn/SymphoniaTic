@@ -45,9 +45,9 @@ export const Header: React.FC<HeaderProps> = ({
       </nav>
 
       <div className="flex items-center gap-2 sm:gap-3">
-        <button onClick={onOpenAdmin} className="hidden sm:flex text-xs text-blue-300 border border-blue-500/30 px-3 py-1.5 rounded-xl hover:bg-blue-950/60 transition-all cursor-pointer items-center gap-1.5">
-          <ShieldCheck className="w-3.5 h-3.5 text-blue-400" /><span>Metrik Admin</span>
-        </button>
+        <a href="/admin" className="hidden sm:flex text-xs text-blue-300 border border-blue-500/30 px-3 py-1.5 rounded-xl hover:bg-blue-950/60 transition-all cursor-pointer items-center gap-1.5">
+          <ShieldCheck className="w-3.5 h-3.5 text-blue-400" /><span>Portal Admin</span>
+        </a>
         <button onClick={onOpenOrders} className="rounded-xl bg-white p-1 pr-3 sm:pr-4 flex items-center gap-2 hover:scale-105 active:scale-95 transition-transform duration-200 cursor-pointer shadow-xl">
           <div className="h-7 w-7 rounded-lg bg-blue-600 flex items-center justify-center shrink-0">
             <ShoppingCart className="w-3.5 h-3.5 text-white" strokeWidth={2} />
@@ -71,10 +71,10 @@ export const Header: React.FC<HeaderProps> = ({
             </a>
           ))}
           <div className="pt-2 border-t border-white/10 mt-1 flex flex-col gap-2">
-            <button onClick={() => { onToggleMenu(); onOpenAdmin(); }}
+            <a href="/admin" onClick={onToggleMenu}
               className="rounded-xl px-4 py-2.5 text-xs text-blue-300 bg-blue-950/40 border border-blue-500/30 text-left font-semibold flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-blue-400" /><span>Portal Metrik Admin & System</span>
-            </button>
+            </a>
           </div>
         </motion.div>
       )}

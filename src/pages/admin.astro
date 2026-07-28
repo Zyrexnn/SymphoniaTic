@@ -1,0 +1,8 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { AdminApp } from '../components/admin/AdminApp';
+---
+
+<Layout title="Portal Admin & Management — SymphoniaTic">
+  <AdminApp client:only="react" />
+</Layout>
