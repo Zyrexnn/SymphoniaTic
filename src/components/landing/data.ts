@@ -259,39 +259,6 @@ export const getApiBaseUrl = () => {
   return 'http://localhost:8082/api/v1';
 };
 
-const LOCAL_AUDIO_FILES = [
-  '/audio/Ludwig van Beethoven - Symphony n.5 in C minor, Op.67, I.Allegro con brio.mp3',
-  '/audio/coldplay - Viva La Vida I COLDPLAY & OASIS AND BAND MUSIC ORCHESTRA FESTA.mp3',
-  '/audio/ABBA - The Winner Takes It All  Epic Orchestra (2020).mp3',
-  '/audio/Laskar Pelangi  TRUST (Trinity Youth Symphony Orchestra).mp3',
-];
-
-const TITLE_AUDIO_MAP: Record<string, string> = {
-  'beethoven': LOCAL_AUDIO_FILES[0],
-  'symphony': LOCAL_AUDIO_FILES[0],
-  'symfoni': LOCAL_AUDIO_FILES[0],
-  'coldplay': LOCAL_AUDIO_FILES[1],
-  'viva la vida': LOCAL_AUDIO_FILES[1],
-  'abba': LOCAL_AUDIO_FILES[2],
-  'winner takes': LOCAL_AUDIO_FILES[2],
-  'laskar pelangi': LOCAL_AUDIO_FILES[3],
-  'trust': LOCAL_AUDIO_FILES[3],
-  'trinity': LOCAL_AUDIO_FILES[3],
-};
-
-let audioCycleIndex = 0;
-
-const resolveAudioUrl = (title: string, apiAudioUrl?: string): string => {
-  if (apiAudioUrl && apiAudioUrl.startsWith('/audio/')) return apiAudioUrl;
-  const lower = title.toLowerCase();
-  for (const [key, path] of Object.entries(TITLE_AUDIO_MAP)) {
-    if (lower.includes(key)) return path;
-  }
-  const fallback = LOCAL_AUDIO_FILES[audioCycleIndex % LOCAL_AUDIO_FILES.length];
-  audioCycleIndex++;
-  return fallback;
-};
-
 export const fetchEventsAPI = async (): Promise<EventItem[]> => {
   try {
     const res = await fetch(`${getApiBaseUrl()}/events`);
@@ -311,7 +278,7 @@ export const fetchEventsAPI = async (): Promise<EventItem[]> => {
         category: evt.category || 'SIMFONI UTAMA',
         categoryBadgeColor: evt.categoryBadgeColor || 'bg-blue-900/80 text-blue-200 border-blue-500/40',
         image: evt.image || 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?q=80&w=1000&auto=format&fit=crop',
-        audioUrl: resolveAudioUrl(evt.title, evt.audioUrl),
+        audioUrl: evt.audioUrl || '',
         organizer: evt.organizer || 'SymphoniaTic Production',
         description: evt.description,
         rundown: Array.isArray(evt.rundown) && evt.rundown.length > 0

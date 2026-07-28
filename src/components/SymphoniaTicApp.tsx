@@ -46,14 +46,14 @@ export const SymphoniaTicApp: React.FC = () => {
   }, []);
 
   const displayEvents = liveEvents.length > 0 ? liveEvents : CONCERT_EVENTS;
-  const activeTrack = displayEvents[currentTrackIndex] || CONCERT_EVENTS[0];
+  const activeTrack = CONCERT_EVENTS[currentTrackIndex] || CONCERT_EVENTS[0];
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
     const onTime = () => setCurrentTime(audio.currentTime);
     const onMeta = () => setDuration(audio.duration);
-    const onEnd = () => setCurrentTrackIndex((prev) => (prev + 1) % displayEvents.length);
+    const onEnd = () => setCurrentTrackIndex((prev) => (prev + 1) % CONCERT_EVENTS.length);
     audio.addEventListener('timeupdate', onTime);
     audio.addEventListener('loadedmetadata', onMeta);
     audio.addEventListener('ended', onEnd);
@@ -62,7 +62,7 @@ export const SymphoniaTicApp: React.FC = () => {
       audio.removeEventListener('loadedmetadata', onMeta);
       audio.removeEventListener('ended', onEnd);
     };
-  }, [displayEvents.length]);
+  }, []);
 
   useEffect(() => {
     const audio = audioRef.current;
