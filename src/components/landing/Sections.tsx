@@ -24,15 +24,18 @@ const GUIDE_STEPS = [
 ];
 
 interface SectionProps {
+  events?: EventItem[];
   onShowDetail: (event: EventItem) => void;
   onBuyTicket: (event: EventItem) => void;
 }
 
-export const ConcertCatalog: React.FC<SectionProps> = ({ onShowDetail, onBuyTicket }) => {
+export const ConcertCatalog: React.FC<SectionProps> = ({ events, onShowDetail, onBuyTicket }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('SEMUA');
 
-  const filteredEvents = CONCERT_EVENTS.filter((e) => {
+  const sourceEvents = (events && events.length > 0) ? events : CONCERT_EVENTS;
+
+  const filteredEvents = sourceEvents.filter((e) => {
     const matchCat = selectedCategory === 'SEMUA' || e.category === selectedCategory;
     const q = searchQuery.toLowerCase();
     const matchQ = !q || e.title.toLowerCase().includes(q) || e.artist.toLowerCase().includes(q) || e.venue.toLowerCase().includes(q);
@@ -74,8 +77,8 @@ export const ConcertCatalog: React.FC<SectionProps> = ({ onShowDetail, onBuyTick
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredEvents.map((event) => {
-            const minPrice = event.categories[0].price;
-            const totalQuota = event.categories.reduce((a, c) => a + c.quota, 0);
+            const minPrice = (event.categories && event.categories.length > 0) ? event.categories[0].price : 0;
+            const totalQuota = (event.categories && event.categories.length > 0) ? event.categories.reduce((a, c) => a + c.quota, 0) : 0;
             return (
               <motion.div layout initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} key={event.id}
                 className="liquid-glass liquid-glass-card rounded-3xl overflow-hidden border border-white/10 flex flex-col justify-between group shadow-xl">

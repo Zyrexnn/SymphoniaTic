@@ -4,8 +4,10 @@ import {
   X, MapPin, Clock, ChevronRight, ShieldCheck, User, Mail,
   CheckCircle2, QrCode, Ticket, BarChart3, Download, Search, Copy, Check, Sparkles,
 } from 'lucide-react';
-import { formatIDR } from './data';
+import { formatIDR, createOrderAPI, lookupTicketAPI } from './data';
 import type { EventItem, TicketCategory, OrderRecord } from './data';
+import { AdminDashboard } from './AdminDashboard';
+
 
 // ════════════════════════════════════════════════════════════════════
 // DETAIL CONCERT MODAL
@@ -65,7 +67,7 @@ export const DetailConcertModal: React.FC<DetailProps> = ({ event, onClose, onBu
             <div className="space-y-4">
               <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-2"><Clock className="w-4 h-4 text-blue-400" /><span>Rangkaian Acara (Rundown Konser)</span></h4>
               <div className="space-y-2.5">
-                {event.rundown.map((item, idx) => (
+                {(event.rundown || []).map((item, idx) => (
                   <div key={idx} className="flex items-start gap-3 sm:gap-4 p-3 sm:p-3.5 rounded-xl bg-white/5 border border-white/10">
                     <span className="font-mono text-blue-400 font-bold shrink-0 w-20 text-xs">{item.time}</span>
                     <span className="text-gray-200 font-medium text-xs">{item.activity}</span>
@@ -78,14 +80,14 @@ export const DetailConcertModal: React.FC<DetailProps> = ({ event, onClose, onBu
             <div className="space-y-4">
               <h4 className="text-sm font-semibold text-white mb-2">Pilihan Kategori Tiket & Benefit Kursi</h4>
               <div className="space-y-3">
-                {event.categories.map((cat) => (
+                {(event.categories || []).map((cat) => (
                   <div key={cat.id} className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
                     <div className="flex items-center justify-between"><span className="font-bold text-white text-sm">{cat.name}</span><span className="font-bold text-blue-400 text-sm">{formatIDR(cat.price)}</span></div>
                     <span className="text-[10px] text-emerald-400 block font-semibold">Sisa Kuota: {cat.quota} Tempat Duduk</span>
                     <div className="pt-2 border-t border-white/5 space-y-1">
                       <span className="text-[10px] text-gray-400 block font-medium">Fasilitas Termasuk:</span>
                       <div className="flex flex-wrap gap-1.5 mt-1">
-                        {cat.benefits.map((b, i) => (<span key={i} className="bg-blue-950/60 text-blue-200 text-[10px] px-2.5 py-0.5 rounded-full border border-blue-800/40">{b}</span>))}
+                        {(cat.benefits || []).map((b, i) => (<span key={i} className="bg-blue-950/60 text-blue-200 text-[10px] px-2.5 py-0.5 rounded-full border border-blue-800/40">{b}</span>))}
                       </div>
                     </div>
                   </div>
@@ -107,7 +109,7 @@ export const DetailConcertModal: React.FC<DetailProps> = ({ event, onClose, onBu
           )}
         </div>
         <div className="p-4 sm:p-6 bg-gray-950 border-t border-white/10 flex items-center justify-between shrink-0">
-          <div><span className="text-[10px] text-gray-400 block font-medium">Harga Mulai Dari</span><span className="text-sm sm:text-base font-bold text-white">{formatIDR(event.categories[0].price)}</span></div>
+          <div><span className="text-[10px] text-gray-400 block font-medium">Harga Mulai Dari</span><span className="text-sm sm:text-base font-bold text-white">{formatIDR(event.categories && event.categories.length > 0 ? event.categories[0].price : 0)}</span></div>
           <div className="flex items-center gap-2 sm:gap-3">
             <button onClick={onClose} className="px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs text-gray-400 hover:text-white transition-all">Tutup</button>
             <button onClick={() => { onBuyTicket(event); onClose(); }}
@@ -131,18 +133,31 @@ export const BookingModal: React.FC<BookingProps> = ({ event, initialCategory, o
   const [quantity, setQuantity] = useState(1);
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userName || !userEmail) return;
-    const num = Math.floor(100000 + Math.random() * 900000);
-    const code = `SYM-${num}`;
-    onSubmit({
-      orderCode: code, eventTitle: event.title, artist: event.artist, venue: event.venue,
-      date: `${event.date} @ ${event.time}`, categoryName: selectedCat.name, quantity,
-      totalPrice: selectedCat.price * quantity, userName, userEmail, qrCode: `QR-SYM-${code}`,
-      status: 'VERIFIED', expiresAt: '30 Menit',
-    });
+    if (!userName || !userEmail || !selectedCat) return;
+    setIsSubmitting(true);
+    try {
+      const res = await createOrderAPI({
+        eventId: String(event.id),
+        ticketCategoryId: selectedCat.id,
+        quantity,
+        userName,
+        userEmail,
+      });
+
+      if (res.success && res.data) {
+        onSubmit(res.data);
+      } else {
+        alert(res.message || 'Gagal membuat pesanan tiket');
+      }
+    } catch (err) {
+      alert('Gagal terhubung ke backend server');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -635,15 +650,24 @@ export const OrdersDrawer: React.FC<OrdersProps> = ({ orders, onClose, onShowTic
   const [foundOrder, setFoundOrder] = useState<OrderRecord | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchCode.trim()) return;
     setHasSearched(true);
-    const q = searchCode.trim().toLowerCase();
-    const match = orders.find(
-      (o) => o.orderCode.toLowerCase() === q
-    );
-    setFoundOrder(match || null);
+    try {
+      const res = await lookupTicketAPI(searchCode.trim());
+      if (res.success && res.data) {
+        setFoundOrder(res.data);
+      } else {
+        const q = searchCode.trim().toLowerCase();
+        const match = orders.find((o) => o.orderCode.toLowerCase() === q);
+        setFoundOrder(match || null);
+      }
+    } catch (err) {
+      const q = searchCode.trim().toLowerCase();
+      const match = orders.find((o) => o.orderCode.toLowerCase() === q);
+      setFoundOrder(match || null);
+    }
   };
 
   return (
@@ -733,43 +757,11 @@ export const OrdersDrawer: React.FC<OrdersProps> = ({ orders, onClose, onShowTic
 };
 
 // ════════════════════════════════════════════════════════════════════
-// ADMIN DRAWER
+// ADMIN DRAWER & PORTAL
 // ════════════════════════════════════════════════════════════════════
-interface AdminProps { onClose: () => void; }
+interface AdminProps { onClose: () => void; onEventsUpdated?: () => void; allEvents?: EventItem[]; }
 
-export const AdminDrawer: React.FC<AdminProps> = ({ onClose }) => (
-  <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-md">
-    <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
-      className="w-full max-w-md bg-[#0f121d] text-white h-full flex flex-col p-6 overflow-y-auto border-l border-white/10 shadow-2xl">
-      <div className="flex items-center justify-between pb-4 border-b border-white/10">
-        <div className="flex items-center gap-2"><BarChart3 className="w-5 h-5 text-blue-500" /><h2 className="text-xl font-bold tracking-tight">Portal Metrik Admin</h2></div>
-        <button onClick={onClose} className="liquid-glass p-2 rounded-xl text-white/80 hover:text-white"><X className="w-4 h-4" /></button>
-      </div>
-      <div className="mt-4 space-y-4 text-xs">
-        <div className="p-4 rounded-2xl bg-blue-950/40 border border-blue-500/30 space-y-1">
-          <span className="text-gray-400 font-medium">Rest API Endpoint:</span>
-          <p className="font-mono text-blue-400 font-semibold">GET /api/v1/admin/dashboard</p>
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          {[
-            ['Total Pendapatan', 'Rp 485.500.000', 'text-emerald-400'],
-            ['Tiket Terjual', '1.420', 'text-white'],
-            ['Sisa Kuota Kursi', '288', 'text-blue-400'],
-            ['Perlu Verifikasi', '12 Order', 'text-amber-400'],
-          ].map(([l, v, c]) => (
-            <div key={l} className="p-3.5 rounded-xl bg-white/5 border border-white/10">
-              <span className="text-[10px] text-gray-400 block font-medium">{l}</span>
-              <span className={`text-base font-bold ${c}`}>{v}</span>
-            </div>
-          ))}
-        </div>
-        <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
-          <h4 className="font-bold text-white">Proteksi Transaksi Basis Data</h4>
-          <p className="text-gray-300 text-[11px] leading-relaxed">
-            Setiap verifikasi pesanan mengeksekusi <code className="text-blue-400 font-mono">db.Begin()</code> dengan penguncian <code className="text-blue-400 font-mono">FOR UPDATE</code> untuk mencegah alokasi ganda kuota saat lonjakan pembelian tiket.
-          </p>
-        </div>
-      </div>
-    </motion.div>
-  </div>
+export const AdminDrawer: React.FC<AdminProps> = ({ onClose, onEventsUpdated, allEvents }) => (
+  <AdminDashboard onClose={onClose} onEventsUpdated={onEventsUpdated} allEvents={allEvents} />
 );
+

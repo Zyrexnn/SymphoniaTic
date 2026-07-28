@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { BoomerangVideoBg } from './BoomerangVideoBg';
-import { CONCERT_EVENTS } from './landing/data';
+import { CONCERT_EVENTS, fetchEventsAPI } from './landing/data';
 import type { EventItem, TicketCategory, OrderRecord } from './landing/data';
 
 import { Header, Hero, Footer } from './landing/Layout';
@@ -29,14 +29,32 @@ export const SymphoniaTicApp: React.FC = () => {
   const [activeSuccessOrder, setActiveSuccessOrder] = useState<OrderRecord | null>(null);
   const [orders, setOrders] = useState<OrderRecord[]>([]);
 
-  const activeTrack = CONCERT_EVENTS[currentTrackIndex];
+  const [liveEvents, setLiveEvents] = useState<EventItem[]>([]);
+
+  const loadLiveEvents = async () => {
+    try {
+      const data = await fetchEventsAPI();
+      if (data && data.length > 0) {
+        setLiveEvents(data);
+      }
+    } catch (err) {
+      console.error('Error fetching live events:', err);
+    }
+  };
+
+  useEffect(() => {
+    loadLiveEvents();
+  }, []);
+
+  const displayEvents = liveEvents.length > 0 ? liveEvents : CONCERT_EVENTS;
+  const activeTrack = displayEvents[currentTrackIndex] || CONCERT_EVENTS[0];
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
     const onTime = () => setCurrentTime(audio.currentTime);
     const onMeta = () => setDuration(audio.duration);
-    const onEnd = () => setCurrentTrackIndex((prev) => (prev + 1) % CONCERT_EVENTS.length);
+    const onEnd = () => setCurrentTrackIndex((prev) => (prev + 1) % displayEvents.length);
     audio.addEventListener('timeupdate', onTime);
     audio.addEventListener('loadedmetadata', onMeta);
     audio.addEventListener('ended', onEnd);
@@ -45,15 +63,15 @@ export const SymphoniaTicApp: React.FC = () => {
       audio.removeEventListener('loadedmetadata', onMeta);
       audio.removeEventListener('ended', onEnd);
     };
-  }, []);
+  }, [displayEvents.length]);
 
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio) return;
+    if (!audio || !activeTrack) return;
     audio.src = activeTrack.audioUrl;
     audio.load();
     if (isPlayingAudio) audio.play().catch(() => setIsPlayingAudio(false));
-  }, [currentTrackIndex]);
+  }, [currentTrackIndex, activeTrack]);
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 40);
@@ -70,6 +88,7 @@ export const SymphoniaTicApp: React.FC = () => {
     setActiveSuccessOrder(order);
     setBookingEvent(null);
     setBookingCategory(null);
+    loadLiveEvents();
   };
 
   const openBooking = (event: EventItem) => {
@@ -110,7 +129,7 @@ export const SymphoniaTicApp: React.FC = () => {
         />
       </div>
 
-      <ConcertCatalog onShowDetail={setDetailEvent} onBuyTicket={openBooking} />
+      <ConcertCatalog events={displayEvents} onShowDetail={setDetailEvent} onBuyTicket={openBooking} />
       <ArtistLineup />
       <SecurityMetrics />
       <ETicketGuide />
@@ -133,8 +152,15 @@ export const SymphoniaTicApp: React.FC = () => {
         {activeDrawer === 'ORDERS' && <OrdersDrawer orders={orders} onClose={() => setActiveDrawer(null)} onShowTicket={setActiveSuccessOrder} />}
       </AnimatePresence>
       <AnimatePresence>
-        {activeDrawer === 'ADMIN' && <AdminDrawer onClose={() => setActiveDrawer(null)} />}
+        {activeDrawer === 'ADMIN' && (
+          <AdminDrawer
+            onClose={() => setActiveDrawer(null)}
+            onEventsUpdated={loadLiveEvents}
+            allEvents={displayEvents}
+          />
+        )}
       </AnimatePresence>
     </div>
   );
 };
+
