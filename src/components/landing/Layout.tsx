@@ -52,7 +52,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="h-7 w-7 rounded-lg bg-blue-600 flex items-center justify-center shrink-0">
             <ShoppingCart className="w-3.5 h-3.5 text-white" strokeWidth={2} />
           </div>
-          <span className="text-xs sm:text-sm font-bold text-gray-900"><span className="hidden sm:inline">E-Ticket </span>({ordersCount})</span>
+          <span className="text-xs sm:text-sm font-bold text-gray-900"><span className="hidden sm:inline">Cek Tiket / Invoice </span>({ordersCount})</span>
         </button>
         <button onClick={onToggleMenu} className="liquid-glass h-9 w-9 rounded-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-200 cursor-pointer md:hidden border border-white/20" aria-label="Toggle menu">
           {isMenuOpen ? <X className="w-5 h-5 text-white" /> : <Menu className="w-5 h-5 text-white" />}

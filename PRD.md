@@ -19,29 +19,33 @@
 Untuk memastikan rilis versi awal yang solid, fungsional, dan dapat diuji secara langsung, pengembangannya dibagi berdasarkan prioritas berikut:
 
 ### 🔴 Phase 1: High Priority (Must-Have for MVP Launch)
-1. **User Authentication & RBAC System**:
-   - Register & Login pelanggan (Customer) dan pengelola (Admin).
-   - Pengamanan endpoint dengan JWT Token & Middleware Guard berdasarkan Role.
-2. **Master Data Management (Admin Only)**:
+1. **Guest Checkout System (No-Login Flow)**:
+   - Pembelian tiket instan tanpa wajib registrasi/login akun.
+   - Form checkout hanya membutuhkan **Nama Lengkap**, **Email**, dan **Nomor WhatsApp/HP**.
+   - Generasi otomatis Kode Pemesanan/Invoice Unik (`SYM-YYYY-XXXXX`).
+2. **Instant E-Receipt & Email Dispatch**:
+   - Pengiriman tanda terima pembayaran / invoice dan E-Ticket otomatis ke email pemesan setelah transaksi dikonfirmasi.
+3. **Download E-Ticket (PDF & PNG Format)**:
+   - Pengunjung dapat mengunduh E-Ticket ber-Kode QR resmi dalam format **PNG** (`html2canvas`) dan **PDF** (`jspdf`) secara langsung dari web.
+4. **Invoice & Ticket Lookup (Cek Tiket Saya)**:
+   - Modul pencarian tiket tanpa login di mana user cukup memasukkan **Kode Invoice** atau **Email** untuk melihat status pesanan dan E-Ticket mereka kapan saja.
+5. **Master Data Management (Admin Only)**:
    - CRUD Data Artis (`artists`).
    - CRUD Data Event Konser (`events`) + Toggle status aktif/non-aktif penjualan tiket.
    - Manajemen Kategori Tiket (`ticket_categories`) beserta penetapan harga dan alokasi kuota awal.
-3. **Transactional Ticket Booking (Customer)**:
-   - Pemesanan tiket dengan batasan maksimal 4 tiket per transaksi (`POST /api/v1/orders`).
-   - Penetapan status awal order menjadi `PENDING` beserta kalkulasi harga total.
-4. **Atomic Quota Deduction & Order Verification (Admin Only)**:
-   - Dashboard daftar order untuk proses verifikasi oleh Admin (`GET /api/v1/admin/orders`).
-   - Approval/Rejection pembayaran (`PATCH /api/v1/admin/orders/:id/verify`) dengan **Database Transaction (`db.Begin()`)** & **Row Locking (`FOR UPDATE`)**.
-   - Generasi otomatis QR Code `QR-SYM-[ORDER_CODE]` setelah order disetujui (`VERIFIED`).
-5. **Basic Admin Metrics Dashboard**:
-   - Tampilan ringkasan total pendapatan (*total revenue*), total tiket terpotong (*tickets sold*), dan sisa kuota yang tersedia (`GET /api/v1/admin/dashboard`).
+6. **Atomic Quota Deduction & Transactional Security**:
+   - Transaksi pemesanan tiket dengan batasan maksimal 4 tiket per transaksi.
+   - Penguncian baris basis data (`FOR UPDATE`) pada backend Go untuk menjamin tidak ada *overbooking* saat *ticket war*.
+7. **Basic Admin Dashboard & Verification**:
+   - Dashboard daftar order untuk proses verifikasi/approval pembayaran oleh Admin (`GET /api/v1/admin/orders`).
+   - Generasi otomatis QR Code `QR-SYM-[ORDER_CODE]` setelah order diverifikasi.
 
 ---
 
 ### 🟡 Phase 2: Medium Priority (Post-MVP Enhancements)
-1. Otomatisasi pembatalan order `PENDING` yang kedaluwarsa (`expires_at` > 30 menit).
-2. Tampilan katalog event & riwayat pesanan tiket di sisi Customer (Frontend Landing Page).
-3. Halaman rincian E-Ticket dengan scanner QR Code untuk validasi di pintu masuk lokasi acara.
+1. User Authentication (Optional Registered Customer Portal & History).
+2. Otomatisasi pembatalan order `PENDING` yang kedaluwarsa (`expires_at` > 30 menit).
+3. Scanner QR Code E-Ticket untuk petugas check-in di lokasi konser.
 
 ---
 
@@ -117,8 +121,11 @@ SymphoniaTic/
 
 ### 4.5 Orders (`orders`)
 - `id` (UUID / Integer, Primary Key)
-- `order_code` (String, Unique, Indexed)
-- `user_id` (Foreign Key -> Users.id, Indexed)
+- `order_code` (String, Unique, Indexed, e.g., `SYM-2026-X8K9L`)
+- `customer_name` (String, Required for Guest Checkout)
+- `customer_email` (String, Required for Guest Checkout, Indexed)
+- `customer_phone` (String, Required for Guest Checkout)
+- `user_id` (Foreign Key -> Users.id, Nullable for Guest Checkout)
 - `ticket_category_id` (Foreign Key -> TicketCategories.id, Indexed)
 - `quantity` (Integer, Max 4 per transaction)
 - `total_price` (Float/Decimal)
@@ -142,13 +149,22 @@ All API responses must follow this format:
 }
 ```
 
+### Public Ticket & Order Routes (`/api/v1/public`)
+- `POST /api/v1/orders` (Public / Guest Checkout)
+  - Body: `{ customer_name, customer_email, customer_phone, ticket_category_id, quantity }`
+  - Validation: Quantity between 1 and 4, valid email format.
+  - Action: Create order, generate `order_code`, send receipt/e-ticket email asynchronously, and set `status = PENDING`.
+- `GET /api/v1/tickets/lookup?code=SYM-2026-X8K9L` (Public / No-Login Ticket Check)
+  - Query: `code` (Order Code) or `email`
+  - Action: Return order status, ticket details, and QR Code string for guest ticket lookup.
+
 ### Auth Routes (`/api/v1/auth`)
 - `POST /api/v1/auth/register`
   - Body: `{ name, email, password, role }`
-  - Action: Registers customer account, hashes password using bcrypt.
+  - Action: Registers admin/internal account, hashes password using bcrypt.
 - `POST /api/v1/auth/login`
   - Body: `{ email, password }`
-  - Action: Authenticates user and returns JWT Token (1-day expiry) + User Info & Role.
+  - Action: Authenticates admin user and returns JWT Token (1-day expiry) + User Info & Role.
 
 ### Master Data Routes (Admin Only)
 - `GET /api/v1/artists` & `POST /api/v1/artists` (CRUD Artists)
