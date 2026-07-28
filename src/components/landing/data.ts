@@ -34,7 +34,9 @@ export interface EventItem {
 }
 
 export interface OrderRecord {
+  id: string;
   orderCode: string;
+  eventId: string;
   eventTitle: string;
   artist: string;
   venue: string;
@@ -45,17 +47,24 @@ export interface OrderRecord {
   userName: string;
   userEmail: string;
   qrCode: string;
-  status: 'PENDING' | 'VERIFIED';
-  expiresAt: string;
+  status: string;
+  paymentMethod: string;
+  createdAt: string;
 }
 
 // ─── Utils ───
-export const formatIDR = (amount: number): string => {
+export const formatIDR = (amount: any): string => {
+  let num = 0;
+  if (typeof amount === 'number') {
+    num = isNaN(amount) ? 0 : amount;
+  } else if (typeof amount === 'string') {
+    num = parseFloat(amount) || 0;
+  }
   return new Intl.NumberFormat('id-ID', {
     style: 'currency',
     currency: 'IDR',
     maximumFractionDigits: 0,
-  }).format(amount);
+  }).format(num);
 };
 
 export const formatTime = (secs: number): string => {
@@ -208,3 +217,249 @@ export const NAV_PAGES = [
   { label: 'Panduan E-Ticket', href: '#guide' },
   { label: 'FAQ', href: '#faq' },
 ];
+
+// ─── Admin API Types & Helpers ───
+export interface AdminMetricsData {
+  totalRevenue: number;
+  ticketsSold: number;
+  remainingQuota: number;
+  totalEvents: number;
+  totalOrders: number;
+  eventStats?: { eventId: string; title: string; revenue: number; ticketsSold: number }[];
+  recentOrders?: { id: string; orderCode: string; eventTitle: string; quantity: number; totalPrice: number; userName: string; status: string; createdAt: string }[];
+}
+
+export interface CreateEventInput {
+  title: string;
+  artist: string;
+  venue: string;
+  date: string;
+  time: string;
+  category?: string;
+  categoryBadgeColor?: string;
+  image: string;
+  audioUrl?: string;
+  conductor?: string;
+  openGate?: string;
+  address?: string;
+  organizer?: string;
+  subtitle?: string;
+  description: string;
+  rundown?: RundownItem[];
+  categories: { name: string; price: number; quota: number }[];
+}
+
+export const getApiBaseUrl = () => {
+  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_BASE_URL) {
+    return import.meta.env.PUBLIC_API_BASE_URL;
+  }
+  if (typeof window !== 'undefined' && (window as any).PUBLIC_API_BASE_URL) {
+    return (window as any).PUBLIC_API_BASE_URL;
+  }
+  return 'http://localhost:8082/api/v1';
+};
+
+export const fetchEventsAPI = async (): Promise<EventItem[]> => {
+  try {
+    const res = await fetch(`${getApiBaseUrl()}/events`);
+    const data = await res.json();
+    if (data.success && Array.isArray(data.data)) {
+      return data.data.map((evt: any, idx: number) => ({
+        id: evt.id || idx + 1,
+        title: evt.title,
+        subtitle: evt.subtitle || evt.artist || 'Pertunjukan Mahakarya Simfoni',
+        artist: evt.artist,
+        conductor: evt.conductor || '-',
+        venue: evt.venue,
+        address: evt.address || evt.venue,
+        date: evt.date,
+        time: evt.time,
+        openGate: evt.openGate || '18:00 WIB',
+        category: evt.category || 'SIMFONI UTAMA',
+        categoryBadgeColor: evt.categoryBadgeColor || 'bg-blue-900/80 text-blue-200 border-blue-500/40',
+        image: evt.image || 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?q=80&w=1000&auto=format&fit=crop',
+        audioUrl: evt.audioUrl || '',
+        organizer: evt.organizer || 'SymphoniaTic Production',
+        description: evt.description,
+        rundown: Array.isArray(evt.rundown) && evt.rundown.length > 0
+          ? evt.rundown
+          : [
+              { time: '18:00 WIB', activity: 'Open Gate & Registrasi Tiket' },
+              { time: '19:30 WIB', activity: 'Pertunjukan Utama' },
+              { time: '21:30 WIB', activity: 'Selesai & Curtain Call' },
+            ],
+        categories: (evt.categories || []).map((cat: any) => ({
+          id: cat.id,
+          name: cat.name,
+          price: typeof cat.price === 'string' ? parseFloat(cat.price) : cat.price,
+          quota: cat.remainingQuota !== undefined ? cat.remainingQuota : cat.quota,
+          benefits: ['Akustik Jernih', 'Tempat Duduk Bernomor', 'Pass Digital']
+        }))
+      }));
+    }
+    return [];
+  } catch (err) {
+    console.error('Fetch events API error:', err);
+    return [];
+  }
+};
+
+export const createOrderAPI = async (payload: {
+  eventId: string;
+  ticketCategoryId: string;
+  quantity: number;
+  userName: string;
+  userEmail: string;
+}) => {
+  const res = await fetch(`${getApiBaseUrl()}/orders`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return res.json();
+};
+
+export const lookupTicketAPI = async (code: string) => {
+  const res = await fetch(`${getApiBaseUrl()}/tickets/lookup?code=${encodeURIComponent(code)}`);
+  return res.json();
+};
+
+export const adminLoginAPI = async (username: string, password: string) => {
+  const res = await fetch(`${getApiBaseUrl()}/admin/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password }),
+  });
+  return res.json();
+};
+
+export const fetchAdminMetricsAPI = async (): Promise<AdminMetricsData | null> => {
+  try {
+    const res = await fetch(`${getApiBaseUrl()}/admin/dashboard`);
+    const data = await res.json();
+    if (data.success && data.data) {
+      const d = data.data;
+      return {
+        totalRevenue: typeof d.totalRevenue === 'string' ? parseFloat(d.totalRevenue) : (d.totalRevenue || 0),
+        ticketsSold: Number(d.ticketsSold || 0),
+        remainingQuota: Number(d.remainingQuota || 0),
+        totalEvents: Number(d.totalEvents || 0),
+        totalOrders: Number(d.totalOrders || 0),
+        eventStats: Array.isArray(d.eventStats) ? d.eventStats.map((st: any) => ({
+          eventId: String(st.eventId || ''),
+          title: String(st.title || 'Konser'),
+          revenue: typeof st.revenue === 'string' ? parseFloat(st.revenue) : (st.revenue || 0),
+          ticketsSold: Number(st.ticketsSold || 0),
+        })) : [],
+        recentOrders: Array.isArray(d.recentOrders) ? d.recentOrders.map((ro: any) => ({
+          id: String(ro.id || ''),
+          orderCode: String(ro.orderCode || ''),
+          eventTitle: String(ro.eventTitle || 'Konser'),
+          quantity: Number(ro.quantity || 1),
+          totalPrice: typeof ro.totalPrice === 'string' ? parseFloat(ro.totalPrice) : (ro.totalPrice || 0),
+          userName: String(ro.userName || 'Guest'),
+          status: String(ro.status || 'VERIFIED'),
+          createdAt: String(ro.createdAt || ''),
+        })) : [],
+      };
+    }
+    return null;
+  } catch (err) {
+    console.error('Fetch admin metrics error:', err);
+    return null;
+  }
+};
+
+export const createEventAPI = async (payload: CreateEventInput) => {
+  const res = await fetch(`${getApiBaseUrl()}/admin/events`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return res.json();
+};
+
+export const updateEventAPI = async (eventId: string, payload: Partial<CreateEventInput>) => {
+  const res = await fetch(`${getApiBaseUrl()}/admin/events/${eventId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return res.json();
+};
+
+export const deleteEventAPI = async (eventId: string) => {
+  const res = await fetch(`${getApiBaseUrl()}/admin/events/${eventId}`, {
+    method: 'DELETE',
+  });
+  return res.json();
+};
+
+export const createTicketCategoryAPI = async (eventId: string, payload: { name: string; price: number; quota: number }) => {
+  const res = await fetch(`${getApiBaseUrl()}/admin/events/${eventId}/categories`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return res.json();
+};
+
+export const updateTicketCategoryAPI = async (catId: string, payload: { name: string; price: number; quota: number }) => {
+  const res = await fetch(`${getApiBaseUrl()}/admin/categories/${catId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return res.json();
+};
+
+export const deleteTicketCategoryAPI = async (catId: string) => {
+  const res = await fetch(`${getApiBaseUrl()}/admin/categories/${catId}`, {
+    method: 'DELETE',
+  });
+  return res.json();
+};
+
+export const fetchAdminOrdersAPI = async (search = '', status = '') => {
+  try {
+    const params = new URLSearchParams();
+    if (search) params.append('search', search);
+    if (status) params.append('status', status);
+    const res = await fetch(`${getApiBaseUrl()}/admin/orders?${params.toString()}`);
+    const data = await res.json();
+    if (data.success && Array.isArray(data.data)) {
+      return data.data.map((o: any) => ({
+        id: String(o.id || ''),
+        orderCode: String(o.orderCode || ''),
+        eventId: String(o.eventId || ''),
+        eventTitle: String(o.eventTitle || ''),
+        artist: String(o.artist || ''),
+        venue: String(o.venue || ''),
+        date: String(o.date || ''),
+        categoryName: String(o.categoryName || ''),
+        quantity: Number(o.quantity || 1),
+        totalPrice: typeof o.totalPrice === 'string' ? parseFloat(o.totalPrice) : (o.totalPrice || 0),
+        userName: String(o.userName || ''),
+        userEmail: String(o.userEmail || ''),
+        qrCode: String(o.qrCode || ''),
+        status: String(o.status || 'VERIFIED'),
+        paymentMethod: String(o.paymentMethod || 'SANDBOX_PAYMENT'),
+        createdAt: String(o.createdAt || ''),
+      }));
+    }
+    return [];
+  } catch (err) {
+    console.error('Fetch admin orders error:', err);
+    return [];
+  }
+};
+
+export const updateOrderStatusAPI = async (orderId: string, status: string) => {
+  const res = await fetch(`${getApiBaseUrl()}/admin/orders/${orderId}/status`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status }),
+  });
+  return res.json();
+};
+
