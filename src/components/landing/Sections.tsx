@@ -42,11 +42,11 @@ export const BentoSection: React.FC<SectionProps> = ({ events, onBuyTicket }) =>
   return (
     <>
       <section
-        id="bento"
+        id="concerts"
         className="mx-auto max-w-[1400px] px-10 pb-[120px]"
       >
         {/* Desktop: bento grid */}
-        <div className="hidden md:grid grid-cols-12 gap-5 auto-rows-[200px]">
+        <div className="hidden md:grid grid-cols-12 gap-5 auto-rows-[220px]">
           {/* FEATURED — 8 col, 2 rows */}
           <div
             className="col-span-8 row-span-2 relative overflow-hidden cursor-pointer group"
@@ -69,14 +69,12 @@ export const BentoSection: React.FC<SectionProps> = ({ events, onBuyTicket }) =>
           </div>
 
           {/* ARTIST — 4 col, 2 rows */}
-          <div className="col-span-4 row-span-2 relative overflow-hidden">
+          <div id="lineup" className="col-span-4 row-span-2 relative overflow-hidden">
             <img src={ARTISTS_LINEUP[0].image} alt={ARTISTS_LINEUP[0].name}
               className="absolute inset-0 w-full h-full object-cover opacity-50" />
             <div className="absolute inset-0 bg-[linear-gradient(to_top,#171717_0%,transparent_50%)]" />
-            <div className="absolute bottom-0 left-0 right-0 p-7">
-              <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mb-1.5">
-                {ARTISTS_LINEUP[0].genre}
-              </p>
+            <div className="absolute bottom-0 left-0 right-0 p-6">
+              <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mb-1.5">Artis Musim Ini</p>
               <h3 className="text-xl tracking-[-0.01em] font-light text-white">
                 {ARTISTS_LINEUP[0].name}
               </h3>
@@ -100,14 +98,14 @@ export const BentoSection: React.FC<SectionProps> = ({ events, onBuyTicket }) =>
           )}
 
           {/* METRIC — 4 col */}
-          <div className="col-span-4 flex flex-col justify-center px-2">
+          <div id="ticket-war" className="col-span-4 flex flex-col justify-center px-4 py-6 border border-white/[0.06] bg-[#171717]">
             <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mb-2">Akurasi Gate</p>
             <p className="text-[48px] leading-[1] tracking-[-0.04em] font-light text-white">99,8%</p>
             <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mt-2">Pemindaian tanpa overbooking.</p>
           </div>
 
           {/* STEP 1 — 3 col */}
-          <div className="col-span-3 flex flex-col justify-end px-2">
+          <div id="guide" className="col-span-3 flex flex-col justify-end px-4 py-6 border border-white/[0.06] bg-[#171717]">
             <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mb-1.5">01</p>
             <p className="text-xl tracking-[-0.01em] font-light text-white leading-[1.3]">Pilih Konser</p>
             <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mt-1.5">Maksimal 4 tiket per transaksi.</p>
@@ -130,74 +128,55 @@ export const BentoSection: React.FC<SectionProps> = ({ events, onBuyTicket }) =>
           )}
 
           {/* STEP 2 — 4 col */}
-          <div className="col-span-4 flex flex-col justify-end px-2">
+          <div className="col-span-4 flex flex-col justify-end px-4 py-6 border border-white/[0.06] bg-[#171717]">
             <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mb-1.5">02</p>
             <p className="text-xl tracking-[-0.01em] font-light text-white leading-[1.3]">Verifikasi Instan</p>
             <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mt-1.5">Sistem atomic menerbitkan kode transaksi.</p>
           </div>
 
           {/* STEP 3 — 4 col */}
-          <div className="col-span-4 flex flex-col justify-end px-2">
+          <div className="col-span-4 flex flex-col justify-end px-4 py-6 border border-white/[0.06] bg-[#171717]">
             <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mb-1.5">03</p>
             <p className="text-xl tracking-[-0.01em] font-light text-white leading-[1.3]">Tunjukkan QR Code</p>
             <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mt-1.5">E-Ticket dipindai di pintu masuk hall.</p>
           </div>
+        </div>
 
-          {/* ARTIST 2 — 3 col */}
-          {ARTISTS_LINEUP[1] && (
-            <div className="col-span-3 relative overflow-hidden">
-              <img src={ARTISTS_LINEUP[1].image} alt={ARTISTS_LINEUP[1].name}
-                className="absolute inset-0 w-full h-full object-cover opacity-40" />
-              <div className="absolute inset-0 bg-[linear-gradient(to_top,#171717_0%,transparent_50%)]" />
-              <div className="absolute bottom-0 left-0 right-0 p-5">
-                <p className="text-base font-light tracking-[-0.05px] text-white">{ARTISTS_LINEUP[1].name}</p>
+        {/* Dedicated FAQ Section to prevent layout collision */}
+        <div id="faq" className="mt-20 border-t border-white/[0.06] pt-12">
+          <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mb-8 uppercase">Pertanyaan Umum (FAQ)</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+            {FAQS.map((faq, i) => (
+              <div key={i} className="border-b border-white/[0.06] pb-4">
+                <button
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  className="w-full flex items-center justify-between py-2 text-left cursor-pointer hover:opacity-60 transition-opacity bg-transparent border-none"
+                >
+                  <span className="text-lg font-light tracking-[-0.05px] text-white">
+                    {faq.q}
+                  </span>
+                  <ChevronDown size={16} className="text-[#9a9a9a] shrink-0 transition-transform duration-200" style={{ transform: openFaq === i ? 'rotate(180deg)' : 'none' }} />
+                </button>
+                <AnimatePresence>
+                  {openFaq === i && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden"
+                    >
+                      <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] leading-[1.6] pt-2 pb-3">{faq.a}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-            </div>
-          )}
-
-          {/* REVENUE — 3 col */}
-          <div className="col-span-3 flex flex-col justify-center px-2">
-            <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mb-1.5">Total Pendapatan</p>
-            <p className="text-[32px] leading-[1.2] tracking-[-0.03em] font-light text-white">Rp 485M</p>
-            <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mt-1.5">1.420 dari 1.708 kuota.</p>
-          </div>
-
-          {/* FAQ — 6 col */}
-          <div className="col-span-6 flex flex-col justify-center px-2">
-            <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mb-3">Pertanyaan Umum</p>
-            <div>
-              {FAQS.slice(0, 3).map((faq, i) => (
-                <div key={i} className="border-b border-white/[0.06]">
-                  <button
-                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                    className="w-full flex items-center justify-between py-3 text-left cursor-pointer hover:opacity-60 transition-opacity bg-transparent border-none"
-                  >
-                    <span className="text-base font-light tracking-[-0.05px] text-white">
-                      {faq.q.length > 45 ? faq.q.slice(0, 45) + '…' : faq.q}
-                    </span>
-                    <ChevronDown size={14} className="text-[#9a9a9a] shrink-0 transition-transform duration-200" style={{ transform: openFaq === i ? 'rotate(180deg)' : 'none' }} />
-                  </button>
-                  <AnimatePresence>
-                    {openFaq === i && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="overflow-hidden"
-                      >
-                        <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] leading-[1.6] pb-3">{faq.a}</p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              ))}
-            </div>
+            ))}
           </div>
         </div>
 
         {/* Mobile: stacked layout */}
-        <div className="md:hidden flex flex-col gap-5">
+        <div className="md:hidden flex flex-col gap-5 mt-10">
           {featured && (
             <div className="relative overflow-hidden h-[280px] cursor-pointer group"
               onClick={() => goToConcert(featured)}

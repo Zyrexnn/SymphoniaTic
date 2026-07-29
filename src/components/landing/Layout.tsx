@@ -27,6 +27,15 @@ export const Header: React.FC<HeaderProps> = ({
           <a
             key={p.label}
             href={p.href}
+            onClick={(e) => {
+              if (p.href.startsWith('#')) {
+                e.preventDefault();
+                const target = document.querySelector(p.href);
+                if (target) {
+                  target.scrollIntoView({ behavior: 'smooth' });
+                }
+              }
+            }}
             className={`text-base font-light tracking-[-0.05px] text-white pb-2.5 hover:opacity-60 transition-opacity ${
               i === 0 ? 'border-b border-white' : 'border-b border-transparent'
             }`}
@@ -72,7 +81,16 @@ export const Header: React.FC<HeaderProps> = ({
               <a
                 key={p.label}
                 href={p.href}
-                onClick={onToggleMenu}
+                onClick={(e) => {
+                  onToggleMenu();
+                  if (p.href.startsWith('#')) {
+                    e.preventDefault();
+                    const target = document.querySelector(p.href);
+                    if (target) {
+                      target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }
+                }}
                 className="py-3 text-base font-light tracking-[-0.05px] text-white hover:opacity-60 transition-opacity"
               >
                 {p.label}
