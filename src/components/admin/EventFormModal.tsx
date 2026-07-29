@@ -6,7 +6,7 @@ import type { EventItem, RundownItem } from '../landing/data';
 export interface EventFormData {
   title: string; artist: string; venue: string; date: string; time: string;
   category: string; categoryBadgeColor: string; image: string; description: string;
-  conductor: string; subtitle: string; openGate: string; address: string;
+  conductor: string; subtitle: string; openGate: string; address: string; googleMapsUrl: string;
   organizer: string; initialCatName: string; initialCatPrice: number; initialCatQuota: number;
   rundown: RundownItem[];
 }
@@ -36,7 +36,8 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
         date: form.date, time: form.time, category: form.category,
         categoryBadgeColor: form.categoryBadgeColor, image: form.image,
         conductor: form.conductor, subtitle: form.subtitle, openGate: form.openGate,
-        address: form.address, organizer: form.organizer, description: form.description,
+        address: form.address, googleMapsUrl: form.googleMapsUrl, organizer: form.organizer, description: form.description,
+        rundown: form.rundown || [],
       });
     }
     onSubmit(e);
@@ -90,6 +91,7 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
                 <InputField label="Alamat Lengkap Venue" value={form.address} onChange={(v) => update({ address: v })} placeholder="Jl. Industri Blok B14 No.1, Kemayoran" />
               </div>
             </div>
+            <InputField label="Custom Google Maps Embed / Search URL (Opsional)" value={form.googleMapsUrl} onChange={(v) => update({ googleMapsUrl: v })} placeholder="https://maps.google.com/maps?q=..." />
             <InputField label="Penyelenggara / Organizer" value={form.organizer} onChange={(v) => update({ organizer: v })} placeholder="SymphoniaTic Production" />
           </div>
 

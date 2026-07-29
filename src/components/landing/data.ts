@@ -20,6 +20,7 @@ export interface EventItem {
   conductor: string;
   venue: string;
   address: string;
+  googleMapsUrl?: string;
   date: string;
   time: string;
   openGate: string;
@@ -272,6 +273,7 @@ export const fetchEventsAPI = async (): Promise<EventItem[]> => {
         conductor: evt.conductor || '-',
         venue: evt.venue,
         address: evt.address || evt.venue,
+        googleMapsUrl: evt.googleMapsUrl || '',
         date: evt.date,
         time: evt.time,
         openGate: evt.openGate || '18:00 WIB',

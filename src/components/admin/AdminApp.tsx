@@ -19,7 +19,7 @@ const EMPTY_EVENT_FORM = {
   title: '', artist: '', venue: '', date: '', time: '',
   category: 'SIMFONI UTAMA',
   categoryBadgeColor: 'bg-blue-900/80 text-blue-200 border-blue-500/40',
-  image: '', description: '', conductor: '', subtitle: '', openGate: '', address: '',
+  image: '', description: '', conductor: '', subtitle: '', openGate: '', address: '', googleMapsUrl: '',
   organizer: 'SymphoniaTic Production',
   initialCatName: 'VIP Pit', initialCatPrice: 1000000, initialCatQuota: 50,
   rundown: [
@@ -351,8 +351,13 @@ export const AdminApp: React.FC = () => {
                   categoryBadgeColor: evt.categoryBadgeColor, image: evt.image,
                   conductor: evt.conductor || '', subtitle: evt.subtitle || '',
                   openGate: evt.openGate || '', address: evt.address || '',
+                  googleMapsUrl: evt.googleMapsUrl || '',
                   organizer: evt.organizer || '', description: evt.description || '',
                   initialCatName: '', initialCatPrice: 0, initialCatQuota: 0,
+                  rundown: evt.rundown && evt.rundown.length > 0 ? [...evt.rundown] : [
+                    { time: '18:00 WIB', activity: 'Registrasi & Open Gate' },
+                    { time: '19:30 WIB', activity: 'Pertunjukan Utama' }
+                  ],
                 });
               }}
               onDeleteEvent={handleDeleteEvent}

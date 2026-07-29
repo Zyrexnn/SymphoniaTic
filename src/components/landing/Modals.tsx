@@ -142,83 +142,117 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
   const drawTicketCanvas = (): HTMLCanvasElement => {
     const canvas = document.createElement('canvas');
     const width = 800;
-    const height = 1000;
+    const height = 1100;
     canvas.width = width;
     canvas.height = height;
     const ctx = canvas.getContext('2d');
     if (!ctx) return canvas;
 
+    // Background Canvas
     ctx.fillStyle = '#171717';
     ctx.fillRect(0, 0, width, height);
 
+    // Border Frame
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(20, 20, width - 40, height - 40);
+
+    // Header Branding
     ctx.fillStyle = '#ffffff';
-    ctx.font = '600 36px Inter, system-ui, sans-serif';
-    ctx.fillText('SymphoniaTic Pass', 60, 100);
+    ctx.font = '600 34px Inter, system-ui, sans-serif';
+    ctx.fillText('SymphoniaTic Pass', 50, 80);
 
     ctx.fillStyle = '#9a9a9a';
-    ctx.font = '300 20px Inter, system-ui, sans-serif';
-    ctx.fillText('VERIFIED', 600, 100);
+    ctx.font = '300 16px Inter, system-ui, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText('VERIFIED E-TICKET', 750, 80);
+    ctx.textAlign = 'left';
 
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
     ctx.beginPath();
-    ctx.moveTo(60, 130);
-    ctx.lineTo(740, 130);
+    ctx.moveTo(50, 105);
+    ctx.lineTo(750, 105);
     ctx.stroke();
 
+    // Event Info
     ctx.fillStyle = '#9a9a9a';
     ctx.font = '300 12px sans-serif';
-    ctx.fillText('PERTUNJUKAN RESMI', 60, 140);
+    ctx.fillText('PERTUNJUKAN RESMI', 50, 130);
 
     ctx.fillStyle = '#ffffff';
-    ctx.font = '300 28px sans-serif';
-    ctx.fillText(order.eventTitle, 60, 180);
+    ctx.font = '400 26px sans-serif';
+    ctx.fillText(order.eventTitle, 50, 165);
 
     ctx.fillStyle = '#9a9a9a';
-    ctx.font = '300 16px sans-serif';
-    ctx.fillText(order.artist, 60, 210);
+    ctx.font = '300 15px sans-serif';
+    ctx.fillText(order.artist, 50, 192);
 
     const drawInfo = (y: number, label: string, value: string) => {
       ctx.fillStyle = '#9a9a9a';
       ctx.font = '300 11px sans-serif';
-      ctx.fillText(label.toUpperCase(), 60, y);
+      ctx.fillText(label.toUpperCase(), 50, y);
       ctx.fillStyle = '#ffffff';
-      ctx.font = '300 16px sans-serif';
-      ctx.fillText(value, 60, y + 22);
+      ctx.font = '300 15px sans-serif';
+      ctx.fillText(value, 50, y + 20);
     };
 
-    drawInfo(260, 'Tanggal & Waktu', order.date);
-    drawInfo(320, 'Venue', order.venue);
-    drawInfo(380, 'Pemegang Tiket', order.userName);
-    drawInfo(440, 'Kategori', `${order.categoryName} (${order.quantity}x)`);
+    drawInfo(235, 'Tanggal & Waktu', order.date);
+    drawInfo(290, 'Pemegang Tiket', order.userName);
+    drawInfo(345, 'Kategori Tiket', `${order.categoryName} (${order.quantity}x Tiket)`);
 
+    // Divider Line
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
     ctx.setLineDash([6, 6]);
     ctx.beginPath();
-    ctx.moveTo(60, 500);
-    ctx.lineTo(width - 60, 500);
+    ctx.moveTo(50, 395);
+    ctx.lineTo(width - 50, 395);
     ctx.stroke();
     ctx.setLineDash([]);
 
-    const qrSize = 200;
+    // Map Location Box Section
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(50, 425, 700, 180);
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(50, 425, 700, 180);
+
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = '600 15px sans-serif';
+    ctx.fillText('📍 PETUNJUK LOKASI VENUE & MAPS', 75, 460);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '400 16px sans-serif';
+    ctx.fillText(order.venue, 75, 492);
+
+    ctx.fillStyle = '#9a9a9a';
+    ctx.font = '300 13px sans-serif';
+    ctx.fillText(`Navigasi Peta: maps.google.com/?q=${encodeURIComponent(order.venue)}`, 75, 522);
+
+    ctx.fillStyle = '#64748b';
+    ctx.font = '300 11px sans-serif';
+    ctx.fillText('Tunjukkan dokumen E-Ticket ini saat memasuki gerbang pemeriksaan (Open Gate).', 75, 570);
+
+    // QR Code Section
+    const qrSize = 190;
     const qrX = (width - qrSize) / 2;
-    const qrY = 530;
+    const qrY = 640;
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(qrX, qrY, qrSize, qrSize);
 
     ctx.fillStyle = '#171717';
     const drawFinder = (fx: number, fy: number) => {
-      ctx.fillRect(fx, fy, 40, 40);
+      ctx.fillRect(fx, fy, 38, 38);
       ctx.fillStyle = '#ffffff';
-      ctx.fillRect(fx + 6, fy + 6, 28, 28);
+      ctx.fillRect(fx + 5, fy + 5, 28, 28);
       ctx.fillStyle = '#171717';
-      ctx.fillRect(fx + 12, fy + 12, 16, 16);
+      ctx.fillRect(fx + 10, fy + 10, 18, 18);
     };
 
-    const qrPad = 20;
+    const qrPad = 18;
     const qrInner = qrSize - qrPad * 2;
     drawFinder(qrX + qrPad, qrY + qrPad);
-    drawFinder(qrX + qrPad + qrInner - 40, qrY + qrPad);
-    drawFinder(qrX + qrPad, qrY + qrPad + qrInner - 40);
+    drawFinder(qrX + qrPad + qrInner - 38, qrY + qrPad);
+    drawFinder(qrX + qrPad, qrY + qrPad + qrInner - 38);
 
     ctx.fillStyle = '#171717';
     const gridSize = 10;
@@ -235,19 +269,15 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
     ctx.fillStyle = '#9a9a9a';
     ctx.font = '300 20px monospace';
     ctx.textAlign = 'center';
-    ctx.fillText(order.orderCode, width / 2, 775);
-
-    ctx.fillStyle = '#38bdf8';
-    ctx.font = '300 13px sans-serif';
-    ctx.fillText(`📍 Map Guide: maps.google.com/?q=${encodeURIComponent(order.venue)}`, width / 2, 810);
+    ctx.fillText(order.orderCode, width / 2, 870);
 
     ctx.fillStyle = '#9a9a9a';
     ctx.font = '300 12px sans-serif';
-    ctx.fillText('Tunjukkan QR Code ini di pintu pemeriksaan gate venue', width / 2, 835);
+    ctx.fillText('Pindai QR Code ini pada scanner gate di pintu masuk hall', width / 2, 905);
 
     ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
     ctx.font = '300 11px sans-serif';
-    ctx.fillText('SYMPHONIATIC OFFICIAL E-TICKET PASS & MAP GUIDE', width / 2, 930);
+    ctx.fillText('SYMPHONIATIC OFFICIAL E-TICKET PASS & MAP GUIDE', width / 2, 1040);
 
     return canvas;
   };
@@ -279,13 +309,13 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
       const pdfWidth = pdf.internal.pageSize.getWidth();
-      const imgWidth = 170;
+      const imgWidth = 180;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
       const xPos = (pdfWidth - imgWidth) / 2;
 
       pdf.setFillColor(23, 23, 23);
       pdf.rect(0, 0, 210, 297, 'F');
-      pdf.addImage(imgData, 'PNG', xPos, 15, imgWidth, imgHeight);
+      pdf.addImage(imgData, 'PNG', xPos, 10, imgWidth, imgHeight);
       pdf.save(`E-Ticket-${order.orderCode}.pdf`);
     } catch (err) {
       console.error('PDF download error:', err);
