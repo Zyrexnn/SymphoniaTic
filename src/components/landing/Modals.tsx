@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import {
   X, ChevronRight,
-  CheckCircle2, QrCode, Ticket, Download, Search, Copy, Check,
+  CheckCircle2, QrCode, Ticket, Download, Search, Copy, Check, Mail,
 } from 'lucide-react';
 import { formatIDR, createOrderAPI, lookupTicketAPI } from './data';
 import type { EventItem, TicketCategory, OrderRecord } from './data';
@@ -346,6 +346,22 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
               {copied ? <Check className="w-3.5 h-3.5" strokeWidth={1} /> : <Copy className="w-3.5 h-3.5" strokeWidth={1} />}
               <span>{copied ? 'Tersalin!' : 'Salin'}</span>
             </button>
+          </div>
+        </div>
+
+        {/* Mailpit Info Banner */}
+        <div style={{ padding: '16px 24px 0' }}>
+          <div className="flex items-start gap-3 p-3 text-left"
+            style={{ background: 'rgba(99, 102, 241, 0.08)', border: '1px solid rgba(99, 102, 241, 0.2)', borderRadius: 8 }}>
+            <Mail className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" strokeWidth={1.5} />
+            <div style={{ fontSize: 12, lineHeight: 1.4 }}>
+              <p style={{ color: '#e2e8f0', fontWeight: 400, margin: 0 }}>
+                E-Ticket telah dikirim ke <span className="text-indigo-300 font-medium">{order.userEmail}</span>.
+              </p>
+              <p style={{ color: '#94a3b8', marginTop: 2, margin: 0 }}>
+                Cek kotak masuk testing email lokal di Mailpit UI: <a href="http://localhost:8025" target="_blank" rel="noreferrer" className="text-indigo-400 underline hover:text-indigo-300">http://localhost:8025</a>
+              </p>
+            </div>
           </div>
         </div>
 
