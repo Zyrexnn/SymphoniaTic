@@ -23,37 +23,20 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   activeTab, onTabChange, onLogout, eventsCount, ordersCount, totalRevenue,
 }) => (
   <aside
-    style={{
-      width: 240,
-      borderRight: '1px solid rgba(255,255,255,0.06)',
-      background: '#171717',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-between',
-      minHeight: '100vh',
-      padding: 24,
-      flexShrink: 0,
-    }}
-    className="hidden md:flex"
+    className="hidden md:flex flex-col justify-between min-h-screen w-60 border-r border-white/10 bg-[#171717] p-6 shrink-0"
   >
     <div>
-      <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '0 8px', marginBottom: 24, textDecoration: 'none' }}>
-        <div
-          style={{
-            width: 36, height: 36,
-            border: '1px solid rgba(255,255,255,0.15)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}
-        >
-          <span style={{ fontSize: 14, fontWeight: 300, color: '#ffffff', letterSpacing: '0.1em' }}>S</span>
+      <a href="/" className="flex items-center gap-3 px-2 mb-6 no-underline">
+        <div className="w-9 h-9 border border-white/[0.15] flex items-center justify-center">
+          <span className="text-sm font-light text-white tracking-[0.1em]">S</span>
         </div>
         <div>
-          <span style={{ fontSize: 14, fontWeight: 300, color: '#ffffff', letterSpacing: '-0.02em', display: 'block' }}>SymphoniaTic</span>
-          <span style={{ fontSize: 9, fontWeight: 300, color: '#9a9a9a', letterSpacing: '0.15em', textTransform: 'uppercase' }}>ADMIN PORTAL</span>
+          <span className="text-sm font-light text-white tracking-tight block">SymphoniaTic</span>
+          <span className="text-[9px] font-light text-[#9a9a9a] tracking-[0.15em] uppercase block">ADMIN PORTAL</span>
         </div>
       </a>
 
-      <nav style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 16 }}>
+      <nav className="border-t border-white/10 pt-4">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
@@ -65,30 +48,18 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
             <button
               key={item.id}
               onClick={() => onTabChange(item.id)}
-              style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '10px 12px',
-                fontSize: 13,
-                fontWeight: 300,
-                color: isActive ? '#ffffff' : '#9a9a9a',
-                background: isActive ? 'rgba(255,255,255,0.04)' : 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                textAlign: 'left',
-                borderBottom: isActive ? '1px solid #ffffff' : '1px solid transparent',
-              }}
-              onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.color = '#ffffff'; }}
-              onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.color = '#9a9a9a'; }}
+              className={`w-full flex items-center justify-between px-3 py-2.5 text-[13px] font-light text-left border-none cursor-pointer ${
+                isActive
+                  ? 'text-white bg-white/[0.04] border-b border-white'
+                  : 'text-[#9a9a9a] bg-transparent border-b border-transparent hover:text-white'
+              }`}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div className="flex items-center gap-2.5">
                 <Icon size={15} strokeWidth={1} />
                 <span>{item.label}</span>
               </div>
               {badge && (
-                <span style={{ fontSize: 10, fontWeight: 300, color: '#9a9a9a', letterSpacing: '0.05em' }}>{badge}</span>
+                <span className="text-[10px] font-light text-[#9a9a9a] tracking-wider">{badge}</span>
               )}
             </button>
           );
@@ -96,30 +67,18 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
       </nav>
     </div>
 
-    <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 16 }}>
+    <div className="border-t border-white/10 pt-4">
       <a
         href="/"
-        style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '10px 12px', fontSize: 13, fontWeight: 300, color: '#9a9a9a',
-          textDecoration: 'none',
-        }}
-        onMouseEnter={(e) => { e.currentTarget.style.color = '#ffffff'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.color = '#9a9a9a'; }}
+        className="flex items-center justify-between px-3 py-2.5 text-[13px] font-light text-[#9a9a9a] no-underline hover:text-white"
       >
-        <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}><ExternalLink size={14} strokeWidth={1} /> Web Utama</span>
+        <span className="flex items-center gap-2"><ExternalLink size={14} strokeWidth={1} /> Web Utama</span>
         <ChevronRightIcon />
       </a>
 
       <button
         onClick={onLogout}
-        style={{
-          display: 'flex', alignItems: 'center', gap: 8,
-          padding: '10px 12px', fontSize: 13, fontWeight: 300, color: '#9a9a9a',
-          background: 'transparent', border: 'none', cursor: 'pointer', width: '100%', textAlign: 'left',
-        }}
-        onMouseEnter={(e) => { e.currentTarget.style.color = '#ffffff'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.color = '#9a9a9a'; }}
+        className="flex items-center gap-2 px-3 py-2.5 text-[13px] font-light text-[#9a9a9a] bg-transparent border-none cursor-pointer w-full text-left hover:text-white"
       >
         <LogOut size={14} strokeWidth={1} />
         <span>Keluar Sesi Admin</span>
@@ -133,8 +92,6 @@ const ChevronRightIcon = () => (
     <polyline points="9 18 15 12 9 6" />
   </svg>
 );
-
-// ── Mobile ──
 
 interface MobileHeaderProps {
   activeTab: TabId;
@@ -150,49 +107,44 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
   activeTab, onTabChange, onLogout, isOpen, onToggle, onRefresh, isLoading,
 }) => (
   <>
-    <div
-      className="md:hidden"
-      style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '12px 16px', background: '#171717',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
-        position: 'sticky', top: 0, zIndex: 40,
-      }}
-    >
-      
+    <div className="md:hidden flex items-center justify-between px-4 py-3 bg-[#171717] border-b border-white/10 sticky top-0 z-40">
+      <div className="flex items-center gap-2.5">
+        <div className="w-7 h-7 border border-white/[0.15] flex items-center justify-center">
+          <span className="text-xs font-light text-white">S</span>
+        </div>
+        <span className="text-[13px] font-light text-white">SymphoniaTic Admin</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <button onClick={onRefresh} className="p-1.5 bg-transparent border border-white/[0.1] cursor-pointer">
+          <RefreshCw size={14} strokeWidth={1} className={`text-[#9a9a9a] ${isLoading ? 'animate-spin' : ''}`} />
+        </button>
+        <button onClick={onToggle} className="p-1.5 bg-transparent border border-white/[0.1] cursor-pointer">
+          {isOpen ? <X size={14} strokeWidth={1} className="text-white" /> : <Menu size={14} strokeWidth={1} className="text-white" />}
+        </button>
+      </div>
     </div>
 
     {isOpen && (
-      <div
-        className="md:hidden"
-        style={{
-          background: '#171717',
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
-          padding: 16,
-        }}
-      >
+      <div className="md:hidden bg-[#171717] border-b border-white/10 p-4">
         {NAV_ITEMS.map((item) => (
           <button
             key={item.id}
             onClick={() => { onTabChange(item.id); onToggle(); }}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 10,
-              padding: '10px 12px', fontSize: 13, fontWeight: 300,
-              color: activeTab === item.id ? '#ffffff' : '#9a9a9a',
-              background: activeTab === item.id ? 'rgba(255,255,255,0.04)' : 'transparent',
-              border: 'none', cursor: 'pointer', width: '100%', textAlign: 'left',
-              borderBottom: activeTab === item.id ? '1px solid #ffffff' : '1px solid transparent',
-            }}
+            className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-[13px] font-light text-left border-none cursor-pointer ${
+              activeTab === item.id
+                ? 'text-white bg-white/[0.04] border-b border-white'
+                : 'text-[#9a9a9a] bg-transparent border-b border-transparent'
+            }`}
           >
             <item.icon size={15} strokeWidth={1} />
             <span>{item.label}</span>
           </button>
         ))}
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', marginTop: 8, paddingTop: 8, display: 'flex', justifyContent: 'space-between' }}>
-          <a href="/" style={{ fontSize: 12, fontWeight: 300, color: '#9a9a9a', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
+        <div className="border-t border-white/10 mt-2 pt-2 flex justify-between">
+          <a href="/" className="text-xs font-light text-[#9a9a9a] no-underline flex items-center gap-1 hover:text-white">
             <ExternalLink size={12} strokeWidth={1} /> Web Utama
           </a>
-          <button onClick={onLogout} style={{ fontSize: 12, fontWeight: 300, color: '#9a9a9a', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
+          <button onClick={onLogout} className="text-xs font-light text-[#9a9a9a] bg-transparent border-none cursor-pointer flex items-center gap-1 hover:text-white">
             <LogOut size={12} strokeWidth={1} /> Keluar
           </button>
         </div>

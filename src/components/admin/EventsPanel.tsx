@@ -17,30 +17,24 @@ export const EventsPanel: React.FC<EventsPanelProps> = ({
   events, onAddEvent, onEditEvent, onDeleteEvent,
   onAddCategory, onEditCategory, onDeleteCategory,
 }) => (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-    <div style={{ border: '1px solid rgba(255,255,255,0.06)', background: '#171717', padding: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+  <div className="flex flex-col gap-6">
+    <div className="border border-white/10 bg-[#171717] p-5 flex justify-between items-center">
       <div>
-        <h3 style={{ fontSize: 16, fontWeight: 300, color: '#ffffff', letterSpacing: '-0.02em', margin: 0 }}>Postingan Konser & Kategori Tiket</h3>
-        <p style={{ fontSize: 12, fontWeight: 300, color: '#9a9a9a', margin: '4px 0 0 0' }}>
+        <h3 className="text-base font-light text-white tracking-tight m-0">Postingan Konser & Kategori Tiket</h3>
+        <p className="text-xs font-light text-[#9a9a9a] mt-1 m-0">
           Kelola data event, jam open gate, konduktor, lokasi venue, serta kuota tempat duduk
         </p>
       </div>
       <button
         onClick={onAddEvent}
-        style={{
-          padding: '8px 16px', fontSize: 13, fontWeight: 300, color: '#ffffff',
-          border: '1px solid #ffffff', background: 'transparent', cursor: 'pointer',
-          display: 'flex', alignItems: 'center', gap: 6,
-        }}
-        onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.6'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
+        className="px-4 py-2 text-[13px] font-light text-white border border-white bg-transparent cursor-pointer flex items-center gap-1.5 hover:opacity-60"
       >
         <Plus size={14} strokeWidth={1} />
         <span>Tambah Konser Baru</span>
       </button>
     </div>
 
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {events.map((evt) => (
         <EventCard
           key={evt.id}
@@ -68,40 +62,40 @@ interface EventCardProps {
 const EventCard: React.FC<EventCardProps> = ({
   event: evt, onEdit, onDelete, onAddCategory, onEditCategory, onDeleteCategory,
 }) => (
-  <div style={{ border: '1px solid rgba(255,255,255,0.06)', background: '#171717', padding: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
-    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
-      <div style={{ display: 'flex', gap: 12, minWidth: 0 }}>
-        <img src={evt.image} alt={evt.title} style={{ width: 64, height: 64, objectFit: 'cover', border: '1px solid rgba(255,255,255,0.06)' }} />
+  <div className="border border-white/10 bg-[#171717] p-5 flex flex-col gap-4">
+    <div className="flex justify-between gap-3">
+      <div className="flex gap-3 min-w-0">
+        <img src={evt.image} alt={evt.title} className="w-16 h-16 object-cover border border-white/[0.06]" />
         <div>
-          <span style={{ fontSize: 10, fontWeight: 300, color: '#9a9a9a', letterSpacing: '0.05em', textTransform: 'uppercase' }}>{evt.category}</span>
-          <h4 style={{ fontSize: 15, fontWeight: 300, color: '#ffffff', margin: '4px 0 2px', letterSpacing: '-0.02em' }}>{evt.title}</h4>
-          <p style={{ fontSize: 12, fontWeight: 300, color: '#9a9a9a', margin: 0 }}>{evt.artist}</p>
+          <span className="text-[10px] font-light text-[#9a9a9a] tracking-wider uppercase">{evt.category}</span>
+          <h4 className="text-[15px] font-light text-white mt-1 mb-0.5 tracking-tight">{evt.title}</h4>
+          <p className="text-xs font-light text-[#9a9a9a] m-0">{evt.artist}</p>
         </div>
       </div>
-      <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+      <div className="flex gap-1.5 shrink-0">
         <button onClick={onEdit} title="Edit"
-          style={{ padding: 6, background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', display: 'flex' }}>
-          <Edit size={14} strokeWidth={1} style={{ color: '#9a9a9a' }} />
+          className="p-1.5 bg-transparent border border-white/[0.1] cursor-pointer flex hover:opacity-60">
+          <Edit size={14} strokeWidth={1} className="text-[#9a9a9a]" />
         </button>
         <button onClick={onDelete} title="Hapus"
-          style={{ padding: 6, background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', display: 'flex' }}>
-          <Trash2 size={14} strokeWidth={1} style={{ color: '#9a9a9a' }} />
+          className="p-1.5 bg-transparent border border-white/[0.1] cursor-pointer flex hover:opacity-60">
+          <Trash2 size={14} strokeWidth={1} className="text-[#9a9a9a]" />
         </button>
       </div>
     </div>
 
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+    <div className="grid grid-cols-2 gap-2">
       <DetailBox label="Venue & Hall" value={evt.venue} />
       <DetailBox label="Jadwal Tanggal" value={`${evt.date} @ ${evt.time}`} />
       {evt.conductor && <DetailBox label="Konduktor" value={evt.conductor} />}
       {evt.openGate && <DetailBox label="Open Gate" value={evt.openGate} />}
     </div>
 
-    <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 12 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-        <span style={{ fontSize: 12, fontWeight: 300, color: '#9a9a9a' }}>Kategori Tiket & Kuota:</span>
+    <div className="border-t border-white/10 pt-3">
+      <div className="flex justify-between mb-2">
+        <span className="text-xs font-light text-[#9a9a9a]">Kategori Tiket & Kuota:</span>
         <button onClick={onAddCategory}
-          style={{ fontSize: 12, fontWeight: 300, color: '#9a9a9a', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, padding: 0 }}>
+          className="text-xs font-light text-[#9a9a9a] bg-transparent border-none cursor-pointer flex items-center gap-1 p-0 hover:text-white">
           <Plus size={12} strokeWidth={1} />
           <span>Tambah Kategori</span>
         </button>
@@ -109,26 +103,26 @@ const EventCard: React.FC<EventCardProps> = ({
       <div>
         {evt.categories && evt.categories.length > 0 ? (
           evt.categories.map((cat) => (
-            <div key={cat.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)', padding: '8px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div key={cat.id} className="border-b border-white/[0.04] py-2 flex justify-between items-center">
               <div>
-                <span style={{ fontSize: 13, fontWeight: 300, color: '#ffffff', display: 'block' }}>{cat.name}</span>
-                <span style={{ fontSize: 10, fontWeight: 300, color: '#9a9a9a', display: 'block', marginTop: 1 }}>Sisa Kuota: {cat.quota} tempat duduk</span>
+                <span className="text-[13px] font-light text-white block">{cat.name}</span>
+                <span className="text-[10px] font-light text-[#9a9a9a] block mt-0.5">Sisa Kuota: {cat.quota} tempat duduk</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 13, fontWeight: 300, color: '#ffffff' }}>{formatIDR(cat.price)}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-[13px] font-light text-white">{formatIDR(cat.price)}</span>
                 <button onClick={() => onEditCategory(cat)} title="Edit Kategori"
-                  style={{ padding: 4, background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex' }}>
-                  <Edit size={12} strokeWidth={1} style={{ color: '#9a9a9a' }} />
+                  className="p-1 bg-transparent border-none cursor-pointer flex hover:opacity-60">
+                  <Edit size={12} strokeWidth={1} className="text-[#9a9a9a]" />
                 </button>
                 <button onClick={() => onDeleteCategory(cat.id, cat.name)} title="Hapus Kategori"
-                  style={{ padding: 4, background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex' }}>
-                  <Trash2 size={12} strokeWidth={1} style={{ color: '#9a9a9a' }} />
+                  className="p-1 bg-transparent border-none cursor-pointer flex hover:opacity-60">
+                  <Trash2 size={12} strokeWidth={1} className="text-[#9a9a9a]" />
                 </button>
               </div>
             </div>
           ))
         ) : (
-          <span style={{ fontSize: 12, fontWeight: 300, color: '#9a9a9a', fontStyle: 'italic' }}>Belum ada kategori tiket</span>
+          <span className="text-xs font-light text-[#9a9a9a] italic">Belum ada kategori tiket</span>
         )}
       </div>
     </div>
@@ -136,8 +130,8 @@ const EventCard: React.FC<EventCardProps> = ({
 );
 
 const DetailBox: React.FC<{ label: string; value: string }> = ({ label, value }) => (
-  <div style={{ border: '1px solid rgba(255,255,255,0.04)', padding: 10 }}>
-    <span style={{ fontSize: 9, fontWeight: 300, color: '#9a9a9a', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block' }}>{label}</span>
-    <span style={{ fontSize: 12, fontWeight: 300, color: '#ffffff', display: 'block', marginTop: 2 }}>{value}</span>
+  <div className="border border-white/[0.04] p-2.5">
+    <span className="text-[9px] font-light text-[#9a9a9a] tracking-wider uppercase block">{label}</span>
+    <span className="text-xs font-light text-white block mt-0.5">{value}</span>
   </div>
 );

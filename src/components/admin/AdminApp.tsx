@@ -314,33 +314,22 @@ export const AdminApp: React.FC = () => {
       />
 
       <main className="flex flex-col flex-1 min-w-0 bg-[#171717]">
-        <header
-          className="sticky top-0"
-          style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '12px 24px', borderBottom: '1px solid rgba(255,255,255,0.06)',
-            background: '#171717', zIndex: 20,
-          }}
-        >
+        <header className="sticky top-0 flex items-center justify-between px-6 py-3 border-b border-white/10 bg-[#171717] z-20">
           <div>
-            <h1 style={{ fontSize: 16, fontWeight: 300, color: '#ffffff', letterSpacing: '-0.02em', margin: 0 }}>{tabLabels[activeTab].title}</h1>
-            <p style={{ fontSize: 11, fontWeight: 300, color: '#9a9a9a', margin: '2px 0 0 0' }}>{tabLabels[activeTab].subtitle}</p>
+            <h1 className="text-base font-light text-white tracking-tight m-0">{tabLabels[activeTab].title}</h1>
+            <p className="text-[11px] font-light text-[#9a9a9a] mt-0.5 m-0">{tabLabels[activeTab].subtitle}</p>
           </div>
           <button
             onClick={refreshData}
             disabled={isLoading}
-            style={{
-              padding: '6px 14px', fontSize: 12, fontWeight: 300, color: '#9a9a9a',
-              border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', cursor: isLoading ? 'default' : 'pointer',
-              display: 'flex', alignItems: 'center', gap: 6, opacity: isLoading ? 0.4 : 1,
-            }}
+            className={`px-3.5 py-1.5 text-xs font-light text-[#9a9a9a] border border-white/[0.1] bg-transparent flex items-center gap-1.5 ${isLoading ? 'opacity-40 cursor-default' : 'cursor-pointer hover:text-white'}`}
           >
             <RefreshCw size={13} strokeWidth={1} className={isLoading ? 'animate-spin' : ''} />
             <span className="hidden sm:inline">Refresh Data</span>
           </button>
         </header>
 
-        <div style={{ flex: 1, padding: '24px 32px', overflowY: 'auto', maxWidth: 1200, margin: '0 auto', width: '100%' }}>
+        <div className="flex-1 p-6 sm:p-8 overflow-y-auto max-w-[1200px] mx-auto w-full">
           {activeTab === 'METRICS' && (
             <MetricsPanel metrics={metrics} eventsCount={eventsList.length} onGoToOrders={() => setActiveTab('ORDERS')} />
           )}
