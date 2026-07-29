@@ -22,6 +22,10 @@ const EMPTY_EVENT_FORM = {
   image: '', description: '', conductor: '', subtitle: '', openGate: '', address: '',
   organizer: 'SymphoniaTic Production',
   initialCatName: 'VIP Pit', initialCatPrice: 1000000, initialCatQuota: 50,
+  rundown: [
+    { time: '18:00 WIB', activity: 'Registrasi & Open Gate' },
+    { time: '19:30 WIB', activity: 'Pertunjukan Utama' }
+  ],
 };
 
 const EMPTY_CAT_FORM = { name: '', price: 500000, quota: 50 };
@@ -120,6 +124,7 @@ export const AdminApp: React.FC = () => {
         conductor: eventForm.conductor, subtitle: eventForm.subtitle,
         openGate: eventForm.openGate, address: eventForm.address,
         organizer: eventForm.organizer, description: eventForm.description,
+        rundown: eventForm.rundown,
         categories: [{
           name: eventForm.initialCatName, price: Number(eventForm.initialCatPrice),
           quota: Number(eventForm.initialCatQuota),
@@ -151,6 +156,7 @@ export const AdminApp: React.FC = () => {
         conductor: editingEvent.conductor, subtitle: editingEvent.subtitle,
         openGate: editingEvent.openGate, address: editingEvent.address,
         organizer: editingEvent.organizer, description: editingEvent.description,
+        rundown: editingEvent.rundown || [],
       });
       if (res.success) {
         setEditingEvent(null);

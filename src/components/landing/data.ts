@@ -13,7 +13,7 @@ export interface RundownItem {
 }
 
 export interface EventItem {
-  id: number;
+  id: string | number;
   title: string;
   subtitle: string;
   artist: string;
@@ -264,8 +264,8 @@ export const fetchEventsAPI = async (): Promise<EventItem[]> => {
     const res = await fetch(`${getApiBaseUrl()}/events`);
     const data = await res.json();
     if (data.success && Array.isArray(data.data)) {
-      return data.data.map((evt: any, idx: number) => ({
-        id: evt.id || idx + 1,
+      return data.data.map((evt: any) => ({
+        id: evt.id,
         title: evt.title,
         subtitle: evt.subtitle || evt.artist || 'Pertunjukan Mahakarya Simfoni',
         artist: evt.artist,

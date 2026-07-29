@@ -1,13 +1,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
-import type { EventItem } from '../landing/data';
+import type { EventItem, RundownItem } from '../landing/data';
 
-interface EventFormData {
+export interface EventFormData {
   title: string; artist: string; venue: string; date: string; time: string;
   category: string; categoryBadgeColor: string; image: string; description: string;
   conductor: string; subtitle: string; openGate: string; address: string;
   organizer: string; initialCatName: string; initialCatPrice: number; initialCatQuota: number;
+  rundown: RundownItem[];
 }
 
 interface EventFormModalProps {
@@ -90,6 +91,66 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
               </div>
             </div>
             <InputField label="Penyelenggara / Organizer" value={form.organizer} onChange={(v) => update({ organizer: v })} placeholder="SymphoniaTic Production" />
+          </div>
+
+          {/* Rundown Builder */}
+          <div className="border border-white/10 p-4 flex flex-col gap-3">
+            <div className="flex justify-between items-center">
+              <span className="text-xs font-light text-[#9a9a9a] tracking-wider uppercase">Rangkaian Acara (Rundown Konser)</span>
+              <button
+                type="button"
+                onClick={() => {
+                  const current = form.rundown || [];
+                  update({ rundown: [...current, { time: '18:00 WIB', activity: 'Aktivitas Baru' }] });
+                }}
+                className="text-xs font-light text-white bg-transparent border border-white/20 px-2.5 py-1 cursor-pointer hover:opacity-60 flex items-center gap-1"
+              >
+                + Tambah Item Rundown
+              </button>
+            </div>
+
+            {(!form.rundown || form.rundown.length === 0) ? (
+              <p className="text-xs font-light text-[#9a9a9a] m-0 italic">Belum ada item rundown disetel. Klik tombol di atas untuk menambah.</p>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {form.rundown.map((item, idx) => (
+                  <div key={idx} className="flex gap-2 items-center">
+                    <input
+                      type="text"
+                      placeholder="Waktu (contoh: 19:30 WIB)"
+                      value={item.time}
+                      onChange={(e) => {
+                        const updated = [...form.rundown];
+                        updated[idx].time = e.target.value;
+                        update({ rundown: updated });
+                      }}
+                      className="w-1/3 bg-transparent border border-white/[0.1] px-2.5 py-1.5 text-xs font-light text-white outline-none"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Kegiatan / Movement"
+                      value={item.activity}
+                      onChange={(e) => {
+                        const updated = [...form.rundown];
+                        updated[idx].activity = e.target.value;
+                        update({ rundown: updated });
+                      }}
+                      className="flex-1 bg-transparent border border-white/[0.1] px-2.5 py-1.5 text-xs font-light text-white outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const updated = form.rundown.filter((_, i) => i !== idx);
+                        update({ rundown: updated });
+                      }}
+                      className="text-xs text-red-400 bg-transparent border border-red-500/30 px-2 py-1 cursor-pointer hover:bg-red-500/10"
+                    >
+                      Hapus
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div>
