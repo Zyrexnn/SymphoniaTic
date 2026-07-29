@@ -235,15 +235,19 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
     ctx.fillStyle = '#9a9a9a';
     ctx.font = '300 20px monospace';
     ctx.textAlign = 'center';
-    ctx.fillText(order.orderCode, width / 2, 780);
+    ctx.fillText(order.orderCode, width / 2, 775);
+
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = '300 13px sans-serif';
+    ctx.fillText(`📍 Map Guide: maps.google.com/?q=${encodeURIComponent(order.venue)}`, width / 2, 810);
 
     ctx.fillStyle = '#9a9a9a';
     ctx.font = '300 12px sans-serif';
-    ctx.fillText('Tunjukkan QR Code ini di pintu pemeriksaan gate', width / 2, 810);
+    ctx.fillText('Tunjukkan QR Code ini di pintu pemeriksaan gate venue', width / 2, 835);
 
     ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
     ctx.font = '300 11px sans-serif';
-    ctx.fillText('SYMPHONIATIC OFFICIAL PASS', width / 2, 930);
+    ctx.fillText('SYMPHONIATIC OFFICIAL E-TICKET PASS & MAP GUIDE', width / 2, 930);
 
     return canvas;
   };

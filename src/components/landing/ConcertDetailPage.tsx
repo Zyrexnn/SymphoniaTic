@@ -155,10 +155,33 @@ const ConcertDetailPage: React.FC<Props> = ({ eventId }) => {
               </div>
               <div className="max-w-[720px]">
                 <h3 className="text-xl tracking-[-0.01em] font-light text-white mb-3 flex items-center gap-2">
-                  <MapPin className="w-4 h-4" strokeWidth={1} /> Detail Lokasi Venue
+                  <MapPin className="w-4 h-4" strokeWidth={1} /> Detail Lokasi Venue &amp; Peta Interaktif
                 </h3>
                 <p className="text-base font-light text-white">{event.venue}</p>
-                <p className="text-base font-light text-[#9a9a9a] mt-1">{event.address}</p>
+                <p className="text-base font-light text-[#9a9a9a] mt-1 mb-4">{event.address}</p>
+
+                {/* Dark-mode Interactive Google Maps Embed */}
+                <div className="w-full h-[280px] border border-white/10 overflow-hidden relative mb-3 bg-[#171717]">
+                  <iframe
+                    title="Peta Lokasi Venue Konser"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0, filter: 'grayscale(0.9) invert(0.92) contrast(1.2)' }}
+                    loading="lazy"
+                    allowFullScreen
+                    src={`https://maps.google.com/maps?q=${encodeURIComponent(event.venue + ' ' + event.address)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                  />
+                </div>
+
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venue + ' ' + event.address)}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 text-xs font-light tracking-wider uppercase text-white border border-white/20 px-4 py-2 hover:bg-white/10 transition-colors"
+                >
+                  <MapPin className="w-3.5 h-3.5" strokeWidth={1} />
+                  <span>Buka Petunjuk Arah di Google Maps</span>
+                </a>
               </div>
             </div>
           )}
