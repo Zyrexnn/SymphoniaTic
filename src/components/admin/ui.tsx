@@ -9,19 +9,13 @@ interface StatCardProps {
 }
 
 export const StatCard: React.FC<StatCardProps> = ({ label, value, subtext, icon: Icon }) => (
-  <div
-    style={{
-      padding: 20,
-      border: '1px solid rgba(255,255,255,0.06)',
-      background: '#171717',
-    }}
-  >
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-      <span style={{ fontSize: 13, fontWeight: 300, color: '#9a9a9a', letterSpacing: '0.05em', textTransform: 'uppercase' }}>{label}</span>
-      <Icon size={16} strokeWidth={1} style={{ color: '#9a9a9a' }} />
+  <div className="p-5 border border-white/10 bg-[#171717]">
+    <div className="flex items-center justify-between mb-3">
+      <span className="text-[13px] font-light text-[#9a9a9a] tracking-wider uppercase">{label}</span>
+      <Icon size={16} strokeWidth={1} className="text-[#9a9a9a]" />
     </div>
-    <div style={{ fontSize: 24, fontWeight: 300, color: '#ffffff', letterSpacing: '-0.02em' }}>{value}</div>
-    <span style={{ fontSize: 12, fontWeight: 300, color: '#9a9a9a', display: 'block', marginTop: 4 }}>{subtext}</span>
+    <div className="text-2xl font-light text-white tracking-tight">{value}</div>
+    <span className="text-xs font-light text-[#9a9a9a] block mt-1">{subtext}</span>
   </div>
 );
 
@@ -30,9 +24,7 @@ interface BadgeProps {
 }
 
 export const Badge: React.FC<BadgeProps> = ({ children }) => (
-  <span style={{ fontSize: 10, fontWeight: 300, color: '#9a9a9a', letterSpacing: '0.05em' }}>
-    {children}
-  </span>
+  <span className="text-[10px] font-light text-[#9a9a9a] tracking-wider">{children}</span>
 );
 
 interface GlassButtonProps {
@@ -48,19 +40,7 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
   <button
     onClick={onClick}
     disabled={disabled}
-    className={className}
-    style={{
-      padding: '8px 16px',
-      fontSize: 13,
-      fontWeight: 300,
-      color: '#ffffff',
-      border: '1px solid #ffffff',
-      background: 'transparent',
-      cursor: disabled ? 'default' : 'pointer',
-      opacity: disabled ? 0.4 : 1,
-    }}
-    onMouseEnter={(e) => { if (!disabled) e.currentTarget.style.opacity = '0.6'; }}
-    onMouseLeave={(e) => { if (!disabled) e.currentTarget.style.opacity = '1'; }}
+    className={`px-4 py-2 text-[13px] font-light text-white border border-white bg-transparent ${disabled ? 'opacity-40 cursor-default' : 'cursor-pointer hover:opacity-60'} ${className}`}
   >
     {children}
   </button>
@@ -72,7 +52,5 @@ interface PanelCardProps {
 }
 
 export const PanelCard: React.FC<PanelCardProps> = ({ children, className = '' }) => (
-  <div className={className} style={{ border: '1px solid rgba(255,255,255,0.06)', background: '#171717' }}>
-    {children}
-  </div>
+  <div className={`border border-white/10 bg-[#171717] ${className}`}>{children}</div>
 );

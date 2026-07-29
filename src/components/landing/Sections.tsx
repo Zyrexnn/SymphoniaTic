@@ -41,48 +41,43 @@ export const BentoSection: React.FC<SectionProps> = ({ events, onBuyTicket }) =>
 
   return (
     <>
-      {/* ═══ BENTO GRID ═══ */}
       <section
         id="bento"
-        className="mx-auto"
-        style={{ maxWidth: 1400, padding: '0 40px 120px' }}
+        className="mx-auto max-w-[1400px] px-10 pb-[120px]"
       >
         {/* Desktop: bento grid */}
-        <div className="hidden md:grid" style={{ gridTemplateColumns: 'repeat(12, 1fr)', gap: 20, gridAutoRows: '200px' }}>
+        <div className="hidden md:grid grid-cols-12 gap-5 auto-rows-[200px]">
           {/* FEATURED — 8 col, 2 rows */}
           <div
-            style={{ gridColumn: 'span 8', gridRow: 'span 2', position: 'relative', overflow: 'hidden', cursor: 'pointer' }}
-            className="group"
+            className="col-span-8 row-span-2 relative overflow-hidden cursor-pointer group"
             onClick={() => featured && goToConcert(featured)}
           >
             <img src={featured?.image} alt={featured?.title}
               className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.01] transition-transform duration-700" />
-            <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, #171717 0%, transparent 50%)' }} />
-            <div className="absolute bottom-0 left-0 right-0" style={{ padding: '32px' }}>
-              <p style={{ fontSize: 16, fontWeight: 300, letterSpacing: '-0.05px', color: '#9a9a9a', marginBottom: 8 }}>
+            <div className="absolute inset-0 bg-[linear-gradient(to_top,#171717_0%,transparent_50%)]" />
+            <div className="absolute bottom-0 left-0 right-0 p-8">
+              <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mb-2">
                 {featured?.date} · {featured?.time}
               </p>
-              <h2 style={{ fontSize: 28, lineHeight: 1.2, letterSpacing: '-0.02em', fontWeight: 300, color: '#ffffff' }}>
+              <h2 className="text-[28px] leading-[1.2] tracking-[-0.02em] font-light text-white">
                 {featured?.title}
               </h2>
-              <p style={{ fontSize: 16, fontWeight: 300, letterSpacing: '-0.05px', color: '#9a9a9a', marginTop: 8 }}>
+              <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mt-2">
                 {featured?.artist}
               </p>
             </div>
           </div>
 
           {/* ARTIST — 4 col, 2 rows */}
-          <div
-            style={{ gridColumn: 'span 4', gridRow: 'span 2', position: 'relative', overflow: 'hidden' }}
-          >
+          <div className="col-span-4 row-span-2 relative overflow-hidden">
             <img src={ARTISTS_LINEUP[0].image} alt={ARTISTS_LINEUP[0].name}
               className="absolute inset-0 w-full h-full object-cover opacity-50" />
-            <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, #171717 0%, transparent 50%)' }} />
-            <div className="absolute bottom-0 left-0 right-0" style={{ padding: '28px' }}>
-              <p style={{ fontSize: 16, fontWeight: 300, letterSpacing: '-0.05px', color: '#9a9a9a', marginBottom: 6 }}>
+            <div className="absolute inset-0 bg-[linear-gradient(to_top,#171717_0%,transparent_50%)]" />
+            <div className="absolute bottom-0 left-0 right-0 p-7">
+              <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mb-1.5">
                 {ARTISTS_LINEUP[0].genre}
               </p>
-              <h3 style={{ fontSize: 20, letterSpacing: '-0.01em', fontWeight: 300, color: '#ffffff' }}>
+              <h3 className="text-xl tracking-[-0.01em] font-light text-white">
                 {ARTISTS_LINEUP[0].name}
               </h3>
             </div>
@@ -91,112 +86,96 @@ export const BentoSection: React.FC<SectionProps> = ({ events, onBuyTicket }) =>
           {/* CONCERT 2 — 5 col */}
           {rest[0] && (
             <div
-              style={{ gridColumn: 'span 5', position: 'relative', overflow: 'hidden', cursor: 'pointer' }}
-              className="group"
+              className="col-span-5 relative overflow-hidden cursor-pointer group"
               onClick={() => goToConcert(rest[0])}
             >
               <img src={rest[0].image} alt={rest[0].title}
                 className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.01] transition-transform duration-700" />
-              <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, #171717 0%, transparent 50%)' }} />
-              <div className="absolute bottom-0 left-0 right-0" style={{ padding: '24px' }}>
-                <h3 style={{ fontSize: 20, letterSpacing: '-0.01em', fontWeight: 300, color: '#ffffff' }}>{rest[0].title}</h3>
-                <p style={{ fontSize: 16, fontWeight: 300, letterSpacing: '-0.05px', color: '#9a9a9a', marginTop: 4 }}>{rest[0].date}</p>
+              <div className="absolute inset-0 bg-[linear-gradient(to_top,#171717_0%,transparent_50%)]" />
+              <div className="absolute bottom-0 left-0 right-0 p-6">
+                <h3 className="text-xl tracking-[-0.01em] font-light text-white">{rest[0].title}</h3>
+                <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mt-1">{rest[0].date}</p>
               </div>
             </div>
           )}
 
           {/* METRIC — 4 col */}
-          <div
-            style={{ gridColumn: 'span 4', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 8px' }}
-          >
-            <p style={{ fontSize: 16, fontWeight: 300, letterSpacing: '-0.05px', color: '#9a9a9a', marginBottom: 8 }}>Akurasi Gate</p>
-            <p style={{ fontSize: 48, lineHeight: 1, letterSpacing: '-0.04em', fontWeight: 300, color: '#ffffff' }}>99,8%</p>
-            <p style={{ fontSize: 16, fontWeight: 300, letterSpacing: '-0.05px', color: '#9a9a9a', marginTop: 8 }}>Pemindaian tanpa overbooking.</p>
+          <div className="col-span-4 flex flex-col justify-center px-2">
+            <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mb-2">Akurasi Gate</p>
+            <p className="text-[48px] leading-[1] tracking-[-0.04em] font-light text-white">99,8%</p>
+            <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mt-2">Pemindaian tanpa overbooking.</p>
           </div>
 
           {/* STEP 1 — 3 col */}
-          <div
-            style={{ gridColumn: 'span 3', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '0 8px' }}
-          >
-            <p style={{ fontSize: 16, fontWeight: 300, letterSpacing: '-0.05px', color: '#9a9a9a', marginBottom: 6 }}>01</p>
-            <p style={{ fontSize: 20, letterSpacing: '-0.01em', fontWeight: 300, color: '#ffffff', lineHeight: 1.3 }}>Pilih Konser</p>
-            <p style={{ fontSize: 16, fontWeight: 300, letterSpacing: '-0.05px', color: '#9a9a9a', marginTop: 6 }}>Maksimal 4 tiket per transaksi.</p>
+          <div className="col-span-3 flex flex-col justify-end px-2">
+            <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mb-1.5">01</p>
+            <p className="text-xl tracking-[-0.01em] font-light text-white leading-[1.3]">Pilih Konser</p>
+            <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mt-1.5">Maksimal 4 tiket per transaksi.</p>
           </div>
 
           {/* CONCERT 3 — 4 col */}
           {rest[1] && (
             <div
-              style={{ gridColumn: 'span 4', position: 'relative', overflow: 'hidden', cursor: 'pointer' }}
-              className="group"
+              className="col-span-4 relative overflow-hidden cursor-pointer group"
               onClick={() => goToConcert(rest[1])}
             >
               <img src={rest[1].image} alt={rest[1].title}
                 className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.01] transition-transform duration-700" />
-              <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, #171717 0%, transparent 50%)' }} />
-              <div className="absolute bottom-0 left-0 right-0" style={{ padding: '24px' }}>
-                <h3 style={{ fontSize: 20, letterSpacing: '-0.01em', fontWeight: 300, color: '#ffffff' }}>{rest[1].title}</h3>
-                <p style={{ fontSize: 16, fontWeight: 300, letterSpacing: '-0.05px', color: '#9a9a9a', marginTop: 4 }}>{rest[1].date}</p>
+              <div className="absolute inset-0 bg-[linear-gradient(to_top,#171717_0%,transparent_50%)]" />
+              <div className="absolute bottom-0 left-0 right-0 p-6">
+                <h3 className="text-xl tracking-[-0.01em] font-light text-white">{rest[1].title}</h3>
+                <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mt-1">{rest[1].date}</p>
               </div>
             </div>
           )}
 
           {/* STEP 2 — 4 col */}
-          <div
-            style={{ gridColumn: 'span 4', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '0 8px' }}
-          >
-            <p style={{ fontSize: 16, fontWeight: 300, letterSpacing: '-0.05px', color: '#9a9a9a', marginBottom: 6 }}>02</p>
-            <p style={{ fontSize: 20, letterSpacing: '-0.01em', fontWeight: 300, color: '#ffffff', lineHeight: 1.3 }}>Verifikasi Instan</p>
-            <p style={{ fontSize: 16, fontWeight: 300, letterSpacing: '-0.05px', color: '#9a9a9a', marginTop: 6 }}>Sistem atomic menerbitkan kode transaksi.</p>
+          <div className="col-span-4 flex flex-col justify-end px-2">
+            <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mb-1.5">02</p>
+            <p className="text-xl tracking-[-0.01em] font-light text-white leading-[1.3]">Verifikasi Instan</p>
+            <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mt-1.5">Sistem atomic menerbitkan kode transaksi.</p>
           </div>
 
           {/* STEP 3 — 4 col */}
-          <div
-            style={{ gridColumn: 'span 4', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '0 8px' }}
-          >
-            <p style={{ fontSize: 16, fontWeight: 300, letterSpacing: '-0.05px', color: '#9a9a9a', marginBottom: 6 }}>03</p>
-            <p style={{ fontSize: 20, letterSpacing: '-0.01em', fontWeight: 300, color: '#ffffff', lineHeight: 1.3 }}>Tunjukkan QR Code</p>
-            <p style={{ fontSize: 16, fontWeight: 300, letterSpacing: '-0.05px', color: '#9a9a9a', marginTop: 6 }}>E-Ticket dipindai di pintu masuk hall.</p>
+          <div className="col-span-4 flex flex-col justify-end px-2">
+            <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mb-1.5">03</p>
+            <p className="text-xl tracking-[-0.01em] font-light text-white leading-[1.3]">Tunjukkan QR Code</p>
+            <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mt-1.5">E-Ticket dipindai di pintu masuk hall.</p>
           </div>
 
           {/* ARTIST 2 — 3 col */}
           {ARTISTS_LINEUP[1] && (
-            <div
-              style={{ gridColumn: 'span 3', position: 'relative', overflow: 'hidden' }}
-            >
+            <div className="col-span-3 relative overflow-hidden">
               <img src={ARTISTS_LINEUP[1].image} alt={ARTISTS_LINEUP[1].name}
                 className="absolute inset-0 w-full h-full object-cover opacity-40" />
-              <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, #171717 0%, transparent 50%)' }} />
-              <div className="absolute bottom-0 left-0 right-0" style={{ padding: '20px' }}>
-                <p style={{ fontSize: 16, fontWeight: 300, letterSpacing: '-0.05px', color: '#ffffff' }}>{ARTISTS_LINEUP[1].name}</p>
+              <div className="absolute inset-0 bg-[linear-gradient(to_top,#171717_0%,transparent_50%)]" />
+              <div className="absolute bottom-0 left-0 right-0 p-5">
+                <p className="text-base font-light tracking-[-0.05px] text-white">{ARTISTS_LINEUP[1].name}</p>
               </div>
             </div>
           )}
 
           {/* REVENUE — 3 col */}
-          <div
-            style={{ gridColumn: 'span 3', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 8px' }}
-          >
-            <p style={{ fontSize: 16, fontWeight: 300, letterSpacing: '-0.05px', color: '#9a9a9a', marginBottom: 6 }}>Total Pendapatan</p>
-            <p style={{ fontSize: 32, lineHeight: 1.2, letterSpacing: '-0.03em', fontWeight: 300, color: '#ffffff' }}>Rp 485M</p>
-            <p style={{ fontSize: 16, fontWeight: 300, letterSpacing: '-0.05px', color: '#9a9a9a', marginTop: 6 }}>1.420 dari 1.708 kuota.</p>
+          <div className="col-span-3 flex flex-col justify-center px-2">
+            <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mb-1.5">Total Pendapatan</p>
+            <p className="text-[32px] leading-[1.2] tracking-[-0.03em] font-light text-white">Rp 485M</p>
+            <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mt-1.5">1.420 dari 1.708 kuota.</p>
           </div>
 
           {/* FAQ — 6 col */}
-          <div
-            style={{ gridColumn: 'span 6', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 8px' }}
-          >
-            <p style={{ fontSize: 16, fontWeight: 300, letterSpacing: '-0.05px', color: '#9a9a9a', marginBottom: 12 }}>Pertanyaan Umum</p>
+          <div className="col-span-6 flex flex-col justify-center px-2">
+            <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mb-3">Pertanyaan Umum</p>
             <div>
               {FAQS.slice(0, 3).map((faq, i) => (
-                <div key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                <div key={i} className="border-b border-white/[0.06]">
                   <button
                     onClick={() => setOpenFaq(openFaq === i ? null : i)}
                     className="w-full flex items-center justify-between py-3 text-left cursor-pointer hover:opacity-60 transition-opacity bg-transparent border-none"
                   >
-                    <span style={{ fontSize: 16, fontWeight: 300, letterSpacing: '-0.05px', color: '#ffffff' }}>
+                    <span className="text-base font-light tracking-[-0.05px] text-white">
                       {faq.q.length > 45 ? faq.q.slice(0, 45) + '…' : faq.q}
                     </span>
-                    <ChevronDown size={14} style={{ color: '#9a9a9a', flexShrink: 0, transition: 'transform 0.2s', transform: openFaq === i ? 'rotate(180deg)' : 'none' }} />
+                    <ChevronDown size={14} className="text-[#9a9a9a] shrink-0 transition-transform duration-200" style={{ transform: openFaq === i ? 'rotate(180deg)' : 'none' }} />
                   </button>
                   <AnimatePresence>
                     {openFaq === i && (
@@ -207,7 +186,7 @@ export const BentoSection: React.FC<SectionProps> = ({ events, onBuyTicket }) =>
                         transition={{ duration: 0.2 }}
                         className="overflow-hidden"
                       >
-                        <p style={{ fontSize: 16, fontWeight: 300, letterSpacing: '-0.05px', color: '#9a9a9a', lineHeight: 1.6, paddingBottom: 12 }}>{faq.a}</p>
+                        <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] leading-[1.6] pb-3">{faq.a}</p>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -218,87 +197,69 @@ export const BentoSection: React.FC<SectionProps> = ({ events, onBuyTicket }) =>
         </div>
 
         {/* Mobile: stacked layout */}
-        <div className="md:hidden flex flex-col" style={{ gap: 20 }}>
+        <div className="md:hidden flex flex-col gap-5">
           {featured && (
-            <div
-              style={{ position: 'relative', overflow: 'hidden', height: 280, cursor: 'pointer' }}
-              className="group"
+            <div className="relative overflow-hidden h-[280px] cursor-pointer group"
               onClick={() => goToConcert(featured)}
             >
               <img src={featured.image} alt={featured.title}
                 className="absolute inset-0 w-full h-full object-cover" />
-              <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, #171717 0%, transparent 50%)' }} />
-              <div className="absolute bottom-0 left-0 right-0" style={{ padding: '24px' }}>
-                <p style={{ fontSize: 16, fontWeight: 300, color: '#9a9a9a', marginBottom: 6 }}>{featured.date}</p>
-                <h2 style={{ fontSize: 22, letterSpacing: '-0.01em', fontWeight: 300, color: '#ffffff' }}>{featured.title}</h2>
-                <p style={{ fontSize: 16, fontWeight: 300, color: '#9a9a9a', marginTop: 4 }}>{featured.artist}</p>
+              <div className="absolute inset-0 bg-[linear-gradient(to_top,#171717_0%,transparent_50%)]" />
+              <div className="absolute bottom-0 left-0 right-0 p-6">
+                <p className="text-base font-light text-[#9a9a9a] mb-1.5">{featured.date}</p>
+                <h2 className="text-[22px] tracking-[-0.01em] font-light text-white">{featured.title}</h2>
+                <p className="text-base font-light text-[#9a9a9a] mt-1">{featured.artist}</p>
               </div>
             </div>
           )}
 
-          {rest.slice(0, 2).map((event, i) => (
+          {rest.slice(0, 2).map((event) => (
             <div
               key={event.id}
-              style={{ position: 'relative', overflow: 'hidden', height: 200, cursor: 'pointer' }}
-              className="group"
+              className="relative overflow-hidden h-[200px] cursor-pointer group"
               onClick={() => goToConcert(event)}
             >
               <img src={event.image} alt={event.title}
                 className="absolute inset-0 w-full h-full object-cover" />
-              <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, #171717 0%, transparent 50%)' }} />
-              <div className="absolute bottom-0 left-0 right-0" style={{ padding: '20px' }}>
-                <h3 style={{ fontSize: 20, fontWeight: 300, color: '#ffffff' }}>{event.title}</h3>
-                <p style={{ fontSize: 16, fontWeight: 300, color: '#9a9a9a', marginTop: 4 }}>{event.date}</p>
+              <div className="absolute inset-0 bg-[linear-gradient(to_top,#171717_0%,transparent_50%)]" />
+              <div className="absolute bottom-0 left-0 right-0 p-5">
+                <h3 className="text-xl font-light text-white">{event.title}</h3>
+                <p className="text-base font-light text-[#9a9a9a] mt-1">{event.date}</p>
               </div>
             </div>
           ))}
 
-          {/* Mobile metrics */}
-          <div style={{ padding: '20px 0' }}>
-            <p style={{ fontSize: 16, fontWeight: 300, color: '#9a9a9a', marginBottom: 6 }}>Akurasi Gate</p>
-            <p style={{ fontSize: 40, lineHeight: 1, letterSpacing: '-0.04em', fontWeight: 300 }}>99,8%</p>
+          <div className="py-5">
+            <p className="text-base font-light text-[#9a9a9a] mb-1.5">Akurasi Gate</p>
+            <p className="text-[40px] leading-[1] tracking-[-0.04em] font-light text-white">99,8%</p>
           </div>
 
-          {/* Mobile steps */}
-          <div style={{ padding: '20px 0', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+          <div className="py-5 border-t border-white/[0.06]">
             {['Pilih Konser', 'Verifikasi Instan', 'Tunjukkan QR Code'].map((step, i) => (
-              <div key={i} style={{ marginBottom: 20 }}>
-                <p style={{ fontSize: 16, fontWeight: 300, color: '#9a9a9a', marginBottom: 4 }}>{`0${i + 1}`}</p>
-                <p style={{ fontSize: 20, fontWeight: 300 }}>{step}</p>
+              <div key={i} className="mb-5">
+                <p className="text-base font-light text-[#9a9a9a] mb-1">{`0${i + 1}`}</p>
+                <p className="text-xl font-light text-white">{step}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ═══ SECTION INDICATOR ═══ */}
-      <div className="mx-auto" style={{ maxWidth: 1400, padding: '0 40px 32px' }}>
-        <p style={{ fontSize: 16, fontWeight: 300, letterSpacing: '-0.05px', color: '#9a9a9a' }}>
+      <div className="mx-auto max-w-[1400px] px-10 pb-8">
+        <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a]">
           ↓ Semua Konser
         </p>
       </div>
 
-      {/* ═══ SEARCH + FILTERS ═══ */}
-      <div className="mx-auto" style={{ maxWidth: 1400, padding: '0 40px 48px' }}>
-        <div className="flex items-center gap-3 mb-8" style={{ maxWidth: 400 }}>
-          <Search size={14} style={{ color: '#9a9a9a' }} />
+      <div className="mx-auto max-w-[1400px] px-10 pb-12">
+        <div className="flex items-center gap-3 mb-8 max-w-[400px]">
+          <Search size={14} className="text-[#9a9a9a]" />
           <input
             type="text"
             placeholder="Cari konser, artis, venue..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={{
-              fontSize: 16,
-              fontWeight: 300,
-              letterSpacing: '-0.05px',
-              color: '#ffffff',
-              background: 'transparent',
-              border: 'none',
-              borderBottom: '1px solid rgba(255,255,255,0.08)',
-              outline: 'none',
-              width: '100%',
-              padding: '4px 0',
-            }}
+            className="text-base font-light tracking-[-0.05px] text-white bg-transparent border-none border-b border-white/[0.08] outline-none w-full py-1"
           />
         </div>
 
@@ -307,23 +268,18 @@ export const BentoSection: React.FC<SectionProps> = ({ events, onBuyTicket }) =>
             <button
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
-              className="whitespace-nowrap transition-opacity cursor-pointer shrink-0 bg-transparent border-none"
-              style={{
-                fontSize: 16,
-                fontWeight: 300,
-                letterSpacing: '-0.05px',
-                color: selectedCategory === cat.id ? '#ffffff' : '#9a9a9a',
-                borderBottom: selectedCategory === cat.id ? '1px solid #ffffff' : '1px solid transparent',
-                paddingBottom: 4,
-              }}
+              className={`whitespace-nowrap transition-opacity cursor-pointer shrink-0 bg-transparent border-none text-base font-light tracking-[-0.05px] pb-1 ${
+                selectedCategory === cat.id
+                  ? 'text-white border-b border-white'
+                  : 'text-[#9a9a9a] border-b border-transparent'
+              }`}
             >
               {cat.label}
             </button>
           ))}
         </div>
 
-        {/* ═══ CONCERT LIST ═══ */}
-        <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: '64px 48px' }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16">
           {filteredEvents.map((event) => {
             const minPrice = event.categories?.[0]?.price ?? 0;
             return (
@@ -332,18 +288,17 @@ export const BentoSection: React.FC<SectionProps> = ({ events, onBuyTicket }) =>
                 className="cursor-pointer group"
                 onClick={() => goToConcert(event)}
               >
-                <div style={{ marginBottom: 16, overflow: 'hidden' }}>
+                <div className="mb-4 overflow-hidden">
                   <img
                     src={event.image}
                     alt={event.title}
-                    className="w-full object-cover group-hover:scale-[1.01] transition-transform duration-700"
-                    style={{ aspectRatio: '3/2' }}
+                    className="w-full object-cover group-hover:scale-[1.01] transition-transform duration-700 aspect-[3/2]"
                   />
                 </div>
-                <h3 style={{ fontSize: 20, letterSpacing: '-0.01em', fontWeight: 300, lineHeight: 1.4, marginBottom: 4 }}>
+                <h3 className="text-xl tracking-[-0.01em] font-light leading-[1.4] mb-1 text-white">
                   {event.title}
                 </h3>
-                <p style={{ fontSize: 16, fontWeight: 300, letterSpacing: '-0.05px', color: '#9a9a9a', lineHeight: 1.5 }}>
+                <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] leading-[1.5]">
                   {event.artist} · {event.venue} · {formatIDR(minPrice)}
                 </p>
               </div>

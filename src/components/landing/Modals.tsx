@@ -8,9 +8,6 @@ import { formatIDR, createOrderAPI, lookupTicketAPI } from './data';
 import type { EventItem, TicketCategory, OrderRecord } from './data';
 import { AdminDashboard } from './AdminDashboard';
 
-// ════════════════════════════════════════════════════════════════════
-// BOOKING MODAL
-// ════════════════════════════════════════════════════════════════════
 interface BookingProps { event: EventItem; initialCategory: TicketCategory; onClose: () => void; onSubmit: (order: OrderRecord) => void; }
 
 export const BookingModal: React.FC<BookingProps> = ({ event, initialCategory, onClose, onSubmit }) => {
@@ -47,57 +44,49 @@ export const BookingModal: React.FC<BookingProps> = ({ event, initialCategory, o
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        className="w-full max-w-md text-white relative my-auto max-h-[90vh] overflow-y-auto flex flex-col"
-        style={{ background: '#171717' }}>
+        className="w-full max-w-md text-white relative my-auto max-h-[90vh] overflow-y-auto flex flex-col bg-[#171717]">
 
-        {/* Close */}
         <button onClick={onClose} className="absolute top-4 right-4 p-1 text-white/40 hover:text-white cursor-pointer bg-transparent border-none z-10">
           <X className="w-4 h-4" strokeWidth={1} />
         </button>
 
-        {/* Header */}
-        <div style={{ padding: '24px 24px 0' }}>
-          <p style={{ fontSize: 13, fontWeight: 300, color: '#9a9a9a', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 6 }}>Pemesanan Tiket</p>
-          <h3 style={{ fontSize: 22, letterSpacing: '-0.02em', fontWeight: 300, color: '#ffffff', lineHeight: 1.2 }}>{event.title}</h3>
-          <p style={{ fontSize: 14, fontWeight: 300, color: '#9a9a9a', marginTop: 4 }}>{event.artist}</p>
+        <div className="px-6 pt-6">
+          <p className="text-[13px] font-light text-[#9a9a9a] tracking-wider uppercase mb-1.5">Pemesanan Tiket</p>
+          <h3 className="text-[22px] tracking-[-0.02em] font-light text-white leading-[1.2]">{event.title}</h3>
+          <p className="text-sm font-light text-[#9a9a9a] mt-1">{event.artist}</p>
         </div>
 
         <form onSubmit={handleSubmit}>
           {/* Kategori */}
-          <div style={{ padding: '20px 24px 0' }}>
-            <p style={{ fontSize: 13, fontWeight: 300, color: '#9a9a9a', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 10 }}>Kategori</p>
+          <div className="px-6 pt-5">
+            <p className="text-[13px] font-light text-[#9a9a9a] tracking-wider uppercase mb-2.5">Kategori</p>
             <div className="flex gap-2">
               {event.categories.map((cat) => (
                 <button type="button" key={cat.id} onClick={() => setSelectedCat(cat)}
-                  className="flex-1 text-left cursor-pointer bg-transparent"
-                  style={{
-                    padding: '12px',
-                    border: selectedCat.id === cat.id ? '1px solid #ffffff' : '1px solid rgba(255,255,255,0.08)',
-                  }}>
-                  <span className="block truncate" style={{ fontSize: 13, fontWeight: 300, color: selectedCat.id === cat.id ? '#ffffff' : '#9a9a9a' }}>{cat.name}</span>
-                  <span className="block" style={{ fontSize: 13, fontWeight: 300, color: '#9a9a9a', marginTop: 2 }}>{formatIDR(cat.price)}</span>
+                  className={`flex-1 text-left cursor-pointer bg-transparent p-3 ${
+                    selectedCat.id === cat.id ? 'border border-white' : 'border border-white/[0.08]'
+                  }`}>
+                  <span className={`block truncate text-[13px] font-light ${selectedCat.id === cat.id ? 'text-white' : 'text-[#9a9a9a]'}`}>{cat.name}</span>
+                  <span className="block text-[13px] font-light text-[#9a9a9a] mt-0.5">{formatIDR(cat.price)}</span>
                 </button>
               ))}
             </div>
           </div>
 
           {/* Jumlah */}
-          <div style={{ padding: '20px 24px 0' }}>
+          <div className="px-6 pt-5">
             <div className="flex items-center justify-between mb-8">
-              <p style={{ fontSize: 13, fontWeight: 300, color: '#9a9a9a', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Jumlah</p>
-              <span style={{ fontSize: 13, fontWeight: 300, color: '#9a9a9a' }}>Maks 4</span>
+              <p className="text-[13px] font-light text-[#9a9a9a] tracking-wider uppercase">Jumlah</p>
+              <span className="text-[13px] font-light text-[#9a9a9a]">Maks 4</span>
             </div>
             <div className="flex gap-2">
               {[1, 2, 3, 4].map((num) => (
                 <button type="button" key={num} onClick={() => setQuantity(num)}
-                  className="flex-1 cursor-pointer bg-transparent text-center"
-                  style={{
-                    padding: '10px 0',
-                    fontSize: 15,
-                    fontWeight: 300,
-                    color: quantity === num ? '#ffffff' : '#9a9a9a',
-                    border: quantity === num ? '1px solid #ffffff' : '1px solid rgba(255,255,255,0.08)',
-                  }}>
+                  className={`flex-1 cursor-pointer bg-transparent text-center py-2.5 text-[15px] font-light ${
+                    quantity === num
+                      ? 'text-white border border-white'
+                      : 'text-[#9a9a9a] border border-white/[0.08]'
+                  }`}>
                   {num}
                 </button>
               ))}
@@ -105,37 +94,25 @@ export const BookingModal: React.FC<BookingProps> = ({ event, initialCategory, o
           </div>
 
           {/* Data Pemesan */}
-          <div style={{ padding: '20px 24px 0' }}>
-            <p style={{ fontSize: 13, fontWeight: 300, color: '#9a9a9a', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 12 }}>Data Pemesan</p>
+          <div className="px-6 pt-5">
+            <p className="text-[13px] font-light text-[#9a9a9a] tracking-wider uppercase mb-3">Data Pemesan</p>
             <div className="space-y-3">
               <input type="text" required placeholder="Nama lengkap" value={userName} onChange={(e) => setUserName(e.target.value)}
-                style={{
-                  fontSize: 14, fontWeight: 300, color: '#ffffff', background: 'transparent',
-                  border: '1px solid rgba(255,255,255,0.08)', outline: 'none',
-                  width: '100%', padding: '12px 14px',
-                }} />
+                className="text-sm font-light text-white bg-transparent border border-white/[0.08] outline-none w-full px-3.5 py-3" />
               <input type="email" required placeholder="Email" value={userEmail} onChange={(e) => setUserEmail(e.target.value)}
-                style={{
-                  fontSize: 14, fontWeight: 300, color: '#ffffff', background: 'transparent',
-                  border: '1px solid rgba(255,255,255,0.08)', outline: 'none',
-                  width: '100%', padding: '12px 14px',
-                }} />
+                className="text-sm font-light text-white bg-transparent border border-white/[0.08] outline-none w-full px-3.5 py-3" />
             </div>
           </div>
 
           {/* Total & Submit */}
-          <div style={{ padding: '24px', marginTop: 8 }}>
-            <div className="flex items-center justify-between" style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 20 }}>
+          <div className="px-6 pb-6 mt-2">
+            <div className="flex items-center justify-between border-t border-white/[0.06] pt-5">
               <div>
-                <span style={{ fontSize: 13, fontWeight: 300, color: '#9a9a9a', display: 'block', marginBottom: 2 }}>Total</span>
-                <span style={{ fontSize: 22, letterSpacing: '-0.02em', fontWeight: 300, color: '#ffffff' }}>{formatIDR(selectedCat.price * quantity)}</span>
+                <span className="text-[13px] font-light text-[#9a9a9a] block mb-0.5">Total</span>
+                <span className="text-[22px] tracking-[-0.02em] font-light text-white">{formatIDR(selectedCat.price * quantity)}</span>
               </div>
               <button type="submit" disabled={isSubmitting}
-                className="cursor-pointer bg-transparent hover:opacity-60 transition-opacity"
-                style={{
-                  fontSize: 14, fontWeight: 300, color: '#ffffff',
-                  border: '1px solid #ffffff', padding: '12px 24px',
-                }}>
+                className="cursor-pointer bg-transparent hover:opacity-60 transition-opacity text-sm font-light text-white border border-white px-6 py-3">
                 {isSubmitting ? 'Memproses...' : 'Konfirmasi'}
               </button>
             </div>
@@ -316,33 +293,29 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        className="w-full max-w-md text-white relative my-auto max-h-[90vh] overflow-y-auto flex flex-col"
-        style={{ background: '#171717' }}>
+        className="w-full max-w-md text-white relative my-auto max-h-[90vh] overflow-y-auto flex flex-col bg-[#171717]">
 
-        {/* Close */}
         <button onClick={onClose} className="absolute top-4 right-4 p-1 text-white/40 hover:text-white cursor-pointer bg-transparent border-none z-10">
           <X className="w-4 h-4" strokeWidth={1} />
         </button>
 
-        {/* Header */}
-        <div style={{ padding: '24px 24px 0' }}>
+        <div className="px-6 pt-6">
           <div className="flex items-center gap-2 mb-1">
-            <CheckCircle2 className="w-4 h-4" strokeWidth={1} style={{ color: '#9a9a9a' }} />
-            <p style={{ fontSize: 13, fontWeight: 300, color: '#9a9a9a', letterSpacing: '0.05em', textTransform: 'uppercase' }}>E-Ticket Terbit</p>
+            <CheckCircle2 className="w-4 h-4 text-[#9a9a9a]" strokeWidth={1} />
+            <p className="text-[13px] font-light text-[#9a9a9a] tracking-wider uppercase">E-Ticket Terbit</p>
           </div>
-          <h3 style={{ fontSize: 22, letterSpacing: '-0.02em', fontWeight: 300, color: '#ffffff', lineHeight: 1.2 }}>Simpan kode atau unduh tiket Anda</h3>
+          <h3 className="text-[22px] tracking-[-0.02em] font-light text-white leading-[1.2]">Simpan kode atau unduh tiket Anda</h3>
         </div>
 
         {/* Order Code */}
-        <div style={{ padding: '20px 24px 0' }}>
+        <div className="px-6 pt-5">
           <div className="flex items-center justify-between">
             <div>
-              <span style={{ fontSize: 13, fontWeight: 300, color: '#9a9a9a', display: 'block', marginBottom: 4 }}>Kode Pesanan</span>
-              <span style={{ fontSize: 18, letterSpacing: '-0.01em', fontWeight: 300, color: '#ffffff', fontVariantNumeric: 'tabular-nums' }}>{order.orderCode}</span>
+              <span className="text-[13px] font-light text-[#9a9a9a] block mb-1">Kode Pesanan</span>
+              <span className="text-lg tracking-[-0.01em] font-light text-white tabular-nums">{order.orderCode}</span>
             </div>
             <button onClick={handleCopyCode}
-              className="cursor-pointer bg-transparent border-none hover:opacity-60 transition-opacity flex items-center gap-1.5"
-              style={{ fontSize: 13, fontWeight: 300, color: copied ? '#ffffff' : '#9a9a9a' }}>
+              className={`cursor-pointer bg-transparent border-none hover:opacity-60 transition-opacity flex items-center gap-1.5 text-[13px] font-light ${copied ? 'text-white' : 'text-[#9a9a9a]'}`}>
               {copied ? <Check className="w-3.5 h-3.5" strokeWidth={1} /> : <Copy className="w-3.5 h-3.5" strokeWidth={1} />}
               <span>{copied ? 'Tersalin!' : 'Salin'}</span>
             </button>
@@ -350,15 +323,14 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
         </div>
 
         {/* Mailpit Info Banner */}
-        <div style={{ padding: '16px 24px 0' }}>
-          <div className="flex items-start gap-3 p-3 text-left"
-            style={{ background: 'rgba(99, 102, 241, 0.08)', border: '1px solid rgba(99, 102, 241, 0.2)', borderRadius: 8 }}>
+        <div className="px-6 pt-4">
+          <div className="flex items-start gap-3 p-3 text-left bg-[rgba(99,102,241,0.08)] border border-[rgba(99,102,241,0.2)] rounded-lg">
             <Mail className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" strokeWidth={1.5} />
-            <div style={{ fontSize: 12, lineHeight: 1.4 }}>
-              <p style={{ color: '#e2e8f0', fontWeight: 400, margin: 0 }}>
+            <div className="text-xs leading-[1.4]">
+              <p className="text-[#e2e8f0] font-normal m-0">
                 E-Ticket telah dikirim ke <span className="text-indigo-300 font-medium">{order.userEmail}</span>.
               </p>
-              <p style={{ color: '#94a3b8', marginTop: 2, margin: 0 }}>
+              <p className="text-[#94a3b8] mt-0.5 m-0">
                 Cek kotak masuk testing email lokal di Mailpit UI: <a href="http://localhost:8025" target="_blank" rel="noreferrer" className="text-indigo-400 underline hover:text-indigo-300">http://localhost:8025</a>
               </p>
             </div>
@@ -366,65 +338,59 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
         </div>
 
         {/* E-Ticket Card */}
-        <div ref={ticketRef} data-ticket-card="true" style={{ padding: '20px 24px 0' }}>
-          {/* Top branding */}
-          <div className="flex items-center justify-between" style={{ paddingBottom: 16, marginBottom: 16, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-            <span style={{ fontSize: 14, fontWeight: 300, color: '#ffffff' }}>SymphoniaTic Pass</span>
-            <span style={{ fontSize: 13, fontWeight: 300, color: '#9a9a9a', letterSpacing: '0.05em' }}>VERIFIED</span>
+        <div ref={ticketRef} data-ticket-card="true" className="px-6 pt-5">
+          <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/[0.06]">
+            <span className="text-sm font-light text-white">SymphoniaTic Pass</span>
+            <span className="text-[13px] font-light text-[#9a9a9a] tracking-wider">VERIFIED</span>
           </div>
 
-          {/* Event Title */}
-          <div style={{ marginBottom: 16 }}>
-            <span style={{ fontSize: 12, fontWeight: 300, color: '#9a9a9a', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block', marginBottom: 4 }}>Pertunjukan Resmi</span>
-            <h4 style={{ fontSize: 18, letterSpacing: '-0.01em', fontWeight: 300, color: '#ffffff' }}>{order.eventTitle}</h4>
-            <p style={{ fontSize: 14, fontWeight: 300, color: '#9a9a9a', marginTop: 2 }}>{order.artist}</p>
+          <div className="mb-4">
+            <span className="text-xs font-light text-[#9a9a9a] tracking-wider uppercase block mb-1">Pertunjukan Resmi</span>
+            <h4 className="text-lg tracking-[-0.01em] font-light text-white">{order.eventTitle}</h4>
+            <p className="text-sm font-light text-[#9a9a9a] mt-0.5">{order.artist}</p>
           </div>
 
-          {/* Info grid */}
-          <div className="grid grid-cols-2 gap-x-4" style={{ marginBottom: 16 }}>
+          <div className="grid grid-cols-2 gap-x-4 mb-4">
             <div>
-              <span style={{ fontSize: 12, fontWeight: 300, color: '#9a9a9a', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block', marginBottom: 4 }}>Tanggal & Waktu</span>
-              <span style={{ fontSize: 14, fontWeight: 300, color: '#ffffff' }}>{order.date}</span>
+              <span className="text-xs font-light text-[#9a9a9a] tracking-wider uppercase block mb-1">Tanggal & Waktu</span>
+              <span className="text-sm font-light text-white">{order.date}</span>
             </div>
             <div>
-              <span style={{ fontSize: 12, fontWeight: 300, color: '#9a9a9a', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block', marginBottom: 4 }}>Venue</span>
-              <span style={{ fontSize: 14, fontWeight: 300, color: '#ffffff' }}>{order.venue}</span>
+              <span className="text-xs font-light text-[#9a9a9a] tracking-wider uppercase block mb-1">Venue</span>
+              <span className="text-sm font-light text-white">{order.venue}</span>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-x-4" style={{ marginBottom: 20 }}>
+          <div className="grid grid-cols-2 gap-x-4 mb-5">
             <div>
-              <span style={{ fontSize: 12, fontWeight: 300, color: '#9a9a9a', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block', marginBottom: 4 }}>Pemegang Tiket</span>
-              <span style={{ fontSize: 14, fontWeight: 300, color: '#ffffff' }}>{order.userName}</span>
+              <span className="text-xs font-light text-[#9a9a9a] tracking-wider uppercase block mb-1">Pemegang Tiket</span>
+              <span className="text-sm font-light text-white">{order.userName}</span>
             </div>
             <div>
-              <span style={{ fontSize: 12, fontWeight: 300, color: '#9a9a9a', letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block', marginBottom: 4 }}>Kategori</span>
-              <span style={{ fontSize: 14, fontWeight: 300, color: '#ffffff' }}>{order.categoryName} ({order.quantity}x)</span>
+              <span className="text-xs font-light text-[#9a9a9a] tracking-wider uppercase block mb-1">Kategori</span>
+              <span className="text-sm font-light text-white">{order.categoryName} ({order.quantity}x)</span>
             </div>
           </div>
 
-          {/* QR Code */}
-          <div className="flex flex-col items-center text-center" style={{ borderTop: '1px dashed rgba(255,255,255,0.1)', paddingTop: 20 }}>
-            <div className="p-2.5" style={{ background: '#ffffff' }}>
-              <QrCode className="w-20 h-20 sm:w-24 sm:h-24" strokeWidth={1} style={{ color: '#171717' }} />
+          <div className="flex flex-col items-center text-center border-t border-dashed border-white/[0.1] pt-5">
+            <div className="p-2.5 bg-white">
+              <QrCode className="w-20 h-20 sm:w-24 sm:h-24 text-[#171717]" strokeWidth={1} />
             </div>
-            <span style={{ fontSize: 15, fontWeight: 300, color: '#ffffff', marginTop: 12, fontVariantNumeric: 'tabular-nums' }}>{order.orderCode}</span>
-            <span style={{ fontSize: 13, fontWeight: 300, color: '#9a9a9a', marginTop: 4 }}>Tunjukkan QR ini di pintu masuk</span>
+            <span className="text-[15px] font-light text-white mt-3 tabular-nums">{order.orderCode}</span>
+            <span className="text-[13px] font-light text-[#9a9a9a] mt-1">Tunjukkan QR ini di pintu masuk</span>
           </div>
         </div>
 
         {/* Download buttons */}
-        <div style={{ padding: '20px 24px 24px' }}>
+        <div className="px-6 pb-6 pt-5">
           <div className="grid grid-cols-2 gap-3">
             <button onClick={handleDownloadPNG} disabled={!!isDownloading}
-              className="cursor-pointer bg-transparent border-none hover:opacity-60 transition-opacity flex items-center justify-center gap-1.5"
-              style={{ fontSize: 13, fontWeight: 300, color: '#ffffff', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+              className="cursor-pointer bg-transparent border-none hover:opacity-60 transition-opacity flex items-center justify-center gap-1.5 text-[13px] font-light text-white py-2.5 border-b border-white/[0.1]">
               <Download className="w-3.5 h-3.5" strokeWidth={1} />
               <span>{isDownloading === 'PNG' ? 'Membuat...' : 'PNG'}</span>
             </button>
             <button onClick={handleDownloadPDF} disabled={!!isDownloading}
-              className="cursor-pointer bg-transparent border-none hover:opacity-60 transition-opacity flex items-center justify-center gap-1.5"
-              style={{ fontSize: 13, fontWeight: 300, color: '#ffffff', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+              className="cursor-pointer bg-transparent border-none hover:opacity-60 transition-opacity flex items-center justify-center gap-1.5 text-[13px] font-light text-white py-2.5 border-b border-white/[0.1]">
               <Download className="w-3.5 h-3.5" strokeWidth={1} />
               <span>{isDownloading === 'PDF' ? 'Membuat...' : 'PDF'}</span>
             </button>
@@ -468,39 +434,26 @@ export const OrdersDrawer: React.FC<OrdersProps> = ({ orders, onClose, onShowTic
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-black/70 backdrop-blur-sm">
       <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
-        className="w-full max-w-md text-white h-full flex flex-col overflow-y-auto"
-        style={{ background: '#171717', borderLeft: '1px solid rgba(255,255,255,0.06)' }}>
-        <div className="flex items-center justify-between pb-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '16px 24px' }}>
+        className="w-full max-w-md text-white h-full flex flex-col overflow-y-auto bg-[#171717] border-l border-white/[0.06]">
+        <div className="flex items-center justify-between pb-4 border-b border-white/[0.06] px-6 py-4">
           <div className="flex items-center gap-2">
-            <QrCode className="w-5 h-5" strokeWidth={1} style={{ color: '#9a9a9a' }} />
-            <h2 style={{ fontSize: 20, letterSpacing: '-0.01em', fontWeight: 300 }}>Cek Tiket & Invoice</h2>
+            <QrCode className="w-5 h-5 text-[#9a9a9a]" strokeWidth={1} />
+            <h2 className="text-xl tracking-[-0.01em] font-light text-white">Cek Tiket & Invoice</h2>
           </div>
           <button onClick={onClose} className="p-2 text-white/60 hover:text-white cursor-pointer bg-transparent border-none"><X className="w-5 h-5" strokeWidth={1} /></button>
         </div>
 
-        <div style={{ padding: '16px 24px' }}>
+        <div className="px-6 py-4">
           {/* Search Form */}
           <form onSubmit={handleSearch} className="mb-6">
-            <label style={{ fontSize: 16, fontWeight: 300, color: '#9a9a9a', display: 'block', marginBottom: 8 }}>Cari Berdasarkan Kode Pesanan</label>
+            <label className="text-base font-light text-[#9a9a9a] block mb-2">Cari Berdasarkan Kode Pesanan</label>
             <div className="relative mb-3">
-              <Search className="w-4 h-4 absolute left-0 top-3" strokeWidth={1} style={{ color: '#9a9a9a' }} />
+              <Search className="w-4 h-4 absolute left-0 top-3 text-[#9a9a9a]" strokeWidth={1} />
               <input type="text" placeholder="SYM-123456" value={searchCode} onChange={(e) => setSearchCode(e.target.value)}
-                style={{
-                  fontSize: 16,
-                  fontWeight: 300,
-                  color: '#ffffff',
-                  background: 'transparent',
-                  border: 'none',
-                  borderBottom: '1px solid rgba(255,255,255,0.15)',
-                  outline: 'none',
-                  width: '100%',
-                  padding: '8px 0 8px 24px',
-                  fontVariantNumeric: 'tabular-nums',
-                }} />
+                className="text-base font-light text-white bg-transparent border-none border-b border-white/[0.15] outline-none w-full pl-6 py-2 tabular-nums" />
             </div>
             <button type="submit"
-              className="w-full cursor-pointer bg-transparent border-none hover:opacity-60 transition-opacity flex items-center justify-center gap-2"
-              style={{ fontSize: 16, fontWeight: 300, color: '#ffffff', padding: '10px 0', borderBottom: '1px solid #ffffff' }}>
+              className="w-full cursor-pointer bg-transparent border-none hover:opacity-60 transition-opacity flex items-center justify-center gap-2 text-base font-light text-white py-2.5 border-b border-white">
               <Search className="w-3.5 h-3.5" strokeWidth={1} />
               <span>Cek Kode Pesanan</span>
             </button>
@@ -510,49 +463,47 @@ export const OrdersDrawer: React.FC<OrdersProps> = ({ orders, onClose, onShowTic
           {hasSearched && (
             <div className="mb-6">
               {foundOrder ? (
-                <div style={{ padding: '16px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                <div className="py-4 border-b border-white/[0.06]">
                   <div className="flex items-center justify-between mb-2">
-                    <span style={{ fontSize: 16, fontWeight: 300, color: '#ffffff', fontVariantNumeric: 'tabular-nums' }}>{foundOrder.orderCode}</span>
-                    <span style={{ fontSize: 16, fontWeight: 300, color: '#9a9a9a' }}>VERIFIED</span>
+                    <span className="text-base font-light text-white tabular-nums">{foundOrder.orderCode}</span>
+                    <span className="text-base font-light text-[#9a9a9a]">VERIFIED</span>
                   </div>
-                  <h4 style={{ fontSize: 16, fontWeight: 300, color: '#ffffff', marginBottom: 4 }}>{foundOrder.eventTitle}</h4>
-                  <p style={{ fontSize: 16, fontWeight: 300, color: '#9a9a9a', marginBottom: 12 }}>Pemegang: {foundOrder.userName}</p>
+                  <h4 className="text-base font-light text-white mb-1">{foundOrder.eventTitle}</h4>
+                  <p className="text-base font-light text-[#9a9a9a] mb-3">Pemegang: {foundOrder.userName}</p>
                   <button onClick={() => onShowTicket(foundOrder)}
-                    className="w-full cursor-pointer bg-transparent border-none hover:opacity-60 transition-opacity flex items-center justify-center gap-2"
-                    style={{ fontSize: 16, fontWeight: 300, color: '#ffffff', padding: '10px 0', borderBottom: '1px solid #ffffff' }}>
+                    className="w-full cursor-pointer bg-transparent border-none hover:opacity-60 transition-opacity flex items-center justify-center gap-2 text-base font-light text-white py-2.5 border-b border-white">
                     <QrCode className="w-3.5 h-3.5" strokeWidth={1} />
                     <span>Buka E-Ticket</span>
                   </button>
                 </div>
               ) : (
-                <p style={{ fontSize: 16, fontWeight: 300, color: '#9a9a9a' }}>Kode Pesanan tidak ditemukan.</p>
+                <p className="text-base font-light text-[#9a9a9a]">Kode Pesanan tidak ditemukan.</p>
               )}
             </div>
           )}
 
           {/* Local Orders */}
           <div>
-            <h3 style={{ fontSize: 16, fontWeight: 300, color: '#9a9a9a', marginBottom: 12 }}>E-Ticket Di Perangkat Ini</h3>
+            <h3 className="text-base font-light text-[#9a9a9a] mb-3">E-Ticket Di Perangkat Ini</h3>
             {orders.length === 0 ? (
-              <div className="text-center" style={{ padding: '32px 0' }}>
-                <Ticket className="w-8 h-8 mx-auto mb-3" strokeWidth={1} style={{ color: '#9a9a9a' }} />
-                <p style={{ fontSize: 16, fontWeight: 300, color: '#9a9a9a' }}>Belum Ada Tiket Tersimpan</p>
-                <p style={{ fontSize: 16, fontWeight: 300, color: '#9a9a9a', marginTop: 4 }}>Pesan tiket konser baru atau cari menggunakan kode invoice.</p>
+              <div className="text-center py-8">
+                <Ticket className="w-8 h-8 mx-auto mb-3 text-[#9a9a9a]" strokeWidth={1} />
+                <p className="text-base font-light text-[#9a9a9a]">Belum Ada Tiket Tersimpan</p>
+                <p className="text-base font-light text-[#9a9a9a] mt-1">Pesan tiket konser baru atau cari menggunakan kode invoice.</p>
               </div>
             ) : (
               <div className="space-y-0">
                 {orders.map((ord, idx) => (
-                  <div key={idx} style={{ padding: '16px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                  <div key={idx} className="py-4 border-b border-white/[0.06]">
                     <div className="flex items-center justify-between mb-2">
-                      <span style={{ fontSize: 16, fontWeight: 300, color: '#ffffff', fontVariantNumeric: 'tabular-nums' }}>{ord.orderCode}</span>
-                      <span style={{ fontSize: 16, fontWeight: 300, color: '#9a9a9a' }}>{ord.status}</span>
+                      <span className="text-base font-light text-white tabular-nums">{ord.orderCode}</span>
+                      <span className="text-base font-light text-[#9a9a9a]">{ord.status}</span>
                     </div>
-                    <h4 style={{ fontSize: 16, fontWeight: 300, color: '#ffffff', marginBottom: 4 }}>{ord.eventTitle}</h4>
-                    <p style={{ fontSize: 16, fontWeight: 300, color: '#9a9a9a', marginBottom: 8 }}>{ord.artist}</p>
-                    <div className="flex items-center justify-between" style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 8 }}>
-                      <span style={{ fontSize: 16, fontWeight: 300, color: '#9a9a9a' }}>{ord.categoryName} ({ord.quantity}x)</span>
-                      <button onClick={() => onShowTicket(ord)} className="cursor-pointer bg-transparent border-none hover:opacity-60 transition-opacity flex items-center gap-2"
-                        style={{ fontSize: 16, fontWeight: 300, color: '#ffffff', borderBottom: '1px solid #ffffff', paddingBottom: 2 }}>
+                    <h4 className="text-base font-light text-white mb-1">{ord.eventTitle}</h4>
+                    <p className="text-base font-light text-[#9a9a9a] mb-2">{ord.artist}</p>
+                    <div className="flex items-center justify-between border-t border-white/[0.06] pt-2">
+                      <span className="text-base font-light text-[#9a9a9a]">{ord.categoryName} ({ord.quantity}x)</span>
+                      <button onClick={() => onShowTicket(ord)} className="cursor-pointer bg-transparent border-none hover:opacity-60 transition-opacity flex items-center gap-2 text-base font-light text-white border-b border-white pb-0.5">
                         <QrCode className="w-3.5 h-3.5" strokeWidth={1} /><span>Tampilkan QR</span>
                       </button>
                     </div>
@@ -567,9 +518,6 @@ export const OrdersDrawer: React.FC<OrdersProps> = ({ orders, onClose, onShowTic
   );
 };
 
-// ════════════════════════════════════════════════════════════════════
-// ADMIN DRAWER
-// ════════════════════════════════════════════════════════════════════
 interface AdminProps { onClose: () => void; onEventsUpdated?: () => void; allEvents?: EventItem[]; }
 
 export const AdminDrawer: React.FC<AdminProps> = ({ onClose, onEventsUpdated, allEvents }) => (

@@ -34,7 +34,6 @@ const ConcertDetailPage: React.FC<Props> = ({ eventId }) => {
         if (found) {
           setEvent(found);
         } else {
-          // fallback to static
           const staticEvent = CONCERT_EVENTS.find((e) => String(e.id) === eventId);
           if (staticEvent) setEvent(staticEvent);
         }
@@ -61,17 +60,17 @@ const ConcertDetailPage: React.FC<Props> = ({ eventId }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#171717' }}>
-        <p style={{ fontSize: 16, fontWeight: 300, color: '#9a9a9a' }}>Memuat...</p>
+      <div className="min-h-screen flex items-center justify-center bg-[#171717]">
+        <p className="text-base font-light text-[#9a9a9a]">Memuat...</p>
       </div>
     );
   }
 
   if (!event) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center" style={{ background: '#171717' }}>
-        <p style={{ fontSize: 24, fontWeight: 300, color: '#ffffff', marginBottom: 16 }}>Konser Tidak Ditemukan</p>
-        <a href="/" style={{ fontSize: 16, fontWeight: 300, color: '#9a9a9a', borderBottom: '1px solid #9a9a9a', paddingBottom: 2 }}>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#171717]">
+        <p className="text-2xl font-light text-white mb-4">Konser Tidak Ditemukan</p>
+        <a href="/" className="text-base font-light text-[#9a9a9a] border-b border-[#9a9a9a] pb-0.5">
           Kembali ke Beranda
         </a>
       </div>
@@ -79,39 +78,38 @@ const ConcertDetailPage: React.FC<Props> = ({ eventId }) => {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: '#171717' }}>
+    <div className="min-h-screen bg-[#171717]">
       {/* Hero Image */}
-      <div className="relative w-full" style={{ height: '60vh', minHeight: 400 }}>
+      <div className="relative w-full h-[60vh] min-h-[400px]">
         <img src={event.image} alt={event.title} className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, #171717 0%, rgba(23,23,23,0.3) 40%, transparent 100%)' }} />
+        <div className="absolute inset-0 bg-[linear-gradient(to_top,#171717_0%,rgba(23,23,23,0.3)_40%,transparent_100%)]" />
 
         {/* Back button */}
-        <div className="absolute top-0 left-0 right-0" style={{ padding: '16px 40px' }}>
-          <a href="/" className="inline-flex items-center gap-2 hover:opacity-60 transition-opacity"
-            style={{ fontSize: 16, fontWeight: 300, color: '#9a9a9a' }}>
+        <div className="absolute top-0 left-0 right-0 px-10 py-4">
+          <a href="/" className="inline-flex items-center gap-2 text-base font-light text-[#9a9a9a] hover:opacity-60 transition-opacity">
             <ArrowLeft className="w-4 h-4" strokeWidth={1} />
             <span>Kembali</span>
           </a>
         </div>
 
         {/* Title overlay */}
-        <div className="absolute bottom-0 left-0 right-0" style={{ maxWidth: 1400, padding: '0 40px 48px' }}>
-          <p style={{ fontSize: 16, fontWeight: 300, letterSpacing: '-0.05px', color: '#9a9a9a', marginBottom: 8 }}>
+        <div className="absolute bottom-0 left-0 right-0 max-w-[1400px] px-10 pb-12">
+          <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mb-2">
             {event.category}
           </p>
-          <h1 style={{ fontSize: 'clamp(32px, 5vw, 56px)', lineHeight: 1.0, letterSpacing: '-0.056em', fontWeight: 300, color: '#ffffff' }}>
+          <h1 className="text-[clamp(32px,5vw,56px)] leading-[1.0] tracking-[-0.056em] font-light text-white">
             {event.title}
           </h1>
-          <p style={{ fontSize: 20, fontWeight: 300, letterSpacing: '-0.01em', color: '#9a9a9a', marginTop: 12 }}>
+          <p className="text-xl tracking-[-0.01em] font-light text-[#9a9a9a] mt-3">
             {event.artist}
           </p>
         </div>
       </div>
 
       {/* Content */}
-      <div className="mx-auto" style={{ maxWidth: 1400, padding: '0 40px 120px' }}>
+      <div className="mx-auto max-w-[1400px] px-10 pb-[120px]">
         {/* Quick Info Bar */}
-        <div className="flex flex-wrap items-center gap-6" style={{ paddingTop: 40, paddingBottom: 40, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <div className="flex flex-wrap items-center gap-6 pt-10 pb-10 border-b border-white/[0.06]">
           {[
             { label: 'Tanggal', value: event.date },
             { label: 'Waktu', value: event.time },
@@ -119,83 +117,81 @@ const ConcertDetailPage: React.FC<Props> = ({ eventId }) => {
             { label: 'Venue', value: event.venue },
           ].map((item) => (
             <div key={item.label}>
-              <span style={{ fontSize: 16, fontWeight: 300, color: '#9a9a9a', display: 'block', marginBottom: 4 }}>{item.label}</span>
-              <span style={{ fontSize: 16, fontWeight: 300, color: '#ffffff' }}>{item.value}</span>
+              <span className="text-base font-light text-[#9a9a9a] block mb-1">{item.label}</span>
+              <span className="text-base font-light text-white">{item.value}</span>
             </div>
           ))}
         </div>
 
         {/* Tabs */}
-        <div className="flex overflow-x-auto no-scrollbar" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', marginTop: 40 }}>
+        <div className="flex overflow-x-auto no-scrollbar border-b border-white/[0.06] mt-10">
           {TABS.map((t) => (
             <button key={t.id} onClick={() => setTab(t.id)}
-              className="whitespace-nowrap cursor-pointer bg-transparent border-none"
-              style={{
-                fontSize: 16, fontWeight: 300, letterSpacing: '-0.05px',
-                color: tab === t.id ? '#ffffff' : '#9a9a9a',
-                borderBottom: tab === t.id ? '1px solid #ffffff' : '1px solid transparent',
-                padding: '16px 24px 14px',
-              }}>
+              className={`whitespace-nowrap cursor-pointer bg-transparent border-none text-base font-light tracking-[-0.05px] px-6 pt-4 pb-[14px] ${
+                tab === t.id
+                  ? 'text-white border-b border-white'
+                  : 'text-[#9a9a9a] border-b border-transparent'
+              }`}>
               {t.label}
             </button>
           ))}
         </div>
 
         {/* Tab Content */}
-        <div style={{ paddingTop: 48 }}>
+        <div className="pt-12">
           {tab === 'INFO' && (
             <div className="space-y-8">
               <div>
-                <h2 style={{ fontSize: 28, letterSpacing: '-0.02em', fontWeight: 300, color: '#ffffff', marginBottom: 16 }}>Deskripsi Mahakarya</h2>
-                <p style={{ fontSize: 16, fontWeight: 300, color: '#9a9a9a', lineHeight: 1.7, maxWidth: 720 }}>{event.description}</p>
+                <h2 className="text-[28px] tracking-[-0.02em] font-light text-white mb-4">Deskripsi Mahakarya</h2>
+                <p className="text-base font-light text-[#9a9a9a] leading-[1.7] max-w-[720px]">{event.description}</p>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6" style={{ maxWidth: 720 }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-[720px]">
                 {[['Penyelenggara', event.organizer], ['Konduktor & Solois', event.conductor], ['Jadwal Tanggal', event.date], ['Waktu Konser', `${event.time} (Open Gate ${event.openGate})`]].map(([label, value]) => (
-                  <div key={label} style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: 16 }}>
-                    <span style={{ fontSize: 16, fontWeight: 300, color: '#9a9a9a', display: 'block', marginBottom: 4 }}>{label}</span>
-                    <span style={{ fontSize: 16, fontWeight: 300, color: '#ffffff' }}>{value}</span>
+                  <div key={label} className="border-b border-white/[0.06] pb-4">
+                    <span className="text-base font-light text-[#9a9a9a] block mb-1">{label}</span>
+                    <span className="text-base font-light text-white">{value}</span>
                   </div>
                 ))}
               </div>
-              <div style={{ maxWidth: 720 }}>
-                <h3 style={{ fontSize: 20, letterSpacing: '-0.01em', fontWeight: 300, color: '#ffffff', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div className="max-w-[720px]">
+                <h3 className="text-xl tracking-[-0.01em] font-light text-white mb-3 flex items-center gap-2">
                   <MapPin className="w-4 h-4" strokeWidth={1} /> Detail Lokasi Venue
                 </h3>
-                <p style={{ fontSize: 16, fontWeight: 300, color: '#ffffff' }}>{event.venue}</p>
-                <p style={{ fontSize: 16, fontWeight: 300, color: '#9a9a9a', marginTop: 4 }}>{event.address}</p>
+                <p className="text-base font-light text-white">{event.venue}</p>
+                <p className="text-base font-light text-[#9a9a9a] mt-1">{event.address}</p>
               </div>
             </div>
           )}
 
           {tab === 'RUNDOWN' && (
-            <div className="space-y-4" style={{ maxWidth: 720 }}>
-              <h2 style={{ fontSize: 28, letterSpacing: '-0.02em', fontWeight: 300, color: '#ffffff', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div className="space-y-4 max-w-[720px]">
+              <h2 className="text-[28px] tracking-[-0.02em] font-light text-white mb-4 flex items-center gap-2">
                 <Clock className="w-5 h-5" strokeWidth={1} /> Rangkaian Acara
               </h2>
               {(event.rundown || []).map((item, idx) => (
-                <div key={idx} className="flex items-start gap-6" style={{ padding: '16px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                  <span style={{ fontSize: 16, fontWeight: 300, color: '#9a9a9a', minWidth: 100 }}>{item.time}</span>
-                  <span style={{ fontSize: 16, fontWeight: 300, color: '#ffffff' }}>{item.activity}</span>
+                <div key={idx} className="flex items-start gap-6 py-4 border-b border-white/[0.06]">
+                  <span className="text-base font-light text-[#9a9a9a] min-w-[100px]">{item.time}</span>
+                  <span className="text-base font-light text-white">{item.activity}</span>
                 </div>
               ))}
             </div>
           )}
 
           {tab === 'BENEFITS' && (
-            <div className="space-y-6" style={{ maxWidth: 720 }}>
-              <h2 style={{ fontSize: 28, letterSpacing: '-0.02em', fontWeight: 300, color: '#ffffff', marginBottom: 16 }}>Pilihan Kategori Tiket</h2>
+            <div className="space-y-6 max-w-[720px]">
+              <h2 className="text-[28px] tracking-[-0.02em] font-light text-white mb-4">Pilihan Kategori Tiket</h2>
               {(event.categories || []).map((cat) => (
-                <div key={cat.id} style={{ padding: '24px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                <div key={cat.id} className="py-6 border-b border-white/[0.06]">
                   <div className="flex items-center justify-between mb-2">
-                    <span style={{ fontSize: 20, letterSpacing: '-0.01em', fontWeight: 300, color: '#ffffff' }}>{cat.name}</span>
-                    <span style={{ fontSize: 20, letterSpacing: '-0.01em', fontWeight: 300, color: '#ffffff' }}>{formatIDR(cat.price)}</span>
+                    <span className="text-xl tracking-[-0.01em] font-light text-white">{cat.name}</span>
+                    <span className="text-xl tracking-[-0.01em] font-light text-white">{formatIDR(cat.price)}</span>
                   </div>
-                  <p style={{ fontSize: 16, fontWeight: 300, color: '#9a9a9a', marginBottom: 12 }}>Sisa Kuota: {cat.quota} Tempat Duduk</p>
+                  <p className="text-base font-light text-[#9a9a9a] mb-3">Sisa Kuota: {cat.quota} Tempat Duduk</p>
                   <div>
-                    <span style={{ fontSize: 16, fontWeight: 300, color: '#9a9a9a', display: 'block', marginBottom: 8 }}>Fasilitas Termasuk:</span>
+                    <span className="text-base font-light text-[#9a9a9a] block mb-2">Fasilitas Termasuk:</span>
                     <div className="flex flex-wrap gap-3">
                       {(cat.benefits || []).map((b, i) => (
-                        <span key={i} style={{ fontSize: 16, fontWeight: 300, color: '#9a9a9a' }}>{b}</span>
+                        <span key={i} className="text-base font-light text-[#9a9a9a]">{b}</span>
                       ))}
                     </div>
                   </div>
@@ -205,9 +201,9 @@ const ConcertDetailPage: React.FC<Props> = ({ eventId }) => {
           )}
 
           {tab === 'TERMS' && (
-            <div style={{ maxWidth: 720 }}>
-              <h2 style={{ fontSize: 28, letterSpacing: '-0.02em', fontWeight: 300, color: '#ffffff', marginBottom: 16 }}>Syarat & Ketentuan</h2>
-              <ul className="list-disc pl-5 space-y-3" style={{ fontSize: 16, fontWeight: 300, color: '#9a9a9a', lineHeight: 1.7 }}>
+            <div className="max-w-[720px]">
+              <h2 className="text-[28px] tracking-[-0.02em] font-light text-white mb-4">Syarat & Ketentuan</h2>
+              <ul className="list-disc pl-5 space-y-3 text-base font-light text-[#9a9a9a] leading-[1.7]">
                 <li>Setiap akun/identitas pemesan hanya diperbolehkan membeli maksimal 4 tiket dalam 1 transaksi resmi.</li>
                 <li>Pengunjung wajib menggunakan pakaian Rapi &amp; Sopan (Smart Casual / Formal).</li>
                 <li>Anak-anak berusia di bawah 7 tahun tidak diperkenankan memasuki arena pertunjukan simfoni.</li>
@@ -219,17 +215,16 @@ const ConcertDetailPage: React.FC<Props> = ({ eventId }) => {
         </div>
 
         {/* Sticky Buy Bar */}
-        <div className="fixed bottom-0 left-0 right-0 z-30" style={{ background: 'rgba(23,23,23,0.95)', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-          <div className="flex items-center justify-between mx-auto" style={{ maxWidth: 1400, padding: '16px 40px' }}>
+        <div className="fixed bottom-0 left-0 right-0 z-30 bg-[rgba(23,23,23,0.95)] border-t border-white/[0.06]">
+          <div className="flex items-center justify-between mx-auto max-w-[1400px] px-10 py-4">
             <div>
-              <span style={{ fontSize: 16, fontWeight: 300, color: '#9a9a9a', display: 'block', marginBottom: 4 }}>Harga Mulai Dari</span>
-              <span style={{ fontSize: 24, letterSpacing: '-0.014em', fontWeight: 300, color: '#ffffff' }}>
+              <span className="text-base font-light text-[#9a9a9a] block mb-1">Harga Mulai Dari</span>
+              <span className="text-2xl tracking-[-0.014em] font-light text-white">
                 {formatIDR(event.categories?.[0]?.price ?? 0)}
               </span>
             </div>
             <button onClick={() => openBooking(event)}
-              className="cursor-pointer bg-transparent border-none hover:opacity-60 transition-opacity flex items-center gap-2"
-              style={{ fontSize: 16, fontWeight: 300, color: '#ffffff', borderBottom: '1px solid #ffffff', paddingBottom: 2 }}>
+              className="cursor-pointer bg-transparent border-none hover:opacity-60 transition-opacity flex items-center gap-2 text-base font-light text-white border-b border-white pb-0.5">
               <span>Beli Tiket</span>
               <ChevronRight className="w-4 h-4" strokeWidth={1} />
             </button>
