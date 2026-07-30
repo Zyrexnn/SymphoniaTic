@@ -1,0 +1,8 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { TicketDetailPage } from '../../components/redeem/TicketDetailPage';
+const code = Astro.params.code ?? '';
+---
+<Layout title="E-Ticket — SymphoniaTic" description="Detail tiket konser SymphoniaTic">
+  <TicketDetailPage code={code} client:load />
+</Layout>
