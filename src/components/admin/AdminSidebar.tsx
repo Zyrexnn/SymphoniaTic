@@ -23,7 +23,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   activeTab, onTabChange, onLogout, eventsCount, ordersCount, totalRevenue,
 }) => (
   <aside
-    className="hidden md:flex flex-col justify-between min-h-screen w-60 border-r border-white/10 bg-[#171717] p-6 shrink-0"
+    className="hidden md:flex flex-col justify-between h-screen w-60 border-r border-white/10 bg-[#171717] p-6 shrink-0 sticky top-0"
   >
     <div>
       <a href="/" className="flex items-center gap-3 px-2 mb-6 no-underline">

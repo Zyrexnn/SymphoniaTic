@@ -300,7 +300,7 @@ export const AdminApp: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#171717] text-white flex flex-col md:flex-row">
+    <div className="h-screen w-full bg-[#171717] text-white flex flex-col md:flex-row">
       <AdminSidebar
         activeTab={activeTab}
         onTabChange={setActiveTab}
@@ -320,7 +320,7 @@ export const AdminApp: React.FC = () => {
         isLoading={isLoading}
       />
 
-      <main className="flex flex-col flex-1 min-w-0 bg-[#171717]">
+      <main className="flex flex-col flex-1 min-w-0 bg-[#171717] overflow-y-auto">
         <header className="sticky top-0 flex items-center justify-between px-6 py-3 border-b border-white/10 bg-[#171717] z-20">
           <div>
             <h1 className="text-base font-light text-white tracking-tight m-0">{tabLabels[activeTab].title}</h1>
