@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Clock, ArrowLeft, ChevronRight } from 'lucide-react';
+import { MapPin, Clock, ArrowLeft, ChevronRight, Minus, Plus } from 'lucide-react';
 import { CONCERT_EVENTS, fetchEventsAPI, formatIDR } from './data';
 import type { EventItem, TicketCategory, OrderRecord } from './data';
 import { BookingModal, ETicketConfirmation } from './Modals';
+import { Footer } from './Footer';
 
 type DetailTab = 'INFO' | 'RUNDOWN' | 'BENEFITS' | 'TERMS';
 const TABS: { id: DetailTab; label: string }[] = [
@@ -16,6 +17,103 @@ const TABS: { id: DetailTab; label: string }[] = [
 interface Props {
   eventId: string;
 }
+
+const BuyCard: React.FC<{ event: EventItem; onBuy: () => void }> = ({ event, onBuy }) => {
+  const [selectedCatId, setSelectedCatId] = useState(event.categories?.[0]?.id || '');
+  const [qty, setQty] = useState(1);
+
+  const selectedCat = event.categories?.find((c) => c.id === selectedCatId) || event.categories?.[0];
+  const totalPrice = selectedCat ? selectedCat.price * qty : 0;
+  const isMaxQty = qty >= 4;
+
+  return (
+    <div className="lg:col-span-1">
+      <div className="sticky top-8 border border-white/[0.06] bg-[#171717]">
+        <div className="p-6 border-b border-white/[0.06]">
+          <span className="text-sm font-light text-[#9a9a9a] block mb-1">Harga Mulai Dari</span>
+          <span className="text-2xl tracking-[-0.014em] font-light text-white">
+            {formatIDR(event.categories?.[0]?.price ?? 0)}
+          </span>
+        </div>
+
+        <div className="p-6 space-y-5">
+          <div>
+            <label className="text-[11px] font-light text-[#7a7a7a] tracking-[0.12em] uppercase block mb-3">
+              Pilih Kategori
+            </label>
+            <div className="space-y-2">
+              {(event.categories || []).map((cat) => {
+                const isSelected = selectedCatId === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => setSelectedCatId(cat.id)}
+                    className={`w-full flex items-center justify-between px-3.5 py-3 text-left cursor-pointer transition-all duration-200 ${
+                      isSelected
+                        ? 'border border-white/[0.15] bg-white/[0.03]'
+                        : 'border border-white/[0.04] bg-transparent hover:border-white/[0.08]'
+                    }`}
+                  >
+                    <div>
+                      <span className={`text-sm font-light block ${isSelected ? 'text-white' : 'text-[#9a9a9a]'}`}>
+                        {cat.name}
+                      </span>
+                      <span className="text-[11px] font-light text-[#5a5a5a] mt-0.5 block">
+                        Sisa {cat.quota} kursi
+                      </span>
+                    </div>
+                    <span className={`text-sm font-light ${isSelected ? 'text-white' : 'text-[#9a9a9a]'}`}>
+                      {formatIDR(cat.price)}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div>
+            <label className="text-[11px] font-light text-[#7a7a7a] tracking-[0.12em] uppercase block mb-3">
+              Jumlah Tiket
+            </label>
+            <div className="flex items-center justify-between border border-white/[0.06] px-4 py-2.5">
+              <button
+                onClick={() => setQty(Math.max(1, qty - 1))}
+                disabled={qty <= 1}
+                className="bg-transparent border-none cursor-pointer p-1 text-[#9a9a9a] hover:text-white disabled:opacity-30 disabled:cursor-default"
+              >
+                <Minus size={14} strokeWidth={1} />
+              </button>
+              <span className="text-base font-light text-white">{qty}</span>
+              <button
+                onClick={() => setQty(Math.min(4, qty + 1))}
+                disabled={isMaxQty}
+                className="bg-transparent border-none cursor-pointer p-1 text-[#9a9a9a] hover:text-white disabled:opacity-30 disabled:cursor-default"
+              >
+                <Plus size={14} strokeWidth={1} />
+              </button>
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-white/[0.06]">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-sm font-light text-[#9a9a9a]">Total</span>
+              <span className="text-lg tracking-[-0.01em] font-light text-white">
+                {formatIDR(totalPrice)}
+              </span>
+            </div>
+            <button
+              onClick={onBuy}
+              className="w-full py-3 text-sm font-light text-white bg-white/[0.04] border border-white/[0.1] cursor-pointer transition-all duration-300 hover:bg-white/[0.08] hover:border-white/[0.2] active:scale-[0.98] flex items-center justify-center gap-2"
+            >
+              <span>Beli Tiket</span>
+              <ChevronRight size={14} strokeWidth={1} />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const ConcertDetailPage: React.FC<Props> = ({ eventId }) => {
   const [event, setEvent] = useState<EventItem | null>(null);
@@ -107,7 +205,7 @@ const ConcertDetailPage: React.FC<Props> = ({ eventId }) => {
       </div>
 
       {/* Content */}
-      <div className="mx-auto max-w-[1400px] px-10 pb-[120px]">
+      <div className="mx-auto max-w-[1400px] px-10 pb-20">
         {/* Quick Info Bar */}
         <div className="flex flex-wrap items-center gap-6 pt-10 pb-10 border-b border-white/[0.06]">
           {[
@@ -137,121 +235,107 @@ const ConcertDetailPage: React.FC<Props> = ({ eventId }) => {
           ))}
         </div>
 
-        {/* Tab Content */}
-        <div className="pt-12">
-          {tab === 'INFO' && (
-            <div className="space-y-8">
-              <div>
-                <h2 className="text-[28px] tracking-[-0.02em] font-light text-white mb-4">Deskripsi Mahakarya</h2>
-                <p className="text-base font-light text-[#9a9a9a] leading-[1.7] max-w-[720px]">{event.description}</p>
+        {/* Content Grid: Tab Content + Buy Card */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 pt-12">
+          {/* Left: Tab Content */}
+          <div className="lg:col-span-2">
+            {tab === 'INFO' && (
+              <div className="space-y-8">
+                <div>
+                  <h2 className="text-[28px] tracking-[-0.02em] font-light text-white mb-4">Deskripsi Mahakarya</h2>
+                  <p className="text-base font-light text-[#9a9a9a] leading-[1.7] max-w-[720px]">{event.description}</p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-[720px]">
+                  {[['Penyelenggara', event.organizer], ['Konduktor & Solois', event.conductor], ['Jadwal Tanggal', event.date], ['Waktu Konser', `${event.time} (Open Gate ${event.openGate})`]].map(([label, value]) => (
+                    <div key={label} className="border-b border-white/[0.06] pb-4">
+                      <span className="text-base font-light text-[#9a9a9a] block mb-1">{label}</span>
+                      <span className="text-base font-light text-white">{value}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="max-w-[720px]">
+                  <h3 className="text-xl tracking-[-0.01em] font-light text-white mb-3 flex items-center gap-2">
+                    <MapPin className="w-4 h-4" strokeWidth={1} /> Detail Lokasi Venue &amp; Peta Interaktif
+                  </h3>
+                  <p className="text-base font-light text-white">{event.venue}</p>
+                  <p className="text-base font-light text-[#9a9a9a] mt-1 mb-4">{event.address}</p>
+                  <div className="w-full h-[280px] border border-white/10 overflow-hidden relative mb-3 bg-[#171717]">
+                    <iframe
+                      title="Peta Lokasi Venue Konser"
+                      width="100%"
+                      height="100%"
+                      style={{ border: 0, filter: 'grayscale(0.9) invert(0.92) contrast(1.2)' }}
+                      loading="lazy"
+                      allowFullScreen
+                      src={event.googleMapsUrl || `https://maps.google.com/maps?q=${encodeURIComponent(event.venue + ' ' + event.address)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                    />
+                  </div>
+                  <a
+                    href={event.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venue + ' ' + event.address)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 text-xs font-light tracking-wider uppercase text-white border border-white/20 px-4 py-2 hover:bg-white/10 transition-colors"
+                  >
+                    <MapPin className="w-3.5 h-3.5" strokeWidth={1} />
+                    <span>Buka Petunjuk Arah di Google Maps</span>
+                  </a>
+                </div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-[720px]">
-                {[['Penyelenggara', event.organizer], ['Konduktor & Solois', event.conductor], ['Jadwal Tanggal', event.date], ['Waktu Konser', `${event.time} (Open Gate ${event.openGate})`]].map(([label, value]) => (
-                  <div key={label} className="border-b border-white/[0.06] pb-4">
-                    <span className="text-base font-light text-[#9a9a9a] block mb-1">{label}</span>
-                    <span className="text-base font-light text-white">{value}</span>
+            )}
+
+            {tab === 'RUNDOWN' && (
+              <div className="space-y-4 max-w-[720px]">
+                <h2 className="text-[28px] tracking-[-0.02em] font-light text-white mb-4 flex items-center gap-2">
+                  <Clock className="w-5 h-5" strokeWidth={1} /> Rangkaian Acara
+                </h2>
+                {(event.rundown || []).map((item, idx) => (
+                  <div key={idx} className="flex items-start gap-6 py-4 border-b border-white/[0.06]">
+                    <span className="text-base font-light text-[#9a9a9a] min-w-[100px]">{item.time}</span>
+                    <span className="text-base font-light text-white">{item.activity}</span>
                   </div>
                 ))}
               </div>
-              <div className="max-w-[720px]">
-                <h3 className="text-xl tracking-[-0.01em] font-light text-white mb-3 flex items-center gap-2">
-                  <MapPin className="w-4 h-4" strokeWidth={1} /> Detail Lokasi Venue &amp; Peta Interaktif
-                </h3>
-                <p className="text-base font-light text-white">{event.venue}</p>
-                <p className="text-base font-light text-[#9a9a9a] mt-1 mb-4">{event.address}</p>
+            )}
 
-                {/* Dark-mode Interactive Google Maps Embed */}
-                <div className="w-full h-[280px] border border-white/10 overflow-hidden relative mb-3 bg-[#171717]">
-                  <iframe
-                    title="Peta Lokasi Venue Konser"
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0, filter: 'grayscale(0.9) invert(0.92) contrast(1.2)' }}
-                    loading="lazy"
-                    allowFullScreen
-                    src={event.googleMapsUrl || `https://maps.google.com/maps?q=${encodeURIComponent(event.venue + ' ' + event.address)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
-                  />
-                </div>
-
-                <a
-                  href={event.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venue + ' ' + event.address)}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 text-xs font-light tracking-wider uppercase text-white border border-white/20 px-4 py-2 hover:bg-white/10 transition-colors"
-                >
-                  <MapPin className="w-3.5 h-3.5" strokeWidth={1} />
-                  <span>Buka Petunjuk Arah di Google Maps</span>
-                </a>
-              </div>
-            </div>
-          )}
-
-          {tab === 'RUNDOWN' && (
-            <div className="space-y-4 max-w-[720px]">
-              <h2 className="text-[28px] tracking-[-0.02em] font-light text-white mb-4 flex items-center gap-2">
-                <Clock className="w-5 h-5" strokeWidth={1} /> Rangkaian Acara
-              </h2>
-              {(event.rundown || []).map((item, idx) => (
-                <div key={idx} className="flex items-start gap-6 py-4 border-b border-white/[0.06]">
-                  <span className="text-base font-light text-[#9a9a9a] min-w-[100px]">{item.time}</span>
-                  <span className="text-base font-light text-white">{item.activity}</span>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {tab === 'BENEFITS' && (
-            <div className="space-y-6 max-w-[720px]">
-              <h2 className="text-[28px] tracking-[-0.02em] font-light text-white mb-4">Pilihan Kategori Tiket</h2>
-              {(event.categories || []).map((cat) => (
-                <div key={cat.id} className="py-6 border-b border-white/[0.06]">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xl tracking-[-0.01em] font-light text-white">{cat.name}</span>
-                    <span className="text-xl tracking-[-0.01em] font-light text-white">{formatIDR(cat.price)}</span>
-                  </div>
-                  <p className="text-base font-light text-[#9a9a9a] mb-3">Sisa Kuota: {cat.quota} Tempat Duduk</p>
-                  <div>
-                    <span className="text-base font-light text-[#9a9a9a] block mb-2">Fasilitas Termasuk:</span>
-                    <div className="flex flex-wrap gap-3">
-                      {(cat.benefits || []).map((b, i) => (
-                        <span key={i} className="text-base font-light text-[#9a9a9a]">{b}</span>
-                      ))}
+            {tab === 'BENEFITS' && (
+              <div className="space-y-6 max-w-[720px]">
+                <h2 className="text-[28px] tracking-[-0.02em] font-light text-white mb-4">Pilihan Kategori Tiket</h2>
+                {(event.categories || []).map((cat) => (
+                  <div key={cat.id} className="py-6 border-b border-white/[0.06]">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xl tracking-[-0.01em] font-light text-white">{cat.name}</span>
+                      <span className="text-xl tracking-[-0.01em] font-light text-white">{formatIDR(cat.price)}</span>
+                    </div>
+                    <p className="text-base font-light text-[#9a9a9a] mb-3">Sisa Kuota: {cat.quota} Tempat Duduk</p>
+                    <div>
+                      <span className="text-base font-light text-[#9a9a9a] block mb-2">Fasilitas Termasuk:</span>
+                      <div className="flex flex-wrap gap-3">
+                        {(cat.benefits || []).map((b, i) => (
+                          <span key={i} className="text-base font-light text-[#9a9a9a]">{b}</span>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
 
-          {tab === 'TERMS' && (
-            <div className="max-w-[720px]">
-              <h2 className="text-[28px] tracking-[-0.02em] font-light text-white mb-4">Syarat & Ketentuan</h2>
-              <ul className="list-disc pl-5 space-y-3 text-base font-light text-[#9a9a9a] leading-[1.7]">
-                <li>Setiap akun/identitas pemesan hanya diperbolehkan membeli maksimal 4 tiket dalam 1 transaksi resmi.</li>
-                <li>Pengunjung wajib menggunakan pakaian Rapi &amp; Sopan (Smart Casual / Formal).</li>
-                <li>Anak-anak berusia di bawah 7 tahun tidak diperkenankan memasuki arena pertunjukan simfoni.</li>
-                <li>E-Ticket resmi ber-Kode QR wajib ditunjukkan dari smartphone pada saat registrasi Open Gate.</li>
-                <li>Tiket yang sudah dibeli tidak dapat ditukarkan uang tunai (non-refundable).</li>
-              </ul>
-            </div>
-          )}
-        </div>
-
-        {/* Sticky Buy Bar */}
-        <div className="fixed bottom-0 left-0 right-0 z-30 bg-[rgba(23,23,23,0.95)] border-t border-white/[0.06]">
-          <div className="flex items-center justify-between mx-auto max-w-[1400px] px-10 py-4">
-            <div>
-              <span className="text-base font-light text-[#9a9a9a] block mb-1">Harga Mulai Dari</span>
-              <span className="text-2xl tracking-[-0.014em] font-light text-white">
-                {formatIDR(event.categories?.[0]?.price ?? 0)}
-              </span>
-            </div>
-            <button onClick={() => openBooking(event)}
-              className="cursor-pointer bg-transparent border-none hover:opacity-60 transition-opacity flex items-center gap-2 text-base font-light text-white border-b border-white pb-0.5">
-              <span>Beli Tiket</span>
-              <ChevronRight className="w-4 h-4" strokeWidth={1} />
-            </button>
+            {tab === 'TERMS' && (
+              <div className="max-w-[720px]">
+                <h2 className="text-[28px] tracking-[-0.02em] font-light text-white mb-4">Syarat & Ketentuan</h2>
+                <ul className="list-disc pl-5 space-y-3 text-base font-light text-[#9a9a9a] leading-[1.7]">
+                  <li>Setiap akun/identitas pemesan hanya diperbolehkan membeli maksimal 4 tiket dalam 1 transaksi resmi.</li>
+                  <li>Pengunjung wajib menggunakan pakaian Rapi &amp; Sopan (Smart Casual / Formal).</li>
+                  <li>Anak-anak berusia di bawah 7 tahun tidak diperkenankan memasuki arena pertunjukan simfoni.</li>
+                  <li>E-Ticket resmi ber-Kode QR wajib ditunjukkan dari smartphone pada saat registrasi Open Gate.</li>
+                  <li>Tiket yang sudah dibeli tidak dapat ditukarkan uang tunai (non-refundable).</li>
+                </ul>
+              </div>
+            )}
           </div>
+
+          {/* Right: Buy Card */}
+          <BuyCard event={event} onBuy={() => openBooking(event)} />
         </div>
       </div>
 
@@ -265,6 +349,7 @@ const ConcertDetailPage: React.FC<Props> = ({ eventId }) => {
       {activeSuccessOrder && (
         <ETicketConfirmation order={activeSuccessOrder} onClose={() => setActiveSuccessOrder(null)} />
       )}
+    <Footer />
     </div>
   );
 };
