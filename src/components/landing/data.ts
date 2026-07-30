@@ -215,7 +215,7 @@ export const NAV_PAGES = [
   { label: 'Jelajah Konser', href: '#concerts' },
   { label: 'Artis & Lineup', href: '#lineup' },
   { label: 'Sistem Kuota', href: '#ticket-war' },
-  { label: 'Panduan E-Ticket', href: '#guide' },
+  { label: 'Redem Tiket', href: '/redeem' },
   { label: 'FAQ', href: '#faq' },
 ];
 

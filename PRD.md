@@ -23,7 +23,7 @@
 - [x] Refactor landing page components (`AudioPlayer.tsx`, `Layout.tsx`, `Modals.tsx`, `Sections.tsx`, `data.ts`, `ConcertDetailPage.tsx`)
 - [x] Cleanup dead code & unused legacy components (`EventCard.astro`, `Navbar.astro`, `QuietPressHero.tsx`)
 - [x] Implement **Guest Checkout System** (Form Pemesanan Instan tanpa Login: Nama, Email, Kategori Kursi)
-- [x] Implement **No-Login Order Code Lookup** (Drawer Cek Tiket & Invoice publik via Kode Pesanan `SYM-XXXXXX`)
+- [x] Implement **Dedicated Ticket Redemption Portal Page (`/redeem`)** (Halaman khusus tenang & elegan untuk verifikasi kode `SYM-XXXXXX`, cetak PDF, dan QR gate pass)
 - [x] Add **Quick Copy Code Button** (*"Salin Kode"* dengan feedback visual *"Tersalin!"*)
 - [x] Implement **Instant E-Ticket Pass Display** (Glassmorphism Pass Card + QR Code Resmi)
 - [x] Implement **High-Res PNG E-Ticket Pass Download** (HTML5 Native Canvas API Engine)

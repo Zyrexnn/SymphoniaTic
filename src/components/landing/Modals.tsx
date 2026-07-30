@@ -478,43 +478,18 @@ export const OrdersDrawer: React.FC<OrdersProps> = ({ orders, onClose, onShowTic
         </div>
 
         <div className="px-6 py-4">
-          {/* Search Form */}
-          <form onSubmit={handleSearch} className="mb-6">
-            <label className="text-base font-light text-[#9a9a9a] block mb-2">Cari Berdasarkan Kode Pesanan</label>
-            <div className="relative mb-3">
-              <Search className="w-4 h-4 absolute left-0 top-3 text-[#9a9a9a]" strokeWidth={1} />
-              <input type="text" placeholder="SYM-123456" value={searchCode} onChange={(e) => setSearchCode(e.target.value)}
-                className="text-base font-light text-white bg-transparent border-none border-b border-white/[0.15] outline-none w-full pl-6 py-2 tabular-nums" />
-            </div>
-            <button type="submit"
-              className="w-full cursor-pointer bg-transparent border-none hover:opacity-60 transition-opacity flex items-center justify-center gap-2 text-base font-light text-white py-2.5 border-b border-white">
-              <Search className="w-3.5 h-3.5" strokeWidth={1} />
-              <span>Cek Kode Pesanan</span>
-            </button>
-          </form>
-
-          {/* Search Result */}
-          {hasSearched && (
-            <div className="mb-6">
-              {foundOrder ? (
-                <div className="py-4 border-b border-white/[0.06]">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-base font-light text-white tabular-nums">{foundOrder.orderCode}</span>
-                    <span className="text-base font-light text-[#9a9a9a]">VERIFIED</span>
-                  </div>
-                  <h4 className="text-base font-light text-white mb-1">{foundOrder.eventTitle}</h4>
-                  <p className="text-base font-light text-[#9a9a9a] mb-3">Pemegang: {foundOrder.userName}</p>
-                  <button onClick={() => onShowTicket(foundOrder)}
-                    className="w-full cursor-pointer bg-transparent border-none hover:opacity-60 transition-opacity flex items-center justify-center gap-2 text-base font-light text-white py-2.5 border-b border-white">
-                    <QrCode className="w-3.5 h-3.5" strokeWidth={1} />
-                    <span>Buka E-Ticket</span>
-                  </button>
-                </div>
-              ) : (
-                <p className="text-base font-light text-[#9a9a9a]">Kode Pesanan tidak ditemukan.</p>
-              )}
-            </div>
-          )}
+          <div className="mb-6 border-b border-white/10 pb-5">
+            <p className="text-xs font-light text-[#9a9a9a] leading-relaxed mb-3">
+              Ingin memverifikasi kode pesanan `SYM-XXXXXX` atau mengunduh E-Ticket PDF?
+            </p>
+            <a
+              href="/redeem"
+              className="w-full bg-white text-[#171717] py-2.5 text-xs font-light tracking-wider uppercase flex items-center justify-center gap-2 hover:bg-white/90 transition-opacity"
+            >
+              <QrCode className="w-4 h-4" strokeWidth={1.5} />
+              <span>Buka Halaman Redem Tiket Resmi</span>
+            </a>
+          </div>
 
           {/* Local Orders */}
           <div>
