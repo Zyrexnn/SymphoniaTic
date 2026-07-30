@@ -73,10 +73,30 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
             <InputField label="Waktu Konser" required value={form.time} onChange={(v) => update({ time: v })} placeholder="19:30 WIB" />
           </div>
 
-          <div>
-            <label className="text-xs font-light text-[#9a9a9a] tracking-wider uppercase block mb-1.5">URL Gambar Cover Konser</label>
-            <input type="url" value={form.image} onChange={(e) => update({ image: e.target.value })}
-              className="w-full bg-transparent border border-white/[0.1] px-3 py-2 text-[13px] font-light text-white outline-none" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-light text-[#9a9a9a] tracking-wider uppercase block mb-1.5">Kategori Genre Postingan Konser</label>
+              <select
+                value={form.category}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  let badge = 'bg-blue-900/80 text-blue-200 border-blue-500/40';
+                  if (val === 'SIMFONI UTAMA' || val === 'SIMFONI') badge = 'bg-amber-500/20 text-amber-300 border-amber-500/40';
+                  else if (val === 'KAMAR MUSIK') badge = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
+                  else if (val === 'PADUAN SUARA') badge = 'bg-purple-500/20 text-purple-300 border-purple-500/40';
+                  else if (val === 'SOLO RESITAL') badge = 'bg-sky-500/20 text-sky-300 border-sky-500/40';
+                  update({ category: val, categoryBadgeColor: badge });
+                }}
+                className="w-full bg-[#171717] border border-white/[0.1] px-3 py-2 text-[13px] font-light text-white outline-none"
+              >
+                <option value="SIMFONI UTAMA">SIMFONI UTAMA</option>
+                <option value="SIMFONI">SIMFONI</option>
+                <option value="KAMAR MUSIK">KAMAR MUSIK</option>
+                <option value="PADUAN SUARA">PADUAN SUARA</option>
+                <option value="SOLO RESITAL">SOLO RESITAL</option>
+              </select>
+            </div>
+            <InputField label="URL Gambar Cover Konser" required type="url" value={form.image} onChange={(v) => update({ image: v })} placeholder="https://images.unsplash.com/..." />
           </div>
 
           <div className="border border-white/10 p-4 flex flex-col gap-3">

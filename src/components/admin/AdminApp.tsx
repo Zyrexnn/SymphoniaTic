@@ -211,12 +211,13 @@ export const AdminApp: React.FC = () => {
     setIsLoading(true);
     try {
       const res = await updateTicketCategoryAPI(editingCategory.cat.id, {
-        name: editingCategory.cat.name,
-        price: Number(editingCategory.cat.price),
-        quota: Number(editingCategory.cat.quota),
+        name: catForm.name,
+        price: Number(catForm.price),
+        quota: Number(catForm.quota),
       });
       if (res.success) {
         setEditingCategory(null);
+        setCatForm(EMPTY_CAT_FORM);
         refreshData();
       } else {
         alert('Gagal update kategori: ' + res.message);
