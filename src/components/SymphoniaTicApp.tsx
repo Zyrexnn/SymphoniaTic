@@ -4,9 +4,11 @@ import { BoomerangVideoBg } from './BoomerangVideoBg';
 import { CONCERT_EVENTS, fetchEventsAPI } from './landing/data';
 import type { EventItem, TicketCategory, OrderRecord } from './landing/data';
 
-import { Header, Hero, Footer } from './landing/Layout';
+import { Header, Hero } from './landing/Layout';
+import { Footer } from './landing/Footer';
 import { AudioPlayer } from './landing/AudioPlayer';
 import { BentoSection } from './landing/Sections';
+import FAQSection from './landing/FAQSection';
 import { BookingModal, ETicketConfirmation, OrdersDrawer, AdminDrawer } from './landing/Modals';
 
 export const SymphoniaTicApp: React.FC = () => {
@@ -117,6 +119,8 @@ export const SymphoniaTicApp: React.FC = () => {
 
       {/* Content */}
       <BentoSection events={displayEvents} onBuyTicket={openBooking} />
+
+      <FAQSection />
 
       <Footer />
 

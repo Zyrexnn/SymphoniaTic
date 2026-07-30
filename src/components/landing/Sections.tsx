@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Search } from 'lucide-react';
-import { CONCERT_EVENTS, ARTISTS_LINEUP, FAQS, formatIDR } from './data';
+import { Search } from 'lucide-react';
+import { CONCERT_EVENTS, ARTISTS_LINEUP, formatIDR } from './data';
 import type { EventItem } from './data';
 
 const CATEGORY_FILTERS = [
@@ -26,7 +25,7 @@ const goToConcert = (event: EventItem) => {
 export const BentoSection: React.FC<SectionProps> = ({ events, onBuyTicket }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('SEMUA');
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
+
 
   const sourceEvents = (events && events.length > 0) ? events : CONCERT_EVENTS;
   const filteredEvents = sourceEvents.filter((e) => {
@@ -139,39 +138,6 @@ export const BentoSection: React.FC<SectionProps> = ({ events, onBuyTicket }) =>
             <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mb-1.5">03</p>
             <p className="text-xl tracking-[-0.01em] font-light text-white leading-[1.3]">Tunjukkan QR Code</p>
             <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mt-1.5">E-Ticket dipindai di pintu masuk hall.</p>
-          </div>
-        </div>
-
-        {/* Dedicated FAQ Section to prevent layout collision */}
-        <div id="faq" className="mt-20 border-t border-white/[0.06] pt-12">
-          <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mb-8 uppercase">Pertanyaan Umum (FAQ)</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
-            {FAQS.map((faq, i) => (
-              <div key={i} className="border-b border-white/[0.06] pb-4">
-                <button
-                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full flex items-center justify-between py-2 text-left cursor-pointer hover:opacity-60 transition-opacity bg-transparent border-none"
-                >
-                  <span className="text-lg font-light tracking-[-0.05px] text-white">
-                    {faq.q}
-                  </span>
-                  <ChevronDown size={16} className="text-[#9a9a9a] shrink-0 transition-transform duration-200" style={{ transform: openFaq === i ? 'rotate(180deg)' : 'none' }} />
-                </button>
-                <AnimatePresence>
-                  {openFaq === i && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="overflow-hidden"
-                    >
-                      <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] leading-[1.6] pt-2 pb-3">{faq.a}</p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            ))}
           </div>
         </div>
 

@@ -2,7 +2,6 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 import { NAV_PAGES } from './data';
-import type { EventItem } from './data';
 
 interface HeaderProps {
   isScrolled: boolean;
@@ -127,23 +126,4 @@ export const Hero: React.FC = () => (
   </main>
 );
 
-export const Footer: React.FC = () => (
-  <footer className="mx-auto max-w-[1400px] px-10 pt-[120px] pb-20">
-    <div className="border-t border-white/[0.06] pt-10 flex flex-col sm:flex-row items-start justify-between gap-8">
-      <div className="text-base font-light tracking-[-0.05px] text-[#9a9a9a]">
-        &copy; 2026 SymphoniaTic
-      </div>
-      <div className="flex flex-wrap items-center gap-8">
-        {NAV_PAGES.map((p) => (
-          <a
-            key={p.label}
-            href={p.href}
-            className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] hover:opacity-60 transition-opacity"
-          >
-            {p.label}
-          </a>
-        ))}
-      </div>
-    </div>
-  </footer>
-);
+
