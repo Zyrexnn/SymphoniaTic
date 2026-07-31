@@ -45,6 +45,9 @@ export const Footer: React.FC = () => (
             <a href="/redeem" className="text-sm font-light text-[#9a9a9a] hover:text-white transition-colors duration-200 no-underline">
               Redem E-Tiket
             </a>
+            <a href="/refund" className="text-sm font-light text-[#9a9a9a] hover:text-white transition-colors duration-200 no-underline">
+              Pengajuan Refund Tiket
+            </a>
             <span className="text-sm font-light text-[#5a5a5a]">Bantuan: support@symphoniatic.id</span>
           </div>
         </div>

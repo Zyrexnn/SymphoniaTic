@@ -465,3 +465,27 @@ export const updateOrderStatusAPI = async (orderId: string, status: string) => {
   return res.json();
 };
 
+export const fetchAdminRefundsAPI = async () => {
+  try {
+    const res = await fetch(`${getApiBaseUrl()}/admin/refunds`);
+    const data = await res.json();
+    if (data.success && Array.isArray(data.data)) {
+      return data.data;
+    }
+    return [];
+  } catch (err) {
+    console.error('Fetch admin refunds error:', err);
+    return [];
+  }
+};
+
+export const updateRefundStatusAPI = async (refundId: string, status: string, adminNote: string) => {
+  const res = await fetch(`${getApiBaseUrl()}/admin/refunds/${refundId}/status`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status, adminNote }),
+  });
+  return res.json();
+};
+
+

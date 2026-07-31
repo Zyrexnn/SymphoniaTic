@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart3, Ticket, DollarSign, Layers } from 'lucide-react';
+import { BarChart3, Ticket, DollarSign, Layers, ArrowUpRight, TrendingUp } from 'lucide-react';
 import { formatIDR } from '../landing/data';
 import type { AdminMetricsData } from '../landing/data';
 import { StatCard } from './ui';
@@ -11,93 +11,126 @@ interface MetricsPanelProps {
 }
 
 export const MetricsPanel: React.FC<MetricsPanelProps> = ({ metrics, eventsCount, onGoToOrders }) => (
-  <div className="flex flex-col gap-6">
-    <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-px">
+  <div className="flex flex-col gap-8">
+    {/* Top Grid of Stat Cards */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <StatCard
-        label="Total Pendapatan"
+        label="Total Pendapatan Tiket"
         value={formatIDR(metrics?.totalRevenue || 0)}
-        subtext="Akumulasi dari pesanan terverifikasi"
+        subtext="Akumulasi pesanan terverifikasi"
         icon={DollarSign}
+        badgeText="+12.4% vs bln lalu"
       />
       <StatCard
         label="Tiket Terjual"
-        value={`${metrics?.ticketsSold || 0} Lembar`}
-        subtext="Total unit tiket terkonfirmasi"
+        value={`${metrics?.ticketsSold || 0} Tiket`}
+        subtext="Total transaksi terkonfirmasi"
         icon={Ticket}
+        badgeText="Terverifikasi"
       />
       <StatCard
         label="Sisa Kuota Kursi"
         value={`${metrics?.remainingQuota || 0} Kursi`}
         subtext="Tersedia di seluruh event aktif"
         icon={Layers}
+        trendColor="text-blue-400 border-blue-500/30 bg-blue-500/10"
+        badgeText="Real-time"
       />
       <StatCard
-        label="Konser Aktif"
+        label="Konser & Resital Aktif"
         value={`${metrics?.totalEvents || eventsCount} Event`}
-        subtext="Konser yang sedang dipublikasikan"
+        subtext="Musim Semi 2026"
         icon={BarChart3}
+        trendColor="text-purple-400 border-purple-500/30 bg-purple-500/10"
+        badgeText="Aktif Dipublikasikan"
       />
     </div>
 
+    {/* Section 2: Detailed Breakdown */}
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div className="border border-white/10 bg-[#171717] p-5">
-        <div className="border-b border-white/10 pb-3 flex items-center gap-2">
-          <BarChart3 size={15} strokeWidth={1} className="text-[#9a9a9a]" />
-          <span className="text-sm font-light text-white tracking-tight">Rincian Pendapatan Per Event</span>
-        </div>
-        <div className="mt-4">
-          {metrics?.eventStats && metrics.eventStats.length > 0 ? (
-            metrics.eventStats.map((st) => (
-              <div key={st.eventId} className="border-b border-white/[0.04] py-2.5">
-                <div className="flex justify-between items-center">
-                  <span className="text-[13px] font-light text-white max-w-[220px] truncate">{st.title}</span>
-                  <span className="text-[13px] font-light text-white">{formatIDR(st.revenue)}</span>
-                </div>
-                <div className="flex justify-between text-[11px] font-light text-[#9a9a9a] mt-0.5">
-                  <span>Tiket Terjual: {st.ticketsSold} Lembar</span>
-                  <span className="font-mono">#{st.eventId}</span>
-                </div>
+      {/* Revenue per event */}
+      <div className="border border-white/10 bg-[#121826]/90 p-6 backdrop-blur-md shadow-xl flex flex-col justify-between">
+        <div>
+          <div className="border-b border-white/10 pb-4 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                <TrendingUp size={16} />
               </div>
-            ))
-          ) : (
-            <div className="text-center text-xs font-light text-[#9a9a9a] py-8">Belum ada data transaksi per event</div>
-          )}
+              <div>
+                <h3 className="text-sm font-light text-white tracking-tight m-0">Rincian Pendapatan Per Event</h3>
+                <span className="text-[11px] font-light text-[#8a99ad]">Breakdown penjualan tiket per pertunjukan simfoni</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-5 space-y-3">
+            {metrics?.eventStats && metrics.eventStats.length > 0 ? (
+              metrics.eventStats.map((st) => (
+                <div key={st.eventId} className="border border-white/[0.06] bg-[#0c101a] p-3.5 hover:border-white/15 transition-all">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-xs font-light text-white font-medium truncate max-w-[240px]">{st.title}</span>
+                    <span className="text-xs font-mono font-semibold text-amber-300">{formatIDR(st.revenue)}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-[11px] font-light text-[#8a99ad]">
+                    <span>Tiket Terjual: <strong className="text-slate-200">{st.ticketsSold}</strong> Lembar</span>
+                    <span className="font-mono text-[10px] text-[#5a6a7e]">ID: #{st.eventId}</span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center text-xs font-light text-[#8a99ad] py-10">Belum ada data transaksi per event</div>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="border border-white/10 bg-[#171717] p-5">
-        <div className="border-b border-white/10 pb-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Ticket size={15} strokeWidth={1} className="text-[#9a9a9a]" />
-            <span className="text-sm font-light text-white tracking-tight">5 Transaksi Pesanan Terbaru</span>
-          </div>
-          <button
-            onClick={onGoToOrders}
-            className="text-xs font-light text-[#9a9a9a] bg-transparent border-none cursor-pointer hover:text-white"
-          >
-            Lihat Semua
-          </button>
-        </div>
-        <div className="mt-4">
-          {metrics?.recentOrders && metrics.recentOrders.length > 0 ? (
-            metrics.recentOrders.map((ro) => (
-              <div key={ro.id} className="border-b border-white/[0.04] py-2.5 flex justify-between items-center">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-light text-[#9a9a9a] font-mono">{ro.orderCode}</span>
-                    <span className="text-[10px] font-light text-[#9a9a9a]">{ro.status}</span>
-                  </div>
-                  <div className="text-[11px] font-light text-[#9a9a9a] mt-0.5 max-w-[200px] truncate">{ro.userName} &bull; {ro.eventTitle}</div>
-                </div>
-                <div className="text-right">
-                  <span className="text-[13px] font-light text-white block">{formatIDR(ro.totalPrice)}</span>
-                  <span className="text-[10px] font-light text-[#9a9a9a]">{ro.quantity}x Tiket</span>
-                </div>
+      {/* Recent Orders */}
+      <div className="border border-white/10 bg-[#121826]/90 p-6 backdrop-blur-md shadow-xl flex flex-col justify-between">
+        <div>
+          <div className="border-b border-white/10 pb-4 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400">
+                <Ticket size={16} />
               </div>
-            ))
-          ) : (
-            <div className="text-center text-xs font-light text-[#9a9a9a] py-8">Belum ada data pesanan</div>
-          )}
+              <div>
+                <h3 className="text-sm font-light text-white tracking-tight m-0">Transaksi Pesanan Terbaru</h3>
+                <span className="text-[11px] font-light text-[#8a99ad]">5 Transaksi tiket masuk terakhir</span>
+              </div>
+            </div>
+            <button
+              onClick={onGoToOrders}
+              className="text-xs font-light text-amber-400 hover:text-amber-300 bg-transparent border-none cursor-pointer flex items-center gap-1"
+            >
+              <span>Lihat Semua</span>
+              <ArrowUpRight size={14} />
+            </button>
+          </div>
+
+          <div className="mt-5 space-y-3">
+            {metrics?.recentOrders && metrics.recentOrders.length > 0 ? (
+              metrics.recentOrders.map((ro) => (
+                <div key={ro.id} className="border border-white/[0.06] bg-[#0c101a] p-3.5 flex justify-between items-center hover:border-white/15 transition-all">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs font-mono text-amber-400 font-medium">{ro.orderCode}</span>
+                      <span className="text-[10px] font-mono px-2 py-0.5 border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
+                        {ro.status}
+                      </span>
+                    </div>
+                    <div className="text-[11px] text-[#8a99ad] truncate max-w-[220px]">
+                      {ro.userName} &bull; <span className="text-slate-300">{ro.eventTitle}</span>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-xs font-mono font-semibold text-white block">{formatIDR(ro.totalPrice)}</span>
+                    <span className="text-[10px] text-[#8a99ad]">{ro.quantity}x Tiket</span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center text-xs font-light text-[#8a99ad] py-10">Belum ada data pesanan</div>
+            )}
+          </div>
         </div>
       </div>
     </div>

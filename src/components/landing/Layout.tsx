@@ -52,6 +52,12 @@ export const Header: React.FC<HeaderProps> = ({
           Redem Tiket
         </a>
         <a
+          href="/refund"
+          className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] hover:opacity-60 transition-opacity"
+        >
+          Refund Tiket
+        </a>
+        <a
           href="/admin"
           className="hidden sm:block text-base font-light tracking-[-0.05px] text-[#9a9a9a] hover:opacity-60 transition-opacity"
         >

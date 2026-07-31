@@ -1,8 +1,8 @@
 import React from 'react';
-import { BarChart3, Ticket, Layers, ExternalLink, LogOut, RefreshCw, Menu, X } from 'lucide-react';
+import { BarChart3, Ticket, Layers, ExternalLink, LogOut, RefreshCw, Menu, X, RotateCcw } from 'lucide-react';
 import { formatIDR } from '../landing/data';
 
-export type TabId = 'METRICS' | 'EVENTS' | 'ORDERS';
+export type TabId = 'METRICS' | 'EVENTS' | 'ORDERS' | 'REFUNDS';
 
 interface AdminSidebarProps {
   activeTab: TabId;
@@ -10,6 +10,7 @@ interface AdminSidebarProps {
   onLogout: () => void;
   eventsCount: number;
   ordersCount: number;
+  refundsCount?: number;
   totalRevenue: number;
 }
 
@@ -17,10 +18,11 @@ const NAV_ITEMS: { id: TabId; label: string; icon: typeof BarChart3 }[] = [
   { id: 'METRICS', label: 'Metrik & Finansial', icon: BarChart3 },
   { id: 'EVENTS', label: 'Postingan Konser', icon: Ticket },
   { id: 'ORDERS', label: 'Manajemen Pesanan', icon: Layers },
+  { id: 'REFUNDS', label: 'Permohonan Refund', icon: RotateCcw },
 ];
 
 export const AdminSidebar: React.FC<AdminSidebarProps> = ({
-  activeTab, onTabChange, onLogout, eventsCount, ordersCount, totalRevenue,
+  activeTab, onTabChange, onLogout, eventsCount, ordersCount, refundsCount, totalRevenue,
 }) => (
   <aside
     className="hidden md:flex flex-col justify-between h-screen w-60 border-r border-white/10 bg-[#171717] p-6 shrink-0 sticky top-0"
@@ -42,6 +44,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
           const isActive = activeTab === item.id;
           const badge = item.id === 'EVENTS' ? `${eventsCount}`
             : item.id === 'ORDERS' ? `${ordersCount}`
+            : item.id === 'REFUNDS' ? `${refundsCount || 0}`
             : totalRevenue ? formatIDR(totalRevenue) : '';
 
           return (
@@ -126,20 +129,23 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
 
     {isOpen && (
       <div className="md:hidden bg-[#171717] border-b border-white/10 p-4">
-        {NAV_ITEMS.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => { onTabChange(item.id); onToggle(); }}
-            className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-[13px] font-light text-left border-none cursor-pointer ${
-              activeTab === item.id
-                ? 'text-white bg-white/[0.04] border-b border-white'
-                : 'text-[#9a9a9a] bg-transparent border-b border-transparent'
-            }`}
-          >
-            <item.icon size={15} strokeWidth={1} />
-            <span>{item.label}</span>
-          </button>
-        ))}
+        {NAV_ITEMS.map((item) => {
+          const Icon = item.icon;
+          return (
+            <button
+              key={item.id}
+              onClick={() => { onTabChange(item.id); onToggle(); }}
+              className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-[13px] font-light text-left border-none cursor-pointer ${
+                activeTab === item.id
+                  ? 'text-white bg-white/[0.04] border-b border-white'
+                  : 'text-[#9a9a9a] bg-transparent border-b border-transparent'
+              }`}
+            >
+              <Icon size={15} strokeWidth={1} />
+              <span>{item.label}</span>
+            </button>
+          );
+        })}
         <div className="border-t border-white/10 mt-2 pt-2 flex justify-between">
           <a href="/" className="text-xs font-light text-[#9a9a9a] no-underline flex items-center gap-1 hover:text-white">
             <ExternalLink size={12} strokeWidth={1} /> Web Utama
