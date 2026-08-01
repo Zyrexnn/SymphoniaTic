@@ -1,0 +1,8 @@
+---
+import Layout from '../layouts/Layout.astro';
+import EventsPage from '../components/landing/EventsPage';
+---
+
+<Layout title="Semua Konser — SymphoniaTic" description="Jelajahi dan cari semua pertunjukan orkestra & simfoni musim ini.">
+  <EventsPage client:only="react" />
+</Layout>

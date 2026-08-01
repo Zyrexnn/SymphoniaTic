@@ -46,6 +46,12 @@ export const Header: React.FC<HeaderProps> = ({
 
       <div className="flex items-center gap-8">
         <a
+          href="/edukasi"
+          className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] hover:opacity-60 transition-opacity"
+        >
+          Edukasi
+        </a>
+        <a
           href="/redeem"
           className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] hover:opacity-60 transition-opacity"
         >

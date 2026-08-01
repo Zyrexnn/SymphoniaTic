@@ -1,17 +1,7 @@
-import React, { useState } from 'react';
-import { Search } from 'lucide-react';
+import React from 'react';
+import { Heart } from 'lucide-react';
 import { CONCERT_EVENTS, ARTISTS_LINEUP, formatIDR } from './data';
 import type { EventItem } from './data';
-
-const CATEGORY_FILTERS = [
-  { id: 'SEMUA', label: 'Semua' },
-  { id: 'SIMFONI', label: 'Simfoni' },
-  { id: 'KAMAR MUSIK', label: 'Kamar Musik' },
-  { id: 'BALET & OPERA', label: 'Balet & Opera' },
-  { id: 'PADUAN SUARA', label: 'Paduan Suara' },
-  { id: 'RESITAL PIANO', label: 'Resital Piano' },
-  { id: 'PHILHARMONIC', label: 'Philharmonic' },
-];
 
 interface SectionProps {
   events?: EventItem[];
@@ -23,20 +13,9 @@ const goToConcert = (event: EventItem) => {
 };
 
 export const BentoSection: React.FC<SectionProps> = ({ events, onBuyTicket }) => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('SEMUA');
-
-
   const sourceEvents = (events && events.length > 0) ? events : CONCERT_EVENTS;
-  const filteredEvents = sourceEvents.filter((e) => {
-    const matchCat = selectedCategory === 'SEMUA' || e.category === selectedCategory;
-    const q = searchQuery.toLowerCase();
-    const matchQ = !q || e.title.toLowerCase().includes(q) || e.artist.toLowerCase().includes(q) || e.venue.toLowerCase().includes(q);
-    return matchCat && matchQ;
-  });
-
   const featured = sourceEvents[0];
-  const rest = filteredEvents.filter((e) => e.id !== featured?.id);
+  const rest = sourceEvents.filter((e) => e.id !== featured?.id);
 
   return (
     <>
@@ -190,61 +169,54 @@ export const BentoSection: React.FC<SectionProps> = ({ events, onBuyTicket }) =>
         </div>
       </section>
 
-      <div className="mx-auto max-w-[1400px] px-10 pb-8">
+      <div className="mx-auto max-w-[1400px] px-10 pb-8 flex items-baseline justify-between">
         <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a]">
           ↓ Semua Konser
         </p>
+        <a
+          href="/events"
+          className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] hover:opacity-60 transition-opacity"
+        >
+          Lihat Semua →
+        </a>
       </div>
 
       <div className="mx-auto max-w-[1400px] px-10 pb-12">
-        <div className="flex items-center gap-3 mb-8 max-w-[400px]">
-          <Search size={14} className="text-[#9a9a9a]" />
-          <input
-            type="text"
-            placeholder="Cari konser, artis, venue..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="text-base font-light tracking-[-0.05px] text-white bg-transparent border-none border-b border-white/[0.08] outline-none w-full py-1"
-          />
-        </div>
-
-        <div className="flex items-center gap-6 overflow-x-auto pb-3 mb-12 no-scrollbar">
-          {CATEGORY_FILTERS.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
-              className={`whitespace-nowrap transition-opacity cursor-pointer shrink-0 bg-transparent border-none text-base font-light tracking-[-0.05px] pb-1 ${
-                selectedCategory === cat.id
-                  ? 'text-white border-b border-white'
-                  : 'text-[#9a9a9a] border-b border-transparent'
-              }`}
-            >
-              {cat.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16">
-          {filteredEvents.map((event) => {
+        {/* Poster cards — horizontal scroll ala DICE */}
+        <div className="flex gap-6 overflow-x-auto pb-4 -mx-10 px-10 no-scrollbar snap-x snap-mandatory">
+          {sourceEvents.map((event) => {
             const minPrice = event.categories?.[0]?.price ?? 0;
             return (
               <div
                 key={event.id}
-                className="cursor-pointer group"
+                className="cursor-pointer group shrink-0 w-[220px] md:w-[260px] snap-start"
                 onClick={() => goToConcert(event)}
               >
-                <div className="mb-4 overflow-hidden">
+                <div className="relative mb-4 overflow-hidden rounded-xl aspect-square">
                   <img
                     src={event.image}
                     alt={event.title}
-                    className="w-full object-cover group-hover:scale-[1.01] transition-transform duration-700 aspect-[3/2]"
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700"
                   />
+                  <button
+                    aria-label="Simpan ke favorit"
+                    onClick={(e) => e.stopPropagation()}
+                    className="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-black/70 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black transition-colors cursor-pointer border-none"
+                  >
+                    <Heart size={16} />
+                  </button>
                 </div>
-                <h3 className="text-xl tracking-[-0.01em] font-light leading-[1.4] mb-1 text-white">
+                <h3 className="text-base tracking-[-0.05px] font-light leading-[1.4] text-white line-clamp-2">
                   {event.title}
                 </h3>
                 <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] leading-[1.5]">
-                  {event.artist} · {event.venue} · {formatIDR(minPrice)}
+                  {event.date}
+                </p>
+                <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] leading-[1.5] truncate">
+                  {event.venue}
+                </p>
+                <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] leading-[1.5]">
+                  Mulai {formatIDR(minPrice)}
                 </p>
               </div>
             );

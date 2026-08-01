@@ -212,9 +212,10 @@ export const FAQS = [
 ];
 
 export const NAV_PAGES = [
-  { label: 'Jelajah Konser', href: '#concerts' },
+  { label: 'Jelajah Konser', href: '/events' },
   { label: 'Artis & Lineup', href: '#lineup' },
   { label: 'Sistem Kuota', href: '#ticket-war' },
+  { label: 'Edukasi', href: '/edukasi' },
   { label: 'Redem Tiket', href: '/redeem' },
   { label: 'FAQ', href: '#faq' },
 ];
