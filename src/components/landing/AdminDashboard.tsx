@@ -8,10 +8,10 @@ interface AdminDashboardProps {
   allEvents?: EventItem[];
 }
 
-export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose }) => {
+export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEventsUpdated }) => {
   return (
     <div className="fixed inset-0 z-50 flex bg-[#171717]">
-      <AdminApp onClose={onClose} />
+      <AdminApp onClose={onClose} onEventsUpdated={onEventsUpdated} />
     </div>
   );
 };

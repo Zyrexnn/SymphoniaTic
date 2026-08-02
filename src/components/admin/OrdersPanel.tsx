@@ -38,8 +38,9 @@ export const OrdersPanel: React.FC<OrdersPanelProps> = ({
           className="bg-[#141414] border border-white/10 px-3 py-2 text-xs font-light text-white outline-none cursor-pointer"
         >
           <option value="" className="bg-[#171717]">Semua Status</option>
-          <option value="VERIFIED" className="bg-[#171717]">VERIFIED</option>
+          <option value="ISSUED" className="bg-[#171717]">ISSUED</option>
           <option value="CHECKED_IN" className="bg-[#171717]">CHECKED_IN</option>
+          <option value="REFUNDED" className="bg-[#171717]">REFUNDED</option>
           <option value="CANCELLED" className="bg-[#171717]">CANCELLED</option>
         </select>
       </div>
@@ -90,8 +91,9 @@ export const OrdersPanel: React.FC<OrdersPanelProps> = ({
                     onChange={(e) => onUpdateStatus(ord.id, e.target.value)}
                     className="bg-[#141414] border border-white/10 px-2.5 py-1 text-xs font-light text-white outline-none cursor-pointer"
                   >
-                    <option value="VERIFIED" className="bg-[#171717]">VERIFIED</option>
+                    <option value="ISSUED" className="bg-[#171717]">ISSUED</option>
                     <option value="CHECKED_IN" className="bg-[#171717]">CHECKED_IN</option>
+                    <option value="REFUNDED" className="bg-[#171717]">REFUNDED</option>
                     <option value="CANCELLED" className="bg-[#171717]">CANCELLED</option>
                   </select>
                 </td>
@@ -138,8 +140,9 @@ export const OrdersPanel: React.FC<OrdersPanelProps> = ({
                 onChange={(e) => onUpdateStatus(ord.id, e.target.value)}
                 className="bg-[#141414] border border-white/10 px-2 py-1 text-xs font-light text-white outline-none cursor-pointer"
               >
-                <option value="VERIFIED" className="bg-[#171717]">VERIFIED</option>
+                <option value="ISSUED" className="bg-[#171717]">ISSUED</option>
                 <option value="CHECKED_IN" className="bg-[#171717]">CHECKED_IN</option>
+                <option value="REFUNDED" className="bg-[#171717]">REFUNDED</option>
                 <option value="CANCELLED" className="bg-[#171717]">CANCELLED</option>
               </select>
             </div>

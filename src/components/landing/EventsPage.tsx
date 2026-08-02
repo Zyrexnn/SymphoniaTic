@@ -108,12 +108,21 @@ const EventsPage: React.FC = () => {
                   <img
                     src={event.image}
                     alt={event.title}
-                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700"
+                    className={`absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700 ${
+                      event.isClosed ? 'grayscale brightness-50' : ''
+                    }`}
                   />
+                  {event.isClosed && (
+                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center p-2">
+                      <span className="text-xs font-mono font-bold text-rose-300 bg-rose-950/80 border border-rose-500/40 px-3 py-1 uppercase tracking-wider rounded">
+                        PENJUALAN DITUTUP
+                      </span>
+                    </div>
+                  )}
                   <button
                     aria-label="Simpan ke favorit"
                     onClick={(e) => e.preventDefault()}
-                    className="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-black/70 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black transition-colors cursor-pointer border-none"
+                    className="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-black/70 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black transition-colors cursor-pointer border-none z-10"
                   >
                     <Heart size={16} />
                   </button>
@@ -128,7 +137,11 @@ const EventsPage: React.FC = () => {
                   {event.venue}
                 </p>
                 <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] leading-[1.5]">
-                  Mulai {formatIDR(minPrice)}
+                  {event.isClosed ? (
+                    <span className="text-rose-400 font-mono text-xs">Penjualan Berakhir</span>
+                  ) : (
+                    `Mulai ${formatIDR(minPrice)}`
+                  )}
                 </p>
               </a>
             );

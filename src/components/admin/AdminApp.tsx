@@ -112,9 +112,10 @@ const EMPTY_CAT_FORM = { name: '', price: 500000, quota: 50 };
 
 interface AdminAppProps {
   onClose?: () => void;
+  onEventsUpdated?: () => void;
 }
 
-export const AdminApp: React.FC<AdminAppProps> = ({ onClose }) => {
+export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     try {
       return typeof window !== 'undefined' && !!sessionStorage.getItem('symphoniatic_admin_token');
@@ -159,16 +160,13 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose }) => {
         fetchEventsAPI(),
         fetchAdminRefundsAPI(),
       ]);
-      setMetrics(met || MOCK_ADMIN_METRICS);
-      setOrdersList(ords && ords.length > 0 ? ords : MOCK_ADMIN_ORDERS);
-      setEventsList(evts && evts.length > 0 ? evts : CONCERT_EVENTS);
-      setRefundsList(rfds && rfds.length > 0 ? rfds : MOCK_ADMIN_REFUNDS);
+      if (met) setMetrics(met);
+      if (ords) setOrdersList(ords);
+      if (evts) setEventsList(evts);
+      if (rfds) setRefundsList(rfds);
+      if (onEventsUpdated) onEventsUpdated();
     } catch (err) {
       console.error('Error refreshing admin data:', err);
-      setMetrics(MOCK_ADMIN_METRICS);
-      setEventsList(CONCERT_EVENTS);
-      setOrdersList(MOCK_ADMIN_ORDERS);
-      setRefundsList(MOCK_ADMIN_REFUNDS);
     } finally {
       setIsLoading(false);
     }
@@ -229,6 +227,10 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose }) => {
       return;
     }
     setIsLoading(true);
+    const catName = eventForm.initialCatName.trim() || 'VIP Pit';
+    const catPrice = Number(eventForm.initialCatPrice) || 1000000;
+    const catQuota = Number(eventForm.initialCatQuota) || 50;
+
     try {
       const res = await createEventAPI({
         title: eventForm.title, artist: eventForm.artist, venue: eventForm.venue,
@@ -240,14 +242,15 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose }) => {
         organizer: eventForm.organizer, description: eventForm.description,
         rundown: eventForm.rundown,
         categories: [{
-          name: eventForm.initialCatName, price: Number(eventForm.initialCatPrice),
-          quota: Number(eventForm.initialCatQuota),
+          name: catName,
+          price: catPrice,
+          quota: catQuota,
         }],
       });
       if (res.success) {
         setShowAddEventModal(false);
         setEventForm(EMPTY_EVENT_FORM);
-        refreshData();
+        await refreshData();
       } else {
         alert(res.message || 'Gagal membuat event baru');
       }
@@ -276,7 +279,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose }) => {
       if (res.success) {
         setEditingEvent(null);
         setEventForm(EMPTY_EVENT_FORM);
-        refreshData();
+        await refreshData();
       } else {
         alert(res.message || 'Gagal mengupdate data event');
       }
@@ -462,6 +465,25 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose }) => {
     const matchStatus = !refundStatusFilter || rf.status === refundStatusFilter;
     return matchSearch && matchStatus;
   });
+
+  const handleToggleCloseEvent = async (id: string) => {
+    setIsLoading(true);
+    try {
+      const { toggleEventCloseAPI } = await import('../landing/data');
+      const res = await toggleEventCloseAPI(id);
+      if (res.success) {
+        refreshData();
+        if (onEventsUpdated) onEventsUpdated();
+      } else {
+        alert(res.message || 'Gagal mengubah status penutupan order');
+      }
+    } catch (err) {
+      console.error('Error toggling event close:', err);
+      alert('Terjadi kesalahan koneksi server');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen w-full bg-[#171717] text-white flex flex-col md:flex-row font-sans">

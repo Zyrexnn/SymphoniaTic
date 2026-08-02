@@ -42,28 +42,29 @@ interface StatusBadgeProps {
 
 export const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
   const s = (status || '').toUpperCase();
-  if (s === 'VERIFIED' || s === 'APPROVED') {
+  if (s === 'ISSUED' || s === 'VERIFIED' || s === 'APPROVED') {
+    const label = s === 'ISSUED' ? 'ISSUED (AKTIF)' : s;
     return (
       <span className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5">
-        ● {s}
+        ● {label}
       </span>
     );
   }
   if (s === 'CHECKED_IN') {
     return (
       <span className="inline-flex items-center gap-1 text-[11px] font-mono text-sky-300 bg-sky-500/10 border border-sky-500/30 px-2 py-0.5">
-        ✓ {s}
+        ✓ CHECKED_IN
       </span>
     );
   }
-  if (s === 'PENDING') {
+  if (s === 'PENDING' || s === 'REFUND_REQUESTED') {
     return (
       <span className="inline-flex items-center gap-1 text-[11px] font-mono text-amber-300 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5">
         ⏳ {s}
       </span>
     );
   }
-  if (s === 'CANCELLED' || s === 'REJECTED') {
+  if (s === 'REFUNDED' || s === 'CANCELLED' || s === 'REJECTED') {
     return (
       <span className="inline-flex items-center gap-1 text-[11px] font-mono text-rose-300 bg-rose-500/10 border border-rose-500/30 px-2 py-0.5">
         ✕ {s}

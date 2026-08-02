@@ -9,13 +9,14 @@ interface EventsPanelProps {
   onAddEvent: () => void;
   onEditEvent: (event: EventItem) => void;
   onDeleteEvent: (id: string, title: string) => void;
+  onToggleCloseEvent?: (id: string) => void;
   onAddCategory: (event: EventItem) => void;
   onEditCategory: (eventId: string, cat: TicketCategory) => void;
   onDeleteCategory: (catId: string, name: string) => void;
 }
 
 export const EventsPanel: React.FC<EventsPanelProps> = ({
-  events, onAddEvent, onEditEvent, onDeleteEvent,
+  events, onAddEvent, onEditEvent, onDeleteEvent, onToggleCloseEvent,
   onAddCategory, onEditCategory, onDeleteCategory,
 }) => (
   <div className="flex flex-col gap-6 pb-12">
@@ -24,7 +25,7 @@ export const EventsPanel: React.FC<EventsPanelProps> = ({
       <div>
         <h3 className="text-base font-light text-white tracking-tight m-0">Postingan Konser & Kategori Tiket</h3>
         <p className="text-xs font-light text-[#9a9a9a] mt-1 m-0">
-          Kelola data event, jam open gate, konduktor, lokasi venue, serta kuota tempat duduk
+          Kelola data event, jam open gate, penutupan order tiket, lokasi venue, serta kuota tempat duduk
         </p>
       </div>
       <button
@@ -44,6 +45,7 @@ export const EventsPanel: React.FC<EventsPanelProps> = ({
           event={evt}
           onEdit={() => onEditEvent(evt)}
           onDelete={() => onDeleteEvent(String(evt.id), evt.title)}
+          onToggleClose={() => onToggleCloseEvent && onToggleCloseEvent(String(evt.id))}
           onAddCategory={() => onAddCategory(evt)}
           onEditCategory={(cat) => onEditCategory(String(evt.id), cat)}
           onDeleteCategory={(catId, name) => onDeleteCategory(catId, name)}
@@ -57,13 +59,14 @@ interface EventCardProps {
   event: EventItem;
   onEdit: () => void;
   onDelete: () => void;
+  onToggleClose: () => void;
   onAddCategory: () => void;
   onEditCategory: (cat: TicketCategory) => void;
   onDeleteCategory: (catId: string, name: string) => void;
 }
 
 const EventCard: React.FC<EventCardProps> = ({
-  event: evt, onEdit, onDelete, onAddCategory, onEditCategory, onDeleteCategory,
+  event: evt, onEdit, onDelete, onToggleClose, onAddCategory, onEditCategory, onDeleteCategory,
 }) => (
   <div className="border border-white/[0.08] bg-[#1a1a1a] p-5 sm:p-6 flex flex-col justify-between gap-5 hover:border-white/20 transition-all shadow-xl">
     <div>
@@ -74,10 +77,28 @@ const EventCard: React.FC<EventCardProps> = ({
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2 mb-1">
-            <span className="text-[10px] font-mono tracking-widest text-[#9a9a9a] uppercase border border-white/10 px-2 py-0.5">
-              {evt.category || 'SIMFONI'}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono tracking-widest text-[#9a9a9a] uppercase border border-white/10 px-2 py-0.5">
+                {evt.category || 'SIMFONI'}
+              </span>
+              {evt.isClosed && (
+                <span className="text-[9px] font-mono text-rose-300 bg-rose-500/10 border border-rose-500/30 px-1.5 py-0.2">
+                  [ORDER CLOSED]
+                </span>
+              )}
+            </div>
             <div className="flex items-center gap-1">
+              <button
+                onClick={onToggleClose}
+                title={evt.isClosed ? 'Buka Kembali Penjualan Tiket' : 'Tutup Penjualan Tiket'}
+                className={`px-2 py-1 text-[10px] font-mono border cursor-pointer transition-all ${
+                  evt.isClosed
+                    ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/20'
+                    : 'bg-rose-500/10 text-rose-300 border-rose-500/30 hover:bg-rose-500/20'
+                }`}
+              >
+                {evt.isClosed ? 'Buka Order' : 'Tutup Order'}
+              </button>
               <button
                 onClick={onEdit}
                 title="Edit Event"
@@ -127,13 +148,15 @@ const EventCard: React.FC<EventCardProps> = ({
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-light text-white font-normal truncate">{cat.name}</span>
-                    {cat.quota < 10 && (
+                    {(cat.remainingQuota !== undefined ? cat.remainingQuota : cat.quota) < 10 && (
                       <span className="text-[9px] font-mono text-rose-300 bg-rose-500/10 border border-rose-500/20 px-1.5 py-0.2">
                         Kuota Menipis
                       </span>
                     )}
                   </div>
-                  <span className="text-[11px] font-light text-[#9a9a9a] block mt-0.5">Sisa: {cat.quota} tempat duduk</span>
+                  <span className="text-[11px] font-light text-[#9a9a9a] block mt-0.5">
+                    Sisa: {cat.remainingQuota !== undefined ? cat.remainingQuota : cat.quota} / Total: {cat.quota} tempat duduk
+                  </span>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
                   <span className="text-xs font-mono text-white font-normal">{formatIDR(cat.price)}</span>
