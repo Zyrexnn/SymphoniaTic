@@ -25,6 +25,7 @@ const BuyCard: React.FC<{ event: EventItem; onBuy: () => void }> = ({ event, onB
   const selectedCat = event.categories?.find((c) => c.id === selectedCatId) || event.categories?.[0];
   const totalPrice = selectedCat ? selectedCat.price * qty : 0;
   const isMaxQty = qty >= 4;
+  const isClosed = event.isClosed;
 
   return (
     <div className="lg:col-span-1">
@@ -37,6 +38,12 @@ const BuyCard: React.FC<{ event: EventItem; onBuy: () => void }> = ({ event, onB
         </div>
 
         <div className="p-6 space-y-5">
+          {isClosed && (
+            <div className="p-3 border border-rose-500/30 bg-rose-950/20 text-rose-300 text-xs font-light rounded">
+              ⚠️ <strong>Penjualan Ditutup</strong> — Pertunjukan ini sudah dimulai atau penjualan tiket telah dihentikan.
+            </div>
+          )}
+
           <div>
             <label className="text-[11px] font-light text-[#7a7a7a] tracking-[0.12em] uppercase block mb-3">
               Pilih Kategori
@@ -47,11 +54,12 @@ const BuyCard: React.FC<{ event: EventItem; onBuy: () => void }> = ({ event, onB
                 return (
                   <button
                     key={cat.id}
+                    disabled={isClosed}
                     onClick={() => setSelectedCatId(cat.id)}
-                    className={`w-full flex items-center justify-between px-3.5 py-3 text-left cursor-pointer transition-all duration-200 ${
-                      isSelected
-                        ? 'border border-white/[0.15] bg-white/[0.03]'
-                        : 'border border-white/[0.04] bg-transparent hover:border-white/[0.08]'
+                    className={`w-full flex items-center justify-between px-3.5 py-3 text-left transition-all duration-200 ${
+                      isClosed ? 'opacity-40 cursor-not-allowed border-white/[0.04]' : isSelected
+                        ? 'border border-white/[0.15] bg-white/[0.03] cursor-pointer'
+                        : 'border border-white/[0.04] bg-transparent hover:border-white/[0.08] cursor-pointer'
                     }`}
                   >
                     <div>
@@ -78,7 +86,7 @@ const BuyCard: React.FC<{ event: EventItem; onBuy: () => void }> = ({ event, onB
             <div className="flex items-center justify-between border border-white/[0.06] px-4 py-2.5">
               <button
                 onClick={() => setQty(Math.max(1, qty - 1))}
-                disabled={qty <= 1}
+                disabled={isClosed || qty <= 1}
                 className="bg-transparent border-none cursor-pointer p-1 text-[#9a9a9a] hover:text-white disabled:opacity-30 disabled:cursor-default"
               >
                 <Minus size={14} strokeWidth={1} />
@@ -86,7 +94,7 @@ const BuyCard: React.FC<{ event: EventItem; onBuy: () => void }> = ({ event, onB
               <span className="text-base font-light text-white">{qty}</span>
               <button
                 onClick={() => setQty(Math.min(4, qty + 1))}
-                disabled={isMaxQty}
+                disabled={isClosed || isMaxQty}
                 className="bg-transparent border-none cursor-pointer p-1 text-[#9a9a9a] hover:text-white disabled:opacity-30 disabled:cursor-default"
               >
                 <Plus size={14} strokeWidth={1} />
@@ -103,16 +111,26 @@ const BuyCard: React.FC<{ event: EventItem; onBuy: () => void }> = ({ event, onB
             </div>
             <button
               onClick={onBuy}
-              className="w-full py-3 text-sm font-light text-white bg-white/[0.04] border border-white/[0.1] cursor-pointer transition-all duration-300 hover:bg-white/[0.08] hover:border-white/[0.2] active:scale-[0.98] flex items-center justify-center gap-2"
+              disabled={isClosed}
+              className={`w-full py-3 text-sm font-light text-white border transition-all duration-300 flex items-center justify-center gap-2 ${
+                isClosed
+                  ? 'bg-rose-500/10 border-rose-500/30 text-rose-300 opacity-60 cursor-not-allowed'
+                  : 'bg-white/[0.04] border-white/[0.1] cursor-pointer hover:bg-white/[0.08] hover:border-white/[0.2] active:scale-[0.98]'
+              }`}
             >
-              <span>Beli Tiket</span>
-              <ChevronRight size={14} strokeWidth={1} />
+              <span>{isClosed ? 'ORDER DITUTUP' : 'Beli Tiket'}</span>
+              {!isClosed && <ChevronRight size={14} strokeWidth={1} />}
             </button>
           </div>
         </div>
       </div>
     </div>
   );
+};
+
+const isUrl = (str: string): boolean => {
+  if (!str) return false;
+  return str.startsWith('http://') || str.startsWith('https://');
 };
 
 const ConcertDetailPage: React.FC<Props> = ({ eventId }) => {
@@ -258,7 +276,17 @@ const ConcertDetailPage: React.FC<Props> = ({ eventId }) => {
                     <MapPin className="w-4 h-4" strokeWidth={1} /> Detail Lokasi Venue &amp; Peta Interaktif
                   </h3>
                   <p className="text-base font-light text-white">{event.venue}</p>
-                  <p className="text-base font-light text-[#9a9a9a] mt-1 mb-4">{event.address}</p>
+                  {event.address && (
+                    isUrl(event.address) ? (
+                      <p className="text-base font-light text-[#9a9a9a] mt-1 mb-4">
+                        <a href={event.address} target="_blank" rel="noreferrer" className="text-sky-400 hover:text-sky-300 hover:underline">
+                          Buka Link Peta Lokasi
+                        </a>
+                      </p>
+                    ) : (
+                      <p className="text-base font-light text-[#9a9a9a] mt-1 mb-4">{event.address}</p>
+                    )
+                  )}
                   <div className="w-full h-[280px] border border-white/10 overflow-hidden relative mb-3 bg-[#171717]">
                     <iframe
                       title="Peta Lokasi Venue Konser"
@@ -267,11 +295,11 @@ const ConcertDetailPage: React.FC<Props> = ({ eventId }) => {
                       style={{ border: 0, filter: 'grayscale(0.9) invert(0.92) contrast(1.2)' }}
                       loading="lazy"
                       allowFullScreen
-                      src={event.googleMapsUrl || `https://maps.google.com/maps?q=${encodeURIComponent(event.venue + ' ' + event.address)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                      src={event.googleMapsUrl || (isUrl(event.address) ? `https://maps.google.com/maps?q=${encodeURIComponent(event.venue)}&t=&z=15&ie=UTF8&iwloc=&output=embed` : `https://maps.google.com/maps?q=${encodeURIComponent(event.venue + ' ' + event.address)}&t=&z=15&ie=UTF8&iwloc=&output=embed`)}
                     />
                   </div>
                   <a
-                    href={event.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venue + ' ' + event.address)}`}
+                    href={event.googleMapsUrl || (isUrl(event.address) ? event.address : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venue + ' ' + event.address)}`)}
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex items-center gap-2 text-xs font-light tracking-wider uppercase text-white border border-white/20 px-4 py-2 hover:bg-white/10 transition-colors"
