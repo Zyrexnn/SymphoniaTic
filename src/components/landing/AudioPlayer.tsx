@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Pause, Play, SkipForward, SkipBack, ChevronDown, ChevronUp, Volume2, VolumeX } from 'lucide-react';
 import { CONCERT_EVENTS, formatTime } from './data';
@@ -24,55 +24,73 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   onSetVolume, onSetIsMuted, onSeek,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const activeTrack = CONCERT_EVENTS[currentTrackIndex];
+  const activeTrack = CONCERT_EVENTS[currentTrackIndex] || CONCERT_EVENTS[0];
 
-  const togglePlay = () => {
+  const togglePlay = useCallback(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    if (isPlaying) { audio.pause(); onSetIsPlaying(false); }
-    else { audio.play().then(() => onSetIsPlaying(true)).catch(() => onSetIsPlaying(false)); }
-  };
+    if (isPlaying) {
+      audio.pause();
+      onSetIsPlaying(false);
+    } else {
+      audio.play().then(() => onSetIsPlaying(true)).catch(() => onSetIsPlaying(false));
+    }
+  }, [audioRef, isPlaying, onSetIsPlaying]);
 
-  const playNext = () => { onSetCurrentTrackIndex((currentTrackIndex + 1) % CONCERT_EVENTS.length); onSetIsPlaying(true); };
-  const playPrev = () => { onSetCurrentTrackIndex((currentTrackIndex - 1 + CONCERT_EVENTS.length) % CONCERT_EVENTS.length); onSetIsPlaying(true); };
-  const playTrack = (i: number) => { if (currentTrackIndex === i) togglePlay(); else { onSetCurrentTrackIndex(i); onSetIsPlaying(true); } };
+  const playNext = useCallback(() => {
+    onSetCurrentTrackIndex((currentTrackIndex + 1) % CONCERT_EVENTS.length);
+    onSetIsPlaying(true);
+  }, [currentTrackIndex, onSetCurrentTrackIndex, onSetIsPlaying]);
 
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const playPrev = useCallback(() => {
+    onSetCurrentTrackIndex((currentTrackIndex - 1 + CONCERT_EVENTS.length) % CONCERT_EVENTS.length);
+    onSetIsPlaying(true);
+  }, [currentTrackIndex, onSetCurrentTrackIndex, onSetIsPlaying]);
+
+  const playTrack = useCallback((i: number) => {
+    if (currentTrackIndex === i) {
+      togglePlay();
+    } else {
+      onSetCurrentTrackIndex(i);
+      onSetIsPlaying(true);
+    }
+  }, [currentTrackIndex, togglePlay, onSetCurrentTrackIndex, onSetIsPlaying]);
+
+  const handleVolumeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const v = parseFloat(e.target.value);
     onSetVolume(v);
     if (audioRef.current) audioRef.current.volume = v;
-  };
+  }, [audioRef, onSetVolume]);
 
-  const toggleMute = () => { if (audioRef.current) { audioRef.current.muted = !isMuted; onSetIsMuted(!isMuted); } };
+  const toggleMute = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.muted = !isMuted;
+      onSetIsMuted(!isMuted);
+    }
+  }, [audioRef, isMuted, onSetIsMuted]);
 
   return (
-    <div
-      className="fixed bottom-0 left-0 right-0 z-30"
-      style={{ background: '#171717', borderTop: '1px solid rgba(255,255,255,0.06)' }}
-    >
+    <div className="fixed bottom-0 left-0 right-0 z-30 bg-[#171717] border-t border-white/[0.06]">
       {/* Main bar */}
-      <div
-        className="flex items-center justify-between mx-auto"
-        style={{ maxWidth: 1400, padding: '10px 40px' }}
-      >
+      <div className="flex items-center justify-between mx-auto max-w-[1400px] px-10 py-2.5">
         {/* Left: controls + track info */}
         <div className="flex items-center gap-5 flex-1 min-w-0">
           <div className="flex items-center gap-3">
-            <button onClick={playPrev} className="cursor-pointer bg-transparent border-none p-1" style={{ color: '#9a9a9a' }}>
+            <button onClick={playPrev} className="cursor-pointer bg-transparent border-none p-1 text-[#9a9a9a] hover:text-white transition-colors" title="Lagu sebelumnya">
               <SkipBack size={14} strokeWidth={1} />
             </button>
-            <button onClick={togglePlay} className="cursor-pointer bg-transparent border-none p-1" style={{ color: '#ffffff' }}>
+            <button onClick={togglePlay} className="cursor-pointer bg-transparent border-none p-1 text-white hover:opacity-80 transition-opacity" title={isPlaying ? 'Pause' : 'Play'}>
               {isPlaying ? <Pause size={14} strokeWidth={1} /> : <Play size={14} strokeWidth={1} />}
             </button>
-            <button onClick={playNext} className="cursor-pointer bg-transparent border-none p-1" style={{ color: '#9a9a9a' }}>
+            <button onClick={playNext} className="cursor-pointer bg-transparent border-none p-1 text-[#9a9a9a] hover:text-white transition-colors" title="Lagu berikutnya">
               <SkipForward size={14} strokeWidth={1} />
             </button>
           </div>
           <div className="min-w-0">
-            <p className="truncate" style={{ fontSize: 13, fontWeight: 300, letterSpacing: '-0.05px', color: '#ffffff' }}>
+            <p className="truncate text-[13px] font-light tracking-[-0.05px] text-white">
               {activeTrack.title}
             </p>
-            <p className="truncate" style={{ fontSize: 12, fontWeight: 300, letterSpacing: '-0.03px', color: '#9a9a9a' }}>
+            <p className="truncate text-xs font-light tracking-[-0.03px] text-[#9a9a9a]">
               {activeTrack.artist}
             </p>
           </div>
@@ -80,7 +98,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
 
         {/* Center: seek bar */}
         <div className="hidden md:flex items-center gap-3 flex-1 max-w-md mx-8">
-          <span style={{ fontSize: 11, fontWeight: 300, color: '#9a9a9a', fontVariantNumeric: 'tabular-nums', minWidth: 32 }}>
+          <span className="text-[11px] font-light text-[#9a9a9a] tabular-nums min-w-[32px]">
             {formatTime(currentTime)}
           </span>
           <input
@@ -89,10 +107,9 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
             max={duration || 100}
             value={currentTime}
             onChange={(e) => onSeek(parseFloat(e.target.value))}
-            className="flex-1 cursor-pointer"
-            style={{ height: 2, appearance: 'none', background: 'rgba(255,255,255,0.1)', outline: 'none' }}
+            className="flex-1 cursor-pointer h-0.5 appearance-none bg-white/10 outline-none"
           />
-          <span style={{ fontSize: 11, fontWeight: 300, color: '#9a9a9a', fontVariantNumeric: 'tabular-nums', minWidth: 32 }}>
+          <span className="text-[11px] font-light text-[#9a9a9a] tabular-nums min-w-[32px]">
             {formatTime(duration)}
           </span>
         </div>
@@ -100,7 +117,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
         {/* Right: volume + expand */}
         <div className="flex items-center gap-4">
           <div className="hidden sm:flex items-center gap-2">
-            <button onClick={toggleMute} className="cursor-pointer bg-transparent border-none p-1" style={{ color: '#9a9a9a' }}>
+            <button onClick={toggleMute} className="cursor-pointer bg-transparent border-none p-1 text-[#9a9a9a] hover:text-white transition-colors">
               {isMuted ? <VolumeX size={14} strokeWidth={1} /> : <Volume2 size={14} strokeWidth={1} />}
             </button>
             <input
@@ -110,14 +127,13 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
               step="0.05"
               value={isMuted ? 0 : volume}
               onChange={handleVolumeChange}
-              className="w-16 cursor-pointer"
-              style={{ height: 2, appearance: 'none', background: 'rgba(255,255,255,0.1)', outline: 'none' }}
+              className="w-16 cursor-pointer h-0.5 appearance-none bg-white/10 outline-none"
             />
           </div>
           <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="cursor-pointer bg-transparent border-none p-1"
-            style={{ color: '#9a9a9a' }}
+            onClick={() => setIsExpanded((prev) => !prev)}
+            className="cursor-pointer bg-transparent border-none p-1 text-[#9a9a9a] hover:text-white transition-colors"
+            title={isExpanded ? 'Tutup daftar putar' : 'Buka daftar putar'}
           >
             {isExpanded ? <ChevronDown size={14} strokeWidth={1} /> : <ChevronUp size={14} strokeWidth={1} />}
           </button>
@@ -132,28 +148,22 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="overflow-hidden mx-auto"
-            style={{ borderTop: '1px solid rgba(255,255,255,0.06)', maxWidth: 1400 }}
+            className="overflow-hidden mx-auto max-w-[1400px] border-t border-white/[0.06]"
           >
-            <div style={{ padding: '12px 40px 16px', maxHeight: 200, overflowY: 'auto' }}>
+            <div className="px-10 py-3 pb-4 max-h-[200px] overflow-y-auto">
               {CONCERT_EVENTS.map((evt, idx) => (
                 <button
                   key={evt.id}
                   onClick={() => playTrack(idx)}
-                  className="w-full text-left flex items-center gap-4 cursor-pointer transition-opacity hover:opacity-60 bg-transparent border-none"
-                  style={{
-                    padding: '8px 0',
-                    fontSize: 16,
-                    fontWeight: 300,
-                    letterSpacing: '-0.05px',
-                    color: currentTrackIndex === idx ? '#ffffff' : '#9a9a9a',
-                  }}
+                  className={`w-full text-left flex items-center gap-4 cursor-pointer transition-opacity hover:opacity-60 bg-transparent border-none py-2 text-base font-light tracking-[-0.05px] ${
+                    currentTrackIndex === idx ? 'text-white' : 'text-[#9a9a9a]'
+                  }`}
                 >
-                  <span style={{ width: 20, fontSize: 12, fontWeight: 300, fontVariantNumeric: 'tabular-nums' }}>
+                  <span className="w-5 text-xs font-light tabular-nums">
                     {currentTrackIndex === idx && isPlaying ? '→' : `${idx + 1}`}
                   </span>
                   <span className="truncate flex-1">{evt.title}</span>
-                  <span className="truncate" style={{ color: '#9a9a9a' }}>{evt.artist}</span>
+                  <span className="truncate text-[#9a9a9a]">{evt.artist}</span>
                 </button>
               ))}
             </div>

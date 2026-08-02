@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ArrowLeft, Search, Heart, Music } from 'lucide-react';
 import { CONCERT_EVENTS, fetchEventsAPI, formatIDR } from './data';
 import type { EventItem } from './data';
@@ -8,18 +8,34 @@ const EventsPage: React.FC = () => {
   const [liveEvents, setLiveEvents] = useState<EventItem[]>([]);
 
   useEffect(() => {
-    fetchEventsAPI().then(setLiveEvents).catch(() => setLiveEvents([]));
+    let active = true;
+    fetchEventsAPI()
+      .then((data) => {
+        if (active) setLiveEvents(data);
+      })
+      .catch(() => {
+        if (active) setLiveEvents([]);
+      });
+    return () => {
+      active = false;
+    };
   }, []);
 
-  const sourceEvents = liveEvents.length > 0 ? liveEvents : CONCERT_EVENTS;
-  const q = search.toLowerCase();
-  const filtered = sourceEvents.filter(
-    (e) =>
-      !q ||
-      e.title.toLowerCase().includes(q) ||
-      e.artist.toLowerCase().includes(q) ||
-      e.venue.toLowerCase().includes(q)
+  const sourceEvents = useMemo(
+    () => (liveEvents.length > 0 ? liveEvents : CONCERT_EVENTS),
+    [liveEvents]
   );
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return sourceEvents;
+    return sourceEvents.filter(
+      (e) =>
+        e.title.toLowerCase().includes(q) ||
+        e.artist.toLowerCase().includes(q) ||
+        e.venue.toLowerCase().includes(q)
+    );
+  }, [search, sourceEvents]);
 
   return (
     <div className="min-h-screen bg-[#171717] text-white">

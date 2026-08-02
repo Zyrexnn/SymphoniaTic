@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { BoomerangVideoBg } from './BoomerangVideoBg';
 import { CONCERT_EVENTS, fetchEventsAPI } from './landing/data';
@@ -32,23 +32,41 @@ export const SymphoniaTicApp: React.FC = () => {
 
   const [liveEvents, setLiveEvents] = useState<EventItem[]>([]);
 
-  const loadLiveEvents = async () => {
+  const loadLiveEvents = useCallback(async () => {
     try {
       const data = await fetchEventsAPI();
       setLiveEvents(data);
     } catch (err) {
       console.error('Error fetching live events:', err);
     }
-  };
-
-  useEffect(() => { loadLiveEvents(); }, []);
-  useEffect(() => {
-    const interval = setInterval(loadLiveEvents, 30000);
-    return () => clearInterval(interval);
   }, []);
 
-  const displayEvents = liveEvents.length > 0 ? liveEvents : CONCERT_EVENTS;
-  const activeTrack = CONCERT_EVENTS[currentTrackIndex] || CONCERT_EVENTS[0];
+  useEffect(() => {
+    let mounted = true;
+    fetchEventsAPI().then((data) => {
+      if (mounted) setLiveEvents(data);
+    }).catch(console.error);
+
+    const interval = setInterval(() => {
+      fetchEventsAPI().then((data) => {
+        if (mounted) setLiveEvents(data);
+      }).catch(console.error);
+    }, 30000);
+
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, []);
+
+  const displayEvents = useMemo(
+    () => (liveEvents.length > 0 ? liveEvents : CONCERT_EVENTS),
+    [liveEvents]
+  );
+  const activeTrack = useMemo(
+    () => CONCERT_EVENTS[currentTrackIndex] || CONCERT_EVENTS[0],
+    [currentTrackIndex]
+  );
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -69,10 +87,14 @@ export const SymphoniaTicApp: React.FC = () => {
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio || !activeTrack) return;
-    audio.src = activeTrack.audioUrl;
-    audio.load();
-    if (isPlayingAudio) audio.play().catch(() => setIsPlayingAudio(false));
-  }, [currentTrackIndex, activeTrack]);
+    if (audio.src !== window.location.origin + activeTrack.audioUrl && audio.getAttribute('src') !== activeTrack.audioUrl) {
+      audio.src = activeTrack.audioUrl;
+      audio.load();
+    }
+    if (isPlayingAudio) {
+      audio.play().catch(() => setIsPlayingAudio(false));
+    }
+  }, [activeTrack, isPlayingAudio]);
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 40);
@@ -80,40 +102,52 @@ export const SymphoniaTicApp: React.FC = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const handleSeek = (time: number) => {
-    if (audioRef.current) { audioRef.current.currentTime = time; setCurrentTime(time); }
-  };
+  const handleSeek = useCallback((time: number) => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = time;
+      setCurrentTime(time);
+    }
+  }, []);
 
-  const handleBookingSubmit = (order: OrderRecord) => {
+  const handleBookingSubmit = useCallback((order: OrderRecord) => {
     setOrders((prev) => [order, ...prev]);
     setActiveSuccessOrder(order);
     setBookingEvent(null);
     setBookingCategory(null);
     loadLiveEvents();
-  };
+  }, [loadLiveEvents]);
 
-  const openBooking = (event: EventItem) => {
+  const openBooking = useCallback((event: EventItem) => {
     setBookingEvent(event);
-    setBookingCategory(event.categories[0]);
-  };
+    setBookingCategory(event.categories[0] || null);
+  }, []);
+
+  const toggleMenu = useCallback(() => setIsMenuOpen((prev) => !prev), []);
+  const openAdmin = useCallback(() => setActiveDrawer('ADMIN'), []);
+  const openOrders = useCallback(() => setActiveDrawer('ORDERS'), []);
+  const closeDrawer = useCallback(() => setActiveDrawer(null), []);
+  const closeBookingModal = useCallback(() => {
+    setBookingEvent(null);
+    setBookingCategory(null);
+  }, []);
 
   return (
-    <div className="relative min-h-screen w-full" style={{ background: '#171717', color: '#ffffff' }}>
+    <div className="relative min-h-screen w-full bg-[#171717] text-white">
       <audio ref={audioRef} preload="metadata" />
 
       <Header
         isScrolled={isScrolled}
         isMenuOpen={isMenuOpen}
         ordersCount={orders.length}
-        onToggleMenu={() => setIsMenuOpen(!isMenuOpen)}
-        onOpenAdmin={() => setActiveDrawer('ADMIN')}
-        onOpenOrders={() => setActiveDrawer('ORDERS')}
+        onToggleMenu={toggleMenu}
+        onOpenAdmin={openAdmin}
+        onOpenOrders={openOrders}
       />
 
       {/* Hero with video bg */}
       <div className="relative overflow-hidden">
         <BoomerangVideoBg />
-        <div className="absolute inset-0 z-[1]" style={{ background: 'linear-gradient(to bottom, rgba(23,23,23,0.4) 0%, rgba(23,23,23,0.1) 40%, #171717 100%)' }} />
+        <div className="absolute inset-0 z-[1] bg-gradient-to-b from-[#171717]/40 via-[#171717]/10 to-[#171717]" />
         <Hero />
       </div>
 
@@ -125,7 +159,7 @@ export const SymphoniaTicApp: React.FC = () => {
       <Footer />
 
       {/* Bottom padding for fixed audio bar */}
-      <div style={{ height: 64 }} />
+      <div className="h-16" />
 
       {/* Audio player */}
       <AudioPlayer
@@ -146,19 +180,40 @@ export const SymphoniaTicApp: React.FC = () => {
       {/* Modals */}
       <AnimatePresence>
         {bookingEvent && bookingCategory && (
-          <BookingModal key={bookingEvent.id} event={bookingEvent} initialCategory={bookingCategory}
-            onClose={() => { setBookingEvent(null); setBookingCategory(null); }} onSubmit={handleBookingSubmit} />
+          <BookingModal
+            key={bookingEvent.id}
+            event={bookingEvent}
+            initialCategory={bookingCategory}
+            onClose={closeBookingModal}
+            onSubmit={handleBookingSubmit}
+          />
         )}
       </AnimatePresence>
       <AnimatePresence>
-        {activeSuccessOrder && <ETicketConfirmation key={activeSuccessOrder.orderCode} order={activeSuccessOrder} onClose={() => setActiveSuccessOrder(null)} />}
+        {activeSuccessOrder && (
+          <ETicketConfirmation
+            key={activeSuccessOrder.orderCode}
+            order={activeSuccessOrder}
+            onClose={() => setActiveSuccessOrder(null)}
+          />
+        )}
       </AnimatePresence>
       <AnimatePresence>
-        {activeDrawer === 'ORDERS' && <OrdersDrawer orders={orders} onClose={() => setActiveDrawer(null)} onShowTicket={setActiveSuccessOrder} />}
+        {activeDrawer === 'ORDERS' && (
+          <OrdersDrawer
+            orders={orders}
+            onClose={closeDrawer}
+            onShowTicket={setActiveSuccessOrder}
+          />
+        )}
       </AnimatePresence>
       <AnimatePresence>
         {activeDrawer === 'ADMIN' && (
-          <AdminDrawer onClose={() => setActiveDrawer(null)} onEventsUpdated={loadLiveEvents} allEvents={displayEvents} />
+          <AdminDrawer
+            onClose={closeDrawer}
+            onEventsUpdated={loadLiveEvents}
+            allEvents={displayEvents}
+          />
         )}
       </AnimatePresence>
     </div>

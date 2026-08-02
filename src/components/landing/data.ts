@@ -54,22 +54,24 @@ export interface OrderRecord {
 }
 
 // ─── Utils ───
-export const formatIDR = (amount: any): string => {
+const idrFormatter = new Intl.NumberFormat('id-ID', {
+  style: 'currency',
+  currency: 'IDR',
+  maximumFractionDigits: 0,
+});
+
+export const formatIDR = (amount: number | string | null | undefined): string => {
   let num = 0;
   if (typeof amount === 'number') {
     num = isNaN(amount) ? 0 : amount;
   } else if (typeof amount === 'string') {
     num = parseFloat(amount) || 0;
   }
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    maximumFractionDigits: 0,
-  }).format(num);
+  return idrFormatter.format(num);
 };
 
 export const formatTime = (secs: number): string => {
-  if (isNaN(secs) || secs === 0) return '0:00';
+  if (!secs || isNaN(secs) || secs <= 0) return '0:00';
   const mins = Math.floor(secs / 60);
   const remainingSecs = Math.floor(secs % 60);
   return `${mins}:${remainingSecs < 10 ? '0' : ''}${remainingSecs}`;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, X } from 'lucide-react';
 import type { EventItem, TicketCategory, OrderRecord, AdminMetricsData } from '../landing/data';
 import {
   CONCERT_EVENTS, adminLoginAPI, fetchAdminMetricsAPI, fetchEventsAPI, createEventAPI, updateEventAPI,
@@ -9,7 +9,7 @@ import {
 } from '../landing/data';
 
 import { AdminLogin } from './AdminLogin';
-import { AdminSidebar, MobileHeader, type TabId } from './AdminSidebar';
+import { AdminSidebar, MobileHeader, MobileBottomNav, type TabId } from './AdminSidebar';
 import { MetricsPanel } from './MetricsPanel';
 import { EventsPanel } from './EventsPanel';
 import { OrdersPanel } from './OrdersPanel';
@@ -110,7 +110,11 @@ const EMPTY_EVENT_FORM = {
 
 const EMPTY_CAT_FORM = { name: '', price: 500000, quota: 50 };
 
-export const AdminApp: React.FC = () => {
+interface AdminAppProps {
+  onClose?: () => void;
+}
+
+export const AdminApp: React.FC<AdminAppProps> = ({ onClose }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     try {
       return typeof window !== 'undefined' && !!sessionStorage.getItem('symphoniatic_admin_token');
@@ -487,14 +491,25 @@ export const AdminApp: React.FC = () => {
             <h1 className="text-base font-light text-white tracking-tight m-0">{tabLabels[activeTab].title}</h1>
             <p className="text-[11px] font-light text-[#9a9a9a] mt-0.5 m-0">{tabLabels[activeTab].subtitle}</p>
           </div>
-          <button
-            onClick={refreshData}
-            disabled={isLoading}
-            className={`px-3.5 py-1.5 text-xs font-light text-[#9a9a9a] border border-white/[0.1] bg-transparent flex items-center gap-1.5 ${isLoading ? 'opacity-40 cursor-default' : 'cursor-pointer hover:text-white'}`}
-          >
-            <RefreshCw size={13} strokeWidth={1} className={isLoading ? 'animate-spin' : ''} />
-            <span className="hidden sm:inline">Refresh Data</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={refreshData}
+              disabled={isLoading}
+              className={`px-3.5 py-1.5 text-xs font-light text-[#9a9a9a] border border-white/[0.1] bg-transparent flex items-center gap-1.5 ${isLoading ? 'opacity-40 cursor-default' : 'cursor-pointer hover:text-white'}`}
+            >
+              <RefreshCw size={13} strokeWidth={1} className={isLoading ? 'animate-spin' : ''} />
+              <span className="hidden sm:inline">Refresh Data</span>
+            </button>
+            {onClose && (
+              <button
+                onClick={onClose}
+                className="p-1.5 text-[#9a9a9a] hover:text-white border border-white/[0.1] bg-transparent cursor-pointer"
+                title="Tutup Admin"
+              >
+                <X size={14} strokeWidth={1} />
+              </button>
+            )}
+          </div>
         </header>
 
         <div className="flex-1 p-6 sm:p-8 overflow-y-auto max-w-[1200px] mx-auto w-full">
@@ -554,6 +569,8 @@ export const AdminApp: React.FC = () => {
           )}
         </div>
       </main>
+
+      <MobileBottomNav activeTab={activeTab} onTabChange={setActiveTab} />
 
       <EventFormModal
         isOpen={showAddEventModal || !!editingEvent}
