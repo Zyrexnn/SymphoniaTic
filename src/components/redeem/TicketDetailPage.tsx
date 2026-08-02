@@ -267,8 +267,22 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
           {/* Ticket Card Top Bar */}
           <div className="bg-[#0f172a] px-6 py-4 border-b border-white/10 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" strokeWidth={1.5} />
-              <span className="text-xs font-light tracking-widest text-emerald-400 uppercase">TIKET TERVERIFIKASI</span>
+              {foundOrder.status === 'CHECKED_IN' ? (
+                <>
+                  <CheckCircle2 className="w-4 h-4 text-sky-400" strokeWidth={1.5} />
+                  <span className="text-xs font-light tracking-widest text-sky-400 uppercase">TIKET TELAH DIPINDAI (CHECKED-IN)</span>
+                </>
+              ) : foundOrder.status === 'REFUNDED' || foundOrder.status === 'CANCELLED' ? (
+                <>
+                  <AlertCircle className="w-4 h-4 text-rose-400" strokeWidth={1.5} />
+                  <span className="text-xs font-light tracking-widest text-rose-400 uppercase">TIKET TIDAK BERLAKU / DIBATALKAN</span>
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" strokeWidth={1.5} />
+                  <span className="text-xs font-light tracking-widest text-emerald-400 uppercase">TIKET AKTIF (SIAP DIGUNAKAN)</span>
+                </>
+              )}
             </div>
             <span className="text-xs font-mono text-[#9a9a9a] uppercase">Status: {foundOrder.status}</span>
           </div>
@@ -300,7 +314,7 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
               </div>
             </div>
 
-            <div className="bg-[#0f172a] border border-white/10 p-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="bg-[#0f172a] border border-white/10 p-6 flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden">
               <div className="flex flex-col items-center sm:items-start text-center sm:text-left gap-2">
                 <span className="text-xs font-light text-[#9a9a9a] uppercase tracking-wider">Kode Pesanan Transaksi</span>
                 <div className="flex items-center gap-3">
@@ -314,12 +328,26 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
                   </button>
                 </div>
                 <p className="text-xs font-light text-[#9a9a9a] max-w-[320px] mt-1">
-                  Tunjukkan Kode QR ini di pintu masuk (Open Gate) untuk dipindai oleh petugas.
+                  {foundOrder.status === 'CHECKED_IN'
+                    ? 'Tiket ini telah dipindai oleh petugas gate di venue pertunjukan.'
+                    : foundOrder.status === 'REFUNDED' || foundOrder.status === 'CANCELLED'
+                    ? 'Transaksi tiket ini telah dibatalkan atau direfund.'
+                    : 'Tunjukkan Kode QR ini di pintu masuk (Open Gate) untuk dipindai oleh petugas.'}
                 </p>
               </div>
 
-              <div className="p-3 bg-white border border-white/20 shrink-0">
-                <QrCode className="w-28 h-28 text-[#171717]" strokeWidth={1} />
+              <div className="relative p-3 bg-white border border-white/20 shrink-0">
+                <QrCode className={`w-28 h-28 text-[#171717] ${foundOrder.status === 'REFUNDED' || foundOrder.status === 'CANCELLED' || foundOrder.status === 'CHECKED_IN' ? 'opacity-20 blur-[2px]' : ''}`} strokeWidth={1} />
+                {(foundOrder.status === 'REFUNDED' || foundOrder.status === 'CANCELLED') && (
+                  <div className="absolute inset-0 bg-rose-950/80 flex items-center justify-center text-center p-2">
+                    <span className="text-[10px] font-mono font-bold text-rose-300 uppercase tracking-widest leading-tight">VOID / CANCELLED</span>
+                  </div>
+                )}
+                {foundOrder.status === 'CHECKED_IN' && (
+                  <div className="absolute inset-0 bg-sky-950/80 flex items-center justify-center text-center p-2">
+                    <span className="text-[10px] font-mono font-bold text-sky-300 uppercase tracking-widest leading-tight">USED / CHECKED IN</span>
+                  </div>
+                )}
               </div>
             </div>
 

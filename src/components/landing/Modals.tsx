@@ -19,6 +19,10 @@ export const BookingModal: React.FC<BookingProps> = ({ event, initialCategory, o
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (event.isClosed) {
+      alert('Maaf, penjualan tiket untuk pertunjukan ini telah ditutup.');
+      return;
+    }
     if (!userName || !userEmail || !selectedCat) return;
     setIsSubmitting(true);
     try {
@@ -56,68 +60,82 @@ export const BookingModal: React.FC<BookingProps> = ({ event, initialCategory, o
           <p className="text-sm font-light text-[#9a9a9a] mt-1">{event.artist}</p>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          {/* Kategori */}
-          <div className="px-6 pt-5">
-            <p className="text-[13px] font-light text-[#9a9a9a] tracking-wider uppercase mb-2.5">Kategori</p>
-            <div className="flex gap-2">
-              {event.categories.map((cat) => (
-                <button type="button" key={cat.id} onClick={() => setSelectedCat(cat)}
-                  className={`flex-1 text-left cursor-pointer bg-transparent p-3 ${
-                    selectedCat.id === cat.id ? 'border border-white' : 'border border-white/[0.08]'
-                  }`}>
-                  <span className={`block truncate text-[13px] font-light ${selectedCat.id === cat.id ? 'text-white' : 'text-[#9a9a9a]'}`}>{cat.name}</span>
-                  <span className="block text-[13px] font-light text-[#9a9a9a] mt-0.5">{formatIDR(cat.price)}</span>
-                </button>
-              ))}
+        {event.isClosed ? (
+          <div className="p-6">
+            <div className="p-4 border border-rose-500/30 bg-rose-950/20 text-rose-300 text-xs font-light rounded leading-relaxed">
+              ⚠️ <strong>Penjualan Tiket Ditutup</strong> — Pertunjukan konser ini sudah dimulai atau penjualan tiket dihentikan oleh panitia.
             </div>
+            <button
+              onClick={onClose}
+              className="mt-6 w-full py-3 text-xs font-light text-white border border-white/20 hover:bg-white/10 transition-colors"
+            >
+              Tutup Modal
+            </button>
           </div>
-
-          {/* Jumlah */}
-          <div className="px-6 pt-5">
-            <div className="flex items-center justify-between mb-8">
-              <p className="text-[13px] font-light text-[#9a9a9a] tracking-wider uppercase">Jumlah</p>
-              <span className="text-[13px] font-light text-[#9a9a9a]">Maks 4</span>
-            </div>
-            <div className="flex gap-2">
-              {[1, 2, 3, 4].map((num) => (
-                <button type="button" key={num} onClick={() => setQuantity(num)}
-                  className={`flex-1 cursor-pointer bg-transparent text-center py-2.5 text-[15px] font-light ${
-                    quantity === num
-                      ? 'text-white border border-white'
-                      : 'text-[#9a9a9a] border border-white/[0.08]'
-                  }`}>
-                  {num}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Data Pemesan */}
-          <div className="px-6 pt-5">
-            <p className="text-[13px] font-light text-[#9a9a9a] tracking-wider uppercase mb-3">Data Pemesan</p>
-            <div className="space-y-3">
-              <input type="text" required placeholder="Nama lengkap" value={userName} onChange={(e) => setUserName(e.target.value)}
-                className="text-sm font-light text-white bg-transparent border border-white/[0.08] outline-none w-full px-3.5 py-3" />
-              <input type="email" required placeholder="Email" value={userEmail} onChange={(e) => setUserEmail(e.target.value)}
-                className="text-sm font-light text-white bg-transparent border border-white/[0.08] outline-none w-full px-3.5 py-3" />
-            </div>
-          </div>
-
-          {/* Total & Submit */}
-          <div className="px-6 pb-6 mt-2">
-            <div className="flex items-center justify-between border-t border-white/[0.06] pt-5">
-              <div>
-                <span className="text-[13px] font-light text-[#9a9a9a] block mb-0.5">Total</span>
-                <span className="text-[22px] tracking-[-0.02em] font-light text-white">{formatIDR(selectedCat.price * quantity)}</span>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            {/* Kategori */}
+            <div className="px-6 pt-5">
+              <p className="text-[13px] font-light text-[#9a9a9a] tracking-wider uppercase mb-2.5">Kategori</p>
+              <div className="flex gap-2">
+                {event.categories.map((cat) => (
+                  <button type="button" key={cat.id} onClick={() => setSelectedCat(cat)}
+                    className={`flex-1 text-left cursor-pointer bg-transparent p-3 ${
+                      selectedCat.id === cat.id ? 'border border-white' : 'border border-white/[0.08]'
+                    }`}>
+                    <span className={`block truncate text-[13px] font-light ${selectedCat.id === cat.id ? 'text-white' : 'text-[#9a9a9a]'}`}>{cat.name}</span>
+                    <span className="block text-[13px] font-light text-[#9a9a9a] mt-0.5">{formatIDR(cat.price)}</span>
+                  </button>
+                ))}
               </div>
-              <button type="submit" disabled={isSubmitting}
-                className="cursor-pointer bg-transparent hover:opacity-60 transition-opacity text-sm font-light text-white border border-white px-6 py-3">
-                {isSubmitting ? 'Memproses...' : 'Konfirmasi'}
-              </button>
             </div>
-          </div>
-        </form>
+
+            {/* Jumlah */}
+            <div className="px-6 pt-5">
+              <div className="flex items-center justify-between mb-8">
+                <p className="text-[13px] font-light text-[#9a9a9a] tracking-wider uppercase">Jumlah</p>
+                <span className="text-[13px] font-light text-[#9a9a9a]">Maks 4</span>
+              </div>
+              <div className="flex gap-2">
+                {[1, 2, 3, 4].map((num) => (
+                  <button type="button" key={num} onClick={() => setQuantity(num)}
+                    className={`flex-1 cursor-pointer bg-transparent text-center py-2.5 text-[15px] font-light ${
+                      quantity === num
+                        ? 'text-white border border-white'
+                        : 'text-[#9a9a9a] border border-white/[0.08]'
+                    }`}>
+                    {num}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Data Pemesan */}
+            <div className="px-6 pt-5">
+              <p className="text-[13px] font-light text-[#9a9a9a] tracking-wider uppercase mb-3">Data Pemesan</p>
+              <div className="space-y-3">
+                <input type="text" required placeholder="Nama lengkap" value={userName} onChange={(e) => setUserName(e.target.value)}
+                  className="text-sm font-light text-white bg-transparent border border-white/[0.08] outline-none w-full px-3.5 py-3" />
+                <input type="email" required placeholder="Email" value={userEmail} onChange={(e) => setUserEmail(e.target.value)}
+                  className="text-sm font-light text-white bg-transparent border border-white/[0.08] outline-none w-full px-3.5 py-3" />
+              </div>
+            </div>
+
+            {/* Total & Submit */}
+            <div className="px-6 pb-6 mt-2">
+              <div className="flex items-center justify-between border-t border-white/[0.06] pt-5">
+                <div>
+                  <span className="text-[13px] font-light text-[#9a9a9a] block mb-0.5">Total</span>
+                  <span className="text-[22px] tracking-[-0.02em] font-light text-white">{formatIDR(selectedCat.price * quantity)}</span>
+                </div>
+                <button type="submit" disabled={isSubmitting}
+                  className="cursor-pointer bg-transparent hover:opacity-60 transition-opacity text-sm font-light text-white border border-white px-6 py-3">
+                  {isSubmitting ? 'Memproses...' : 'Konfirmasi'}
+                </button>
+              </div>
+            </div>
+          </form>
+        )}
       </motion.div>
     </div>
   );

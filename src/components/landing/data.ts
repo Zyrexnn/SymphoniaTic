@@ -4,6 +4,7 @@ export interface TicketCategory {
   name: string;
   price: number;
   quota: number;
+  remainingQuota?: number;
   benefits: string[];
 }
 
@@ -32,6 +33,8 @@ export interface EventItem {
   description: string;
   rundown: RundownItem[];
   categories: TicketCategory[];
+  isClosed?: boolean;
+  eventDateTime?: string;
 }
 
 export interface OrderRecord {
@@ -231,6 +234,8 @@ export interface AdminMetricsData {
   totalOrders: number;
   eventStats?: { eventId: string; title: string; revenue: number; ticketsSold: number }[];
   recentOrders?: { id: string; orderCode: string; eventTitle: string; quantity: number; totalPrice: number; userName: string; status: string; createdAt: string }[];
+  revenueTimeline?: { month: string; revenue: number; tickets: number }[];
+  categoryDistribution?: { name: string; value: number; color?: string }[];
 }
 
 export interface CreateEventInput {
@@ -297,7 +302,8 @@ export const fetchEventsAPI = async (): Promise<EventItem[]> => {
           id: cat.id,
           name: cat.name,
           price: typeof cat.price === 'string' ? parseFloat(cat.price) : cat.price,
-          quota: cat.remainingQuota !== undefined ? cat.remainingQuota : cat.quota,
+          quota: typeof cat.quota === 'string' ? parseInt(cat.quota, 10) : (cat.quota || 0),
+          remainingQuota: typeof cat.remainingQuota === 'string' ? parseInt(cat.remainingQuota, 10) : (cat.remainingQuota ?? cat.quota ?? 0),
           benefits: ['Akustik Jernih', 'Tempat Duduk Bernomor', 'Pass Digital']
         }))
       }));
@@ -366,6 +372,19 @@ export const fetchAdminMetricsAPI = async (): Promise<AdminMetricsData | null> =
           status: String(ro.status || 'VERIFIED'),
           createdAt: String(ro.createdAt || ''),
         })) : [],
+        revenueTimeline: Array.isArray(d.revenueTimeline) ? d.revenueTimeline.map((t: any) => ({
+          month: String(t.month || ''),
+          revenue: typeof t.revenue === 'string' ? parseFloat(t.revenue) : (t.revenue || 0),
+          tickets: Number(t.tickets || 0),
+        })) : [],
+        categoryDistribution: Array.isArray(d.categoryDistribution) ? d.categoryDistribution.map((c: any, index: number) => {
+          const colors = ['#ffffff', '#9a9a9a', '#4a4a4a', '#3b82f6', '#10b981', '#8b5cf6'];
+          return {
+            name: String(c.name || 'Lainnya'),
+            value: typeof c.value === 'string' ? parseFloat(c.value) : (c.value || 0),
+            color: colors[index % colors.length],
+          };
+        }) : [],
       };
     }
     return null;
@@ -384,8 +403,9 @@ export const createEventAPI = async (payload: CreateEventInput) => {
   return res.json();
 };
 
-export const updateEventAPI = async (eventId: string, payload: Partial<CreateEventInput>) => {
-  const res = await fetch(`${getApiBaseUrl()}/admin/events/${eventId}`, {
+export const updateEventAPI = async (eventId: string | number, payload: Partial<CreateEventInput>) => {
+  const cleanId = String(eventId).trim();
+  const res = await fetch(`${getApiBaseUrl()}/admin/events/${cleanId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -393,15 +413,25 @@ export const updateEventAPI = async (eventId: string, payload: Partial<CreateEve
   return res.json();
 };
 
-export const deleteEventAPI = async (eventId: string) => {
-  const res = await fetch(`${getApiBaseUrl()}/admin/events/${eventId}`, {
+export const deleteEventAPI = async (eventId: string | number) => {
+  const cleanId = String(eventId).trim();
+  const res = await fetch(`${getApiBaseUrl()}/admin/events/${cleanId}`, {
     method: 'DELETE',
   });
   return res.json();
 };
 
-export const createTicketCategoryAPI = async (eventId: string, payload: { name: string; price: number; quota: number }) => {
-  const res = await fetch(`${getApiBaseUrl()}/admin/events/${eventId}/categories`, {
+export const toggleEventCloseAPI = async (eventId: string | number) => {
+  const cleanId = String(eventId).trim();
+  const res = await fetch(`${getApiBaseUrl()}/admin/events/${cleanId}/toggle-close`, {
+    method: 'PATCH',
+  });
+  return res.json();
+};
+
+export const createTicketCategoryAPI = async (eventId: string | number, payload: { name: string; price: number; quota: number }) => {
+  const cleanId = String(eventId).trim();
+  const res = await fetch(`${getApiBaseUrl()}/admin/events/${cleanId}/categories`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -410,7 +440,8 @@ export const createTicketCategoryAPI = async (eventId: string, payload: { name: 
 };
 
 export const updateTicketCategoryAPI = async (catId: string, payload: { name: string; price: number; quota: number }) => {
-  const res = await fetch(`${getApiBaseUrl()}/admin/categories/${catId}`, {
+  const cleanId = String(catId).trim();
+  const res = await fetch(`${getApiBaseUrl()}/admin/categories/${cleanId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -419,7 +450,8 @@ export const updateTicketCategoryAPI = async (catId: string, payload: { name: st
 };
 
 export const deleteTicketCategoryAPI = async (catId: string) => {
-  const res = await fetch(`${getApiBaseUrl()}/admin/categories/${catId}`, {
+  const cleanId = String(catId).trim();
+  const res = await fetch(`${getApiBaseUrl()}/admin/categories/${cleanId}`, {
     method: 'DELETE',
   });
   return res.json();

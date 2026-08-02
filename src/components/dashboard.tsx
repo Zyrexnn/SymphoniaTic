@@ -33,10 +33,20 @@ interface DashboardProps {
 
 export const Dashboard: React.FC<DashboardProps> = ({ metrics, eventsCount = 4, onGoToOrders }) => {
   const [chartTimeframe, setChartTimeframe] = useState<'MONTHLY' | 'WEEKLY'>('MONTHLY');
-  const totalRevenue = metrics?.totalRevenue || 34500000;
-  const ticketsSold = metrics?.ticketsSold || 42;
-  const remainingQuota = metrics?.remainingQuota || 158;
-  const totalEvents = metrics?.totalEvents || eventsCount;
+  const totalRevenue = metrics ? (metrics.totalRevenue ?? 0) : 0;
+  const ticketsSold = metrics ? (metrics.ticketsSold ?? 0) : 0;
+  const remainingQuota = metrics ? (metrics.remainingQuota ?? 0) : 0;
+  const totalEvents = metrics ? (metrics.totalEvents ?? eventsCount) : eventsCount;
+
+  // Real-time timeline from database or mock fallback
+  const timelineData = metrics?.revenueTimeline && metrics.revenueTimeline.length > 0
+    ? metrics.revenueTimeline
+    : REVENUE_TIMELINE;
+
+  // Real-time category distribution from database or mock fallback
+  const categoryData = metrics?.categoryDistribution && metrics.categoryDistribution.length > 0
+    ? metrics.categoryDistribution
+    : CATEGORY_DISTRIBUTION;
 
   return (
     <div className="flex flex-col gap-6 sm:gap-8 pb-12 w-full text-white">
@@ -108,7 +118,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ metrics, eventsCount = 4, 
 
             <div className="h-64 sm:h-72 w-full mt-6">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={REVENUE_TIMELINE} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <AreaChart data={timelineData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#ffffff" stopOpacity={0.3} />
@@ -141,7 +151,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ metrics, eventsCount = 4, 
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={CATEGORY_DISTRIBUTION}
+                    data={categoryData}
                     cx="50%"
                     cy="50%"
                     innerRadius={50}
@@ -149,7 +159,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ metrics, eventsCount = 4, 
                     paddingAngle={4}
                     dataKey="value"
                   >
-                    {CATEGORY_DISTRIBUTION.map((entry, index) => (
+                    {categoryData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} stroke="rgba(255,255,255,0.1)" />
                     ))}
                   </Pie>
@@ -162,7 +172,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ metrics, eventsCount = 4, 
             </div>
 
             <div className="space-y-2 mt-2 pt-2 border-t border-white/[0.06]">
-              {CATEGORY_DISTRIBUTION.map((cat) => (
+              {categoryData.map((cat) => (
                 <div key={cat.name} className="flex justify-between items-center text-xs font-light">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: cat.color }} />
