@@ -1,8 +1,9 @@
 import React from 'react';
-import { BarChart3, Ticket, DollarSign, Layers, ArrowUpRight, TrendingUp, RefreshCw, Plus, Download } from 'lucide-react';
+import { Ticket, ArrowUpRight, TrendingUp } from 'lucide-react';
 import { formatIDR } from '../landing/data';
 import type { AdminMetricsData } from '../landing/data';
-import { StatCard, StatusBadge, ProgressBar } from './ui';
+import { StatusBadge, ProgressBar } from './ui';
+import { Dashboard } from '@/components/dashboard';
 
 interface MetricsPanelProps {
   metrics: AdminMetricsData | null;
@@ -11,47 +12,13 @@ interface MetricsPanelProps {
 }
 
 export const MetricsPanel: React.FC<MetricsPanelProps> = ({ metrics, eventsCount, onGoToOrders }) => {
-  const totalRevenue = metrics?.totalRevenue || 0;
   const eventStats = metrics?.eventStats || [];
   const maxEventRevenue = Math.max(...eventStats.map((s) => s.revenue), 1);
 
   return (
     <div className="flex flex-col gap-6 sm:gap-8 pb-12">
-      {/* Top Grid of Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          label="Total Pendapatan Tiket"
-          value={formatIDR(totalRevenue)}
-          subtext="Akumulasi transaksi sukses"
-          icon={DollarSign}
-          badgeText="+12.4% bln ini"
-          trendColor="text-emerald-300 border-emerald-500/30 bg-emerald-500/10"
-        />
-        <StatCard
-          label="Tiket Terjual"
-          value={`${metrics?.ticketsSold || 0} Tiket`}
-          subtext="Total transaksi terkonfirmasi"
-          icon={Ticket}
-          badgeText="Terverifikasi"
-          trendColor="text-white border-white/20 bg-white/5"
-        />
-        <StatCard
-          label="Sisa Kuota Kursi"
-          value={`${metrics?.remainingQuota || 0} Kursi`}
-          subtext="Tersedia di seluruh event"
-          icon={Layers}
-          trendColor="text-sky-300 border-sky-500/30 bg-sky-500/10"
-          badgeText="Real-time"
-        />
-        <StatCard
-          label="Konser & Resital Aktif"
-          value={`${metrics?.totalEvents || eventsCount} Event`}
-          subtext="Musim Semi 2026"
-          icon={BarChart3}
-          trendColor="text-purple-300 border-purple-500/30 bg-purple-500/10"
-          badgeText="Aktif Dipublikasikan"
-        />
-      </div>
+      {/* Interactive Financial Dashboard with Recharts */}
+      <Dashboard metrics={metrics} eventsCount={eventsCount} onGoToOrders={onGoToOrders} />
 
       {/* Detailed Analytics Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
