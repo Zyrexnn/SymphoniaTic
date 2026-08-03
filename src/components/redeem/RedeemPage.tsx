@@ -70,7 +70,7 @@ export const RedeemPage: React.FC = () => {
           </a>
           <div className="flex items-center gap-2">
             <QrCode className="w-4 h-4 text-[#9a9a9a]" strokeWidth={1} />
-            <span className="text-xs font-light tracking-widest text-[#9a9a9a] uppercase">Portal Redem Tiket</span>
+            <span className="text-xs font-light tracking-widest text-[#9a9a9a] uppercase">Portal Cek Tiket</span>
           </div>
         </div>
       </header>
@@ -83,7 +83,7 @@ export const RedeemPage: React.FC = () => {
             [ VERIFIKASI RESMI TIKET SIMFONI ]
           </span>
           <h1 className="text-3xl sm:text-4xl tracking-[-0.03em] font-light text-white leading-tight">
-            Redem &amp; Cek E-Ticket Konser Anda
+            Cek E-Ticket Konser Anda
           </h1>
           <p className="text-sm sm:text-base font-light text-[#9a9a9a] max-w-[560px] mt-3 leading-relaxed">
             Masukkan kode unik pesanan Anda (contoh: <code className="text-white bg-white/10 px-1.5 py-0.5 font-mono">SYM-893472</code>) untuk mengakses tiket pass digital, QR code gate, serta dokumen cetak PDF.

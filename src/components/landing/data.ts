@@ -221,7 +221,7 @@ export const NAV_PAGES = [
   { label: 'Artis & Lineup', href: '#lineup' },
   { label: 'Sistem Kuota', href: '#ticket-war' },
   { label: 'Edukasi', href: '/edukasi' },
-  { label: 'Redem Tiket', href: '/redeem' },
+  { label: 'Cek Tiket', href: '/redeem' },
   { label: 'FAQ', href: '#faq' },
 ];
 
