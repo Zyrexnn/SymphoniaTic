@@ -3,6 +3,7 @@ import { AnimatePresence } from 'framer-motion';
 import { BoomerangVideoBg } from './BoomerangVideoBg';
 import { CONCERT_EVENTS, fetchEventsAPI } from './landing/data';
 import type { EventItem, TicketCategory, OrderRecord } from './landing/data';
+import { AuthProvider, useAuth } from '@/context/AuthContext';
 
 import { Header, Hero } from './landing/Layout';
 import { Footer } from './landing/Footer';
@@ -11,7 +12,8 @@ import { BentoSection } from './landing/Sections';
 import FAQSection from './landing/FAQSection';
 import { BookingModal, ETicketConfirmation, OrdersDrawer, AdminDrawer } from './landing/Modals';
 
-export const SymphoniaTicApp: React.FC = () => {
+const App: React.FC = () => {
+  const { user, logout } = useAuth();
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -139,9 +141,11 @@ export const SymphoniaTicApp: React.FC = () => {
         isScrolled={isScrolled}
         isMenuOpen={isMenuOpen}
         ordersCount={orders.length}
+        user={user}
         onToggleMenu={toggleMenu}
         onOpenAdmin={openAdmin}
         onOpenOrders={openOrders}
+        onLogout={logout}
       />
 
       {/* Hero with video bg */}
@@ -219,3 +223,9 @@ export const SymphoniaTicApp: React.FC = () => {
     </div>
   );
 };
+
+export const SymphoniaTicApp: React.FC = () => (
+  <AuthProvider>
+    <App />
+  </AuthProvider>
+);

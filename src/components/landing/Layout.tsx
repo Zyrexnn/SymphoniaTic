@@ -1,42 +1,63 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ArrowUpRight, Ticket, ShieldCheck, ChevronRight, ShoppingBag } from 'lucide-react';
+import { Menu, X, ArrowUpRight, Ticket, ShieldCheck, ChevronRight, ShoppingBag, User, LogOut, LayoutDashboard } from 'lucide-react';
+import type { UserRecord } from './data';
 
 interface HeaderProps {
-  isScrolled: boolean;
-  isMenuOpen: boolean;
-  ordersCount: number;
-  onToggleMenu: () => void;
-  onOpenAdmin: () => void;
-  onOpenOrders: () => void;
+  isScrolled?: boolean;
+  isMenuOpen?: boolean;
+  ordersCount?: number;
+  user?: UserRecord | null;
+  onToggleMenu?: () => void;
+  onOpenAdmin?: () => void;
+  onOpenOrders?: () => void;
+  onLogout?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   isScrolled,
   isMenuOpen,
-  ordersCount,
+  ordersCount = 0,
+  user,
   onToggleMenu,
   onOpenAdmin,
   onOpenOrders,
+  onLogout,
 }) => {
-  // All navigation items for clean, non-duplicated structure
+  const [currentPath, setCurrentPath] = React.useState('');
+  const [internalScrolled, setInternalScrolled] = React.useState(false);
+  const [internalMenuOpen, setInternalMenuOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setCurrentPath(window.location.pathname);
+      const handleScroll = () => {
+        setInternalScrolled(window.scrollY > 30);
+      };
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      handleScroll();
+      return () => window.removeEventListener('scroll', handleScroll);
+    }
+  }, []);
+
+  const scrolled = isScrolled !== undefined ? isScrolled : internalScrolled;
+  const menuOpen = isMenuOpen !== undefined ? isMenuOpen : internalMenuOpen;
+  const handleToggleMenu = onToggleMenu || (() => setInternalMenuOpen((prev) => !prev));
+
+  // Only real, existing pages in the navbar (no fake anchors, no duplicate Cek Tiket text link)
   const mainNavItems = [
-    { label: 'Jelajah Konser', href: '/events' },
-    { label: 'Artis & Lineup', href: '#lineup' },
-    { label: 'Sistem Kuota', href: '#ticket-war' },
+    { label: 'Konser', href: '/events' },
     { label: 'Edukasi', href: '/edukasi' },
-    { label: 'Cek Tiket', href: '/redeem' },
     { label: 'Refund', href: '/refund' },
-    { label: 'FAQ', href: '#faq' },
   ];
 
   return (
     <>
       <header
         className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
-          isScrolled
-            ? 'bg-[#171717]/90 backdrop-blur-md border-b border-white/[0.08] shadow-2xl shadow-black/50 py-3'
-            : 'bg-gradient-to-b from-[#171717]/90 via-[#171717]/40 to-transparent py-4 md:py-5'
+          scrolled
+            ? 'bg-[#171717]/90 backdrop-blur-md border-b border-white/[0.08] shadow-2xl shadow-black/50 py-3.5'
+            : 'bg-gradient-to-b from-[#171717]/95 via-[#171717]/50 to-transparent py-4 md:py-5'
         }`}
       >
         <div className="flex items-center justify-between mx-auto max-w-[1400px] px-4 sm:px-8 md:px-10 lg:px-12">
@@ -58,27 +79,27 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </a>
 
-          {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
-            {mainNavItems.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                onClick={(e) => {
-                  if (item.href.startsWith('#')) {
-                    e.preventDefault();
-                    const target = document.querySelector(item.href);
-                    if (target) {
-                      target.scrollIntoView({ behavior: 'smooth' });
-                    }
-                  }
-                }}
-                className="relative text-sm xl:text-base font-light tracking-[-0.03em] text-[#9a9a9a] hover:text-white transition-colors duration-200 py-1 group"
-              >
-                {item.label}
-                <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-white group-hover:w-full transition-all duration-300" />
-              </a>
-            ))}
+          {/* Desktop Navigation Links (Real Pages Only) */}
+          <nav className="hidden lg:flex items-center gap-8 xl:gap-10">
+            {mainNavItems.map((item) => {
+              const isActive = currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href));
+              return (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  className={`relative text-sm xl:text-base tracking-[-0.02em] transition-colors duration-200 py-1 group ${
+                    isActive ? 'text-white font-normal' : 'text-[#9a9a9a] hover:text-white font-light'
+                  }`}
+                >
+                  {item.label}
+                  <span
+                    className={`absolute bottom-0 left-0 h-[1px] bg-white transition-all duration-300 ${
+                      isActive ? 'w-full' : 'w-0 group-hover:w-full'
+                    }`}
+                  />
+                </a>
+              );
+            })}
           </nav>
 
           {/* Right Utilities & Actions */}
@@ -94,7 +115,7 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             )}
 
-            {/* Quick Cek Tiket Button for Tablet & Desktop */}
+            {/* Dedicated Primary Action: Cek Tiket */}
             <a
               href="/redeem"
               className="hidden sm:inline-flex items-center gap-2 text-xs font-mono tracking-wider uppercase px-4 py-2 border border-white/20 text-white bg-white/5 hover:bg-white hover:text-[#171717] hover:border-white transition-all duration-300"
@@ -103,41 +124,86 @@ export const Header: React.FC<HeaderProps> = ({
               <span>Cek Tiket</span>
             </a>
 
-            {/* Admin Trigger Link / Button */}
-            <button
-              onClick={onOpenAdmin}
+            {/* Admin Link */}
+            <a
+              href="/admin"
+              onClick={(e) => {
+                if (onOpenAdmin) {
+                  e.preventDefault();
+                  onOpenAdmin();
+                }
+              }}
               className="hidden md:inline-flex items-center gap-1.5 text-xs font-mono tracking-wider text-[#9a9a9a] hover:text-white transition-colors px-2 py-1 bg-transparent border-none cursor-pointer"
               title="Portal Admin"
             >
               <ShieldCheck className="w-3.5 h-3.5" strokeWidth={1.5} />
               <span>Admin</span>
-            </button>
+            </a>
+
+            {/* User Auth: Dashboard + Logout jika login, else Masuk/Daftar */}
+            {user ? (
+              <div className="hidden sm:flex items-center gap-2">
+                <a
+                  href="/dashboard"
+                  className="inline-flex items-center gap-1.5 text-xs font-mono tracking-wider uppercase px-3 py-2 border border-white/20 text-white hover:border-white hover:bg-white/5 transition-all"
+                  title="Dashboard"
+                >
+                  <LayoutDashboard className="w-3.5 h-3.5" strokeWidth={1.5} />
+                  <span className="max-w-[80px] truncate">{user.name}</span>
+                </a>
+                {onLogout && (
+                  <button
+                    onClick={onLogout}
+                    className="inline-flex items-center gap-1.5 text-xs font-mono tracking-wider text-[#9a9a9a] hover:text-white transition-colors px-2 py-2 border border-transparent hover:border-white/20 cursor-pointer"
+                    title="Keluar"
+                  >
+                    <LogOut className="w-3.5 h-3.5" strokeWidth={1.5} />
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="hidden sm:flex items-center gap-2">
+                <a
+                  href="/login"
+                  className="inline-flex items-center gap-1.5 text-xs font-mono tracking-wider text-[#9a9a9a] hover:text-white transition-colors px-2.5 py-1.5"
+                >
+                  <User className="w-3.5 h-3.5" strokeWidth={1.5} />
+                  <span>Masuk</span>
+                </a>
+                <a
+                  href="/register"
+                  className="inline-flex items-center gap-1.5 text-xs font-mono tracking-wider uppercase px-3 py-1.5 bg-white text-[#171717] hover:bg-neutral-200 transition-colors"
+                >
+                  Daftar
+                </a>
+              </div>
+            )}
 
             {/* Mobile Menu Toggle Button */}
             <button
-              onClick={onToggleMenu}
+              onClick={handleToggleMenu}
               aria-label="Buka Menu Navigasi"
               className="lg:hidden cursor-pointer bg-white/5 border border-white/15 hover:border-white text-white p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center transition-colors focus:outline-none"
             >
-              {isMenuOpen ? <X size={20} strokeWidth={1.5} /> : <Menu size={20} strokeWidth={1.5} />}
+              {menuOpen ? <X size={20} strokeWidth={1.5} /> : <Menu size={20} strokeWidth={1.5} />}
             </button>
           </div>
         </div>
       </header>
 
-      {/* Mobile & Tablet Fullscreen Navigation Overlay Drawer */}
+      {/* Mobile Navigation Drawer */}
       <AnimatePresence>
-        {isMenuOpen && (
+        {menuOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 bg-[#171717]/95 backdrop-blur-xl flex flex-col justify-between p-6 sm:p-10 lg:hidden overflow-y-auto"
+            className="fixed inset-0 z-50 bg-[#171717]/98 backdrop-blur-xl flex flex-col justify-between p-6 sm:p-10 lg:hidden overflow-y-auto"
           >
             {/* Drawer Top Bar */}
             <div className="flex items-center justify-between border-b border-white/10 pb-6">
-              <a href="/" onClick={onToggleMenu} className="flex items-center gap-2.5 text-white">
+              <a href="/" onClick={handleToggleMenu} className="flex items-center gap-2.5 text-white">
                 <div className="w-7 h-7 border border-white/30 flex items-center justify-center bg-white/10">
                   <span className="font-mono text-xs font-bold">S</span>
                 </div>
@@ -145,7 +211,7 @@ export const Header: React.FC<HeaderProps> = ({
               </a>
 
               <button
-                onClick={onToggleMenu}
+                onClick={handleToggleMenu}
                 aria-label="Tutup Menu"
                 className="bg-white/10 border border-white/20 text-white p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-white hover:text-[#171717] transition-all cursor-pointer"
               >
@@ -166,16 +232,7 @@ export const Header: React.FC<HeaderProps> = ({
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.2, delay: idx * 0.04 }}
-                  onClick={(e) => {
-                    onToggleMenu();
-                    if (item.href.startsWith('#')) {
-                      e.preventDefault();
-                      const target = document.querySelector(item.href);
-                      if (target) {
-                        target.scrollIntoView({ behavior: 'smooth' });
-                      }
-                    }
-                  }}
+                  onClick={handleToggleMenu}
                   className="group flex items-center justify-between py-3.5 px-3 border-b border-white/5 text-lg sm:text-xl font-light tracking-tight text-white hover:text-[#9a9a9a] hover:bg-white/[0.03] transition-all"
                 >
                   <span className="flex items-center gap-3">
@@ -191,7 +248,7 @@ export const Header: React.FC<HeaderProps> = ({
               <div className="pt-4 mt-2 grid grid-cols-2 gap-3">
                 <a
                   href="/redeem"
-                  onClick={onToggleMenu}
+                  onClick={handleToggleMenu}
                   style={{ color: '#171717' }}
                   className="flex items-center justify-center gap-2 py-3 px-4 bg-white !text-[#171717] font-mono text-xs font-semibold uppercase tracking-wider text-center cursor-pointer hover:bg-neutral-200 transition-colors"
                 >
@@ -200,13 +257,62 @@ export const Header: React.FC<HeaderProps> = ({
                 </a>
                 <a
                   href="/admin"
-                  onClick={onToggleMenu}
+                  onClick={(e) => {
+                    handleToggleMenu();
+                    if (onOpenAdmin) {
+                      e.preventDefault();
+                      onOpenAdmin();
+                    }
+                  }}
                   style={{ color: '#ffffff' }}
                   className="flex items-center justify-center gap-2 py-3 px-4 border border-white/30 text-white font-mono text-xs uppercase tracking-wider text-center hover:bg-white/10"
                 >
                   <ShieldCheck size={14} />
                   <span>Admin</span>
                 </a>
+              </div>
+
+              {/* Auth actions in mobile drawer */}
+              <div className="pt-3 grid grid-cols-1 gap-2">
+                {user ? (
+                  <>
+                    <a
+                      href="/dashboard"
+                      onClick={handleToggleMenu}
+                      className="flex items-center justify-center gap-2 py-3 px-4 border border-white/30 text-white font-mono text-xs uppercase tracking-wider hover:bg-white/10"
+                    >
+                      <LayoutDashboard size={14} strokeWidth={1.5} />
+                      <span>Dashboard — {user.name}</span>
+                    </a>
+                    {onLogout && (
+                      <button
+                        onClick={() => { handleToggleMenu(); onLogout(); }}
+                        className="flex items-center justify-center gap-2 py-3 px-4 text-[#9a9a9a] font-mono text-xs uppercase tracking-wider hover:text-white transition-colors cursor-pointer"
+                      >
+                        <LogOut size={14} strokeWidth={1.5} />
+                        <span>Keluar</span>
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <div className="grid grid-cols-2 gap-2">
+                    <a
+                      href="/login"
+                      onClick={handleToggleMenu}
+                      className="flex items-center justify-center gap-2 py-3 px-4 border border-white/30 text-white font-mono text-xs uppercase tracking-wider hover:bg-white/10"
+                    >
+                      <User size={14} strokeWidth={1.5} />
+                      <span>Masuk</span>
+                    </a>
+                    <a
+                      href="/register"
+                      onClick={handleToggleMenu}
+                      className="flex items-center justify-center gap-2 py-3 px-4 bg-white text-[#171717] font-mono text-xs uppercase tracking-wider hover:bg-neutral-200"
+                    >
+                      Daftar
+                    </a>
+                  </div>
+                )}
               </div>
             </nav>
 
