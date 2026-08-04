@@ -1,4 +1,11 @@
 // ─── Types ───
+export interface APIResponse<T = any> {
+  success: boolean;
+  message: string;
+  data: T;
+  error?: string;
+}
+
 export interface TicketCategory {
   id: string;
   name: string;
@@ -36,7 +43,7 @@ export interface EventItem {
   isClosed?: boolean;
   eventDateTime?: string;
 }
-
+ 
 export interface OrderRecord {
   id: string;
   orderCode: string;
@@ -54,6 +61,44 @@ export interface OrderRecord {
   status: string;
   paymentMethod: string;
   createdAt: string;
+  userId?: string;
+}
+
+export interface UserRecord {
+  id: string;
+  email: string;
+  name: string;
+  phone?: string;
+  role: 'USER' | 'ADMIN';
+  isVerified: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AuthResponseData {
+  token: string;
+  user: UserRecord;
+}
+
+export interface UserDashboardSummary {
+  totalTicketsBought: number;
+  upcomingEventsCount: number;
+  pastEventsCount: number;
+  activeRefundsCount: number;
+}
+
+export interface RefundRecord {
+  id: string;
+  orderCode: string;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'COMPLETED';
+  bankName: string;
+  accountNumber: string;
+  accountHolder: string;
+  reason: string;
+  amount: number;
+  adminNote?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // ─── Utils ───
@@ -218,11 +263,9 @@ export const FAQS = [
 
 export const NAV_PAGES = [
   { label: 'Jelajah Konser', href: '/events' },
-  { label: 'Artis & Lineup', href: '#lineup' },
-  { label: 'Sistem Kuota', href: '#ticket-war' },
   { label: 'Edukasi', href: '/edukasi' },
   { label: 'Cek Tiket', href: '/redeem' },
-  { label: 'FAQ', href: '#faq' },
+  { label: 'Refund', href: '/refund' },
 ];
 
 // ─── Admin API Types & Helpers ───
@@ -522,5 +565,82 @@ export const updateRefundStatusAPI = async (refundId: string, status: string, ad
   });
   return res.json();
 };
+
+// ─── User Auth & Account API ───
+const USER_TOKEN_KEY = 'symphoniatic_user_token';
+
+export const getUserToken = (): string | null => {
+  try {
+    return typeof window !== 'undefined' ? localStorage.getItem(USER_TOKEN_KEY) : null;
+  } catch { return null; }
+};
+
+export const setUserToken = (token: string) => {
+  try { localStorage.setItem(USER_TOKEN_KEY, token); } catch {}
+};
+
+export const clearUserToken = () => {
+  try { localStorage.removeItem(USER_TOKEN_KEY); } catch {}
+};
+
+export const authFetch = (path: string, options: RequestInit = {}): Promise<Response> => {
+  const token = getUserToken();
+  const headers = new Headers(options.headers || {});
+  headers.set('Content-Type', 'application/json');
+  if (token) headers.set('Authorization', `Bearer ${token}`);
+  return fetch(`${getApiBaseUrl()}${path}`, { ...options, headers });
+};
+
+const postJSON = (path: string, body: any, auth = false) =>
+  (auth ? authFetch(path, { method: 'POST', body: JSON.stringify(body) })
+        : fetch(`${getApiBaseUrl()}${path}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }))
+    .then(r => r.json());
+
+// Auth (public)
+export const requestRegisterOtpAPI = (email: string, name: string): Promise<APIResponse<null>> =>
+  postJSON('/auth/register/request-otp', { email, name });
+
+export const verifyRegisterOtpAPI = (email: string, name: string, otpCode: string, password: string): Promise<APIResponse<AuthResponseData>> =>
+  postJSON('/auth/register/verify-otp', { email, name, otpCode, password });
+
+export const passwordLoginAPI = (email: string, password: string): Promise<APIResponse<AuthResponseData>> =>
+  postJSON('/auth/login/password', { email, password });
+
+export const requestLoginOtpAPI = (email: string): Promise<APIResponse<null>> =>
+  postJSON('/auth/login/request-otp', { email });
+
+export const verifyLoginOtpAPI = (email: string, otpCode: string): Promise<APIResponse<AuthResponseData>> =>
+  postJSON('/auth/login/verify-otp', { email, otpCode });
+
+export const requestForgotPasswordOtpAPI = (email: string): Promise<APIResponse<null>> =>
+  postJSON('/auth/forgot-password/request-otp', { email });
+
+export const verifyForgotPasswordOtpAPI = (email: string, otpCode: string): Promise<APIResponse<{ resetToken: string; message: string }>> =>
+  postJSON('/auth/forgot-password/verify-otp', { email, otpCode });
+
+export const resetPasswordAPI = (resetToken: string, newPassword: string): Promise<APIResponse<null>> =>
+  postJSON('/auth/forgot-password/reset', { resetToken, newPassword });
+
+// Auth & User (protected)
+export const getMeAPI = (): Promise<APIResponse<UserRecord>> =>
+  authFetch('/auth/me').then(r => r.json());
+
+export const updateUserProfileAPI = (name: string, phone: string): Promise<APIResponse<UserRecord>> =>
+  authFetch('/user/profile', { method: 'PUT', body: JSON.stringify({ name, phone }) }).then(r => r.json());
+
+export const changeUserPasswordAPI = (oldPassword: string, newPassword: string): Promise<APIResponse<null>> =>
+  authFetch('/user/change-password', { method: 'POST', body: JSON.stringify({ oldPassword, newPassword }) }).then(r => r.json());
+
+export const getUserDashboardSummaryAPI = (): Promise<APIResponse<UserDashboardSummary>> =>
+  authFetch('/user/dashboard-summary').then(r => r.json());
+
+export const getUserOrdersAPI = (status?: string): Promise<APIResponse<OrderRecord[]>> =>
+  authFetch(`/user/orders${status ? `?status=${encodeURIComponent(status)}` : ''}`).then(r => r.json());
+
+export const getUserOrderByCodeAPI = (orderCode: string): Promise<APIResponse<OrderRecord>> =>
+  authFetch(`/user/orders/${encodeURIComponent(orderCode)}`).then(r => r.json());
+
+export const getUserRefundsAPI = (): Promise<APIResponse<RefundRecord[]>> =>
+  authFetch('/user/refunds').then(r => r.json());
 
 
