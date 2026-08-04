@@ -1,5 +1,9 @@
-import { EfferdDashboard2 } from "@/components/ui/efferd-dashboard-2";
+import { GlassmorphismListenAppBlock } from "@/components/ui/glassmorphism-listen-app-block-shadcnui"
 
 export default function Demo() {
-  return <EfferdDashboard2 />;
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-background p-8">
+      <GlassmorphismListenAppBlock />
+    </div>
+  )
 }
