@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { BoomerangVideoBg } from './BoomerangVideoBg';
-import { CONCERT_EVENTS, fetchEventsAPI } from './landing/data';
+import { CONCERT_EVENTS, fetchEventsAPI, getUserOrdersAPI } from './landing/data';
 import type { EventItem, TicketCategory, OrderRecord } from './landing/data';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 
@@ -33,6 +33,16 @@ const App: React.FC = () => {
   const [orders, setOrders] = useState<OrderRecord[]>([]);
 
   const [liveEvents, setLiveEvents] = useState<EventItem[]>([]);
+
+  useEffect(() => {
+    if (user) {
+      getUserOrdersAPI().then((res) => {
+        if (res.success && Array.isArray(res.data)) {
+          setOrders(res.data);
+        }
+      }).catch(console.error);
+    }
+  }, [user]);
 
   const loadLiveEvents = useCallback(async () => {
     try {
