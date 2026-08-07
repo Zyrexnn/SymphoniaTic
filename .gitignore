@@ -27,5 +27,11 @@ panduan.md
 !design.md
 !README.md
 
+# Agent Skills & Internal Specs
+.skills/
+.agents/skills/
+skills-lock.json
+AGENTS.md
+
 # jetbrains setting folder
 .idea/
