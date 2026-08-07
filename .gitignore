@@ -20,5 +20,12 @@ pnpm-debug.log*
 # macOS-specific files
 .DS_Store
 
+# Documentation & Internal Guides (Ignored)
+panduan.md
+[pP][rR][dD]*.md
+!DESIGN.md
+!design.md
+!README.md
+
 # jetbrains setting folder
 .idea/
