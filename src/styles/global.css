@@ -23,6 +23,17 @@
   --color-chalk: #ffffff;
   --color-ash: #9a9a9a;
   --font-display: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  /* Landing brand tokens — purple ticketing (#6C2BD9) */
+  --color-brand: #6C2BD9;
+  --color-brand-dark: #5a23b8;
+  --color-brand-light: #F3EBFF;
+  --color-ink: #0F172A;
+  --color-ink-soft: #334155;
+  --color-muted: #64748B;
+  --color-line: #E2E8F0;
+  --color-canvas: #FFFFFF;
+  --color-canvas-alt: #F8FAFC;
 }
 
 :root {

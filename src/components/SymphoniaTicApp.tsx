@@ -8,6 +8,7 @@ import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { Header, Hero } from './landing/Layout';
 import { Footer } from './landing/Footer';
 import { AudioPlayer } from './landing/AudioPlayer';
+import { RecommendedSection } from './landing/RecommendedSection';
 import { BentoSection } from './landing/Sections';
 import FAQSection from './landing/FAQSection';
 import { BookingModal, ETicketConfirmation, OrdersDrawer, AdminDrawer } from './landing/Modals';
@@ -166,6 +167,8 @@ const App: React.FC = () => {
       </div>
 
       {/* Content */}
+      <RecommendedSection />
+
       <BentoSection events={displayEvents} onBuyTicket={openBooking} />
 
       <FAQSection />
