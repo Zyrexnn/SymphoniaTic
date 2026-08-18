@@ -35,7 +35,8 @@ export function drawTicketCanvas(order: OrderRecord): HTMLCanvasElement {
   ctx.lineTo(750, 105);
   ctx.stroke();
 
-  // Event Info
+
+  // Event Info 
   ctx.fillStyle = '#9a9a9a';
   ctx.font = '300 12px sans-serif';
   ctx.fillText('PERTUNJUKAN RESMI', 50, 130);
@@ -97,34 +98,15 @@ export function drawTicketCanvas(order: OrderRecord): HTMLCanvasElement {
   const qrSize = 190;
   const qrX = (width - qrSize) / 2;
   const qrY = 640;
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(qrX, qrY, qrSize, qrSize);
 
-  ctx.fillStyle = '#171717';
-  const drawFinder = (fx: number, fy: number) => {
-    ctx.fillRect(fx, fy, 38, 38);
+  const domQrCanvas = (typeof document !== 'undefined' ? document.getElementById('ticket-real-qrcode') : null) as HTMLCanvasElement | null;
+  if (domQrCanvas) {
     ctx.fillStyle = '#ffffff';
-    ctx.fillRect(fx + 5, fy + 5, 28, 28);
-    ctx.fillStyle = '#171717';
-    ctx.fillRect(fx + 10, fy + 10, 18, 18);
-  };
-
-  const qrPad = 18;
-  const qrInner = qrSize - qrPad * 2;
-  drawFinder(qrX + qrPad, qrY + qrPad);
-  drawFinder(qrX + qrPad + qrInner - 38, qrY + qrPad);
-  drawFinder(qrX + qrPad, qrY + qrPad + qrInner - 38);
-
-  ctx.fillStyle = '#171717';
-  const gridSize = 10;
-  const cellSize = qrInner / gridSize;
-  for (let r = 0; r < gridSize; r++) {
-    for (let c = 0; c < gridSize; c++) {
-      if ((r < 4 && c < 4) || (r < 4 && c >= 6) || (r >= 6 && c < 4)) continue;
-      if ((r + c * 3 + order.orderCode.length) % 3 === 0) {
-        ctx.fillRect(qrX + qrPad + c * cellSize, qrY + qrPad + r * cellSize, cellSize - 1, cellSize - 1);
-      }
-    }
+    ctx.fillRect(qrX - 10, qrY - 10, qrSize + 20, qrSize + 20);
+    ctx.drawImage(domQrCanvas, qrX, qrY, qrSize, qrSize);
+  } else {
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(qrX, qrY, qrSize, qrSize);
   }
 
   ctx.fillStyle = '#9a9a9a';

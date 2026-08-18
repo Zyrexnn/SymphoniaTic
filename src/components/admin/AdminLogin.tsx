@@ -86,15 +86,27 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
               </div>
             </div>
 
-            {/* Quick Demo Fill Button */}
-            <button
-              type="button"
-              onClick={fillDemoCredentials}
-              className="w-full py-2 px-3 border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] text-[#9a9a9a] hover:text-white text-[11px] font-light transition-colors cursor-pointer flex items-center justify-between"
-            >
-              <span className="flex items-center gap-1.5"><KeyRound size={12} /> Gunakan Kredensial Demo</span>
-              <span className="font-mono text-white/60">admin / 123</span>
-            </button>
+            {/* Quick Demo Fill Buttons */}
+            <div className="space-y-1.5 pt-1">
+              <p className="text-[10px] text-[#7a7a7a] font-light uppercase tracking-wider mb-1">Pilihan Login Cepat Demo:</p>
+              <button
+                type="button"
+                onClick={() => { onUsernameChange('admin'); onPasswordChange('123'); }}
+                className="w-full py-2 px-3 border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] text-[#9a9a9a] hover:text-white text-[11px] font-light transition-colors cursor-pointer flex items-center justify-between"
+              >
+                <span className="flex items-center gap-1.5"><KeyRound size={12} /> Administrator Penuh</span>
+                <span className="font-mono text-white/60">admin / 123</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { onUsernameChange('petugas'); onPasswordChange('123'); }}
+                className="w-full py-2 px-3 border border-emerald-500/20 bg-emerald-500/[0.03] hover:bg-emerald-500/[0.08] text-emerald-400 text-[11px] font-light transition-colors cursor-pointer flex items-center justify-between"
+              >
+                <span className="flex items-center gap-1.5"><KeyRound size={12} /> Petugas Gate Scanner</span>
+                <span className="font-mono text-emerald-300">petugas / 123</span>
+              </button>
+            </div>
 
             <button
               type="submit"
