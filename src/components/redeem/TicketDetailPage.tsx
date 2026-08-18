@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { QRCodeCanvas } from 'qrcode.react';
 import {
   QrCode,
   CheckCircle2,
@@ -229,34 +230,15 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
     const qrSize = 200;
     const qrX = (width - qrSize) / 2;
     const qrY = 630;
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(qrX, qrY, qrSize, qrSize);
 
-    ctx.fillStyle = '#171717';
-    const drawFinder = (fx: number, fy: number) => {
-      ctx.fillRect(fx, fy, 40, 40);
+    const domQrCanvas = document.getElementById('ticket-real-qrcode') as HTMLCanvasElement | null;
+    if (domQrCanvas) {
       ctx.fillStyle = '#ffffff';
-      ctx.fillRect(fx + 5, fy + 5, 30, 30);
-      ctx.fillStyle = '#171717';
-      ctx.fillRect(fx + 10, fy + 10, 20, 20);
-    };
-
-    const qrPad = 20;
-    const qrInner = qrSize - qrPad * 2;
-    drawFinder(qrX + qrPad, qrY + qrPad);
-    drawFinder(qrX + qrPad + qrInner - 40, qrY + qrPad);
-    drawFinder(qrX + qrPad, qrY + qrPad + qrInner - 40);
-
-    ctx.fillStyle = '#171717';
-    const gridSize = 10;
-    const cellSize = qrInner / gridSize;
-    for (let r = 0; r < gridSize; r++) {
-      for (let c = 0; c < gridSize; c++) {
-        if ((r < 4 && c < 4) || (r < 4 && c >= 6) || (r >= 6 && c < 4)) continue;
-        if ((r + c * 3 + order.orderCode.length) % 3 === 0) {
-          ctx.fillRect(qrX + qrPad + c * cellSize, qrY + qrPad + r * cellSize, cellSize - 1, cellSize - 1);
-        }
-      }
+      ctx.fillRect(qrX - 10, qrY - 10, qrSize + 20, qrSize + 20);
+      ctx.drawImage(domQrCanvas, qrX, qrY, qrSize, qrSize);
+    } else {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(qrX, qrY, qrSize, qrSize);
     }
 
     ctx.fillStyle = '#ffffff';
@@ -618,11 +600,13 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
                 </div>
 
                 <div className="relative p-4 bg-white border border-white shrink-0 shadow-xl">
-                  <QrCode
-                    className={`w-44 h-44 sm:w-52 sm:h-52 text-[#171717] ${
-                      isRefunded || isCheckedIn ? 'opacity-20 blur-[2px]' : ''
-                    }`}
-                    strokeWidth={1}
+                  <QRCodeCanvas
+                    id="ticket-real-qrcode"
+                    value={foundOrder.orderCode}
+                    size={180}
+                    level="H"
+                    includeMargin={false}
+                    className={`block ${isRefunded || isCheckedIn ? 'opacity-20 blur-[2px]' : ''}`}
                   />
 
                   {isRefunded && (
@@ -855,7 +839,13 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
               <span className="text-xs font-mono text-gray-500 uppercase tracking-widest">
                 SCANNER GATE QR CODE
               </span>
-              <QrCode className="w-64 h-64 text-[#171717]" strokeWidth={1} />
+              <QRCodeCanvas
+                value={foundOrder.orderCode}
+                size={240}
+                level="H"
+                includeMargin={true}
+                className="block shadow-md"
+              />
               <div className="space-y-1">
                 <p className="text-xl font-mono font-bold tracking-widest">{foundOrder.orderCode}</p>
                 <p className="text-xs text-gray-600 font-light">{foundOrder.eventTitle}</p>
