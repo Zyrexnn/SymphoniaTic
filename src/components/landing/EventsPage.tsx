@@ -39,14 +39,14 @@ const EventsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#171717] text-white">
-      {/* Hero panel ala DICE */}
+      {/* Hero panel - cleaned up */}
       <div className="mx-auto max-w-[1400px] px-10 pt-[80px] pb-10">
         <a href="/" className="inline-flex items-center gap-2 text-base font-light tracking-[-0.05px] text-[#9a9a9a] hover:opacity-60 transition-opacity mb-10">
           <ArrowLeft size={16} strokeWidth={1} />
           <span>Kembali ke Beranda</span>
         </a>
 
-        <div className="relative overflow-hidden rounded-2xl bg-white/[0.04] border border-white/[0.06] px-10 py-12 md:px-14 md:py-16">
+        <div className="relative overflow-hidden rounded-2xl bg-[--color-canvas]/[0.04] border border-white/[0.06] px-10 py-12 md:px-14 md:py-16">
           <div className="max-w-[560px]">
             <h1 className="text-[clamp(28px,4vw,44px)] leading-[1.1] tracking-[-0.02em] font-light m-0">
               Temukan konser dari orkestra favoritmu
@@ -55,12 +55,12 @@ const EventsPage: React.FC = () => {
               Sambungkan selera musikmu dan jelajahi semua pertunjukan simfoni musim ini.
             </p>
             <div className="flex flex-wrap items-center gap-3 mt-8">
-              <span className="inline-flex items-center gap-2 rounded-full bg-white text-[#171717] text-base font-light tracking-[-0.05px] px-6 py-3">
-                <Music size={16} strokeWidth={1.5} />
+              <span className="relative inline-flex items-center gap-2 rounded-full bg-[#171717]/50 text-[#9a9a9a] text-sm font-light tracking-[-0.05px] px-6 py-3 hover:bg-[#171717]/60 transition-colors">
+                <Music size={16} strokeWidth={1.5} className="text-[#9a9a9a]"/>
                 Orkestra
               </span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-white text-[#171717] text-base font-light tracking-[-0.05px] px-6 py-3">
-                <Music size={16} strokeWidth={1.5} />
+              <span className="relative inline-flex items-center gap-2 rounded-full bg-[#171717]/50 text-[#9a9a9a] text-sm font-light tracking-[-0.05px] px-6 py-3 hover:bg-[#171717]/60 transition-colors">
+                <Music size={16} strokeWidth={1.5} className="text-[#9a9a9a]"/>
                 Kamar Musik
               </span>
             </div>
@@ -88,14 +88,14 @@ const EventsPage: React.FC = () => {
             placeholder="Cari konser, artis, venue..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="text-base font-light tracking-[-0.05px] text-white bg-transparent border-none outline-none w-full py-1"
+            className="text-base font-light tracking-[-0.05px] text-white bg-[#171717]/50 border-b border-white/20 placeholder-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 transition-colors"
           />
         </div>
       </div>
 
       {/* Poster grid */}
       <div className="mx-auto max-w-[1400px] px-10 pb-[120px]">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {filtered.map((event) => {
             const minPrice = event.categories?.[0]?.price ?? 0;
             return (
@@ -104,17 +104,17 @@ const EventsPage: React.FC = () => {
                 href={`/concert/${event.id}`}
                 className="cursor-pointer group block"
               >
-                <div className="relative mb-4 overflow-hidden rounded-xl aspect-square">
+                <div className="relative mb-4 overflow-hidden rounded-xl min-h-[260px]">
                   <img
                     src={event.image}
                     alt={event.title}
                     className={`absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700 ${
-                      event.isClosed ? 'grayscale brightness-50' : ''
+                      event.isClosed ? 'grayscale brightness-50' : 'brightness-90 group-hover:brightness-100'
                     }`}
                   />
                   {event.isClosed && (
-                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center p-2">
-                      <span className="text-xs font-mono font-bold text-rose-300 bg-rose-950/80 border border-rose-500/40 px-3 py-1 uppercase tracking-wider rounded">
+                    <div className="absolute inset-0 bg-[--color-obsidian]/80 flex items-center justify-center p-2">
+                      <span className="text-xs font-mono font-bold text-white uppercase tracking-wider">
                         PENJUALAN DITUTUP
                       </span>
                     </div>
@@ -122,7 +122,7 @@ const EventsPage: React.FC = () => {
                   <button
                     aria-label="Simpan ke favorit"
                     onClick={(e) => e.preventDefault()}
-                    className="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-black/70 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black transition-colors cursor-pointer border-none z-10"
+                    className="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-[--color-obsidian]/70 backdrop-blur-sm flex items-center justify-center text-white hover:bg-[--color-obsidian]/90 transition-colors cursor-pointer border-none z-10"
                   >
                     <Heart size={16} />
                   </button>

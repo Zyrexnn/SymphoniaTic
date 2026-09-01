@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import { QrCode, ShieldCheck, Music4, Headphones } from 'lucide-react';
 import { Reveal } from './Reveal';
 
@@ -27,41 +26,39 @@ const FEATURES = [
 ];
 
 export const Features: React.FC = () => (
-    <section className="mx-auto max-w-[1280px] px-4 sm:px-8 md:px-10 py-16">
-      <Reveal>
-        <div className="mb-12 max-w-2xl">
-          <span className="text-[11px] font-semibold tracking-[0.2em] text-brand uppercase block mb-3">
-            Mengapa SymphoniaTic
-          </span>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-[-0.03em] text-ink">
-            Pengalaman konser yang dirancang serba cepat.
-          </h2>
-        </div>
-      </Reveal>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        {FEATURES.map((f, i) => {
-          const Icon = f.icon;
-          return (
-            <Reveal key={f.title} delay={i * 0.08}>
-              <motion.div
-                whileHover={{ y: -6 }}
-                transition={{ duration: 0.3, ease: 'easeOut' }}
-                className="group h-full flex flex-col p-7 border border-line hover:border-brand/40 bg-white hover:shadow-lg rounded-2xl transition-all duration-300"
-              >
-                <div className="w-12 h-12 rounded-xl bg-brand-light border border-brand/15 flex items-center justify-center mb-5 transition-colors duration-300">
-                  <Icon size={20} strokeWidth={2} className="text-brand" />
-                </div>
-                <h3 className="text-base font-semibold text-ink tracking-tight mb-2.5">
-                  {f.title}
-                </h3>
-                <p className="text-[13px] font-normal text-muted leading-relaxed">
-                  {f.desc}
-                </p>
-              </motion.div>
-            </Reveal>
-          );
-        })}
+  <section className="mx-auto max-w-[1280px] px-4 sm:px-8 md:px-10 py-16">
+    <Reveal>
+      <div className="mb-12 max-w-2xl">
+        <span className="text-[11px] font-semibold tracking-[0.2em] text-white/60 uppercase block mb-3">
+          Mengapa SymphoniaTic
+        </span>
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-[-0.03em] text-white">
+          Pengalaman konser yang dirancang untuk keindahan suara.
+        </h2>
       </div>
-    </section>
+    </Reveal>
+
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {FEATURES.map((f, i) => {
+        const Icon = f.icon;
+        return (
+          <Reveal key={f.title} delay={i * 0.08}>
+            <div
+              className="flex flex-col p-6 rounded-xl bg-[--color-card] border border-white/[0.08] transition-all duration-300 hover:border-white/[0.12] hover:bg-[--color-card]/90"
+            >
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4">
+                <Icon size={20} strokeWidth={2} className="text-white" />
+              </div>
+              <h3 className="text-base font-semibold text-white tracking-tight mb-2.5">
+                {f.title}
+              </h3>
+              <p className="text-[13px] font-normal text-white/60 leading-relaxed">
+                {f.desc}
+              </p>
+            </div>
+          </Reveal>
+        );
+      })}
+    </div>
+  </section>
 );
