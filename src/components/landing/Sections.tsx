@@ -12,20 +12,29 @@ const goToConcert = (event: EventItem) => {
   window.location.href = `/concert/${event.id}`;
 };
 
+const getFeaturedEvent = (events: EventItem[]) => {
+  const sourceEvents = (events && events.length > 0) ? events : CONCERT_EVENTS;
+  return sourceEvents[0];
+};
+
+const getRestEvents = (events: EventItem[]) => {
+  const sourceEvents = (events && events.length > 0) ? events : CONCERT_EVENTS;
+  return sourceEvents.filter((e) => e.id !== sourceEvents[0]?.id);
+};
+
 export const BentoSection: React.FC<SectionProps> = ({ events, onBuyTicket }) => {
   const sourceEvents = (events && events.length > 0) ? events : CONCERT_EVENTS;
-  const featured = sourceEvents[0];
-  const rest = sourceEvents.filter((e) => e.id !== featured?.id);
+  const featured = getFeaturedEvent(sourceEvents);
+  const rest = getRestEvents(sourceEvents);
 
   return (
     <section className="bg-canvas">
-    <>
       {/* Section Header */}
       <section id="concerts" className="mx-auto max-w-[1400px] px-6 sm:px-8 md:px-10 pt-16 pb-[100px] md:pb-[120px]">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 pb-6 border-b border-line gap-6">
           <div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-[-0.03em] text-ink m-0">
-              Jelajahi Simfoni &amp; Sistem Gate Pilihan.
+              Jelajahi Simfoni & Sistem Gate Pilihan.
             </h2>
           </div>
           <p className="text-xs sm:text-sm text-muted max-w-md leading-relaxed">
@@ -33,34 +42,34 @@ export const BentoSection: React.FC<SectionProps> = ({ events, onBuyTicket }) =>
           </p>
         </div>
 
-        {/* Desktop Bento Grid */}
-        <div className="hidden md:grid grid-cols-12 gap-5 auto-rows-[220px]">
-          {/* FEATURED (8 cols, 2 rows) */}
+        {/* Desktop Grid: Featured + 2 others in row */}
+        <div className="md:grid md:grid-cols-12 gap-6 md:gap-10">
+          {/* FEATURED CONCERT (8 cols) */}
           <div
-            className="col-span-8 row-span-2 relative overflow-hidden cursor-pointer group hover:shadow-xl transition-all duration-500 bg-[#171717]"
+            className="md:col-span-8 bg-[#171717] relative overflow-hidden cursor-pointer group"
             onClick={() => featured && goToConcert(featured)}
           >
             <img
               src={featured?.image}
               alt={featured?.title}
-              className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-700 brightness-90 group-hover:brightness-100"
+              className="w-full h-[420px] object-cover transition-transform duration-700 group-hover:scale-[1.03]"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#171717] via-[#171717]/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[--color-canvas] via-[--color-canvas]/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             
-            {/* Top Badges */}
+            {/* Badges */}
             <div className="absolute top-6 left-6 right-6 flex items-center justify-between z-10">
-              <span className="text-[11px] font-semibold tracking-wide text-white/90 bg-black/50 backdrop-blur-sm px-3 py-1.5 uppercase">
+              <span className="text-[11px] font-semibold tracking-wide text-white/90 bg-[--color-obsidian]/50 backdrop-blur-sm px-3 py-1.5 uppercase">
                 Konser Utama
               </span>
               {featured?.categories?.[0] && (
-                <span className="text-xs font-semibold tracking-wide text-white bg-black/50 backdrop-blur-sm px-3 py-1.5">
+                <span className="text-xs font-semibold tracking-wide text-white bg-[--color-obsidian]/50 backdrop-blur-sm px-3 py-1.5">
                   Mulai {formatIDR(featured.categories[0].price)}
                 </span>
               )}
             </div>
 
             {/* Bottom Info */}
-            <div className="absolute bottom-0 left-0 right-0 p-8 z-10">
+            <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
               <div className="flex items-center gap-3 text-xs text-white/70 uppercase tracking-wider mb-2">
                 <span>{featured?.date}</span>
                 <span>•</span>
@@ -76,296 +85,153 @@ export const BentoSection: React.FC<SectionProps> = ({ events, onBuyTicket }) =>
               </p>
 
               <div className="mt-4 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-white group-hover:translate-x-1 transition-transform">
-                <span>Detail Konser &amp; Tiket</span>
+                <span>Detail Konser & Tiket</span>
                 <ArrowUpRight size={14} className="text-white" />
               </div>
             </div>
           </div>
 
-          {/* FEATURED ARTIST (4 cols, 2 rows) */}
-          <div id="lineup" className="col-span-4 row-span-2 relative overflow-hidden hover:shadow-xl transition-all duration-500 bg-[#171717] group">
-            <img
-              src={ARTISTS_LINEUP[0].image}
-              alt={ARTISTS_LINEUP[0].name}
-              className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-75 transition-opacity duration-700"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#171717] via-[#171717]/30 to-transparent" />
-            
-            <div className="absolute top-6 left-6 z-10">
-              <span className="text-[11px] font-semibold tracking-wide text-white/90 bg-black/50 backdrop-blur-sm px-3 py-1.5 uppercase">
-                Artis Musim Ini
-              </span>
-            </div>
-
-            <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
-              <p className="text-xs text-white/70 uppercase tracking-wider mb-1">
-                Orkestra Pilihan 2026
-              </p>
-              <h3 className="text-xl lg:text-2xl font-semibold text-white tracking-tight leading-snug">
-                {ARTISTS_LINEUP[0].name}
-              </h3>
-              <p className="text-xs text-white/70 mt-2 leading-relaxed">
-                Menghadirkan harmoni ansambel simfoni legendaris secara eksklusif.
-              </p>
-            </div>
-          </div>
-
-          {/* SECONDARY CONCERT (5 cols) */}
-          {rest[0] && (
-            <div
-              className="col-span-5 relative overflow-hidden cursor-pointer group hover:shadow-xl transition-all duration-500 bg-[#171717]"
-              onClick={() => goToConcert(rest[0])}
-            >
-              <img
-                src={rest[0].image}
-                alt={rest[0].title}
-                className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-700 brightness-85 group-hover:brightness-100"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#171717] via-[#171717]/40 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
-                <div className="flex items-center gap-2 text-xs text-muted mb-1.5">
-                  <span>{rest[0].date}</span>
+          {/* SECONDARY CONCERTS (4 cols - 2 cards) */}
+          <div className="md:col-span-4 flex flex-col gap-4">
+            {rest.slice(0, 2).map((event) => (
+              <div
+                key={event.id}
+                className="relative overflow-hidden hover:shadow-xl transition-all duration-300 bg-[--color-canvas]"
+                onClick={() => goToConcert(event)}
+              >
+                <img
+                  src={event.image}
+                  alt={event.title}
+                  className="w-full h-[220px] object-cover group-hover:scale-[1.02] transition-transform duration-500 brightness-90 group-hover:brightness-100"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[--color-canvas] via-[--color-canvas]/40 to-transparent" />
+                
+                <div className="absolute bottom-0 left-0 right-0 p-5 z-10">
+                  <div className="flex items-center gap-2 text-xs text-white/70 uppercase tracking-wider mb-1.5">
+                    <span>{event.date}</span>
+                  </div>
+                  <h4 className="text-lg font-semibold text-white tracking-tight line-clamp-1">
+                    {event.title}
+                  </h4>
+                  <p className="text-xs text-white/80 mt-1">Mulai {formatIDR(event.categories?.[0]?.price ?? 0)}</p>
                 </div>
-                <h4 className="text-lg font-semibold text-white tracking-tight line-clamp-1">
-                  {rest[0].title}
-                </h4>
-                <p className="text-xs text-white/80 mt-1">
-                  Mulai {formatIDR(rest[0].categories?.[0]?.price ?? 0)}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* METRIC TILE (4 cols) */}
-          <div id="ticket-war" className="col-span-4 flex flex-col justify-between p-6 border border-line hover:border-brand/20 bg-white transition-all group relative">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-muted tracking-wide uppercase">
-                Akurasi Sistem
-              </span>
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" title="Sistem Aktif" />
-            </div>
-            
-            <div className="my-2">
-              <div className="flex items-baseline gap-2">
-                <p className="text-4xl lg:text-5xl font-bold text-ink tracking-tight">
-                  99,8%
-                </p>
-                <span className="text-xs font-semibold text-emerald-500">AKURASI</span>
-              </div>
-              <div className="w-full bg-line h-1.5 mt-3 overflow-hidden">
-                <div className="bg-brand h-full w-[99.8%]" />
-              </div>
-            </div>
-
-            <p className="text-sm text-muted leading-relaxed">
-              Pemindaian E-Ticket real-time dengan validasi atomic untuk menjamin zero overbooking.
-            </p>
-          </div>
-
-          {/* SECONDARY CONCERT 2 (3 cols) */}
-          {rest[1] && (
-            <div
-              className="col-span-3 relative overflow-hidden cursor-pointer group hover:shadow-xl transition-all duration-500 bg-[#171717]"
-              onClick={() => goToConcert(rest[1])}
-            >
-              <img
-                src={rest[1].image}
-                alt={rest[1].title}
-                className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-700 brightness-85 group-hover:brightness-100"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#171717] via-[#171717]/40 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-5 z-10">
-                <h4 className="text-base font-semibold text-white tracking-tight truncate">
-                  {rest[1].title}
-                </h4>
-                <p className="text-xs text-white/70 mt-1">{rest[1].date}</p>
-              </div>
-            </div>
-          )}
-
-          {/* STEP 1 (4 cols) */}
-          <div id="guide" className="col-span-4 flex flex-col justify-between p-6 border border-line hover:border-brand/20 bg-white transition-colors">
-            <span className="text-xs font-semibold text-brand tracking-wide uppercase">
-              Langkah 01
-            </span>
-            <div className="mt-4">
-              <h4 className="text-lg font-semibold text-ink tracking-tight mb-1">
-                Pilih Konser &amp; Kategori
-              </h4>
-              <p className="text-sm text-muted leading-relaxed">
-                Tentukan pertunjukan simfoni impian dan pilih zona tempat duduk terbaik (maks. 4 tiket/transaksi).
-              </p>
-            </div>
-          </div>
-
-          {/* STEP 2 (4 cols) */}
-          <div className="col-span-4 flex flex-col justify-between p-6 border border-line hover:border-brand/20 bg-white transition-colors">
-            <span className="text-xs font-semibold text-brand tracking-wide uppercase">
-              Langkah 02
-            </span>
-            <div className="mt-4">
-              <h4 className="text-lg font-semibold text-ink tracking-tight mb-1">
-                Verifikasi Atomic Instan
-              </h4>
-              <p className="text-sm text-muted leading-relaxed">
-                Sistem secara otomatis mengunci kuota tiket dan menerbitkan kode verifikasi unik secara real-time.
-              </p>
-            </div>
-          </div>
-
-          {/* STEP 3 (4 cols) */}
-          <div className="col-span-4 flex flex-col justify-between p-6 border border-line hover:border-brand/20 bg-white transition-colors">
-            <span className="text-xs font-semibold text-brand tracking-wide uppercase">
-              Langkah 03
-            </span>
-            <div className="mt-4">
-              <h4 className="text-lg font-semibold text-ink tracking-tight mb-1">
-                Scan E-Ticket QR Code
-              </h4>
-              <p className="text-sm text-muted leading-relaxed">
-                Tunjukkan QR Code terenkripsi di pintu masuk hall untuk akses masuk serba cepat tanpa antrean fisik.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile View */}
-        <div className="md:hidden flex flex-col gap-6 mt-6">
-          {featured && (
-            <div
-              className="relative overflow-hidden h-[340px] cursor-pointer group bg-[#171717]"
-              onClick={() => featured && goToConcert(featured)}
-            >
-              <img src={featured.image} alt={featured.title} className="absolute inset-0 w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#171717] via-[#171717]/50 to-transparent" />
-              <div className="absolute top-4 left-4">
-                <span className="text-[11px] font-semibold text-white/90 bg-black/50 backdrop-blur-sm px-3 py-1.5 uppercase">
-                  Konser Utama
-                </span>
-              </div>
-              <div className="absolute bottom-0 left-0 right-0 p-6">
-                <p className="text-xs text-white/70 mb-1">{featured.date} · {featured.time}</p>
-                <h3 className="text-xl font-semibold text-white leading-snug">{featured.title}</h3>
-                <p className="text-xs text-white/70 mt-1">{featured.artist}</p>
-              </div>
-            </div>
-          )}
-
-          {rest.slice(0, 2).map((event) => (
-            <div
-              key={event.id}
-              className="relative overflow-hidden h-[200px] cursor-pointer group bg-[#171717]"
-              onClick={() => goToConcert(event)}
-            >
-              <img src={event.image} alt={event.title} className="absolute inset-0 w-full h-full object-cover brightness-85" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#171717] via-transparent to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-5">
-                <h4 className="text-lg font-semibold text-white truncate">{event.title}</h4>
-                <p className="text-xs text-white/70 mt-1">{event.date} • {event.venue}</p>
-              </div>
-            </div>
-          ))}
-
-          {/* Metric in mobile */}
-          <div className="p-6 border border-line bg-white">
-            <span className="text-xs font-semibold text-muted tracking-wide uppercase">Akurasi Sistem</span>
-            <p className="text-4xl font-bold text-ink tracking-tight mt-2">99,8%</p>
-            <p className="text-sm text-muted mt-2">Pemindaian QR real-time tanpa overbooking.</p>
-          </div>
-
-          {/* Steps in mobile */}
-          <div className="grid grid-cols-1 gap-4">
-            {[
-              { num: '01', title: 'Pilih Konser', desc: 'Pilih pertunjukan & kategori tempat duduk.' },
-              { num: '02', title: 'Verifikasi Instan', desc: 'Sistem atomic mengunci transaksi.' },
-              { num: '03', title: 'Tunjukkan QR Code', desc: 'Scan tiket digital di gate masuk hall.' },
-            ].map((step) => (
-              <div key={step.num} className="p-5 border border-line bg-white">
-                <p className="text-xs font-semibold text-brand mb-1">Langkah {step.num}</p>
-                <h4 className="text-base font-semibold text-ink">{step.title}</h4>
-                <p className="text-sm text-muted mt-1">{step.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Catalog Title Header */}
-      <div className="mx-auto max-w-[1400px] px-6 sm:px-8 md:px-10 pb-6 flex items-baseline justify-between border-t border-line pt-12">
-        <div>
-          <h3 className="text-xl sm:text-2xl font-semibold text-ink tracking-tight">
-            Semua Jadwal Konser
-          </h3>
-        </div>
-        <a
-          href="/events"
-          className="text-sm text-muted hover:text-brand transition-colors inline-flex items-center gap-1 group"
-        >
-          <span>Lihat Semua</span>
-          <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-        </a>
-      </div>
-
-      {/* Carousel Section */}
-      <div className="mx-auto max-w-[1400px] px-6 sm:px-8 md:px-10 pb-16">
-        <div className="flex gap-6 overflow-x-auto pb-4 -mx-6 px-6 sm:-mx-8 sm:px-8 md:-mx-10 md:px-10 no-scrollbar snap-x snap-mandatory">
-          {sourceEvents.map((event) => {
-            const minPrice = event.categories?.[0]?.price ?? 0;
-            return (
-              <div
-                key={event.id}
-                className="cursor-pointer group shrink-0 w-[240px] md:w-[280px] snap-start p-4 bg-white hover:shadow-lg transition-all duration-300"
-                onClick={() => goToConcert(event)}
-              >
-                <div className="relative mb-4 overflow-hidden aspect-square bg-canvas-alt">
+      {/* Artist Lineup Sub-section */}
+      <div className="mx-auto max-w-[1400px] px-6 sm:px-8 md:px-10 pb-12">
+        <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+          <div>
+            <h3 className="text-sm font-semibold tracking-wide uppercase text-white/60 mb-4">Artis Musim Ini</h3>
+            <div className="grid grid-cols-2 gap-4">
+              {ARTISTS_LINEUP.slice(0, 4).map((artist) => (
+                <div
+                  key={artist.name}
+                  className="flex flex-col items-center gap-2 px-4 py-6 border border-white/[0.08] rounded-xl hover:border-white/12 transition-colors"
+                >
                   <img
-                    src={event.image}
-                    alt={event.title}
-                    className={`absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700 ${
-                      event.isClosed ? 'grayscale brightness-50' : 'brightness-90 group-hover:brightness-100'
-                    }`}
+                    src={artist.image}
+                    alt={artist.name}
+                    className="w-16 h-16 object-cover rounded-full border-2 border-white/[0.1]"
                   />
-                  {event.isClosed && (
-                    <div className="absolute inset-0 bg-black/70 flex items-center justify-center p-2">
-                      <span className="text-[10px] font-semibold text-white bg-rose-500 px-2.5 py-1 uppercase tracking-wider">
-                        Tutup
-                      </span>
-                    </div>
-                  )}
-                  <button
-                    aria-label="Simpan ke favorit"
-                    onClick={(e) => e.stopPropagation()}
-                    className="absolute bottom-3 right-3 w-8 h-8 bg-white/90 backdrop-blur-sm flex items-center justify-center text-ink hover:bg-brand hover:text-white transition-colors cursor-pointer z-10"
-                  >
-                    <Heart size={14} />
-                  </button>
-                </div>
-                
-                <h4 className="text-base font-semibold tracking-tight leading-snug text-ink line-clamp-2 min-h-[44px]">
-                  {event.title}
-                </h4>
-                <p className="text-xs text-muted mt-2">
-                  {event.date}
-                </p>
-                <p className="text-xs text-muted truncate mt-0.5">
-                  {event.venue}
-                </p>
-                <div className="mt-4 pt-3 border-t border-line flex items-center justify-between">
-                  <span className="text-sm font-semibold text-ink">
-                    {event.isClosed ? (
-                      <span className="text-rose-400">Tutup</span>
-                    ) : (
-                      formatIDR(minPrice)
-                    )}
+                  <span className="text-xs font-medium tracking-widest uppercase text-white/60">
+                    {artist.name}
                   </span>
+                  <span className="text-xs text-white/40">{artist.shows}</span>
                 </div>
-              </div>
-            );
-          })}
+              ))}
+            </div>
+          </div>
+
+          <div className="hidden md:block">
+            <a
+              href="/events"
+              className="text-sm text-brand hover:text-white transition-colors inline-flex items-center gap-1"
+            >
+              Lihat Semua Artis
+              <ArrowUpRight size={10} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </a>
+          </div>
         </div>
       </div>
-    </>
     </section>
+
+    {/* Catalog Title Header */}
+    <div className="mx-auto max-w-[1400px] px-6 sm:px-8 md:px-10 pb-6 flex items-baseline justify-between border-t border-line pt-12">
+      <div>
+        <h3 className="text-xl sm:text-2xl font-semibold text-ink tracking-tight">
+          Semua Jadwal Konser
+        </h3>
+      </div>
+      <a
+        href="/events"
+        className="text-sm text-muted hover:text-brand transition-colors inline-flex items-center gap-1 group"
+      >
+        <span>Lihat Semua</span>
+        <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+      </a>
+    </div>
+
+    {/* Carousel Section - All Events */}
+    <div className="mx-auto max-w-[1400px] px-6 sm:px-8 md:px-10 pb-16">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {sourceEvents.map((event) => {
+          const minPrice = event.categories?.[0]?.price ?? 0;
+          return (
+            <div
+              key={event.id}
+              className="cursor-pointer group shrink-0 rounded-xl bg-[--color-canvas] border border-white/[0.08] hover:shadow-lg transition-all duration-200"
+              onClick={() => goToConcert(event)}
+            >
+              <div className="relative mb-3 overflow-hidden rounded-t-xl min-h-[180px] bg-[--color-canvas-alt]">
+                <img
+                  src={event.image}
+                  alt={event.title}
+                  className={`absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500 ${
+                    event.isClosed ? 'grayscale brightness-50' : 'brightness-90 group-hover:brightness-100'
+                  }`}
+                />
+                {event.isClosed && (
+                  <div className="absolute inset-0 bg-black/70 flex items-center justify-center p-2">
+                    <span className="text-[10px] font-semibold text-white bg-rose-500 px-2.5 py-1 uppercase tracking-wider">
+                      Tutup
+                    </span>
+                  </div>
+                )}
+                <button
+                  aria-label="Simpan ke favorit"
+                  onClick={(e) => e.stopPropagation()}
+                  className="absolute bottom-3 right-3 w-8 h-8 bg-white/90 backdrop-blur-sm flex items-center justify-center text-ink hover:bg-brand hover:text-white transition-colors cursor-pointer z-10"
+                >
+                  <Heart size={14} />
+                </button>
+              </div>
+              
+              <h4 className="text-base font-semibold tracking-tight leading-snug text-ink line-clamp-2 min-h-[44px]">
+                {event.title}
+              </h4>
+              <p className="text-xs text-muted mt-2">
+                {event.date}
+              </p>
+              <p className="text-xs text-muted truncate mt-0.5">
+                {event.venue}
+              </p>
+              <div className="mt-3 pt-2 border-t border-white/[0.06] flex items-center justify-between">
+                <span className="text-sm font-semibold text-ink">
+                  {event.isClosed ? (
+                    <span className="text-rose-400">Tutup</span>
+                  ) : (
+                    formatIDR(minPrice)
+                  )}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 };
-

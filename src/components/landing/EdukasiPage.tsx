@@ -33,13 +33,13 @@ const COMPOSERS = [
   {
     name: 'Wolfgang Amadeus Mozart',
     period: 'Klasik (1756–1791)',
-    context: 'Prodigy yang mulai komposisi usia 5 tahun. Menggabungkan keindahan melodi dengan struktur formal yang sempurna. Wafat di usia 35 tahun, meninggalkan lebih dari 600 karya. Requiem-nya yang terakhir sempat tak terselesaikan.',
+    context: 'Prodigy yang mulai komposisi usia 5 tahun. Menggabungkan keindahan melodi dengan struktur formal yang sempurna. Wafat di usia 35 tahun, meninggalkan lebih dari 600 karya. Requiem-ny yang terakhir sempat tak terselesaikan.',
     works: ['Symphony No. 40 in G minor', 'Piano Concerto No. 21', 'Eine kleine Nachtmusik', 'Requiem in D minor'],
   },
   {
     name: 'Frédéric Chopin',
     period: 'Romantis (1810–1849)',
-    context: 'Penyair piano. Hampir seluruh karyanya ditulis untuk piano solo. Etnis Polandia, tinggal di Paris sebagian besar hidupnya. Nocturne-nya menggabungkan lirisitas vokal dengan harmoni inovatif. Meninggal muda di usia 39 tahun.',
+    context: 'Penyair piano. Hampir seluruh karyanya ditulis untuk piano solo. Etnis Polandia, tinggal di Paris sebagian besar hidupnya. Nocturne-ny menggabungkan lirisitas vokal dengan harmoni inovatif. Meninggal muda di usia 39 tahun.',
     works: ['Nocturne Op. 9 No. 2', 'Ballade No. 1 in G minor', 'Fantaisie-Impromptu', 'Revolutionary Étude'],
   },
   {
@@ -77,15 +77,15 @@ const EdukasiPage: React.FC = () => {
       {/* Header */}
       <div className="border-b border-white/[0.06]">
         <div className="mx-auto max-w-[1400px] px-10 pt-[80px] pb-10">
-          <a href="/" className="inline-flex items-center gap-2 text-base font-light tracking-[-0.05px] text-[#9a9a9a] hover:opacity-60 transition-opacity mb-10">
+          <a href="/" className="inline-flex items-center gap-2 text-base font-light tracking-[-0.05px] text-[#9a9a9a] hover:opacity-60 transition-opacity mb-8">
             <ArrowLeft size={16} strokeWidth={1} />
             <span>Kembali ke Beranda</span>
           </a>
-          <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mb-5">
+          <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mb-6">
             Panduan Penonton
           </p>
           <h1 className="text-[clamp(32px,5vw,56px)] leading-[1.0] tracking-[-0.056em] font-light m-0">
-            Etika, Sejarah &amp; Glosarium<br />Musik Klasik.
+            Etika, Sejarah & Glosarium<br />Musik Klasik.
           </h1>
           <p className="text-xl tracking-[-0.01em] font-light text-[#9a9a9a] mt-5 max-w-[720px]">
             Pelajari tata krama pertunjukan simfoni, kenali komponis di balik mahakarya, dan pahami istilah musik klasik sebelum menikmati konser.
@@ -94,7 +94,7 @@ const EdukasiPage: React.FC = () => {
       </div>
 
       {/* Tabs */}
-      <div className="sticky top-0 z-30 bg-[rgba(23,23,23,0.95)] border-b border-white/[0.06]">
+      <div className="sticky top-0 z-30 bg-[--color-obsidian]/95 border-b border-white/[0.06]">
         <div className="mx-auto max-w-[1400px] px-10">
           <div className="flex overflow-x-auto no-scrollbar">
             {SECTIONS.map((s) => (
@@ -121,8 +121,8 @@ const EdukasiPage: React.FC = () => {
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
           >
             {/* Aturan Ruang */}
-            <h2 className="text-[28px] tracking-[-0.02em] font-light mb-10">Aturan Ruang Pertunjukan</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10 mb-20 max-w-[1000px]">
+            <h2 className="text-[28px] tracking-[-0.02em] font-light mb-8">Aturan Ruang Pertunjukan</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10 mb-16 max-w-[1000px]">
               {VENUE_RULES.map((rule, i) => {
                 const Icon = rule.icon;
                 return (
@@ -138,11 +138,11 @@ const EdukasiPage: React.FC = () => {
             </div>
 
             {/* Dress Code */}
-            <h2 className="text-[28px] tracking-[-0.02em] font-light mb-10">Panduan Pakaian (Dress Code)</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-0 max-w-[1000px]">
+            <h2 className="text-[28px] tracking-[-0.02em] font-light mb-8">Panduan Pakaian (Dress Code)</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-[1000px]">
               {DRESS_CODES.map((dc, i) => (
-                <div key={i} className="border-t border-l border-white/[0.06] p-8">
-                  <span className="inline-block text-[11px] font-light tracking-[0.12em] uppercase text-[#9a9a9a] border border-white/[0.12] px-3 py-1 mb-4">
+                <div key={i} className="border rounded-lg p-6 hover:border-white/20 transition-colors">
+                  <span className="inline-block text-[11px] font-light tracking-[0.12em] uppercase text-[#9a9a9a] border border-white/12 px-3 py-1 mb-4">
                     {dc.label}
                   </span>
                   <p className="text-base font-light text-[#9a9a9a] leading-[1.6]">{dc.description}</p>
@@ -160,7 +160,7 @@ const EdukasiPage: React.FC = () => {
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
             className="max-w-[800px]"
           >
-            <h2 className="text-[28px] tracking-[-0.02em] font-light mb-10">Spotlight Komponis &amp; Sejarah Karya</h2>
+            <h2 className="text-[28px] tracking-[-0.02em] font-light mb-10">Spotlight Komponis & Sejarah Karya</h2>
             <p className="text-base font-light text-[#9a9a9a] leading-[1.7] mb-12 max-w-[720px]">
               Kenali sosok di balik mahakarya yang akan Anda dengarkan. Setiap komponis membawa konteks zaman, perjuangan, dan visi estetik yang membentuk nada-nada di balik pertunjukan.
             </p>
@@ -228,7 +228,7 @@ const EdukasiPage: React.FC = () => {
                 placeholder="Cari istilah musik..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="text-base font-light tracking-[-0.05px] text-white bg-transparent border-none outline-none w-full py-1"
+                className="text-base font-light tracking-[-0.05px] text-white bg-transparent border-b border-white/20 outline-none py-1"
               />
             </div>
 

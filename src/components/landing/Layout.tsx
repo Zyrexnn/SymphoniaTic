@@ -54,10 +54,10 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-40 transition-colors duration-300 ${
           scrolled
-            ? 'bg-[#171717]/90 backdrop-blur-md border-b border-white/[0.08] shadow-2xl shadow-black/50 py-3.5'
-            : 'bg-gradient-to-b from-[#171717]/95 via-[#171717]/50 to-transparent py-4 md:py-5'
+            ? 'bg-[#171717]/90 backdrop-blur-md border-b border-white/[0.05] py-3'
+            : 'bg-[#171717]/95 via-[#171717]/50 to-transparent py-4 md:py-5'
         }`}
       >
         <div className="flex items-center justify-between mx-auto max-w-[1400px] px-4 sm:px-8 md:px-10 lg:px-12">
@@ -87,7 +87,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <a
                   key={item.label}
                   href={item.href}
-                  className={`relative text-sm xl:text-base tracking-[-0.02em] transition-colors duration-200 py-1 group ${
+                  className={`relative inline-block text-sm xl:text-base tracking-[-0.02em] transition-colors duration-200 py-1 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 ${
                     isActive ? 'text-white font-normal' : 'text-[#9a9a9a] hover:text-white font-light'
                   }`}
                 >
@@ -107,22 +107,13 @@ export const Header: React.FC<HeaderProps> = ({
             {ordersCount > 0 && (
               <button
                 onClick={onOpenOrders}
-                className="hidden sm:inline-flex items-center gap-1.5 text-xs font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-3 py-1.5 hover:bg-emerald-900/40 transition-colors cursor-pointer"
+                className="hidden sm:inline-flex items-center gap-1.5 text-xs font-mono text-white bg-[#171717]/50 border border-white/20 px-3 py-1.5 hover:bg-[#171717]/60 transition-colors cursor-pointer"
                 title="Lihat Pesanan Saya"
               >
                 <ShoppingBag className="w-3.5 h-3.5" strokeWidth={1.5} />
                 <span>{ordersCount} Tiket</span>
               </button>
-            )}
-
-            {/* Dedicated Primary Action: Cek Tiket */}
-            <a
-              href="/redeem"
-              className="hidden sm:inline-flex items-center gap-2 text-xs font-mono tracking-wider uppercase px-4 py-2 border border-white/20 text-white bg-white/5 hover:bg-white hover:text-[#171717] hover:border-white transition-all duration-300"
-            >
-              <Ticket className="w-3.5 h-3.5" strokeWidth={1.5} />
-              <span>Cek Tiket</span>
-            </a>
+            })
 
             {/* Admin Link */}
             <a
@@ -172,7 +163,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </a>
                 <a
                   href="/register"
-                  className="inline-flex items-center gap-1.5 text-xs font-mono tracking-wider uppercase px-3 py-1.5 bg-white text-[#171717] hover:bg-neutral-200 transition-colors"
+                  className="inline-flex items-center gap-1.5 text-xs font-mono tracking-wider uppercase px-3 py-1.5 bg-[#171717] text-white hover:bg-neutral-200 transition-colors"
                 >
                   Daftar
                 </a>
@@ -336,7 +327,7 @@ export const Hero: React.FC = () => (
       </div>
 
       <h1 className="text-[clamp(36px,6.5vw,60px)] leading-[1.05] tracking-[-0.04em] font-light text-white m-0 max-w-4xl">
-        Nikmati Harmoni Orkestra &amp; Simfoni Terbaik.
+        Nikmati Harmoni Orkestra & Simfoni Terbaik.
       </h1>
 
       <p className="text-base sm:text-lg md:text-xl font-light text-[#9a9a9a] mt-6 max-w-2xl leading-relaxed">
@@ -347,7 +338,7 @@ export const Hero: React.FC = () => (
         <a
           href="#bento"
           style={{ color: '#171717' }}
-          className="group inline-flex items-center gap-3 px-6 py-3.5 bg-white !text-[#171717] text-xs sm:text-sm font-mono font-medium tracking-wider uppercase hover:bg-neutral-200 transition-all duration-300 shadow-xl cursor-pointer"
+          className="group inline-flex items-center gap-3 px-6 py-3.5 bg-white !text-[#171717] text-xs sm:text-sm font-mono font-medium tracking-wider uppercase hover:bg-neutral-200 transition-all duration-300 cursor-pointer"
         >
           <span style={{ color: '#171717' }}>Jelajahi Konser</span>
           <ArrowUpRight size={16} strokeWidth={2} style={{ color: '#171717' }} className="!text-[#171717] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -364,6 +355,3 @@ export const Hero: React.FC = () => (
     </div>
   </main>
 );
-
-
-
