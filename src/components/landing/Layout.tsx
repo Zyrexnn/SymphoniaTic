@@ -113,7 +113,8 @@ export const Header: React.FC<HeaderProps> = ({
                 <ShoppingBag className="w-3.5 h-3.5" strokeWidth={1.5} />
                 <span>{ordersCount} Tiket</span>
               </button>
-            })
+            )
+}
 
             {/* Admin Link */}
             <a

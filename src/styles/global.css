@@ -19,12 +19,10 @@
   --color-destructive-foreground: var(--destructive-foreground);
   --color-ring: var(--ring);
 
+  /* Color system — SymphoniaTic premium dark mode */
   --color-obsidian: #171717;
   --color-chalk: #ffffff;
   --color-ash: #9a9a9a;
-  --font-display: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
-
-  /* Landing brand tokens — purple ticketing (#6C2BD9) */
   --color-brand: #6C2BD9;
   --color-brand-dark: #5a23b8;
   --color-brand-light: #F3EBFF;
@@ -34,33 +32,87 @@
   --color-line: #E2E8F0;
   --color-canvas: #FFFFFF;
   --color-canvas-alt: #F8FAFC;
+
+  /* Primary brand tokens — reduced accent usage */
+  --color-brand-accent: #6C2BD9;
+  --color-brand-accent-hover: #5a23b8;
+
+  --font-display: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  /* Typography — 6-step scale with Inter */
+  --text-display: 48px;
+  --leading-display: 1.0;
+  --tracking-display: -0.56px;
+
+  --text-heading-lg: 32px;
+  --leading-heading-lg: 1.2;
+  --tracking-heading-lg: -0.26px;
+
+  --text-heading: 28px;
+  --leading-heading: 1.2;
+  --tracking-heading: -0.2px;
+
+  --text-heading-sm: 24px;
+  --leading-heading-sm: 1.4;
+  --tracking-heading-sm: -0.14px;
+
+  --text-subheading: 20px;
+  --leading-subheading: 1.4;
+  --tracking-subheading: -0.1px;
+
+  --text-body: 16px;
+  --leading-body: 1.5;
+  --tracking-body: -0.05px;
+
+  /* Typography — Weights */
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+
+  /* Spacing */
+  --spacing-unit: 4px;
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-7: 28px;
+  --spacing-8: 32px;
+  --spacing-9: 36px;
+  --spacing-10: 40px;
+  --spacing-11: 44px;
+  --spacing-12: 48px;
+  --spacing-13: 52px;
+  --spacing-14: 56px;
+  --spacing-15: 60px;
+  --spacing-16: 64px;
+
+  /* Layout */
+  --section-gap: 120px;
+  --card-padding: 0px;
+  --element-gap: 20px;
+
+  /* Named Radii — 0px per DESIGN.md mantra, but subtle where needed */
+  --radius-tags: 0px;
+  --radius-cards: 0px;
+  --radius-images: 0px;
+  --radius-buttons: 0px;
+  --radius-nav: 0px;
+
+  /* Surfaces */
+  --surface-obsidian-canvas: #171717;
 }
 
-:root {
-  --background: #171717;
-  --foreground: #ffffff;
-  --card: #1e1e1e;
-  --card-foreground: #ffffff;
-  --border: rgba(255, 255, 255, 0.12);
-  --input: rgba(255, 255, 255, 0.15);
-  --primary: #ffffff;
-  --primary-foreground: #171717;
-  --secondary: #27272a;
-  --secondary-foreground: #ffffff;
-  --muted: #27272a;
-  --muted-foreground: #9a9a9a;
-  --accent: #27272a;
-  --accent-foreground: #ffffff;
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --ring: #ffffff;
-  --radius: 0.75rem;
-}
+/* ============================================
+   BASE STYLES
+   ============================================ */
 
 @layer base {
   html {
     font-family: var(--font-display);
-    font-weight: 300;
+    font-feature-settings: "rlig" 1, "calt" 1;
     scroll-behavior: smooth;
     background: #171717;
     color: #ffffff;
@@ -78,6 +130,8 @@
 
   img {
     display: block;
+    max-width: 100%;
+    height: auto;
   }
 
   ::selection {
@@ -110,32 +164,91 @@
     border-radius: 0;
     border: none;
   }
+
   a {
     color: inherit;
     text-decoration: none;
   }
+
+  ::-webkit-scrollbar { width: 2px; }
+  ::-webkit-scrollbar-track { background: #171717; }
+  ::-webkit-scrollbar-thumb { background: #333; }
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .animate-fade-in {
+    animation: fade-in 0.6s ease backwards;
+  }
+
+  .delay-1 { animation-delay: 0.05s; }
+  .delay-2 { animation-delay: 0.12s; }
+  .delay-3 { animation-delay: 0.2s; }
+  .delay-4 { animation-delay: 0.3s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-in { animation: none; }
+  }
+
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 }
 
-::-webkit-scrollbar { width: 2px; }
-::-webkit-scrollbar-track { background: #171717; }
-::-webkit-scrollbar-thumb { background: #333; }
+/* ============================================
+   COMPONENT STYLES
+   ============================================ */
 
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+/* Buttons — 0px radius per DESIGN.md, accent only on :focus and :hover */
+.btn {
+  @apply inline-flex items-center gap-2 rounded-0 px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer;
 }
-.animate-fade-in {
-  animation: fade-in 0.6s ease backwards;
+.btn--primary {
+  @apply bg-[--color-brand-accent] text-[--color-obsidian] hover:bg-[--color-brand-accent-hover] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-brand-accent] focus-visible:ring-offset-2;
+}
+.btn--secondary {
+  @apply bg-transparent border border-[--color-brand-accent]/40 text-[--color-brand-accent] hover:bg-[--color-brand-accent]/10 hover:text-[--color-obsidian] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-brand-accent] focus-visible:ring-offset-2;
+}
+.btn--ghost {
+  @apply bg-transparent text-[--color-chalk] hover:bg-[--color-obsidian]/50 hover:text-[--color-chalk] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-brand-accent] focus-visible:ring-offset-2;
 }
 
-.delay-1 { animation-delay: 0.05s; }
-.delay-2 { animation-delay: 0.12s; }
-.delay-3 { animation-delay: 0.2s; }
-.delay-4 { animation-delay: 0.3s; }
+/* Cards — 0px radius per DESIGN.md */
+.card {
+  @apply rounded-0 bg-[--color-card] border border-white/[0.08] transition-all duration-300 hover:border-white/[0.12];
+}
 
+/* Badges — 0px radius */
+.badge {
+  @apply inline-flex items-center gap-1.5 rounded-0 text-xs font-medium uppercase tracking-wider;
+}
+
+/* Navigation */
+.nav-link {
+  @apply relative group py-1 text-sm xl:text-base tracking-[-0.02em] transition-colors duration-200;
+}
+.nav-link::after {
+  @apply absolute bottom-0 left-0 h-[1px] bg-white transition-all duration-300;
+}
+.nav-link--active {
+  @apply text-white font-normal;
+}
+.nav-link--active::after {
+  @apply w-full;
+}
+
+/* Focus states */
+.focus-visible\:outline-none:focus-visible {
+  @apply outline-none;
+}
+.focus-visible\:ring-2:focus-visible {
+  @apply ring-2 ring-offset-2;
+}
+.focus-visible\:ring-[--color-brand-accent]:focus-visible {
+  @apply ring-[--color-brand-accent];
+}
+
+/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-in { animation: none; }
 }
-
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
