@@ -407,7 +407,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
       `"${o.categoryName}"`,
       o.quantity,
       o.totalPrice,
-      `"${o.status}"`,
+     `"${o.status}"`,
       `"${new Date(o.createdAt).toLocaleString('id-ID')}"`,
     ].join(','));
     const csv = 'data:text/csv;charset=utf-8,' + encodeURIComponent([headers.join(','), ...rows].join('\n'));

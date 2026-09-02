@@ -29,10 +29,10 @@ export const Features: React.FC = () => (
   <section className="mx-auto max-w-[1280px] px-4 sm:px-8 md:px-10 py-16">
     <Reveal>
       <div className="mb-12 max-w-2xl">
-        <span className="text-[11px] font-semibold tracking-[0.2em] text-white/60 uppercase block mb-3">
+        <span className="text-[11px] font-semibold tracking-[0.2em] text-[--color-ash]/60 uppercase block mb-3">
           Mengapa SymphoniaTic
         </span>
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-[-0.03em] text-white">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-[-0.03em] text-chalk">
           Pengalaman konser yang dirancang untuk keindahan suara.
         </h2>
       </div>
@@ -44,15 +44,15 @@ export const Features: React.FC = () => (
         return (
           <Reveal key={f.title} delay={i * 0.08}>
             <div
-              className="flex flex-col p-6 rounded-xl bg-[--color-card] border border-white/[0.08] transition-all duration-300 hover:border-white/[0.12] hover:bg-[--color-card]/90"
+              className="flex flex-col p-6 rounded-0 bg-[--color-card] border border-[--color-border] transition-all duration-300 hover:border-[--color-border]/12 hover:bg-[--color-card]/90"
             >
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4">
-                <Icon size={20} strokeWidth={2} className="text-white" />
+              <div className="w-10 h-10 rounded-0 flex items-center justify-center mb-4">
+                <Icon size={20} strokeWidth={2} className="text-[--color-brand-accent]" />
               </div>
-              <h3 className="text-base font-semibold text-white tracking-tight mb-2.5">
+              <h3 className="text-base font-semibold text-chalk tracking-tight mb-2.5">
                 {f.title}
               </h3>
-              <p className="text-[13px] font-normal text-white/60 leading-relaxed">
+              <p className="text-[13px] font-normal text-[--color-ash]/60 leading-relaxed">
                 {f.desc}
               </p>
             </div>
