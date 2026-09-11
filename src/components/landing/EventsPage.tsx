@@ -4,7 +4,13 @@ import { CONCERT_EVENTS, fetchEventsAPI, formatIDR } from './data';
 import type { EventItem } from './data';
 
 const EventsPage: React.FC = () => {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('q') ?? '';
+    }
+    return '';
+  });
   const [liveEvents, setLiveEvents] = useState<EventItem[]>([]);
 
   useEffect(() => {
@@ -122,7 +128,7 @@ const EventsPage: React.FC = () => {
                   <button
                     aria-label="Simpan ke favorit"
                     onClick={(e) => e.preventDefault()}
-                    className="absolute bottom-3 right-3 rounded-0 bg-[--color-brand-accent]/90 backdrop-blur-sm flex items-center justify-center text-[--color-obsidian] hover:bg-[--color-brand-accent] transition-colors cursor-pointer border-none z-10"
+                    className="absolute bottom-3 right-3 rounded-none bg-[--color-brand-accent]/90 backdrop-blur-sm flex items-center justify-center text-[--color-obsidian] hover:bg-[--color-brand-accent] transition-colors cursor-pointer border-none z-10"
                   >
                     <Heart size={16} />
                   </button>
