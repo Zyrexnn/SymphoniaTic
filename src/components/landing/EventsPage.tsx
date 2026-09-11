@@ -4,7 +4,13 @@ import { CONCERT_EVENTS, fetchEventsAPI, formatIDR } from './data';
 import type { EventItem } from './data';
 
 const EventsPage: React.FC = () => {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('q') ?? '';
+    }
+    return '';
+  });
   const [liveEvents, setLiveEvents] = useState<EventItem[]>([]);
 
   useEffect(() => {

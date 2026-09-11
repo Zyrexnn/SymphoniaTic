@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ArrowUpRight, Ticket, ShieldCheck, ChevronRight, ShoppingBag, User, LogOut, LayoutDashboard } from 'lucide-react';
+import { Menu, X, ArrowUpRight, Ticket, ShieldCheck, ChevronRight, User, LogOut, LayoutDashboard, Search, Music2 } from 'lucide-react';
 import type { UserRecord } from './data';
 
 interface HeaderProps {
@@ -14,6 +14,88 @@ interface HeaderProps {
   onLogout?: () => void;
 }
 
+/* Real existing routes only — no fake anchors */
+const mainNavItems = [
+  { label: 'Konser', href: '/events', primary: true },
+  { label: 'Edukasi', href: '/edukasi', primary: false },
+  { label: 'Cek Tiket', href: '/redeem', primary: false },
+  { label: 'Refund', href: '/refund', primary: false },
+];
+
+const BrandMark: React.FC<{ light?: boolean }> = ({ light }) => {
+  return (
+    <a
+      href="/"
+      aria-label="SymphoniaTic — Beranda"
+      className="group flex items-center gap-3 cursor-pointer no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2"
+    >
+      <span className="h-10 w-10 rounded-[12px] bg-brand-accent flex items-center justify-center text-white shadow-[0_8px_20px_-8px_rgba(108,43,217,0.9)] transition-transform duration-300 group-hover:scale-[1.04]">
+        <Music2 size={20} strokeWidth={2} />
+      </span>
+      <span className="flex flex-col leading-none">
+        <span
+          className={`text-[17px] font-bold tracking-[-0.03em] uppercase transition-colors duration-300 ${
+            light ? 'text-white' : 'text-[#111111]'
+          }`}
+        >
+          SymphoniaTic
+        </span>
+        <span
+          className={`mt-1 text-[9px] font-semibold tracking-[0.24em] uppercase transition-colors duration-300 ${
+            light ? 'text-white/60' : 'text-[#999999]'
+          }`}
+        >
+          Concert Ticketing
+        </span>
+      </span>
+    </a>
+  );
+};
+
+/* Expandable search pill — navigates to /events?q=… */
+const SearchPill: React.FC<{ light?: boolean; onNavigate?: () => void }> = ({ light, onNavigate }) => {
+  const [q, setQ] = useState('');
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const url = q.trim() ? `/events?q=${encodeURIComponent(q.trim())}` : '/events';
+    if (onNavigate) onNavigate();
+    window.location.href = url;
+  };
+
+  return (
+    <form
+      onSubmit={submit}
+      role="search"
+      className={`group flex items-center rounded-full transition-all duration-300 focus-within:w-72 w-44 ${
+        light
+          ? 'bg-white/10 border border-white/15 focus-within:border-white/40'
+          : 'bg-[#F7F7F7] border border-[#E5E5E5] focus-within:border-brand-accent focus-within:ring-2 focus-within:ring-brand-accent/15'
+      }`}
+    >
+      <button type="submit" aria-label="Cari" className="pl-3.5 pr-1 py-2 flex items-center cursor-pointer">
+        <Search
+          size={16}
+          strokeWidth={2}
+          className={light ? 'text-white/70 group-focus-within:text-white' : 'text-[#666666] group-focus-within:text-brand-accent transition-colors'}
+        />
+      </button>
+      <input
+        type="text"
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        placeholder="Cari konser, artis, venue"
+        aria-label="Cari konser, artis, atau venue"
+        className={`bg-transparent py-2 pr-4 text-sm outline-none truncate min-w-0 flex-1 transition-colors duration-300 ${
+          light
+            ? 'text-white placeholder-white/45'
+            : 'text-[#111111] placeholder-[#999999] focus-visible:outline-none focus-visible:ring-0'
+        }`}
+      />
+    </form>
+  );
+};
+
 export const Header: React.FC<HeaderProps> = ({
   isScrolled,
   isMenuOpen,
@@ -24,15 +106,15 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenOrders,
   onLogout,
 }) => {
-  const [currentPath, setCurrentPath] = React.useState('');
-  const [internalScrolled, setInternalScrolled] = React.useState(false);
-  const [internalMenuOpen, setInternalMenuOpen] = React.useState(false);
+  const [currentPath, setCurrentPath] = useState('');
+  const [internalScrolled, setInternalScrolled] = useState(false);
+  const [internalMenuOpen, setInternalMenuOpen] = useState(false);
 
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
       setCurrentPath(window.location.pathname);
       const handleScroll = () => {
-        setInternalScrolled(window.scrollY > 30);
+        setInternalScrolled(window.scrollY > 40);
       };
       window.addEventListener('scroll', handleScroll, { passive: true });
       handleScroll();
@@ -44,57 +126,42 @@ export const Header: React.FC<HeaderProps> = ({
   const menuOpen = isMenuOpen !== undefined ? isMenuOpen : internalMenuOpen;
   const handleToggleMenu = onToggleMenu || (() => setInternalMenuOpen((prev) => !prev));
 
-  // Only real, existing pages in the navbar (no fake anchors, no duplicate Cek Tiket text link)
-  const mainNavItems = [
-    { label: 'Konser', href: '/events' },
-    { label: 'Edukasi', href: '/edukasi' },
-    { label: 'Refund', href: '/refund' },
-  ];
+  const isAdmin = user?.role === 'ADMIN';
 
   return (
     <>
+      {/* ═══════════ DESKTOP NAVBAR ═══════════ */}
       <header
-        className={`fixed top-0 left-0 right-0 z-40 transition-colors duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
           scrolled
-            ? 'bg-[#171717]/90 backdrop-blur-md border-b border-white/[0.05] py-3'
-            : 'bg-[#171717]/95 via-[#171717]/50 to-transparent py-4 md:py-5'
+            ? 'bg-white/95 backdrop-blur-md border-b border-[#E5E5E5] shadow-[0_1px_2px_rgba(17,17,17,0.04)] py-2.5'
+            : 'bg-gradient-to-b from-black/60 via-black/25 to-transparent py-4 md:py-5'
         }`}
       >
-        <div className="flex items-center justify-between mx-auto max-w-[1400px] px-4 sm:px-8 md:px-10 lg:px-12">
-          {/* Brand Wordmark Logo */}
-          <a
-            href="/"
-            className="flex items-center gap-2.5 group cursor-pointer text-white no-underline focus:outline-none"
-          >
-            <div className="w-8 h-8 rounded-none border border-white/20 flex items-center justify-center bg-white/5 group-hover:border-white group-hover:bg-white text-white group-hover:text-[#171717] transition-all duration-300">
-              <span className="font-mono text-xs font-bold tracking-tighter">S</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-base sm:text-lg font-light tracking-[-0.04em] uppercase text-white leading-none">
-                SYMPHONIATIC
-              </span>
-              <span className="text-[9px] font-mono tracking-[0.2em] text-[#9a9a9a] uppercase leading-tight mt-0.5">
-                CONCERT TICKETING
-              </span>
-            </div>
-          </a>
+        <div className="flex items-center justify-between gap-6 mx-auto max-w-[1440px] px-4 sm:px-8 md:px-12">
+          <BrandMark light={!scrolled} />
 
-          {/* Desktop Navigation Links (Real Pages Only) */}
-          <nav className="hidden lg:flex items-center gap-8 xl:gap-10">
+          {/* Desktop primary navigation */}
+          <nav className="hidden lg:flex items-center gap-8 xl:gap-9" aria-label="Navigasi utama">
             {mainNavItems.map((item) => {
-              const isActive = currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href));
+              const isActive =
+                currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href));
               return (
                 <a
                   key={item.label}
                   href={item.href}
-                  className={`relative inline-block text-sm xl:text-base tracking-[-0.02em] transition-colors duration-200 py-1 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 ${
-                    isActive ? 'text-white font-normal' : 'text-[#9a9a9a] hover:text-white font-light'
+                  className={`relative py-2 text-sm xl:text-[15px] tracking-[-0.01em] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2 ${
+                    isActive
+                      ? 'font-semibold text-brand-accent'
+                      : scrolled
+                        ? 'font-medium text-[#444444] hover:text-brand-accent'
+                        : 'font-normal text-white/80 hover:text-white'
                   }`}
                 >
                   {item.label}
                   <span
-                    className={`absolute bottom-0 left-0 h-[1px] bg-white transition-all duration-300 ${
-                      isActive ? 'w-full' : 'w-0 group-hover:w-full'
+                    className={`absolute bottom-0 left-0 h-[2px] rounded-full bg-brand-accent transition-all duration-300 ${
+                      isActive ? 'w-full' : 'w-0'
                     }`}
                   />
                 </a>
@@ -102,88 +169,116 @@ export const Header: React.FC<HeaderProps> = ({
             })}
           </nav>
 
-          {/* Right Utilities & Actions */}
-          <div className="flex items-center gap-3 sm:gap-4">
+          {/* Right utilities */}
+          <div className="flex items-center gap-2.5 sm:gap-3.5">
+            <SearchPill light={!scrolled} />
+
+            {/* My tickets / orders */}
             {ordersCount > 0 && (
               <button
                 onClick={onOpenOrders}
-                className="hidden sm:inline-flex items-center gap-1.5 text-xs font-mono text-white bg-[#171717]/50 border border-white/20 px-3 py-1.5 hover:bg-[#171717]/60 transition-colors cursor-pointer"
-                title="Lihat Pesanan Saya"
+                title="Tiket Saya"
+                className={`relative hidden sm:inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-medium transition-colors cursor-pointer ${
+                  scrolled
+                    ? 'bg-[#F7F7F7] text-[#111111] hover:bg-brand-accent hover:text-white'
+                    : 'bg-white/10 text-white hover:bg-white/20 border border-white/15'
+                }`}
               >
-                <ShoppingBag className="w-3.5 h-3.5" strokeWidth={1.5} />
-                <span>{ordersCount} Tiket</span>
+                <Ticket size={15} strokeWidth={2} />
+                <span>Tiket</span>
+                <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-accent px-1 text-[10px] font-bold text-white">
+                  {ordersCount}
+                </span>
               </button>
-            )
-}
+            )}
 
-            {/* Admin Link */}
-            <a
-              href="/admin"
-              onClick={(e) => {
-                if (onOpenAdmin) {
-                  e.preventDefault();
-                  onOpenAdmin();
-                }
-              }}
-              className="hidden md:inline-flex items-center gap-1.5 text-xs font-mono tracking-wider text-[#9a9a9a] hover:text-white transition-colors px-2 py-1 bg-transparent border-none cursor-pointer"
-              title="Portal Admin"
-            >
-              <ShieldCheck className="w-3.5 h-3.5" strokeWidth={1.5} />
-              <span>Admin</span>
-            </a>
+            {/* Admin — only for admin role */}
+            {isAdmin && (
+              <a
+                href="/admin"
+                onClick={(e) => {
+                  if (onOpenAdmin) {
+                    e.preventDefault();
+                    onOpenAdmin();
+                  }
+                }}
+                title="Portal Admin"
+                className={`hidden md:inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition-colors ${
+                  scrolled
+                    ? 'text-[#666666] hover:text-brand-accent hover:bg-[#F7F7F7]'
+                    : 'text-white/70 hover:text-white'
+                }`}
+              >
+                <ShieldCheck size={15} strokeWidth={2} />
+                <span>Admin</span>
+              </a>
+            )}
 
-            {/* User Auth: Dashboard + Logout jika login, else Masuk/Daftar */}
+            {/* Auth — logged in */}
             {user ? (
-              <div className="hidden sm:flex items-center gap-2">
+              <div className="hidden sm:flex items-center gap-2.5">
                 <a
                   href="/dashboard"
-                  className="inline-flex items-center gap-1.5 text-xs font-mono tracking-wider uppercase px-3 py-2 border border-white/20 text-white hover:border-white hover:bg-white/5 transition-all"
                   title="Dashboard"
+                  className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                    scrolled
+                      ? 'bg-[#111111] text-white hover:bg-brand-accent'
+                      : 'bg-white text-[#111111] hover:bg-brand-accent hover:text-white'
+                  }`}
                 >
-                  <LayoutDashboard className="w-3.5 h-3.5" strokeWidth={1.5} />
-                  <span className="max-w-[80px] truncate">{user.name}</span>
+                  <LayoutDashboard size={15} strokeWidth={2} className={scrolled ? 'text-brand-accent' : 'text-brand-accent'} />
+                  <span className="max-w-[90px] truncate">{user.name}</span>
                 </a>
                 {onLogout && (
                   <button
                     onClick={onLogout}
-                    className="inline-flex items-center gap-1.5 text-xs font-mono tracking-wider text-[#9a9a9a] hover:text-white transition-colors px-2 py-2 border border-transparent hover:border-white/20 cursor-pointer"
                     title="Keluar"
+                    aria-label="Keluar"
+                    className={`inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors cursor-pointer ${
+                      scrolled ? 'bg-[#F7F7F7] text-[#666666] hover:bg-brand-accent hover:text-white' : 'text-white/80 hover:bg-white/15 hover:text-white'
+                    }`}
                   >
-                    <LogOut className="w-3.5 h-3.5" strokeWidth={1.5} />
+                    <LogOut size={16} strokeWidth={2} />
                   </button>
                 )}
               </div>
             ) : (
+              /* Auth — logged out: Masuk (secondary) + Daftar (primary) */
               <div className="hidden sm:flex items-center gap-2">
                 <a
                   href="/login"
-                  className="inline-flex items-center gap-1.5 text-xs font-mono tracking-wider text-[#9a9a9a] hover:text-white transition-colors px-2.5 py-1.5"
+                  className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-medium transition-colors cursor-pointer ${
+                    scrolled ? 'text-[#444444] hover:text-brand-accent' : 'text-white/85 hover:text-white'
+                  }`}
                 >
-                  <User className="w-3.5 h-3.5" strokeWidth={1.5} />
+                  <User size={15} strokeWidth={2} />
                   <span>Masuk</span>
                 </a>
                 <a
                   href="/register"
-                  className="inline-flex items-center gap-1.5 text-xs font-mono tracking-wider uppercase px-3 py-1.5 bg-[#171717] text-white hover:bg-neutral-200 transition-colors"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-brand-accent px-4.5 py-2 text-sm font-semibold text-white hover:bg-brand-accent-hover transition-colors shadow-[0_10px_24px_-10px_rgba(108,43,217,0.9)]"
                 >
                   Daftar
+                  <ArrowUpRight size={15} strokeWidth={2} />
                 </a>
               </div>
             )}
 
-            {/* Mobile Menu Toggle Button */}
+            {/* Mobile menu trigger */}
             <button
               onClick={handleToggleMenu}
-              aria-label="Buka Menu Navigasi"
-              className="lg:hidden cursor-pointer bg-white/5 border border-white/15 hover:border-white text-white p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center transition-colors focus:outline-none"
+              aria-label={menuOpen ? 'Tutup menu navigasi' : 'Buka menu navigasi'}
+              className={`lg:hidden cursor-pointer h-10 w-10 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full transition-colors ${
+                scrolled ? 'bg-[#111111] text-white hover:bg-brand-accent' : 'bg-white text-[#111111]'
+              }`}
             >
-              {menuOpen ? <X size={20} strokeWidth={1.5} /> : <Menu size={20} strokeWidth={1.5} />}
+              {menuOpen ? <X size={20} strokeWidth={2} /> : <Menu size={20} strokeWidth={2} />}
             </button>
           </div>
         </div>
       </header>
 
-      {/* Mobile Navigation Drawer */}
+      {/* ═══════════ MOBILE DRAWER ═══════════ */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -191,62 +286,114 @@ export const Header: React.FC<HeaderProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 bg-[#171717]/98 backdrop-blur-xl flex flex-col justify-between p-6 sm:p-10 lg:hidden overflow-y-auto"
+            className="fixed inset-0 z-50 bg-white flex flex-col lg:hidden overflow-y-auto"
           >
-            {/* Drawer Top Bar */}
-            <div className="flex items-center justify-between border-b border-white/10 pb-6">
-              <a href="/" onClick={handleToggleMenu} className="flex items-center gap-2.5 text-white">
-                <div className="w-7 h-7 border border-white/30 flex items-center justify-center bg-white/10">
-                  <span className="font-mono text-xs font-bold">S</span>
-                </div>
-                <span className="text-base font-light tracking-widest uppercase">SYMPHONIATIC</span>
-              </a>
-
+            {/* Drawer top bar */}
+            <div className="flex items-center justify-between px-5 sm:px-8 pt-4 pb-5">
+              <BrandMark />
               <button
                 onClick={handleToggleMenu}
-                aria-label="Tutup Menu"
-                className="bg-white/10 border border-white/20 text-white p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-white hover:text-[#171717] transition-all cursor-pointer"
+                aria-label="Tutup menu"
+                className="h-11 w-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full bg-[#F7F7F7] text-[#111111] hover:bg-brand-accent hover:text-white transition-colors cursor-pointer"
               >
-                <X size={20} strokeWidth={1.5} />
+                <X size={20} strokeWidth={2} />
               </button>
             </div>
 
-            {/* Drawer Navigation Links */}
-            <nav className="flex flex-col py-8 gap-2">
-              <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-[#9a9a9a] mb-2 px-2">
-                NAVIGASI UTAMA
+            {/* Drawer search */}
+            <div className="px-5 sm:px-8 pb-4">
+              <SearchPill onNavigate={handleToggleMenu} />
+              <p className="mt-2 text-xs text-[#999999] font-light">
+                Cari konser, artis, atau venue favoritmu.
+              </p>
+            </div>
+
+            {/* Drawer navigation */}
+            <nav className="flex flex-col px-5 sm:px-8 py-3" aria-label="Navigasi menu seluler">
+              <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-brand-accent mb-2 px-1">
+                Navigasi Utama
               </span>
-
-              {mainNavItems.map((item, idx) => (
-                <motion.a
-                  key={item.label}
-                  href={item.href}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.2, delay: idx * 0.04 }}
-                  onClick={handleToggleMenu}
-                  className="group flex items-center justify-between py-3.5 px-3 border-b border-white/5 text-lg sm:text-xl font-light tracking-tight text-white hover:text-[#9a9a9a] hover:bg-white/[0.03] transition-all"
-                >
-                  <span className="flex items-center gap-3">
-                    <span className="font-mono text-xs text-[#9a9a9a] group-hover:text-white">
-                      0{idx + 1}
+              {mainNavItems.map((item, idx) => {
+                const isActive =
+                  currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href));
+                return (
+                  <motion.a
+                    key={item.label}
+                    href={item.href}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.18, delay: idx * 0.04 }}
+                    onClick={handleToggleMenu}
+                    className={`group flex items-center justify-between rounded-xl px-4 py-4 my-0.5 transition-colors ${
+                      isActive ? 'bg-[#F3EBFF] text-brand-accent' : 'text-[#111111] hover:bg-[#F7F7F7]'
+                    }`}
+                  >
+                    <span className="flex items-center gap-4 text-lg font-semibold tracking-tight">
+                      <span
+                        className={`font-mono text-xs font-bold ${
+                          isActive ? 'text-brand-accent' : 'text-[#999999] group-hover:text-brand-accent'
+                        }`}
+                      >
+                        0{idx + 1}
+                      </span>
+                      {item.label}
                     </span>
-                    <span>{item.label}</span>
-                  </span>
-                  <ChevronRight size={18} strokeWidth={1} className="text-[#9a9a9a] group-hover:translate-x-1 transition-transform" />
-                </motion.a>
-              ))}
+                    <ChevronRight size={20} strokeWidth={1.5} className="text-[#999999] group-hover:text-brand-accent group-hover:translate-x-0.5 transition-all" />
+                  </motion.a>
+                );
+              })}
+            </nav>
 
-              <div className="pt-4 mt-2 grid grid-cols-2 gap-3">
-                <a
-                  href="/redeem"
-                  onClick={handleToggleMenu}
-                  style={{ color: '#171717' }}
-                  className="flex items-center justify-center gap-2 py-3 px-4 bg-white !text-[#171717] font-mono text-xs font-semibold uppercase tracking-wider text-center cursor-pointer hover:bg-neutral-200 transition-colors"
-                >
-                  <Ticket size={14} style={{ color: '#171717' }} />
-                  <span style={{ color: '#171717' }}>Cek Tiket</span>
-                </a>
+            {/* Account actions */}
+            <div className="px-5 sm:px-8 mt-4">
+              {user ? (
+                <div className="grid gap-2.5">
+                  <a
+                    href="/dashboard"
+                    onClick={handleToggleMenu}
+                    className="flex items-center justify-center gap-2 rounded-full bg-[#111111] text-white py-3.5 text-sm font-semibold hover:bg-brand-accent transition-colors min-h-[48px]"
+                  >
+                    <LayoutDashboard size={16} strokeWidth={2} className="text-brand-accent" />
+                    Dashboard — {user.name}
+                  </a>
+                  {onLogout && (
+                    <button
+                      onClick={() => {
+                        handleToggleMenu();
+                        onLogout();
+                      }}
+                      className="flex items-center justify-center gap-2 rounded-full border border-[#E5E5E5] text-[#666666] py-3.5 text-sm font-semibold hover:border-brand-accent hover:text-brand-accent transition-colors min-h-[48px] cursor-pointer"
+                    >
+                      <LogOut size={16} strokeWidth={2} />
+                      Keluar
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="grid gap-2.5">
+                  <a
+                    href="/login"
+                    onClick={handleToggleMenu}
+                    className="flex items-center justify-center gap-2 rounded-full border border-[#E5E5E5] text-[#111111] py-3.5 text-sm font-semibold hover:border-brand-accent hover:text-brand-accent transition-colors min-h-[48px]"
+                  >
+                    <User size={16} strokeWidth={2} />
+                    Masuk
+                  </a>
+                  <a
+                    href="/register"
+                    onClick={handleToggleMenu}
+                    className="flex items-center justify-center gap-2 rounded-full bg-brand-accent text-white py-3.5 text-sm font-bold hover:bg-brand-accent-hover transition-colors min-h-[48px]"
+                  >
+                    Daftar Sekarang
+                    <ArrowUpRight size={16} strokeWidth={2} />
+                  </a>
+                </div>
+              )}
+            </div>
+
+            {/* Admin (conditional) */}
+            {isAdmin && (
+              <div className="px-5 sm:px-8 mt-5">
                 <a
                   href="/admin"
                   onClick={(e) => {
@@ -256,62 +403,23 @@ export const Header: React.FC<HeaderProps> = ({
                       onOpenAdmin();
                     }
                   }}
-                  style={{ color: '#ffffff' }}
-                  className="flex items-center justify-center gap-2 py-3 px-4 border border-white/30 text-white font-mono text-xs uppercase tracking-wider text-center hover:bg-white/10"
+                  className="flex items-center justify-between rounded-xl border border-dashed border-[#E5E5E5] px-4 py-3.5 text-sm font-semibold text-[#666666] hover:text-brand-accent hover:border-brand-accent transition-colors"
                 >
-                  <ShieldCheck size={14} />
-                  <span>Admin</span>
+                  <span className="flex items-center gap-2.5">
+                    <ShieldCheck size={16} strokeWidth={2} />
+                    Portal Admin
+                  </span>
+                  <ChevronRight size={16} className="text-[#999999]" />
                 </a>
               </div>
+            )}
 
-              {/* Auth actions in mobile drawer */}
-              <div className="pt-3 grid grid-cols-1 gap-2">
-                {user ? (
-                  <>
-                    <a
-                      href="/dashboard"
-                      onClick={handleToggleMenu}
-                      className="flex items-center justify-center gap-2 py-3 px-4 border border-white/30 text-white font-mono text-xs uppercase tracking-wider hover:bg-white/10"
-                    >
-                      <LayoutDashboard size={14} strokeWidth={1.5} />
-                      <span>Dashboard — {user.name}</span>
-                    </a>
-                    {onLogout && (
-                      <button
-                        onClick={() => { handleToggleMenu(); onLogout(); }}
-                        className="flex items-center justify-center gap-2 py-3 px-4 text-[#9a9a9a] font-mono text-xs uppercase tracking-wider hover:text-white transition-colors cursor-pointer"
-                      >
-                        <LogOut size={14} strokeWidth={1.5} />
-                        <span>Keluar</span>
-                      </button>
-                    )}
-                  </>
-                ) : (
-                  <div className="grid grid-cols-2 gap-2">
-                    <a
-                      href="/login"
-                      onClick={handleToggleMenu}
-                      className="flex items-center justify-center gap-2 py-3 px-4 border border-white/30 text-white font-mono text-xs uppercase tracking-wider hover:bg-white/10"
-                    >
-                      <User size={14} strokeWidth={1.5} />
-                      <span>Masuk</span>
-                    </a>
-                    <a
-                      href="/register"
-                      onClick={handleToggleMenu}
-                      className="flex items-center justify-center gap-2 py-3 px-4 bg-white text-[#171717] font-mono text-xs uppercase tracking-wider hover:bg-neutral-200"
-                    >
-                      Daftar
-                    </a>
-                  </div>
-                )}
-              </div>
-            </nav>
-
-            {/* Drawer Footer Info */}
-            <div className="border-t border-white/10 pt-6 text-xs text-[#9a9a9a] font-light flex flex-col gap-2">
+            {/* Drawer footer */}
+            <div className="px-5 sm:px-8 pt-8 pb-10 mt-auto text-xs text-[#999999] font-light flex flex-col gap-2">
               <p>&copy; 2026 SymphoniaTic Official Concert Booking Platform.</p>
-              <p className="font-mono text-[10px] text-white/40">BEETHOVEN • VIVALDI • ABBA • TRUST</p>
+              <p className="text-[10px] tracking-[0.18em] text-brand-accent font-semibold uppercase">
+                Beethoven · Vivaldi · ABBA · Trust
+              </p>
             </div>
           </motion.div>
         )}
