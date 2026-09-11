@@ -44,9 +44,9 @@ export const Features: React.FC = () => (
         return (
           <Reveal key={f.title} delay={i * 0.08}>
             <div
-              className="flex flex-col p-6 rounded-0 bg-[--color-card] border border-[--color-border] transition-all duration-300 hover:border-[--color-border]/12 hover:bg-[--color-card]/90"
+              className="flex flex-col p-6 rounded-none bg-[--color-card] border border-[--color-border] transition-all duration-300 hover:border-[--color-border]/12 hover:bg-[--color-card]/90"
             >
-              <div className="w-10 h-10 rounded-0 flex items-center justify-center mb-4">
+              <div className="w-10 h-10 rounded-none flex items-center justify-center mb-4">
                 <Icon size={20} strokeWidth={2} className="text-[--color-brand-accent]" />
               </div>
               <h3 className="text-base font-semibold text-chalk tracking-tight mb-2.5">

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Heart, ArrowUpRight } from 'lucide-react';
+import React, { useRef } from 'react';
+import { Heart, ArrowUpRight, MapPin, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { CONCERT_EVENTS, ARTISTS_LINEUP, formatIDR } from './data';
 import type { EventItem } from './data';
 
@@ -12,247 +12,374 @@ const goToConcert = (event: EventItem) => {
   window.location.href = `/concert/${event.id}`;
 };
 
-const getFeaturedEvent = (events: EventItem[]) => {
-  const sourceEvents = (events && events.length > 0) ? events : CONCERT_EVENTS;
-  return sourceEvents[0];
+const getMinPrice = (event: EventItem) => event.categories?.[0]?.price ?? 0;
+
+const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGU', 'SEP', 'OKT', 'NOV', 'DES'];
+
+/* Parse date string like "Sabtu, 18 April 2026" or "2026-04-18" → { day, month, year } */
+const parseDate = (date?: string) => {
+  if (!date) return { day: '', month: '', year: '', weekday: '' };
+  let day = '';
+  let month = '';
+  let year = '';
+  let weekday = '';
+
+  const weekdayMatch = date.match(/^([A-Za-z]+),/);
+  if (weekdayMatch) weekday = weekdayMatch[1];
+
+  const long = date.match(/(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})/);
+  if (long) {
+    day = long[1];
+    month = long[2].slice(0, 3).toUpperCase();
+    year = long[3];
+    return { day, month, year, weekday };
+  }
+
+  const iso = date.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (iso) {
+    year = iso[1];
+    month = MONTHS[parseInt(iso[2], 10) - 1] || '';
+    day = iso[3];
+  }
+  return { day, month, year, weekday };
 };
 
-const getRestEvents = (events: EventItem[]) => {
-  const sourceEvents = (events && events.length > 0) ? events : CONCERT_EVENTS;
-  return sourceEvents.filter((e) => e.id !== sourceEvents[0]?.id);
-};
-
-export const BentoSection: React.FC<SectionProps> = ({ events, onBuyTicket }) => {
-  const sourceEvents = (events && events.length > 0) ? events : CONCERT_EVENTS;
-  const featured = getFeaturedEvent(sourceEvents);
-  const rest = getRestEvents(sourceEvents);
-
+/* ── Reusable editorial section header ── */
+const SectionHeading: React.FC<{
+  eyebrow: string;
+  title: string;
+  support: string;
+  actionLabel: string;
+  actionHref: string;
+}> = ({ eyebrow, title, support, actionLabel, actionHref }) => {
   return (
-    <section className="bg-[--color-obsidian-canvas]">
-      {/* =========================
-          SECTION HEADER
-      =========================== */}
-      <section id="concerts" className="mx-auto max-w-[1400px] px-6 sm:px-8 md:px-10 pt-16 pb-[120px]">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 pb-6 border-b border-border gap-6">
-          <div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-[-0.03em] text-chalk m-0">
-              Jelajahi Simfoni & Sistem Gate Pilihan.
-            </h2>
-          </div>
-          <p className="text-xs sm:text-sm text-ash max-w-md leading-relaxed">
-            Integrasi langsung antara ansambel orkestra kelas dunia dan platform tiket berkecepatan tinggi dengan verifikasi instan.
-          </p>
-        </div>
-
-        {/* =========================
-            DESKTOP GRID: FEATURED + 2 SECONDARY
-        =========================== */}
-        <div className="md:grid md:grid-cols-12 gap-6 md:gap-10">
-          {/* FEATURED CONCERT (8 cols) */}
-          <div
-            className="md:col-span-8 bg-[--color-obsidian] relative overflow-hidden cursor-pointer group"
-            onClick={() => featured && goToConcert(featured)}
-          >
-            <img
-              src={featured?.image}
-              alt={featured?.title}
-              className="w-full h-[420px] object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[--color-obsidian]/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            
-            {/* Badges */}
-            <div className="absolute top-6 left-6 right-6 flex items-center justify-between z-10">
-              <span className="text-[11px] font-semibold tracking-wide text-[--color-ash]/90 bg-[--color-obsidian]/50 backdrop-blur-sm px-3 py-1.5 uppercase">
-                Konser Utama
-              </span>
-              {featured?.categories?.[0] && (
-                <span className="text-xs font-semibold tracking-wide text-white bg-[--color-obsidian]/50 backdrop-blur-sm px-3 py-1.5">
-                  Mulai {formatIDR(featured.categories[0].price)}
-                </span>
-              )}
-            </div>
-
-            {/* Bottom Info */}
-            <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
-              <div className="flex items-center gap-3 text-xs text-[--color-ash]/70 uppercase tracking-wider mb-2">
-                <span>{featured?.date}</span>
-                <span>•</span>
-                <span>{featured?.time}</span>
-                <span>•</span>
-                <span className="text-white">{featured?.venue}</span>
-              </div>
-              <h3 className="text-2xl lg:text-3xl font-semibold text-chalk tracking-[-0.03em] leading-tight group-hover:text-[--color-brand-accent]/95 transition-colors">
-                {featured?.title}
-              </h3>
-              <p className="text-sm text-[--color-ash]/70 mt-2 max-w-xl line-clamp-1">
-                {featured?.artist}
-              </p>
-
-              <div className="mt-4 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-white group-hover:translate-x-1 transition-transform">
-                <span>Detail Konser & Tiket</span>
-                <ArrowUpRight size={14} className="text-white" />
-              </div>
-            </div>
-          </div>
-
-          {/* SECONDARY CONCERTS (4 cols - 2 cards) */}
-          <div className="md:col-span-4 flex flex-col gap-4">
-            {rest.slice(0, 2).map((event) => (
-              <div
-                key={event.id}
-                className="relative overflow-hidden hover:shadow-xl transition-all duration-300 bg-[--color-obsidian]"
-                onClick={() => goToConcert(event)}
-              >
-                <img
-                  src={event.image}
-                  alt={event.title}
-                  className="w-full h-[220px] object-cover group-hover:scale-[1.02] transition-transform duration-500 brightness-90 group-hover:brightness-100"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[--color-obsidian]/60 to-transparent" />
-                
-                <div className="absolute bottom-0 left-0 right-0 p-5 z-10">
-                  <div className="flex items-center gap-2 text-xs text-[--color-ash]/70 uppercase tracking-wider mb-1.5">
-                    <span>{event.date}</span>
-                  </div>
-                  <h4 className="text-lg font-semibold text-chalk tracking-tight line-clamp-1">
-                    {event.title}
-                  </h4>
-                  <p className="text-xs text-[--color-ash]/80 mt-1">Mulai {formatIDR(event.categories?.[0]?.price ?? 0)}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* =========================
-          ARTIST LINEUP SUB-SECTION
-      =========================== */}
-      <div className="mx-auto max-w-[1400px] px-6 sm:px-8 md:px-10 pb-12">
-        <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-          <div>
-            <h3 className="text-sm font-semibold tracking-wide uppercase text-[--color-ash]/60 mb-4">
-              Artis Musim Ini
-            </h3>
-            <div className="grid grid-cols-2 gap-4">
-              {ARTISTS_LINEUP.slice(0, 4).map((artist) => (
-                <div
-                  key={artist.name}
-                  className="flex flex-col items-center gap-2 px-4 py-6 rounded-0 border border-[--color-border] rounded-0 hover:border-[--color-border]/12 transition-colors"
-                >
-                  <img
-                    src={artist.image}
-                    alt={artist.name}
-                    className="w-16 h-16 object-cover rounded-0 border-2 border-[--color-border]/1"
-                  />
-                  <span className="text-xs font-medium tracking-widest uppercase text-[--color-ash]/60">
-                    {artist.name}
-                  </span>
-                  <span className="text-xs text-[--color-ash]/40">{artist.shows}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="hidden md:block">
-            <a
-              href="/events"
-              className="text-sm text-[--color-brand-accent] hover:text-[--color-chalk] transition-colors inline-flex items-center gap-1"
-            >
-              Lihat Semua Artis
-              <ArrowUpRight size={10} className="transition-transform" />
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    {/* =========================
-        CATALOG HEADER
-    =========================== */}
-    <div className="mx-auto max-w-[1400px] px-6 sm:px-8 md:px-10 pb-6 flex items-baseline justify-between border-t border-border pt-12">
-      <div>
-        <h3 className="text-xl sm:text-2xl font-semibold text-chalk tracking-tight">
-          Semua Jadwal Konser
-        </h3>
+    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10 sm:mb-14">
+      <div className="max-w-2xl">
+        <p className="inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.22em] text-brand-accent">
+          <span className="h-px w-9 bg-brand-accent" aria-hidden />
+          {eyebrow}
+        </p>
+        <h2 className="mt-4 text-3xl sm:text-4xl lg:text-[42px] font-bold tracking-[-0.03em] leading-[1.08] text-ink">
+          {title}
+        </h2>
+        <p className="mt-4 text-sm sm:text-base leading-relaxed text-[#666666] max-w-xl">
+          {support}
+        </p>
       </div>
       <a
-        href="/events"
-        className="text-sm text-[--color-ash]/60 hover:text-[--color-brand-accent] transition-colors inline-flex items-center gap-1 group"
+        href={actionHref}
+        className="group/btn inline-flex items-center gap-2 rounded-full bg-black text-white px-5 py-2.5 text-sm font-semibold hover:bg-brand-accent transition-colors shrink-0"
       >
-        <span>Lihat Semua</span>
-        <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+        {actionLabel}
+        <ArrowUpRight
+          size={16}
+          className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform"
+        />
       </a>
     </div>
+  );
+};
 
-    {/* =========================
-        ALL EVENTS CAROUSEL
-    =========================== */}
-    <section className="mx-auto max-w-[1400px] px-6 sm:px-8 md:px-10 pb-16">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {sourceEvents.map((event) => {
-          const minPrice = event.categories?.[0]?.price ?? 0;
-          return (
-            <div
-              key={event.id}
-              className="cursor-pointer group rounded-0 shrink-0 bg-[--color-obsidian-canvas] border border-[--color-border]/20 hover:shadow-lg transition-all duration-200"
-              onClick={() => goToConcert(event)}
-            >
-              {/* Event Image */}
-              <div className="relative mb-3 overflow-hidden rounded-0 min-h-[180px] bg-[--color-canvas-alt]">
-                <img
-                  src={event.image}
-                  alt={event.title}
-                  className={`absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500 ${
-                    event.isClosed ? 'grayscale brightness-50' : 'brightness-90 group-hover:brightness-100'
-                  }`}
-                />
-                {event.isClosed && (
-                  <div className="absolute inset-0 bg-[--color-obsidian]/70 flex items-center justify-center p-2">
-                    <span className="text-[10px] font-semibold text-white uppercase tracking-wider">
-                      Tutup
-                    </span>
-                  </div>
-                )}
-                {/* Favorite Button */}
-                <button
-                  aria-label="Simpan ke favorit"
-                  onClick={(e) => e.stopPropagation()}
-                  className="absolute bottom-3 right-3 w-8 h-8 rounded-0 bg-[--color-brand-accent]/90 backdrop-blur-sm flex items-center justify-center text-[--color-obsidian] hover:bg-[--color-brand-accent] transition-colors cursor-pointer z-10"
-                >
-                  <Heart size={14} />
-                </button>
-              </div>
+/* ═══════════ ARTIST DISCOVERY — horizontal portrait rail ═══════════ */
 
-              {/* Event Info */}
-              <div className="px-4 pb-4">
-                <h4 className="text-base font-semibold tracking-tight text-chalk line-clamp-2 min-h-[44px]">
-                  {event.title}
-                </h4>
+const ArtistCard: React.FC<{ image: string; name: string; genre: string; shows: string }> = ({
+  image,
+  name,
+  genre,
+  shows,
+}) => {
+  return (
+    <a
+      href="/events"
+      className="group relative block w-[74vw] sm:w-[280px] lg:w-[320px] shrink-0 snap-start overflow-hidden rounded-2xl bg-[#EEEEEE] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2"
+    >
+      <img
+        src={image}
+        alt={name}
+        className="w-full aspect-[3/4] h-full object-cover brightness-[0.88] group-hover:scale-[1.05] group-hover:brightness-100 transition-all duration-700"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
 
-                <p className="text-xs text-[--color-ash]/60 mt-2">
-                  {event.date}
-                </p>
+      <span className="absolute top-4 right-4 rounded-full bg-white/90 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-black">
+        {shows}
+      </span>
 
-                <p className="text-xs text-[--color-ash]/60 truncate mt-0.5">
-                  {event.venue}
-                </p>
-
-                {/* Price */}
-                <div className="mt-3 pt-2 border-t border-[--color-border]/10 flex items-center justify-between">
-                  <span className="text-sm font-semibold text-chalk">
-                    {event.isClosed ? (
-                      <span className="text-[--color-brand-light]">Tutup</span>
-                    ) : (
-                      formatIDR(minPrice)
-                    )}
-                  </span>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+      <div className="absolute bottom-5 left-5 right-5">
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/70">
+          {genre}
+        </p>
+        <h3 className="mt-1.5 text-xl font-bold leading-snug tracking-tight text-white">
+          {name}
+        </h3>
+        <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-white opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-300">
+          Lihat Konser
+          <ArrowUpRight size={15} />
+        </span>
       </div>
-    </section>
+    </a>
+  );
+};
+
+const ArtistRail: React.FC = () => {
+  const railRef = useRef<HTMLDivElement>(null);
+  const scroll = (dir: number) => {
+    railRef.current?.scrollBy({ left: dir * 300, behavior: 'smooth' });
+  };
+
+  return (
+    <div className="relative">
+      <div className="mb-6 flex items-center justify-end gap-2">
+        <button
+          onClick={() => scroll(-1)}
+          aria-label="Geser artist ke kiri"
+          className="h-11 w-11 rounded-full bg-[#F7F7F7] text-ink flex items-center justify-center hover:bg-brand-accent hover:text-white transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent"
+        >
+          <ChevronLeft size={18} />
+        </button>
+        <button
+          onClick={() => scroll(1)}
+          aria-label="Geser artist ke kanan"
+          className="h-11 w-11 rounded-full bg-[#F7F7F7] text-ink flex items-center justify-center hover:bg-brand-accent hover:text-white transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent"
+        >
+          <ChevronRight size={18} />
+        </button>
+      </div>
+
+      <div
+        ref={railRef}
+        className="flex gap-4 md:gap-5 overflow-x-auto snap-x snap-mandatory no-scrollbar -mx-6 sm:-mx-8 md:-mx-12 px-6 sm:px-8 md:px-12 pb-2"
+      >
+        {ARTISTS_LINEUP.slice(0, 4).map((artist) => (
+          <ArtistCard
+            key={artist.name}
+            image={artist.image}
+            name={artist.name}
+            genre={artist.genre}
+            shows={artist.shows}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* ═══════════ UPCOMING CONCERTS — editorial discovery ═══════════ */
+
+/* Ticket-stub date badge */
+const DateBlock: React.FC<{ event: EventItem; size?: 'sm' | 'lg' }> = ({ event, size = 'sm' }) => {
+  const { day, month, year } = parseDate(event.date);
+  return (
+    <div
+      className={`rounded-xl bg-white text-ink text-center shadow-[0_8px_24px_-8px_rgba(17,17,17,0.4)] ${
+        size === 'lg' ? 'px-4 py-3' : 'px-2.5 py-1.5'
+      }`}
+    >
+      <div className={`font-black tracking-[0.18em] text-brand-accent ${size === 'lg' ? 'text-[10px]' : 'text-[8px]'}`}>
+        {month || 'KONSER'}
+      </div>
+      <div className={`font-black leading-none text-ink ${size === 'lg' ? 'text-3xl' : 'text-sm'}`}>
+        {day || '—'}
+      </div>
+      <div className={`font-semibold text-[#999999] ${size === 'lg' ? 'text-[10px] mt-0.5' : 'text-[8px]'}`}>
+        {year || ''}
+      </div>
+    </div>
+  );
+};
+
+/* Featured editorial card — artwork as hero */
+const FeaturedConcert: React.FC<{ event: EventItem }> = ({ event }) => {
+  const minPrice = getMinPrice(event);
+
+  return (
+    <div
+      onClick={() => goToConcert(event)}
+      className="group relative overflow-hidden rounded-2xl bg-black cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2"
+    >
+      <div className="relative h-[440px] sm:h-[500px] lg:h-[560px] overflow-hidden">
+        <img
+          src={event.image}
+          alt={event.title}
+          className="w-full h-full object-cover brightness-[0.82] group-hover:scale-[1.04] group-hover:brightness-100 transition-all duration-[900ms] ease-out"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent" />
+      </div>
+
+      {/* Top row */}
+      <div className="absolute top-4 left-4 sm:top-6 sm:left-6 right-4 sm:right-6 z-10 flex items-start justify-between gap-3">
+        <DateBlock event={event} size="lg" />
+        <button
+          aria-label="Simpan ke favorit"
+          onClick={(e) => e.stopPropagation()}
+          className="h-10 w-10 rounded-full bg-white/90 text-black flex items-center justify-center hover:bg-brand-accent hover:text-white transition-colors cursor-pointer"
+        >
+          <Heart size={16} />
+        </button>
+      </div>
+
+      {/* Bottom: minimal overlay — let artwork speak */}
+      <div className="absolute inset-x-0 bottom-0 z-10 p-5 sm:p-8">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] sm:text-xs font-bold uppercase tracking-[0.18em] text-white/70">
+          <span>{event.category || 'Konser'}</span>
+          <span className="opacity-50" aria-hidden>·</span>
+          <span>{event.venue}</span>
+          <span className="opacity-50" aria-hidden>·</span>
+          <span className="normal-case tracking-normal">{event.time}</span>
+        </div>
+
+        <h3 className="mt-3 text-2xl sm:text-4xl lg:text-[44px] font-bold tracking-[-0.03em] leading-[1.05] text-white max-w-3xl line-clamp-2">
+          {event.title}
+        </h3>
+        <p className="mt-2 text-sm sm:text-base text-white/75 line-clamp-1 max-w-2xl">
+          {event.artist}
+        </p>
+
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-5 border-t border-white/15 pt-5">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/60">
+              Mulai dari
+            </p>
+            <p className="text-xl sm:text-2xl font-bold text-white">
+              {event.isClosed ? 'Tiket Tutup' : formatIDR(minPrice)}
+            </p>
+          </div>
+          <span className="inline-flex items-center gap-2 rounded-full bg-brand-accent px-5 py-3 text-sm font-semibold text-white hover:bg-brand-accent-hover transition-colors">
+            Detail Konser & Tiket
+            <ArrowUpRight size={16} />
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* Borderless soft-surface event card */
+const ConcertEventCard: React.FC<{ event: EventItem }> = ({ event }) => {
+  const minPrice = getMinPrice(event);
+  const { day, month } = parseDate(event.date);
+
+  return (
+    <div
+      onClick={() => goToConcert(event)}
+      className="group rounded-2xl bg-[#F7F7F7] overflow-hidden cursor-pointer hover:shadow-[0_20px_50px_-24px_rgba(17,17,17,0.35)] hover:-translate-y-1 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2"
+    >
+      <div className="relative aspect-[16/10] overflow-hidden bg-[#EEEEEE]">
+        <img
+          src={event.image}
+          alt={event.title}
+          className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.06] ${
+            event.isClosed ? 'grayscale' : 'brightness-[0.98]'
+          }`}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+        {event.isClosed && (
+          <div className="absolute inset-0 bg-black/55 flex items-center justify-center">
+            <span className="rounded-full bg-white px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-black">
+              Tutup
+            </span>
+          </div>
+        )}
+
+        <span className="absolute top-3 left-3 rounded-lg bg-white/95 px-2.5 py-1.5 text-[11px] font-bold text-black shadow-sm">
+          {day && month ? `${day} ${month}` : event.date}
+        </span>
+
+        <button
+          aria-label="Simpan ke favorit"
+          onClick={(e) => e.stopPropagation()}
+          className="absolute top-3 right-3 h-8 w-8 rounded-full bg-white/95 text-black flex items-center justify-center hover:bg-brand-accent hover:text-white transition-colors cursor-pointer"
+        >
+          <Heart size={14} />
+        </button>
+      </div>
+
+      <div className="p-5 sm:p-6">
+        {event.category && (
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-accent">
+            {event.category}
+          </p>
+        )}
+        <h4 className="mt-1.5 text-lg sm:text-xl font-bold leading-snug tracking-tight text-ink line-clamp-2">
+          {event.title}
+        </h4>
+        <p className="mt-1.5 text-sm text-[#666666] line-clamp-1">
+          {event.artist}
+        </p>
+
+        <div className="mt-4 flex items-center gap-2 text-xs text-[#666666]">
+          <Calendar size={13} className="text-brand-accent shrink-0" />
+          <span>{event.time}</span>
+          <span className="opacity-40" aria-hidden>·</span>
+          <span className="inline-flex items-center gap-1 min-w-0">
+            <MapPin size={13} className="text-brand-accent shrink-0" />
+            <span className="truncate">{event.venue}</span>
+          </span>
+        </div>
+
+        <div className="mt-5 flex items-center justify-between gap-3">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#999999]">
+              Mulai dari
+            </p>
+            <p className="text-lg font-bold text-ink">
+              {event.isClosed ? 'Tutup' : formatIDR(minPrice)}
+            </p>
+          </div>
+          <span className="h-11 w-11 rounded-full bg-black text-white flex items-center justify-center group-hover:bg-brand-accent transition-colors duration-300">
+            <ArrowUpRight size={18} />
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ═══════════ SECTION (hidden "Jelajahi" block removed entirely) ═══════════ */
+
+export const BentoSection: React.FC<SectionProps> = ({ events }) => {
+  const sourceEvents = (events && events.length > 0) ? events : CONCERT_EVENTS;
+  const featured = sourceEvents[0];
+  const rest = sourceEvents.slice(1);
+
+  return (
+    <div className="bg-canvas text-ink">
+      {/* ── ARTIST DISCOVERY ── */}
+      <section className="mx-auto max-w-[1440px] px-6 sm:px-8 md:px-12 pt-20 sm:pt-24 lg:pt-28">
+        <SectionHeading
+          eyebrow="Jelajahi Artis"
+          title="Orkestra & Ensemble Musim Ini"
+          support="Dari orkestra simfoni kelas dunia hingga chamber ensemble — kenali penampil yang siap menghidupkan panggung SymphoniaTic."
+          actionLabel="Semua Artis"
+          actionHref="/events"
+        />
+        <ArtistRail />
+      </section>
+
+      {/* ── UPCOMING CONCERTS (primary) ── */}
+      <section className="mx-auto max-w-[1440px] px-6 sm:px-8 md:px-12 py-20 sm:py-24 lg:py-28">
+        <SectionHeading
+          eyebrow="Jadwal Konser"
+          title="Konser Mendatang"
+          support="Pilih konser favoritmu, cek detail line-up dan jadwal, lalu amankan tiketmu sebelum sold out."
+          actionLabel="Lihat Semua"
+          actionHref="/events"
+        />
+
+        {featured && (
+          <div className="mb-6 md:mb-8">
+            <FeaturedConcert event={featured} />
+          </div>
+        )}
+
+        {rest.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {rest.map((event) => (
+              <ConcertEventCard key={event.id} event={event} />
+            ))}
+          </div>
+        )}
+      </section>
+    </div>
   );
 };

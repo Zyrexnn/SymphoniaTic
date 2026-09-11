@@ -179,7 +179,7 @@ const App: React.FC = () => {
       <div className="h-16" />
 
       {/* Audio player */}
-      <AudioPlayer
+      {/* <AudioPlayer
         audioRef={audioRef}
         currentTrackIndex={currentTrackIndex}
         isPlaying={isPlayingAudio}
@@ -192,7 +192,7 @@ const App: React.FC = () => {
         onSetVolume={setVolume}
         onSetIsMuted={setIsMuted}
         onSeek={handleSeek}
-      />
+      /> */}
 
       {/* Modals */}
       <AnimatePresence>
