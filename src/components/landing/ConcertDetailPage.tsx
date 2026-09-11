@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { MapPin, Clock, ArrowLeft, ChevronRight, Minus, Plus } from 'lucide-react';
+import { MapPin, Clock, ArrowLeft, Minus, Plus, Ticket } from 'lucide-react';
 import { CONCERT_EVENTS, fetchEventsAPI, formatIDR } from './data';
 import type { EventItem, TicketCategory, OrderRecord } from './data';
 import { BookingModal, ETicketConfirmation } from './Modals';
@@ -27,104 +26,190 @@ const BuyCard: React.FC<{ event: EventItem; onBuy: () => void }> = ({ event, onB
   const isMaxQty = qty >= 4;
   const isClosed = event.isClosed;
 
-  return (
-    <div className="lg:col-span-1">
-      <div className="sticky top-8 border border-white/[0.06] bg-[#171717]">
-        <div className="p-6 border-b border-white/[0.06]">
-          <span className="text-sm font-light text-[#9a9a9a] block mb-1">Harga Mulai Dari</span>
-          <span className="text-2xl tracking-[-0.014em] font-light text-white">
-            {formatIDR(event.categories?.[0]?.price ?? 0)}
-          </span>
+  const purchaseContent = (
+    <>
+      {/* ── HEADER ── */}
+      <div className="mb-6">
+        <h3 className="text-lg font-bold text-[#111111] tracking-[-0.01em]">Pilih Tiket</h3>
+        <p className="text-sm text-[#999999] mt-1">Pilih kategori dan jumlah tiket yang ingin kamu pesan.</p>
+      </div>
+
+      {/* ── CLOSED NOTICE ── */}
+      {isClosed && (
+        <div className="mb-5 p-3 border border-red-200 bg-red-50 text-red-600 text-xs font-medium rounded-lg">
+          ⚠️ <strong>Penjualan Ditutup</strong> — Pertunjukan ini sudah dimulai atau penjualan tiket telah dihentikan.
         </div>
+      )}
 
-        <div className="p-6 space-y-5">
-          {isClosed && (
-            <div className="p-3 border border-rose-500/30 bg-rose-950/20 text-rose-300 text-xs font-light rounded">
-              ⚠️ <strong>Penjualan Ditutup</strong> — Pertunjukan ini sudah dimulai atau penjualan tiket telah dihentikan.
-            </div>
-          )}
+      {/* ── TICKET CATEGORIES ── */}
+      <div className="mb-6">
+        <span className="text-[11px] font-bold text-[#999999] tracking-[0.1em] uppercase block mb-3">
+          Kategori Tiket
+        </span>
 
-          <div>
-            <label className="text-[11px] font-light text-[#7a7a7a] tracking-[0.12em] uppercase block mb-3">
-              Pilih Kategori
-            </label>
-            <div className="space-y-2">
-              {(event.categories || []).map((cat) => {
-                const isSelected = selectedCatId === cat.id;
-                return (
-                  <button
-                    key={cat.id}
-                    disabled={isClosed}
-                    onClick={() => setSelectedCatId(cat.id)}
-                    className={`w-full flex items-center justify-between px-3.5 py-3 text-left transition-all duration-200 ${
-                      isClosed ? 'opacity-40 cursor-not-allowed border-white/[0.04]' : isSelected
-                        ? 'border border-white/[0.15] bg-white/[0.03] cursor-pointer'
-                        : 'border border-white/[0.04] bg-transparent hover:border-white/[0.08] cursor-pointer'
+        <div className="divide-y divide-[#E5E5E5]">
+          {(event.categories || []).map((cat) => {
+            const isSelected = selectedCatId === cat.id;
+            return (
+              <button
+                key={cat.id}
+                disabled={isClosed}
+                onClick={() => setSelectedCatId(cat.id)}
+                className={`w-full flex items-center justify-between py-4 px-4 -mx-4 text-left transition-all duration-200 group ${
+                  isClosed
+                    ? 'opacity-40 cursor-not-allowed'
+                    : isSelected
+                      ? 'bg-brand-accent/[0.04] cursor-pointer'
+                      : 'cursor-pointer hover:bg-[#F7F7F7]'
+                }`}
+              >
+                <div className="flex items-center gap-3.5">
+                  {/* Radio indicator */}
+                  <span
+                    className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 ${
+                      isSelected
+                        ? 'border-brand-accent bg-brand-accent'
+                        : 'border-[#CCCCCC] bg-transparent group-hover:border-[#999999]'
                     }`}
                   >
-                    <div>
-                      <span className={`text-sm font-light block ${isSelected ? 'text-white' : 'text-[#9a9a9a]'}`}>
-                        {cat.name}
-                      </span>
-                      <span className="text-[11px] font-light text-[#5a5a5a] mt-0.5 block">
-                        Sisa {cat.quota} kursi
-                      </span>
-                    </div>
-                    <span className={`text-sm font-light ${isSelected ? 'text-white' : 'text-[#9a9a9a]'}`}>
-                      {formatIDR(cat.price)}
+                    {isSelected && <span className="h-2 w-2 rounded-full bg-white" />}
+                  </span>
+
+                  <div>
+                    <span
+                      className={`text-sm block transition-colors ${
+                        isSelected ? 'font-bold text-brand-accent' : 'font-semibold text-[#111111]'
+                      }`}
+                    >
+                      {cat.name}
                     </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+                    <span className="text-xs text-[#999999] mt-0.5 block">
+                      Sisa {cat.quota} kursi
+                    </span>
+                  </div>
+                </div>
 
-          <div>
-            <label className="text-[11px] font-light text-[#7a7a7a] tracking-[0.12em] uppercase block mb-3">
-              Jumlah Tiket
-            </label>
-            <div className="flex items-center justify-between border border-white/[0.06] px-4 py-2.5">
-              <button
-                onClick={() => setQty(Math.max(1, qty - 1))}
-                disabled={isClosed || qty <= 1}
-                className="bg-transparent border-none cursor-pointer p-1 text-[#9a9a9a] hover:text-white disabled:opacity-30 disabled:cursor-default"
-              >
-                <Minus size={14} strokeWidth={1} />
+                <span
+                  className={`text-sm tabular-nums transition-colors ${
+                    isSelected ? 'font-bold text-brand-accent' : 'font-semibold text-[#111111]'
+                  }`}
+                >
+                  {formatIDR(cat.price)}
+                </span>
               </button>
-              <span className="text-base font-light text-white">{qty}</span>
-              <button
-                onClick={() => setQty(Math.min(4, qty + 1))}
-                disabled={isClosed || isMaxQty}
-                className="bg-transparent border-none cursor-pointer p-1 text-[#9a9a9a] hover:text-white disabled:opacity-30 disabled:cursor-default"
-              >
-                <Plus size={14} strokeWidth={1} />
-              </button>
-            </div>
-          </div>
-
-          <div className="pt-2 border-t border-white/[0.06]">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-sm font-light text-[#9a9a9a]">Total</span>
-              <span className="text-lg tracking-[-0.01em] font-light text-white">
-                {formatIDR(totalPrice)}
-              </span>
-            </div>
-            <button
-              onClick={onBuy}
-              disabled={isClosed}
-              className={`w-full py-3 text-sm font-light text-white border transition-all duration-300 flex items-center justify-center gap-2 ${
-                isClosed
-                  ? 'bg-rose-500/10 border-rose-500/30 text-rose-300 opacity-60 cursor-not-allowed'
-                  : 'bg-white/[0.04] border-white/[0.1] cursor-pointer hover:bg-white/[0.08] hover:border-white/[0.2] active:scale-[0.98]'
-              }`}
-            >
-              <span>{isClosed ? 'ORDER DITUTUP' : 'Beli Tiket'}</span>
-              {!isClosed && <ChevronRight size={14} strokeWidth={1} />}
-            </button>
-          </div>
+            );
+          })}
         </div>
       </div>
-    </div>
+
+      {/* ── QUANTITY ── */}
+      {!isClosed && (
+        <div className="mb-6">
+          <span className="text-[11px] font-bold text-[#999999] tracking-[0.1em] uppercase block mb-3">
+            Jumlah Tiket
+          </span>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setQty(Math.max(1, qty - 1))}
+              disabled={qty <= 1}
+              aria-label="Kurangi jumlah tiket"
+              className="h-9 w-9 flex items-center justify-center rounded-full border border-[#E5E5E5] text-[#666666] hover:border-brand-accent hover:text-brand-accent hover:bg-brand-accent/5 transition-all disabled:opacity-30 disabled:cursor-default disabled:hover:border-[#E5E5E5] disabled:hover:text-[#666666] disabled:hover:bg-transparent"
+            >
+              <Minus size={14} strokeWidth={2} />
+            </button>
+            <span className="min-w-[28px] text-center text-base font-bold text-[#111111] tabular-nums select-none">
+              {qty}
+            </span>
+            <button
+              onClick={() => setQty(Math.min(4, qty + 1))}
+              disabled={isMaxQty}
+              aria-label="Tambah jumlah tiket"
+              className="h-9 w-9 flex items-center justify-center rounded-full border border-[#E5E5E5] text-[#666666] hover:border-brand-accent hover:text-brand-accent hover:bg-brand-accent/5 transition-all disabled:opacity-30 disabled:cursor-default disabled:hover:border-[#E5E5E5] disabled:hover:text-[#666666] disabled:hover:bg-transparent"
+            >
+              <Plus size={14} strokeWidth={2} />
+            </button>
+            <span className="text-xs text-[#999999] ml-1">maks. 4 tiket</span>
+          </div>
+        </div>
+      )}
+
+      {/* ── DIVIDER ── */}
+      <div className="border-t border-[#E5E5E5] mb-5" />
+
+      {/* ── TOTAL + CTA ── */}
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-sm font-medium text-[#666666]">Total Pembayaran</span>
+        <span className="text-xl font-bold text-[#111111] tabular-nums tracking-[-0.01em]">
+          {formatIDR(totalPrice)}
+        </span>
+      </div>
+      <button
+        onClick={onBuy}
+        disabled={isClosed}
+        className={`w-full py-3.5 text-sm font-bold rounded-full min-h-[48px] flex items-center justify-center gap-2 transition-all duration-300 ${
+          isClosed
+            ? 'bg-[#F7F7F7] border border-[#E5E5E5] text-[#999999] opacity-60 cursor-not-allowed'
+            : 'bg-brand-accent text-white hover:bg-brand-accent-hover shadow-[0_8px_24px_-8px_rgba(108,43,217,0.9)] cursor-pointer active:scale-[0.98]'
+        }`}
+      >
+        {isClosed ? (
+          <span>ORDER DITUTUP</span>
+        ) : (
+          <>
+            <Ticket size={16} strokeWidth={2} />
+            <span>Beli Tiket</span>
+          </>
+        )}
+      </button>
+    </>
+  );
+
+  return (
+    <>
+      {/* ═══════════ DESKTOP — STICKY SIDEBAR (NO CARD) ═══════════ */}
+      <div className="hidden lg:block lg:col-span-1">
+        <div className="sticky top-24">
+          {purchaseContent}
+        </div>
+      </div>
+
+      {/* ═══════════ MOBILE — INLINE CONTENT (CTA in bottom bar) ═══════════ */}
+      <div className="lg:hidden pt-2">
+        {purchaseContent}
+      </div>
+
+      {/* ═══════════ MOBILE — STICKY BOTTOM BAR ═══════════ */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#E5E5E5] safe-area-pb">
+        <div className="flex items-center justify-between gap-4 px-5 py-3.5">
+          <div className="min-w-0">
+            <span className="text-xs text-[#999999] font-medium block leading-tight">
+              {qty} tiket{selectedCat ? ` · ${selectedCat.name}` : ''}
+            </span>
+            <span className="text-lg font-bold text-[#111111] tabular-nums tracking-[-0.01em]">
+              {formatIDR(totalPrice)}
+            </span>
+          </div>
+          <button
+            onClick={onBuy}
+            disabled={isClosed}
+            className={`flex-shrink-0 inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-bold min-h-[48px] transition-all duration-300 ${
+              isClosed
+                ? 'bg-[#F7F7F7] border border-[#E5E5E5] text-[#999999] opacity-60 cursor-not-allowed'
+                : 'bg-brand-accent text-white hover:bg-brand-accent-hover shadow-[0_8px_24px_-8px_rgba(108,43,217,0.9)] cursor-pointer active:scale-[0.98]'
+            }`}
+          >
+            {isClosed ? (
+              <span>Ditutup</span>
+            ) : (
+              <>
+                <Ticket size={15} strokeWidth={2} />
+                <span>Beli Tiket</span>
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </>
   );
 };
 
@@ -176,17 +261,17 @@ const ConcertDetailPage: React.FC<Props> = ({ eventId }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#171717]">
-        <p className="text-base font-light text-[#9a9a9a]">Memuat...</p>
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <p className="text-base font-medium text-[#999999]">Memuat...</p>
       </div>
     );
   }
 
   if (!event) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#171717]">
-        <p className="text-2xl font-light text-white mb-4">Konser Tidak Ditemukan</p>
-        <a href="/" className="text-base font-light text-[#9a9a9a] border-b border-[#9a9a9a] pb-0.5">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white">
+        <p className="text-2xl font-semibold text-[#111111] mb-4">Konser Tidak Ditemukan</p>
+        <a href="/" className="text-base font-medium text-brand-accent hover:underline">
           Kembali ke Beranda
         </a>
       </div>
@@ -194,38 +279,41 @@ const ConcertDetailPage: React.FC<Props> = ({ eventId }) => {
   }
 
   return (
-    <div className="min-h-screen bg-[#171717]">
+    <div className="min-h-screen bg-white">
       {/* Hero Image */}
-      <div className="relative w-full h-[60vh] min-h-[400px]">
+      <div className="relative w-full h-[55vh] min-h-[380px] md:h-[60vh]">
         <img src={event.image} alt={event.title} className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_top,#171717_0%,rgba(23,23,23,0.3)_40%,transparent_100%)]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent" />
 
         {/* Back button */}
-        <div className="absolute top-0 left-0 right-0 px-10 py-4">
-          <a href="/" className="inline-flex items-center gap-2 text-base font-light text-[#9a9a9a] hover:opacity-60 transition-opacity">
-            <ArrowLeft className="w-4 h-4" strokeWidth={1} />
+        <div className="absolute top-0 left-0 right-0 px-6 sm:px-10 py-5">
+          <a
+            href="/events"
+            className="inline-flex items-center gap-2 rounded-full bg-white/90 backdrop-blur-sm px-4 py-2 text-sm font-semibold text-[#111111] hover:bg-white hover:shadow-md transition-all"
+          >
+            <ArrowLeft size={16} strokeWidth={2} />
             <span>Kembali</span>
           </a>
         </div>
 
         {/* Title overlay */}
-        <div className="absolute bottom-0 left-0 right-0 max-w-[1400px] px-10 pb-12">
-          <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mb-2">
+        <div className="absolute bottom-0 left-0 right-0 max-w-[1400px] px-6 sm:px-10 pb-10 md:pb-12">
+          <p className="text-sm font-bold tracking-[0.08em] uppercase text-brand-accent mb-2">
             {event.category}
           </p>
-          <h1 className="text-[clamp(32px,5vw,56px)] leading-[1.0] tracking-[-0.056em] font-light text-white">
+          <h1 className="text-[clamp(28px,5vw,52px)] leading-[1.05] tracking-[-0.04em] font-bold text-[#111111]">
             {event.title}
           </h1>
-          <p className="text-xl tracking-[-0.01em] font-light text-[#9a9a9a] mt-3">
+          <p className="text-lg md:text-xl tracking-[-0.01em] font-medium text-[#666666] mt-2.5">
             {event.artist}
           </p>
         </div>
       </div>
 
       {/* Content */}
-      <div className="mx-auto max-w-[1400px] px-10 pb-20">
+      <div className="mx-auto max-w-[1400px] px-6 sm:px-10 pb-20 lg:pb-20 pb-32 lg:pb-20">
         {/* Quick Info Bar */}
-        <div className="flex flex-wrap items-center gap-6 pt-10 pb-10 border-b border-white/[0.06]">
+        <div className="flex flex-wrap items-center gap-8 pt-10 pb-10 border-b border-[#E5E5E5]">
           {[
             { label: 'Tanggal', value: event.date },
             { label: 'Waktu', value: event.time },
@@ -233,66 +321,79 @@ const ConcertDetailPage: React.FC<Props> = ({ eventId }) => {
             { label: 'Venue', value: event.venue },
           ].map((item) => (
             <div key={item.label}>
-              <span className="text-base font-light text-[#9a9a9a] block mb-1">{item.label}</span>
-              <span className="text-base font-light text-white">{item.value}</span>
+              <span className="text-xs font-bold text-[#999999] tracking-[0.06em] uppercase block mb-1">{item.label}</span>
+              <span className="text-base font-semibold text-[#111111]">{item.value}</span>
             </div>
           ))}
         </div>
 
         {/* Tabs */}
-        <div className="flex overflow-x-auto no-scrollbar border-b border-white/[0.06] mt-10">
+        <div className="flex overflow-x-auto no-scrollbar border-b border-[#E5E5E5] mt-10 -mb-px">
           {TABS.map((t) => (
-            <button key={t.id} onClick={() => setTab(t.id)}
-              className={`whitespace-nowrap cursor-pointer bg-transparent border-none text-base font-light tracking-[-0.05px] px-6 pt-4 pb-[14px] ${
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              className={`whitespace-nowrap cursor-pointer bg-transparent text-sm font-semibold px-5 sm:px-6 pt-4 pb-3.5 border-b-[3px] transition-all ${
                 tab === t.id
-                  ? 'text-white border-b border-white'
-                  : 'text-[#9a9a9a] border-b border-transparent'
-              }`}>
+                  ? 'text-brand-accent border-b-brand-accent'
+                  : 'text-[#999999] border-b-transparent hover:text-[#666666]'
+              }`}
+            >
               {t.label}
             </button>
           ))}
         </div>
 
-        {/* Content Grid: Tab Content + Buy Card */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 pt-12">
+        {/* Content Grid: Tab Content + Purchase Module */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-14 pt-12">
           {/* Left: Tab Content */}
           <div className="lg:col-span-2">
             {tab === 'INFO' && (
               <div className="space-y-8">
                 <div>
-                  <h2 className="text-[28px] tracking-[-0.02em] font-light text-white mb-4">Deskripsi Mahakarya</h2>
-                  <p className="text-base font-light text-[#9a9a9a] leading-[1.7] max-w-[720px]">{event.description}</p>
+                  <h2 className="text-2xl tracking-[-0.02em] font-bold text-[#111111] mb-4">Deskripsi Mahakarya</h2>
+                  <p className="text-base font-normal text-[#666666] leading-[1.75] max-w-[720px]">{event.description}</p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-[720px]">
-                  {[['Penyelenggara', event.organizer], ['Konduktor & Solois', event.conductor], ['Jadwal Tanggal', event.date], ['Waktu Konser', `${event.time} (Open Gate ${event.openGate})`]].map(([label, value]) => (
-                    <div key={label} className="border-b border-white/[0.06] pb-4">
-                      <span className="text-base font-light text-[#9a9a9a] block mb-1">{label}</span>
-                      <span className="text-base font-light text-white">{value}</span>
+                  {[
+                    ['Penyelenggara', event.organizer],
+                    ['Konduktor & Solois', event.conductor],
+                    ['Jadwal Tanggal', event.date],
+                    ['Waktu Konser', `${event.time} (Open Gate ${event.openGate})`],
+                  ].map(([label, value]) => (
+                    <div key={label} className="border-b border-[#E5E5E5] pb-4">
+                      <span className="text-xs font-bold text-[#999999] tracking-[0.06em] uppercase block mb-1.5">{label}</span>
+                      <span className="text-base font-semibold text-[#111111]">{value}</span>
                     </div>
                   ))}
                 </div>
                 <div className="max-w-[720px]">
-                  <h3 className="text-xl tracking-[-0.01em] font-light text-white mb-3 flex items-center gap-2">
-                    <MapPin className="w-4 h-4" strokeWidth={1} /> Detail Lokasi Venue &amp; Peta Interaktif
+                  <h3 className="text-lg font-bold text-[#111111] mb-3 flex items-center gap-2">
+                    <MapPin size={18} strokeWidth={2} className="text-brand-accent" /> Detail Lokasi Venue
                   </h3>
-                  <p className="text-base font-light text-white">{event.venue}</p>
+                  <p className="text-base font-semibold text-[#111111] mb-1">{event.venue}</p>
                   {event.address && (
                     isUrl(event.address) ? (
-                      <p className="text-base font-light text-[#9a9a9a] mt-1 mb-4">
-                        <a href={event.address} target="_blank" rel="noreferrer" className="text-sky-400 hover:text-sky-300 hover:underline">
+                      <p className="text-sm text-[#999999] mb-4">
+                        <a
+                          href={event.address}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-brand-accent font-medium hover:underline"
+                        >
                           Buka Link Peta Lokasi
                         </a>
                       </p>
                     ) : (
-                      <p className="text-base font-light text-[#9a9a9a] mt-1 mb-4">{event.address}</p>
+                      <p className="text-sm text-[#999999] mb-4">{event.address}</p>
                     )
                   )}
-                  <div className="w-full h-[280px] border border-white/10 overflow-hidden relative mb-3 bg-[#171717]">
+                  <div className="w-full h-[280px] border border-[#E5E5E5] overflow-hidden rounded-lg relative mb-3 bg-[#F7F7F7]">
                     <iframe
                       title="Peta Lokasi Venue Konser"
                       width="100%"
                       height="100%"
-                      style={{ border: 0, filter: 'grayscale(0.9) invert(0.92) contrast(1.2)' }}
+                      style={{ border: 0 }}
                       loading="lazy"
                       allowFullScreen
                       src={event.googleMapsUrl || (isUrl(event.address) ? `https://maps.google.com/maps?q=${encodeURIComponent(event.venue)}&t=&z=15&ie=UTF8&iwloc=&output=embed` : `https://maps.google.com/maps?q=${encodeURIComponent(event.venue + ' ' + event.address)}&t=&z=15&ie=UTF8&iwloc=&output=embed`)}
@@ -302,9 +403,9 @@ const ConcertDetailPage: React.FC<Props> = ({ eventId }) => {
                     href={event.googleMapsUrl || (isUrl(event.address) ? event.address : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venue + ' ' + event.address)}`)}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-2 text-xs font-light tracking-wider uppercase text-white border border-white/20 px-4 py-2 hover:bg-white/10 transition-colors"
+                    className="inline-flex items-center gap-2 text-xs font-bold tracking-wider uppercase text-brand-accent bg-brand-accent/5 border border-brand-accent/20 px-4 py-2.5 rounded-full hover:bg-brand-accent/10 hover:border-brand-accent/40 transition-all"
                   >
-                    <MapPin className="w-3.5 h-3.5" strokeWidth={1} />
+                    <MapPin size={14} strokeWidth={2} />
                     <span>Buka Petunjuk Arah di Google Maps</span>
                   </a>
                 </div>
@@ -313,13 +414,18 @@ const ConcertDetailPage: React.FC<Props> = ({ eventId }) => {
 
             {tab === 'RUNDOWN' && (
               <div className="space-y-4 max-w-[720px]">
-                <h2 className="text-[28px] tracking-[-0.02em] font-light text-white mb-4 flex items-center gap-2">
-                  <Clock className="w-5 h-5" strokeWidth={1} /> Rangkaian Acara
+                <h2 className="text-2xl tracking-[-0.02em] font-bold text-[#111111] mb-5 flex items-center gap-2.5">
+                  <span className="h-8 w-8 rounded-lg bg-brand-accent/10 flex items-center justify-center">
+                    <Clock size={16} strokeWidth={2} className="text-brand-accent" />
+                  </span>
+                  Rangkaian Acara
                 </h2>
                 {(event.rundown || []).map((item, idx) => (
-                  <div key={idx} className="flex items-start gap-6 py-4 border-b border-white/[0.06]">
-                    <span className="text-base font-light text-[#9a9a9a] min-w-[100px]">{item.time}</span>
-                    <span className="text-base font-light text-white">{item.activity}</span>
+                  <div key={idx} className="flex items-start gap-5 py-4 border-b border-[#E5E5E5] last:border-b-0">
+                    <span className="text-sm font-bold text-brand-accent min-w-[90px] bg-brand-accent/5 rounded-full px-3 py-1 text-center">
+                      {item.time}
+                    </span>
+                    <span className="text-base font-medium text-[#111111] pt-0.5">{item.activity}</span>
                   </div>
                 ))}
               </div>
@@ -327,19 +433,27 @@ const ConcertDetailPage: React.FC<Props> = ({ eventId }) => {
 
             {tab === 'BENEFITS' && (
               <div className="space-y-6 max-w-[720px]">
-                <h2 className="text-[28px] tracking-[-0.02em] font-light text-white mb-4">Pilihan Kategori Tiket</h2>
+                <h2 className="text-2xl tracking-[-0.02em] font-bold text-[#111111] mb-5">Pilihan Kategori Tiket</h2>
                 {(event.categories || []).map((cat) => (
-                  <div key={cat.id} className="py-6 border-b border-white/[0.06]">
+                  <div key={cat.id} className="py-6 border-b border-[#E5E5E5] last:border-b-0">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xl tracking-[-0.01em] font-light text-white">{cat.name}</span>
-                      <span className="text-xl tracking-[-0.01em] font-light text-white">{formatIDR(cat.price)}</span>
+                      <span className="text-lg font-bold text-[#111111]">{cat.name}</span>
+                      <span className="text-lg font-bold text-brand-accent">{formatIDR(cat.price)}</span>
                     </div>
-                    <p className="text-base font-light text-[#9a9a9a] mb-3">Sisa Kuota: {cat.quota} Tempat Duduk</p>
+                    <p className="text-sm font-medium text-[#999999] mb-3">
+                      Sisa Kuota:{' '}
+                      <span className="font-bold text-[#666666]">{cat.quota}</span> Tempat Duduk
+                    </p>
                     <div>
-                      <span className="text-base font-light text-[#9a9a9a] block mb-2">Fasilitas Termasuk:</span>
-                      <div className="flex flex-wrap gap-3">
+                      <span className="text-xs font-bold text-[#999999] tracking-[0.06em] uppercase block mb-2">Fasilitas Termasuk:</span>
+                      <div className="flex flex-wrap gap-2">
                         {(cat.benefits || []).map((b, i) => (
-                          <span key={i} className="text-base font-light text-[#9a9a9a]">{b}</span>
+                          <span
+                            key={i}
+                            className="text-sm font-medium text-[#666666] bg-[#F7F7F7] border border-[#E5E5E5] rounded-full px-3.5 py-1.5"
+                          >
+                            {b}
+                          </span>
                         ))}
                       </div>
                     </div>
@@ -350,34 +464,45 @@ const ConcertDetailPage: React.FC<Props> = ({ eventId }) => {
 
             {tab === 'TERMS' && (
               <div className="max-w-[720px]">
-                <h2 className="text-[28px] tracking-[-0.02em] font-light text-white mb-4">Syarat & Ketentuan</h2>
-                <ul className="list-disc pl-5 space-y-3 text-base font-light text-[#9a9a9a] leading-[1.7]">
-                  <li>Setiap akun/identitas pemesan hanya diperbolehkan membeli maksimal 4 tiket dalam 1 transaksi resmi.</li>
-                  <li>Pengunjung wajib menggunakan pakaian Rapi &amp; Sopan (Smart Casual / Formal).</li>
-                  <li>Anak-anak berusia di bawah 7 tahun tidak diperkenankan memasuki arena pertunjukan simfoni.</li>
-                  <li>E-Ticket resmi ber-Kode QR wajib ditunjukkan dari smartphone pada saat registrasi Open Gate.</li>
-                  <li>Tiket yang sudah dibeli tidak dapat ditukarkan uang tunai (non-refundable).</li>
+                <h2 className="text-2xl tracking-[-0.02em] font-bold text-[#111111] mb-5">Syarat & Ketentuan</h2>
+                <ul className="space-y-4 text-base font-normal text-[#666666] leading-[1.75]">
+                  {[
+                    'Setiap akun/identitas pemesan hanya diperbolehkan membeli maksimal 4 tiket dalam 1 transaksi resmi.',
+                    'Pengunjung wajib menggunakan pakaian Rapi & Sopan (Smart Casual / Formal).',
+                    'Anak-anak berusia di bawah 7 tahun tidak diperkenankan memasuki arena pertunjukan simfoni.',
+                    'E-Ticket resmi ber-Kode QR wajib ditunjukkan dari smartphone pada saat registrasi Open Gate.',
+                    'Tiket yang sudah dibeli tidak dapat ditukarkan uang tunai (non-refundable).',
+                  ].map((item, idx) => (
+                    <li key={idx} className="flex items-start gap-3">
+                      <span className="mt-2 h-1.5 w-1.5 rounded-full bg-brand-accent flex-shrink-0" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
                 </ul>
               </div>
             )}
           </div>
 
-          {/* Right: Buy Card */}
+          {/* Right: Purchase Module */}
           <BuyCard event={event} onBuy={() => openBooking(event)} />
         </div>
       </div>
 
       {/* Booking Modal */}
       {bookingEvent && bookingCategory && (
-        <BookingModal event={bookingEvent} initialCategory={bookingCategory}
-          onClose={() => { setBookingEvent(null); setBookingCategory(null); }} onSubmit={handleBookingSubmit} />
+        <BookingModal
+          event={bookingEvent}
+          initialCategory={bookingCategory}
+          onClose={() => { setBookingEvent(null); setBookingCategory(null); }}
+          onSubmit={handleBookingSubmit}
+        />
       )}
 
       {/* E-Ticket Confirmation */}
       {activeSuccessOrder && (
         <ETicketConfirmation order={activeSuccessOrder} onClose={() => setActiveSuccessOrder(null)} />
       )}
-    <Footer />
+      <Footer />
     </div>
   );
 };
