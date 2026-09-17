@@ -145,7 +145,7 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative min-h-screen w-full bg-[#171717] text-white">
+    <div className="relative min-h-screen w-full bg-white text-[#183B56]">
       <audio ref={audioRef} preload="metadata" />
 
       <Header
@@ -160,9 +160,9 @@ const App: React.FC = () => {
       />
 
       {/* Hero with video bg */}
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden bg-[#183B56]">
         <BoomerangVideoBg />
-        <div className="absolute inset-0 z-[1] bg-gradient-to-b from-[#171717]/40 via-[#171717]/10 to-[#171717]" />
+        <div className="absolute inset-0 z-[1] bg-gradient-to-b from-[#183B56]/50 via-[#183B56]/20 to-white" />
         <Hero />
       </div>
 

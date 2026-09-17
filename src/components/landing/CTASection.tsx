@@ -18,9 +18,10 @@ export const CTASection: React.FC = () => {
   return (
     <section className="mx-auto max-w-[1400px] px-6 sm:px-8 md:px-10 py-16 bg-[--color-canvas] rounded-2xl">
       <Reveal>
-        <div className="relative overflow-hidden px-8 sm:px-12 lg:px-16 py-12 lg:py-16">
+        <div className="relative overflow-hidden rounded-3xl bg-brand px-8 sm:px-12 lg:px-16 py-12 lg:py-16">
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute top-[-40%] right-[-10%] w-[50%] h-[120%] rounded-full bg-white/10 blur-[100px]" />
+            <div className="absolute bottom-[-30%] left-[-5%] w-[35%] h-[80%] rounded-full bg-brand-accent/20 blur-[90px]" />
           </div>
 
           <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-10">
@@ -57,7 +58,7 @@ export const CTASection: React.FC = () => {
                   </div>
                   <button
                     type="submit"
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-brand text-white text-[13px] font-semibold tracking-wide rounded-xl hover:bg-brand/90 active:scale-[0.98] transition-all duration-200 shrink-0 cursor-pointer"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-brand-accent text-white text-[13px] font-semibold tracking-wide rounded-xl hover:bg-brand-accent-hover active:scale-[0.98] transition-all duration-200 shrink-0 cursor-pointer"
                   >
                     Daftar
                     <ArrowRight size={14} strokeWidth={2.5} />

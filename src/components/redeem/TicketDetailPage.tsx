@@ -143,7 +143,7 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return canvas;
 
-    ctx.fillStyle = '#171717';
+    ctx.fillStyle = '#183B56';
     ctx.fillRect(0, 0, width, height);
 
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
@@ -154,7 +154,7 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
     ctx.font = '400 32px Inter, sans-serif';
     ctx.fillText('SymphoniaTic Pass', 50, 75);
 
-    ctx.fillStyle = '#9a9a9a';
+    ctx.fillStyle = '#94A3B8';
     ctx.font = '300 13px sans-serif';
     ctx.textAlign = 'right';
     ctx.fillText('VERIFIED DIGITAL E-TICKET', width - 50, 75);
@@ -166,7 +166,7 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
     ctx.lineTo(width - 50, 95);
     ctx.stroke();
 
-    ctx.fillStyle = '#9a9a9a';
+    ctx.fillStyle = '#94A3B8';
     ctx.font = '300 12px sans-serif';
     ctx.fillText('PERTUNJUKAN SIMFONI RESMI', 50, 125);
 
@@ -174,12 +174,12 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
     ctx.font = '400 24px sans-serif';
     ctx.fillText(order.eventTitle, 50, 160);
 
-    ctx.fillStyle = '#9a9a9a';
+    ctx.fillStyle = '#94A3B8';
     ctx.font = '300 15px sans-serif';
     ctx.fillText(order.artist, 50, 188);
 
     const drawInfo = (x: number, y: number, label: string, value: string) => {
-      ctx.fillStyle = '#9a9a9a';
+      ctx.fillStyle = '#94A3B8';
       ctx.font = '300 11px sans-serif';
       ctx.fillText(label.toUpperCase(), x, y);
       ctx.fillStyle = '#ffffff';
@@ -204,7 +204,7 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
     ctx.stroke();
     ctx.setLineDash([]);
 
-    ctx.fillStyle = '#171717';
+    ctx.fillStyle = '#183B56';
     ctx.fillRect(50, 440, width - 100, 150);
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
     ctx.lineWidth = 1;
@@ -218,11 +218,11 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
     ctx.font = '400 16px sans-serif';
     ctx.fillText(order.venue, 75, 505);
 
-    ctx.fillStyle = '#9a9a9a';
+    ctx.fillStyle = '#94A3B8';
     ctx.font = '300 12px sans-serif';
     ctx.fillText(`Alamat: ${evt?.address || order.venue}`, 75, 532);
 
-    ctx.fillStyle = '#9a9a9a';
+    ctx.fillStyle = '#94A3B8';
     ctx.font = '300 11px sans-serif';
     ctx.fillText('Tunjukkan dokumen E-Ticket ini di pintu pemeriksaan gate saat memasuki concert hall.', 75, 565);
 
@@ -232,12 +232,12 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(qrX, qrY, qrSize, qrSize);
 
-    ctx.fillStyle = '#171717';
+    ctx.fillStyle = '#183B56';
     const drawFinder = (fx: number, fy: number) => {
       ctx.fillRect(fx, fy, 40, 40);
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(fx + 5, fy + 5, 30, 30);
-      ctx.fillStyle = '#171717';
+      ctx.fillStyle = '#183B56';
       ctx.fillRect(fx + 10, fy + 10, 20, 20);
     };
 
@@ -247,7 +247,7 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
     drawFinder(qrX + qrPad + qrInner - 40, qrY + qrPad);
     drawFinder(qrX + qrPad, qrY + qrPad + qrInner - 40);
 
-    ctx.fillStyle = '#171717';
+    ctx.fillStyle = '#183B56';
     const gridSize = 10;
     const cellSize = qrInner / gridSize;
     for (let r = 0; r < gridSize; r++) {
@@ -264,11 +264,11 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
     ctx.textAlign = 'center';
     ctx.fillText(order.orderCode, width / 2, 875);
 
-    ctx.fillStyle = '#9a9a9a';
+    ctx.fillStyle = '#94A3B8';
     ctx.font = '300 13px sans-serif';
     ctx.fillText('Pindai Kode QR ini pada scanner gate di pintu masuk hall', width / 2, 910);
 
-    ctx.fillStyle = '#171717';
+    ctx.fillStyle = '#183B56';
     ctx.fillRect(50, 940, width - 100, 190);
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
     ctx.strokeRect(50, 940, width - 100, 190);
@@ -288,7 +288,7 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
       ctx.fillStyle = '#ffffff';
       ctx.font = '400 12px sans-serif';
       ctx.fillText(item.time, 75, 1000 + idx * 28);
-      ctx.fillStyle = '#9a9a9a';
+      ctx.fillStyle = '#94A3B8';
       ctx.font = '300 12px sans-serif';
       ctx.fillText(item.activity, 190, 1000 + idx * 28);
     });
@@ -336,7 +336,7 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
       const xPos = (pdfWidth - imgWidth) / 2;
 
-      pdf.setFillColor(23, 23, 23);
+      pdf.setFillColor(24, 59, 86);
       pdf.rect(0, 0, 210, 297, 'F');
       pdf.addImage(imgData, 'PNG', xPos, 5, imgWidth, imgHeight);
       pdf.save(`E-Ticket-${foundOrder.orderCode}.pdf`);
@@ -351,8 +351,8 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#171717] flex flex-col items-center justify-center gap-4">
-        <p className="text-sm font-light text-[#9a9a9a] tracking-wider uppercase">
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center gap-4">
+        <p className="text-sm font-light text-[#94A3B8] tracking-wider uppercase">
           Memverifikasi E-Ticket & Gate Data...
         </p>
       </div>
@@ -361,17 +361,17 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
 
   if (errorMessage || !foundOrder) {
     return (
-      <div className="min-h-screen bg-[#171717] flex flex-col items-center justify-center px-6 text-center">
-        <AlertCircle className="w-8 h-8 text-[#9a9a9a] mb-5" strokeWidth={1} />
-        <h1 className="text-2xl font-light text-white mb-2">E-Ticket Tidak Ditemukan</h1>
-        <p className="text-sm font-light text-[#9a9a9a] mb-8 max-w-md leading-relaxed">
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6 text-center">
+        <AlertCircle className="w-8 h-8 text-[#94A3B8] mb-5" strokeWidth={1} />
+        <h1 className="text-2xl font-light text-[#183B56] mb-2">E-Ticket Tidak Ditemukan</h1>
+        <p className="text-sm font-light text-[#94A3B8] mb-8 max-w-md leading-relaxed">
           {errorMessage || 'Kode pesanan tiket yang Anda cari tidak terdaftar atau telah kadaluarsa.'}
         </p>
         <a
           href="/redeem"
-          className="text-xs font-light text-white tracking-wider uppercase border border-white/30 px-6 py-3 hover:bg-white/10 transition-colors inline-flex items-center gap-2"
+          className="text-xs font-light text-[#183B56] tracking-wider uppercase border border-[#E5E7EB] px-6 py-3 hover:bg-[#F8FAFC] transition-colors inline-flex items-center gap-2"
         >
-          <ArrowLeft className="w-4 h-4 text-[#9a9a9a]" strokeWidth={1} />
+          <ArrowLeft className="w-4 h-4 text-[#94A3B8]" strokeWidth={1} />
           <span>Kembali ke Portal Cek Tiket</span>
         </a>
       </div>
@@ -382,7 +382,7 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
   const isRefunded = foundOrder.status === 'REFUNDED' || foundOrder.status === 'CANCELLED';
 
   return (
-    <div className="min-h-screen bg-[#171717] text-white selection:bg-white selection:text-[#171717] pb-24 md:pb-12 relative">
+    <div className="min-h-screen bg-white text-[#183B56] selection:bg-[#183B56] selection:text-white pb-24 md:pb-12 relative">
       {/* Toast Banner */}
       <AnimatePresence>
         {toastMessage && (
@@ -390,42 +390,42 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed top-20 right-6 z-50 bg-[#171717] border border-white/20 text-white px-4 py-3 shadow-2xl text-xs font-light tracking-wide flex items-center gap-2"
+            className="fixed top-20 right-6 z-50 bg-white border border-[#E5E7EB] text-[#183B56] px-4 py-3 shadow-2xl text-xs font-light tracking-wide flex items-center gap-2"
           >
-            <Check className="w-4 h-4 text-white" strokeWidth={1} />
+            <Check className="w-4 h-4 text-[#183B56]" strokeWidth={1} />
             <span>{toastMessage}</span>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Header Bar */}
-      <header className="sticky top-0 z-40 bg-[#171717]/95 backdrop-blur-md border-b border-white/[0.08] print:hidden">
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#E5E7EB] print:hidden">
         <div className="max-w-[1100px] mx-auto px-6 h-16 flex items-center justify-between">
           <a
             href="/redeem"
-            className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors"
+            className="inline-flex items-center gap-2 text-[#4A5A6A] hover:text-[#183B56] transition-colors"
           >
-            <ArrowLeft className="w-4 h-4 text-[#9a9a9a]" strokeWidth={1} />
+            <ArrowLeft className="w-4 h-4 text-[#94A3B8]" strokeWidth={1} />
             <span className="text-xs font-light tracking-wide">Cari Kode Lain</span>
           </a>
           <div className="flex items-center gap-3">
             <button
               onClick={handleShareTicket}
-              className="p-2 text-[#9a9a9a] hover:text-white border border-white/10 hover:border-white/30 transition-colors cursor-pointer"
+              className="p-2 text-[#94A3B8] hover:text-[#183B56] border border-[#E5E7EB] hover:border-[#183B56] transition-colors cursor-pointer"
               title="Bagikan Tiket"
             >
               <Share2 className="w-4 h-4" strokeWidth={1} />
             </button>
             <button
               onClick={handlePrintTicket}
-              className="p-2 text-[#9a9a9a] hover:text-white border border-white/10 hover:border-white/30 transition-colors cursor-pointer hidden sm:block"
+              className="p-2 text-[#94A3B8] hover:text-[#183B56] border border-[#E5E7EB] hover:border-[#183B56] transition-colors cursor-pointer hidden sm:block"
               title="Cetak Halaman"
             >
               <Printer className="w-4 h-4" strokeWidth={1} />
             </button>
-            <div className="hidden sm:flex items-center gap-2 pl-2 border-l border-white/10">
-              <QrCode className="w-4 h-4 text-[#9a9a9a]" strokeWidth={1} />
-              <span className="text-xs font-mono tracking-wider text-[#9a9a9a] uppercase">E-Ticket Pass</span>
+            <div className="hidden sm:flex items-center gap-2 pl-2 border-l border-[#E5E7EB]">
+              <QrCode className="w-4 h-4 text-[#94A3B8]" strokeWidth={1} />
+              <span className="text-xs font-mono tracking-wider text-[#94A3B8] uppercase">E-Ticket Pass</span>
             </div>
           </div>
         </div>
@@ -439,24 +439,24 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
           className="flex flex-col gap-8"
         >
           {/* Status Alert Banner */}
-          <div className="p-5 border border-white/20 bg-[#171717] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="p-5 border border-[#E5E7EB] bg-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               {isCheckedIn ? (
-                <CheckCircle2 className="w-5 h-5 text-white shrink-0" strokeWidth={1} />
+                <CheckCircle2 className="w-5 h-5 text-[#183B56] shrink-0" strokeWidth={1} />
               ) : isRefunded ? (
                 <AlertCircle className="w-5 h-5 text-red-400 shrink-0" strokeWidth={1} />
               ) : (
-                <ShieldCheck className="w-5 h-5 text-white shrink-0" strokeWidth={1} />
+                <ShieldCheck className="w-5 h-5 text-[#183B56] shrink-0" strokeWidth={1} />
               )}
               <div>
-                <p className="text-sm font-light tracking-wide uppercase text-white">
+                <p className="text-sm font-light tracking-wide uppercase text-[#183B56]">
                   {isCheckedIn
                     ? 'TIKET TELAH DIPINDAI (CHECKED-IN)'
                     : isRefunded
                     ? 'TIKET TIDAK BERLAKU / VOID'
                     : 'TIKET AKTIF — SIAP DIGUNAKAN'}
                 </p>
-                <p className="text-xs text-[#9a9a9a] mt-0.5 font-light">
+                <p className="text-xs text-[#94A3B8] mt-0.5 font-light">
                   {isCheckedIn
                     ? 'E-Ticket ini telah digunakan untuk memasuki concert hall.'
                     : isRefunded
@@ -467,7 +467,7 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
             </div>
 
             <div className="flex items-center gap-2 self-end sm:self-auto">
-              <span className="text-xs font-mono text-[#9a9a9a] border border-white/10 px-2.5 py-1">
+              <span className="text-xs font-mono text-[#94A3B8] border border-[#E5E7EB] px-2.5 py-1">
                 KODE: {foundOrder.orderCode}
               </span>
             </div>
@@ -476,7 +476,7 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
           {/* MAIN E-TICKET PASS STUB CONTAINER */}
           <div
             ref={ticketCardRef}
-            className="bg-[#171717] border border-white/20 relative overflow-hidden"
+            className="bg-[#183B56] border border-white/20 relative overflow-hidden"
           >
             {/* Top Event Hero Banner */}
             <div className="relative h-48 sm:h-64 overflow-hidden border-b border-white/15">
@@ -488,11 +488,11 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
                 alt={foundOrder.eventTitle}
                 className="w-full h-full object-cover object-center filter brightness-[0.45] contrast-125"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#171717] via-[#171717]/60 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#183B56] via-[#183B56]/60 to-transparent" />
 
               {/* Event Badge Overlay */}
               <div className="absolute top-4 left-4 sm:top-6 sm:left-6 flex flex-wrap items-center gap-2">
-                <span className="px-3 py-1 bg-white text-[#171717] text-[11px] font-mono tracking-widest uppercase">
+                <span className="px-3 py-1 bg-white text-[#183B56] text-[11px] font-mono tracking-widest uppercase">
                   {foundOrder.categoryName}
                 </span>
                 <span className="px-3 py-1 bg-black/60 border border-white/20 text-white text-[11px] font-light">
@@ -502,14 +502,14 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
 
               {/* Event Title in Banner */}
               <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 right-4 sm:right-6">
-                <span className="text-xs font-light text-[#9a9a9a] tracking-widest uppercase block mb-1">
+                <span className="text-xs font-light text-[#94A3B8] tracking-widest uppercase block mb-1">
                   PERTUNJUKAN SIMFONI
                 </span>
                 <h1 className="text-2xl sm:text-4xl font-light text-white tracking-tight leading-tight">
                   {foundOrder.eventTitle}
                 </h1>
-                <p className="text-xs sm:text-sm font-light text-[#9a9a9a] mt-1 flex items-center gap-2">
-                  <Music className="w-3.5 h-3.5 text-[#9a9a9a]" strokeWidth={1} />
+                <p className="text-xs sm:text-sm font-light text-[#94A3B8] mt-1 flex items-center gap-2">
+                  <Music className="w-3.5 h-3.5 text-[#94A3B8]" strokeWidth={1} />
                   <span>{foundOrder.artist}</span>
                 </p>
               </div>
@@ -517,9 +517,9 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
 
             {/* Countdown Bar */}
             {!timeLeft.isPast && !isRefunded && (
-              <div className="bg-[#171717] border-b border-white/10 px-4 sm:px-6 py-3 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs font-light">
-                <span className="text-[#9a9a9a] flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-[#9a9a9a]" strokeWidth={1} />
+              <div className="bg-[#183B56] border-b border-white/10 px-4 sm:px-6 py-3 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs font-light">
+                <span className="text-[#94A3B8] flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-[#94A3B8]" strokeWidth={1} />
                   <span>Waktu Tersisa Menuju Pertunjukan:</span>
                 </span>
                 <div className="flex items-center gap-3 font-mono text-white text-sm">
@@ -539,27 +539,27 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
               {/* Left Column: Specs */}
               <div className="lg:col-span-7 flex flex-col gap-6">
                 <div>
-                  <h3 className="text-xs font-light text-[#9a9a9a] tracking-widest uppercase mb-3 flex items-center gap-2">
-                    <User className="w-4 h-4 text-[#9a9a9a]" strokeWidth={1} />
+                  <h3 className="text-xs font-light text-[#94A3B8] tracking-widest uppercase mb-3 flex items-center gap-2">
+                    <User className="w-4 h-4 text-[#94A3B8]" strokeWidth={1} />
                     <span>Rincian Pemegang Tiket & Transaksi</span>
                   </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border border-white/10 p-5 bg-[#171717]">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border border-white/10 p-5 bg-[#183B56]">
                     <div>
-                      <span className="text-[11px] font-light text-[#9a9a9a] uppercase block">Pemegang Tiket</span>
+                      <span className="text-[11px] font-light text-[#94A3B8] uppercase block">Pemegang Tiket</span>
                       <span className="text-sm font-normal text-white">{foundOrder.userName}</span>
                     </div>
                     <div>
-                      <span className="text-[11px] font-light text-[#9a9a9a] uppercase block">Email Terdaftar</span>
+                      <span className="text-[11px] font-light text-[#94A3B8] uppercase block">Email Terdaftar</span>
                       <span className="text-sm font-normal text-white truncate block">{foundOrder.userEmail}</span>
                     </div>
                     <div>
-                      <span className="text-[11px] font-light text-[#9a9a9a] uppercase block">Kategori & Jumlah</span>
+                      <span className="text-[11px] font-light text-[#94A3B8] uppercase block">Kategori & Jumlah</span>
                       <span className="text-sm font-normal text-white">
                         {foundOrder.categoryName} ({foundOrder.quantity}x)
                       </span>
                     </div>
                     <div>
-                      <span className="text-[11px] font-light text-[#9a9a9a] uppercase block">Total Harga Pembayaran</span>
+                      <span className="text-[11px] font-light text-[#94A3B8] uppercase block">Total Harga Pembayaran</span>
                       <span className="text-sm font-mono text-white">{formatIDR(foundOrder.totalPrice)}</span>
                     </div>
                   </div>
@@ -567,29 +567,29 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
 
                 {/* Date & Location Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="border border-white/10 p-4 bg-[#171717]">
-                    <div className="flex items-center gap-2 text-[#9a9a9a] text-xs font-light mb-1">
+                  <div className="border border-white/10 p-4 bg-[#183B56]">
+                    <div className="flex items-center gap-2 text-[#94A3B8] text-xs font-light mb-1">
                       <Calendar className="w-3.5 h-3.5" strokeWidth={1} />
                       <span>Jadwal Konser:</span>
                     </div>
                     <p className="text-sm font-light text-white">{foundOrder.date}</p>
-                    <p className="text-xs font-light text-[#9a9a9a] mt-0.5">Open Gate: {matchingEvent?.openGate || '18:00 WIB'}</p>
+                    <p className="text-xs font-light text-[#94A3B8] mt-0.5">Open Gate: {matchingEvent?.openGate || '18:00 WIB'}</p>
                   </div>
 
-                  <div className="border border-white/10 p-4 bg-[#171717]">
-                    <div className="flex items-center gap-2 text-[#9a9a9a] text-xs font-light mb-1">
+                  <div className="border border-white/10 p-4 bg-[#183B56]">
+                    <div className="flex items-center gap-2 text-[#94A3B8] text-xs font-light mb-1">
                       <MapPin className="w-3.5 h-3.5" strokeWidth={1} />
                       <span>Venue & Hall:</span>
                     </div>
                     <p className="text-sm font-light text-white">{foundOrder.venue}</p>
-                    <p className="text-xs font-light text-[#9a9a9a] mt-0.5 truncate">{matchingEvent?.address || 'Jakarta'}</p>
+                    <p className="text-xs font-light text-[#94A3B8] mt-0.5 truncate">{matchingEvent?.address || 'Jakarta'}</p>
                   </div>
                 </div>
 
                 {/* Order Code Box */}
-                <div className="border border-white/20 bg-[#171717] p-5 flex items-center justify-between gap-4">
+                <div className="border border-white/20 bg-[#183B56] p-5 flex items-center justify-between gap-4">
                   <div>
-                    <span className="text-[11px] font-light text-[#9a9a9a] uppercase tracking-wider block">
+                    <span className="text-[11px] font-light text-[#94A3B8] uppercase tracking-wider block">
                       Kode Pesanan Transaksi
                     </span>
                     <span className="text-xl sm:text-2xl font-mono text-white tracking-widest">
@@ -600,7 +600,7 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
                   <button
                     type="button"
                     onClick={handleCopyCode}
-                    className="px-4 py-2 bg-white text-[#171717] text-xs font-light uppercase tracking-wider flex items-center gap-2 cursor-pointer transition-colors"
+                    className="px-4 py-2 bg-white text-[#183B56] text-xs font-light uppercase tracking-wider flex items-center gap-2 cursor-pointer transition-colors"
                   >
                     {isCopied ? <Check className="w-4 h-4" strokeWidth={1.5} /> : <Copy className="w-4 h-4" strokeWidth={1.5} />}
                     <span>{isCopied ? 'Tersalin' : 'Salin Kode'}</span>
@@ -609,9 +609,9 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
               </div>
 
               {/* Right Column: QR Code Scanner */}
-              <div className="lg:col-span-5 border border-white/15 p-6 flex flex-col items-center justify-between text-center gap-6 relative bg-[#171717]">
+              <div className="lg:col-span-5 border border-white/15 p-6 flex flex-col items-center justify-between text-center gap-6 relative bg-[#183B56]">
                 <div className="w-full flex items-center justify-between border-b border-white/10 pb-3">
-                  <span className="text-xs font-mono text-[#9a9a9a] uppercase">SCANNER GATEPASS</span>
+                  <span className="text-xs font-mono text-[#94A3B8] uppercase">SCANNER GATEPASS</span>
                   <span className="text-[10px] font-mono text-white border border-white/20 px-2 py-0.5">
                     GATE SCAN READY
                   </span>
@@ -619,14 +619,14 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
 
                 <div className="relative p-4 bg-white border border-white shrink-0 shadow-xl">
                   <QrCode
-                    className={`w-44 h-44 sm:w-52 sm:h-52 text-[#171717] ${
+                    className={`w-44 h-44 sm:w-52 sm:h-52 text-[#183B56] ${
                       isRefunded || isCheckedIn ? 'opacity-20 blur-[2px]' : ''
                     }`}
                     strokeWidth={1}
                   />
 
                   {isRefunded && (
-                    <div className="absolute inset-0 bg-[#171717]/90 flex flex-col items-center justify-center p-3 text-center border border-red-500/40">
+                    <div className="absolute inset-0 bg-[#183B56]/90 flex flex-col items-center justify-center p-3 text-center border border-red-500/40">
                       <AlertCircle className="w-8 h-8 text-red-400 mb-1" strokeWidth={1} />
                       <span className="text-xs font-mono font-bold text-red-300 uppercase tracking-widest">
                         VOID / CANCELLED
@@ -635,7 +635,7 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
                   )}
 
                   {isCheckedIn && (
-                    <div className="absolute inset-0 bg-[#171717]/90 flex flex-col items-center justify-center p-3 text-center border border-white/30">
+                    <div className="absolute inset-0 bg-[#183B56]/90 flex flex-col items-center justify-center p-3 text-center border border-white/30">
                       <CheckCircle2 className="w-8 h-8 text-white mb-1" strokeWidth={1} />
                       <span className="text-xs font-mono font-bold text-white uppercase tracking-widest">
                         USED / CHECKED IN
@@ -646,7 +646,7 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
 
                 <div>
                   <p className="text-sm font-mono text-white tracking-widest mb-1">{foundOrder.orderCode}</p>
-                  <p className="text-xs font-light text-[#9a9a9a] max-w-[240px] mx-auto leading-relaxed">
+                  <p className="text-xs font-light text-[#94A3B8] max-w-[240px] mx-auto leading-relaxed">
                     Pindai Kode QR ini di pemindai otomatis pintu masuk venue hall.
                   </p>
                 </div>
@@ -664,14 +664,14 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
           </div>
 
           {/* Interactive Navigation Tabs */}
-          <div className="border border-white/15 bg-[#171717] p-6 flex flex-col gap-6">
-            <div className="flex border-b border-white/10 gap-2 overflow-x-auto no-scrollbar">
+          <div className="border border-[#E5E7EB] bg-white p-6 flex flex-col gap-6">
+            <div className="flex border-b border-[#E5E7EB] gap-2 overflow-x-auto no-scrollbar">
               <button
                 onClick={() => setActiveTab('rundown')}
                 className={`px-5 py-3 text-xs font-light tracking-wider uppercase border-b transition-colors shrink-0 cursor-pointer ${
                   activeTab === 'rundown'
-                    ? 'border-white text-white font-normal'
-                    : 'border-transparent text-[#9a9a9a] hover:text-white'
+                    ? 'border-[#183B56] text-[#183B56] font-normal'
+                    : 'border-transparent text-[#94A3B8] hover:text-[#183B56]'
                 }`}
               >
                 Rundown Jadwal Konser
@@ -680,8 +680,8 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
                 onClick={() => setActiveTab('venue')}
                 className={`px-5 py-3 text-xs font-light tracking-wider uppercase border-b transition-colors shrink-0 cursor-pointer ${
                   activeTab === 'venue'
-                    ? 'border-white text-white font-normal'
-                    : 'border-transparent text-[#9a9a9a] hover:text-white'
+                    ? 'border-[#183B56] text-[#183B56] font-normal'
+                    : 'border-transparent text-[#94A3B8] hover:text-[#183B56]'
                 }`}
               >
                 Lokasi Venue & Maps
@@ -690,8 +690,8 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
                 onClick={() => setActiveTab('rules')}
                 className={`px-5 py-3 text-xs font-light tracking-wider uppercase border-b transition-colors shrink-0 cursor-pointer ${
                   activeTab === 'rules'
-                    ? 'border-white text-white font-normal'
-                    : 'border-transparent text-[#9a9a9a] hover:text-white'
+                    ? 'border-[#183B56] text-[#183B56] font-normal'
+                    : 'border-transparent text-[#94A3B8] hover:text-[#183B56]'
                 }`}
               >
                 Panduan Masuk & Ketentuan
@@ -701,7 +701,7 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
             {/* Tab 1: Rundown */}
             {activeTab === 'rundown' && (
               <div className="space-y-4">
-                <h4 className="text-xs font-light text-[#9a9a9a] tracking-widest uppercase">
+                <h4 className="text-xs font-light text-[#94A3B8] tracking-widest uppercase">
                   Susunan Acara Pertunjukan
                 </h4>
                 <div className="space-y-3">
@@ -717,10 +717,10 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
                   ).map((item: any, idx: number) => (
                     <div
                       key={idx}
-                      className="p-3.5 border border-white/10 flex items-center justify-between gap-4 text-xs font-light"
+                      className="p-3.5 border border-[#E5E7EB] flex items-center justify-between gap-4 text-xs font-light"
                     >
-                      <span className="font-mono text-white shrink-0 w-24">{item.time}</span>
-                      <span className="text-[#9a9a9a] flex-1">{item.activity}</span>
+                      <span className="font-mono text-[#183B56] shrink-0 w-24">{item.time}</span>
+                      <span className="text-[#94A3B8] flex-1">{item.activity}</span>
                     </div>
                   ))}
                 </div>
@@ -732,8 +732,8 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
               <div className="space-y-4">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div>
-                    <h4 className="text-base font-light text-white">{foundOrder.venue}</h4>
-                    <p className="text-xs font-light text-[#9a9a9a] mt-1">
+                    <h4 className="text-base font-light text-[#183B56]">{foundOrder.venue}</h4>
+                    <p className="text-xs font-light text-[#94A3B8] mt-1">
                       {matchingEvent?.address || 'Jakarta Pusat'}
                     </p>
                   </div>
@@ -743,20 +743,20 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
                     )}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="px-5 py-2.5 bg-white text-[#171717] hover:bg-white/90 text-xs font-light tracking-wider uppercase inline-flex items-center gap-2 shrink-0 transition-colors"
+                    className="px-5 py-2.5 bg-[#183B56] text-white hover:bg-[#10293E] text-xs font-light tracking-wider uppercase inline-flex items-center gap-2 shrink-0 transition-colors"
                   >
                     <span>Buka Google Maps</span>
                     <ExternalLink className="w-3.5 h-3.5" strokeWidth={1} />
                   </a>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-light text-[#9a9a9a] pt-2">
-                  <div className="p-4 border border-white/10">
-                    <span className="text-white block font-normal mb-1">Akses Parkir & Pintu Masuk</span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-light text-[#94A3B8] pt-2">
+                  <div className="p-4 border border-[#E5E7EB]">
+                    <span className="text-[#183B56] block font-normal mb-1">Akses Parkir & Pintu Masuk</span>
                     Area parkir tersedia di gedung utama venue. Gunakan Pintu Gerbang Utama A untuk registrasi cepat.
                   </div>
-                  <div className="p-4 border border-white/10">
-                    <span className="text-white block font-normal mb-1">Fasilitas Venue</span>
+                  <div className="p-4 border border-[#E5E7EB]">
+                    <span className="text-[#183B56] block font-normal mb-1">Fasilitas Venue</span>
                     Tersedia Toilet, Lounge, Area Penyimpanan Barang (Locker Deposit), serta Booth Merchandise Resmi.
                   </div>
                 </div>
@@ -765,25 +765,25 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
 
             {/* Tab 3: Rules */}
             {activeTab === 'rules' && (
-              <div className="space-y-4 text-xs font-light text-[#9a9a9a]">
-                <h4 className="text-xs font-light text-[#9a9a9a] tracking-widest uppercase">
+              <div className="space-y-4 text-xs font-light text-[#94A3B8]">
+                <h4 className="text-xs font-light text-[#94A3B8] tracking-widest uppercase">
                   Checklist Kelengkapan & Tata Tertib Gate
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="p-3 border border-white/10 flex items-start gap-2.5">
-                    <CheckSquare className="w-4 h-4 text-white shrink-0 mt-0.5" strokeWidth={1} />
+                  <div className="p-3 border border-[#E5E7EB] flex items-start gap-2.5">
+                    <CheckSquare className="w-4 h-4 text-[#183B56] shrink-0 mt-0.5" strokeWidth={1} />
                     <span>Wajib membawa identitas asli (KTP/SIM/Paspor) sesuai nama pemesan.</span>
                   </div>
-                  <div className="p-3 border border-white/10 flex items-start gap-2.5">
-                    <CheckSquare className="w-4 h-4 text-white shrink-0 mt-0.5" strokeWidth={1} />
+                  <div className="p-3 border border-[#E5E7EB] flex items-start gap-2.5">
+                    <CheckSquare className="w-4 h-4 text-[#183B56] shrink-0 mt-0.5" strokeWidth={1} />
                     <span>Matikan suara HP (Silent mode) selama pertunjukan berlangsung.</span>
                   </div>
-                  <div className="p-3 border border-white/10 flex items-start gap-2.5">
-                    <AlertTriangle className="w-4 h-4 text-[#9a9a9a] shrink-0 mt-0.5" strokeWidth={1} />
+                  <div className="p-3 border border-[#E5E7EB] flex items-start gap-2.5">
+                    <AlertTriangle className="w-4 h-4 text-[#94A3B8] shrink-0 mt-0.5" strokeWidth={1} />
                     <span>Dilarang membawa makanan dan minuman luar ke dalam hall utama.</span>
                   </div>
-                  <div className="p-3 border border-white/10 flex items-start gap-2.5">
-                    <AlertTriangle className="w-4 h-4 text-[#9a9a9a] shrink-0 mt-0.5" strokeWidth={1} />
+                  <div className="p-3 border border-[#E5E7EB] flex items-start gap-2.5">
+                    <AlertTriangle className="w-4 h-4 text-[#94A3B8] shrink-0 mt-0.5" strokeWidth={1} />
                     <span>Dilarang merekam dengan kamera profesional atau flash saat musik dimainkan.</span>
                   </div>
                 </div>
@@ -796,7 +796,7 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
             <button
               onClick={handleDownloadPDF}
               disabled={!!isDownloading}
-              className="bg-white text-[#171717] py-3.5 text-xs font-light tracking-wider uppercase flex items-center justify-center gap-2 cursor-pointer hover:bg-white/90 transition-opacity"
+              className="bg-[#183B56] text-white py-3.5 text-xs font-light tracking-wider uppercase flex items-center justify-center gap-2 cursor-pointer hover:bg-[#10293E] transition-opacity"
             >
               <Download className="w-4 h-4" strokeWidth={1} />
               <span>{isDownloading === 'PDF' ? 'Proses PDF...' : 'Unduh PDF E-Ticket Pass'}</span>
@@ -805,7 +805,7 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
             <button
               onClick={handleDownloadPNG}
               disabled={!!isDownloading}
-              className="bg-transparent border border-white/20 text-white py-3.5 text-xs font-light tracking-wider uppercase flex items-center justify-center gap-2 cursor-pointer hover:bg-white/10 transition-opacity"
+              className="bg-transparent border border-[#E5E7EB] text-[#183B56] py-3.5 text-xs font-light tracking-wider uppercase flex items-center justify-center gap-2 cursor-pointer hover:bg-[#F8FAFC] transition-opacity"
             >
               <Download className="w-4 h-4" strokeWidth={1} />
               <span>{isDownloading === 'PNG' ? 'Proses PNG...' : 'Simpan Gambar PNG'}</span>
@@ -813,7 +813,7 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
 
             <a
               href="/refund"
-              className="bg-transparent border border-white/20 text-[#9a9a9a] hover:text-white py-3.5 text-xs font-light tracking-wider uppercase flex items-center justify-center gap-2 transition-colors text-center"
+              className="bg-transparent border border-[#E5E7EB] text-[#94A3B8] hover:text-[#183B56] py-3.5 text-xs font-light tracking-wider uppercase flex items-center justify-center gap-2 transition-colors text-center"
             >
               <Info className="w-4 h-4" strokeWidth={1} />
               <span>Pusat Bantuan / Refund</span>
@@ -823,19 +823,19 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
       </main>
 
       {/* MOBILE STICKY BOTTOM ACTIONS BAR */}
-      <div className="fixed bottom-0 left-0 w-full z-40 bg-[#171717]/95 backdrop-blur-lg border-t border-white/20 p-3 sm:hidden flex items-center justify-between gap-2 print:hidden shadow-2xl">
+      <div className="fixed bottom-0 left-0 w-full z-40 bg-white/95 backdrop-blur-lg border-t border-[#E5E7EB] p-3 sm:hidden flex items-center justify-between gap-2 print:hidden shadow-2xl">
         <button
           onClick={() => setShowQrModal(true)}
-          className="flex-1 py-3 bg-white/10 border border-white/20 text-white text-xs font-light tracking-wider uppercase flex items-center justify-center gap-1.5 cursor-pointer"
+          className="flex-1 py-3 bg-[#F8FAFC] border border-[#E5E7EB] text-[#183B56] text-xs font-light tracking-wider uppercase flex items-center justify-center gap-1.5 cursor-pointer"
         >
-          <QrCode className="w-4 h-4 text-white" strokeWidth={1} />
+          <QrCode className="w-4 h-4 text-[#183B56]" strokeWidth={1} />
           <span>Tampilkan QR</span>
         </button>
 
         <button
           onClick={handleDownloadPDF}
           disabled={!!isDownloading}
-          className="flex-1 py-3 bg-white text-[#171717] text-xs font-light tracking-wider uppercase flex items-center justify-center gap-1.5 cursor-pointer"
+          className="flex-1 py-3 bg-[#183B56] text-white text-xs font-light tracking-wider uppercase flex items-center justify-center gap-1.5 cursor-pointer"
         >
           <Download className="w-4 h-4" strokeWidth={1} />
           <span>PDF Pass</span>
@@ -851,19 +851,19 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md p-6 flex flex-col items-center justify-center text-center"
           >
-            <div className="bg-white p-6 rounded-none max-w-sm w-full text-black flex flex-col items-center gap-4">
-              <span className="text-xs font-mono text-gray-500 uppercase tracking-widest">
+            <div className="bg-white p-6 rounded-none max-w-sm w-full text-[#183B56] flex flex-col items-center gap-4">
+              <span className="text-xs font-mono text-[#94A3B8] uppercase tracking-widest">
                 SCANNER GATE QR CODE
               </span>
-              <QrCode className="w-64 h-64 text-[#171717]" strokeWidth={1} />
+              <QrCode className="w-64 h-64 text-[#183B56]" strokeWidth={1} />
               <div className="space-y-1">
                 <p className="text-xl font-mono font-bold tracking-widest">{foundOrder.orderCode}</p>
-                <p className="text-xs text-gray-600 font-light">{foundOrder.eventTitle}</p>
-                <p className="text-[11px] text-gray-500 font-light">Pemegang: {foundOrder.userName}</p>
+                <p className="text-xs text-[#64748B] font-light">{foundOrder.eventTitle}</p>
+                <p className="text-[11px] text-[#94A3B8] font-light">Pemegang: {foundOrder.userName}</p>
               </div>
               <button
                 onClick={() => setShowQrModal(false)}
-                className="w-full py-3 bg-[#171717] text-white text-xs uppercase font-light tracking-wider mt-2 cursor-pointer"
+                className="w-full py-3 bg-[#183B56] text-white text-xs uppercase font-light tracking-wider mt-2 cursor-pointer"
               >
                 Tutup QR Code
               </button>
@@ -873,7 +873,7 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
       </AnimatePresence>
 
       {/* Footer */}
-      <footer className="border-t border-white/[0.08] py-8 text-center text-xs text-[#9a9a9a] font-light print:hidden">
+      <footer className="border-t border-[#E5E7EB] py-8 text-center text-xs text-[#94A3B8] font-light print:hidden">
         &copy; 2026 SymphoniaTic Official Ticket Redemption Portal. All rights reserved.
       </footer>
     </div>

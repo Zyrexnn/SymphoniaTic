@@ -185,17 +185,17 @@ export const RefundPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#171717] text-white flex flex-col justify-between selection:bg-white selection:text-[#171717] font-sans">
+    <div className="min-h-screen bg-white text-[#183B56] flex flex-col justify-between selection:bg-[#183B56] selection:text-white font-sans">
       {/* Top Header — Minimalist Atelier Bar */}
-      <header className="sticky top-0 z-40 bg-[#171717]/90 backdrop-blur-md border-b border-white/[0.08]">
+      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-[#E5E7EB]">
         <div className="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
-          <a href="/" className="inline-flex items-center gap-2 text-white hover:opacity-60 transition-opacity no-underline">
-            <ArrowLeft className="w-4 h-4 text-[#9a9a9a]" strokeWidth={1.5} />
+          <a href="/" className="inline-flex items-center gap-2 text-[#183B56] hover:opacity-60 transition-opacity no-underline">
+            <ArrowLeft className="w-4 h-4 text-[#94A3B8]" strokeWidth={1.5} />
             <span className="text-sm font-light tracking-[-0.05px]">Kembali ke Beranda</span>
           </a>
           <div className="flex items-center gap-3">
-            <ShieldCheck className="w-4 h-4 text-[#9a9a9a]" strokeWidth={1.5} />
-            <span className="text-xs font-light tracking-[0.2em] text-[#9a9a9a] uppercase">SymphoniaTic — Layanan Refund</span>
+            <ShieldCheck className="w-4 h-4 text-[#94A3B8]" strokeWidth={1.5} />
+            <span className="text-xs font-light tracking-[0.2em] text-[#94A3B8] uppercase">SymphoniaTic — Layanan Refund</span>
           </div>
         </div>
       </header>
@@ -204,28 +204,28 @@ export const RefundPage: React.FC = () => {
       <main className="flex-1 max-w-[920px] w-full mx-auto px-6 py-16 sm:py-24">
         {/* Left-Aligned Editorial Hero Headline Block */}
         <div className="mb-16 space-y-4">
-          <div className="text-xs font-light tracking-[0.2em] uppercase text-[#9a9a9a] flex items-center gap-2">
+          <div className="text-xs font-light tracking-[0.2em] uppercase text-[#94A3B8] flex items-center gap-2">
             <span>↓</span>
             <span>Portal Pengembalian Dana Resmi</span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl font-light tracking-[-0.03em] text-white leading-tight max-w-3xl">
+          <h1 className="text-4xl sm:text-6xl font-light tracking-[-0.03em] text-[#183B56] leading-tight max-w-3xl">
             Pengajuan &amp; Pemantauan Refund Tiket
           </h1>
 
-          <p className="text-sm sm:text-base font-light text-[#9a9a9a] max-w-[640px] leading-relaxed pt-2">
+          <p className="text-sm sm:text-base font-light text-[#94A3B8] max-w-[640px] leading-relaxed pt-2">
             Pengembalian dana dapat diajukan secara langsung tanpa perlu login. Verifikasi keamanan diproses menggunakan kode OTP 6-digit yang dikirim ke email pemesan tiket.
           </p>
         </div>
 
         {/* Minimalist Tab Navigation Bar */}
-        <div className="flex items-center gap-8 sm:gap-12 border-b border-white/10 pb-4 mb-12">
+        <div className="flex items-center gap-8 sm:gap-12 border-b border-[#E5E7EB] pb-4 mb-12">
           <button
             onClick={() => { setActiveTab('request'); setErrorMsg(null); setSuccessMsg(null); }}
             className={`text-xs sm:text-sm uppercase tracking-[0.15em] font-light pb-4 -mb-[17px] transition-colors cursor-pointer border-b-2 bg-transparent text-left ${
               activeTab === 'request'
-                ? 'text-white border-white font-medium'
-                : 'text-[#9a9a9a] hover:text-white border-transparent'
+                ? 'text-[#183B56] border-[#183B56] font-medium'
+                : 'text-[#94A3B8] hover:text-[#183B56] border-transparent'
             }`}
           >
             01. Ajukan Refund Baru
@@ -234,8 +234,8 @@ export const RefundPage: React.FC = () => {
             onClick={() => { setActiveTab('status'); setLookupError(null); }}
             className={`text-xs sm:text-sm uppercase tracking-[0.15em] font-light pb-4 -mb-[17px] transition-colors cursor-pointer border-b-2 bg-transparent text-left ${
               activeTab === 'status'
-                ? 'text-white border-white font-medium'
-                : 'text-[#9a9a9a] hover:text-white border-transparent'
+                ? 'text-[#183B56] border-[#183B56] font-medium'
+                : 'text-[#94A3B8] hover:text-[#183B56] border-transparent'
             }`}
           >
             02. Pantau Status Refund
@@ -252,16 +252,16 @@ export const RefundPage: React.FC = () => {
           >
             {/* Step Progress Stepper */}
             {step < 3 && (
-              <div className="flex items-center gap-6 sm:gap-8 border-b border-white/10 pb-6 text-xs uppercase tracking-[0.15em] font-light">
-                <div className={`flex items-center gap-2.5 ${step >= 1 ? 'text-white font-medium' : 'text-[#9a9a9a]'}`}>
-                  <span className={`text-[10px] font-mono px-2 py-0.5 border ${step >= 1 ? 'border-white text-white' : 'border-white/20 text-[#9a9a9a]'}`}>
+              <div className="flex items-center gap-6 sm:gap-8 border-b border-[#E5E7EB] pb-6 text-xs uppercase tracking-[0.15em] font-light">
+                <div className={`flex items-center gap-2.5 ${step >= 1 ? 'text-[#183B56] font-medium' : 'text-[#94A3B8]'}`}>
+                  <span className={`text-[10px] font-mono px-2 py-0.5 border ${step >= 1 ? 'border-[#183B56] text-[#183B56]' : 'border-[#E5E7EB] text-[#94A3B8]'}`}>
                     01
                   </span>
                   <span>Validasi Tiket</span>
                 </div>
-                <span className="text-white/20">—</span>
-                <div className={`flex items-center gap-2.5 ${step >= 2 ? 'text-white font-medium' : 'text-[#9a9a9a]'}`}>
-                  <span className={`text-[10px] font-mono px-2 py-0.5 border ${step >= 2 ? 'border-white text-white' : 'border-white/20 text-[#9a9a9a]'}`}>
+                <span className="text-[#CBD5E1]">—</span>
+                <div className={`flex items-center gap-2.5 ${step >= 2 ? 'text-[#183B56] font-medium' : 'text-[#94A3B8]'}`}>
+                  <span className={`text-[10px] font-mono px-2 py-0.5 border ${step >= 2 ? 'border-[#183B56] text-[#183B56]' : 'border-[#E5E7EB] text-[#94A3B8]'}`}>
                     02
                   </span>
                   <span>Kode OTP &amp; Transfer Bank</span>
@@ -271,14 +271,14 @@ export const RefundPage: React.FC = () => {
 
             {/* Error & Success Feedback Alerts */}
             {errorMsg && (
-              <div className="p-4 border border-white/30 bg-white/[0.03] text-white text-xs font-light flex items-center gap-3 rounded-none">
-                <AlertCircle className="w-4 h-4 shrink-0 text-white/70" strokeWidth={1.5} />
+              <div className="p-4 border border-[#E5E7EB] bg-[#F8FAFC] text-[#183B56] text-xs font-light flex items-center gap-3 rounded-none">
+                <AlertCircle className="w-4 h-4 shrink-0 text-[#94A3B8]" strokeWidth={1.5} />
                 <span>{errorMsg}</span>
               </div>
             )}
             {successMsg && step === 2 && (
-              <div className="p-4 border border-white/40 bg-white/[0.05] text-white text-xs font-light flex items-center gap-3 rounded-none">
-                <CheckCircle2 className="w-4 h-4 shrink-0 text-white" strokeWidth={1.5} />
+              <div className="p-4 border border-[#E5E7EB] bg-[#F8FAFC] text-[#183B56] text-xs font-light flex items-center gap-3 rounded-none">
+                <CheckCircle2 className="w-4 h-4 shrink-0 text-[#183B56]" strokeWidth={1.5} />
                 <span>{successMsg}</span>
               </div>
             )}
@@ -287,7 +287,7 @@ export const RefundPage: React.FC = () => {
             {step === 1 && (
               <form onSubmit={handleRequestOTP} className="space-y-8 max-w-2xl">
                 <div className="space-y-2.5">
-                  <label className="block text-xs font-light text-[#9a9a9a] uppercase tracking-[0.15em]">
+                  <label className="block text-xs font-light text-[#94A3B8] uppercase tracking-[0.15em]">
                     Kode Pesanan (Order Code) *
                   </label>
                   <input
@@ -296,15 +296,15 @@ export const RefundPage: React.FC = () => {
                     placeholder="Contoh: SYM-893472"
                     value={orderCode}
                     onChange={(e) => setOrderCode(e.target.value.toUpperCase())}
-                    className="w-full bg-[#171717] border border-white/20 px-4 py-3.5 text-sm font-mono text-white placeholder-[#9a9a9a]/50 outline-none focus:border-white transition-colors rounded-none"
+                    className="w-full bg-white border border-[#E5E7EB] px-4 py-3.5 text-sm font-mono text-[#183B56] placeholder-[#94A3B8]/50 outline-none focus:border-[#183B56] transition-colors rounded-none"
                   />
-                  <p className="text-[11px] text-[#9a9a9a] font-light">
+                  <p className="text-[11px] text-[#94A3B8] font-light">
                     Kode unik transaksi yang tercantum pada E-Ticket resmi SymphoniaTic Anda.
                   </p>
                 </div>
 
                 <div className="space-y-2.5">
-                  <label className="block text-xs font-light text-[#9a9a9a] uppercase tracking-[0.15em]">
+                  <label className="block text-xs font-light text-[#94A3B8] uppercase tracking-[0.15em]">
                     Email Pemegang Tiket *
                   </label>
                   <input
@@ -313,21 +313,21 @@ export const RefundPage: React.FC = () => {
                     placeholder="nama@domain.com"
                     value={userEmail}
                     onChange={(e) => setUserEmail(e.target.value)}
-                    className="w-full bg-[#171717] border border-white/20 px-4 py-3.5 text-sm text-white placeholder-[#9a9a9a]/50 outline-none focus:border-white transition-colors rounded-none"
+                    className="w-full bg-white border border-[#E5E7EB] px-4 py-3.5 text-sm text-[#183B56] placeholder-[#94A3B8]/50 outline-none focus:border-[#183B56] transition-colors rounded-none"
                   />
-                  <p className="text-[11px] text-[#9a9a9a] font-light">
+                  <p className="text-[11px] text-[#94A3B8] font-light">
                     Email yang dimasukkan saat menyelesaikan checkout pemesanan tiket.
                   </p>
                 </div>
 
                 {/* Terms and Eligibility Notice */}
-                <div className="p-6 border border-white/10 space-y-3 text-xs text-[#9a9a9a] rounded-none bg-transparent">
-                  <div className="flex items-center gap-2 text-white font-medium uppercase tracking-[0.15em] text-[11px]">
-                    <Info className="w-3.5 h-3.5 text-white/70" strokeWidth={1.5} />
+                <div className="p-6 border border-[#E5E7EB] space-y-3 text-xs text-[#94A3B8] rounded-none bg-transparent">
+                  <div className="flex items-center gap-2 text-[#183B56] font-medium uppercase tracking-[0.15em] text-[11px]">
+                    <Info className="w-3.5 h-3.5 text-[#64748B]" strokeWidth={1.5} />
                     <span>Syarat &amp; Ketentuan Kelayakan Refund:</span>
                   </div>
-                  <ul className="list-disc list-inside space-y-1.5 text-[11px] text-[#9a9a9a] font-light leading-relaxed">
-                    <li>Status pesanan harus dalam status terverifikasi (<strong className="text-white">VERIFIED</strong>).</li>
+                  <ul className="list-disc list-inside space-y-1.5 text-[11px] text-[#94A3B8] font-light leading-relaxed">
+                    <li>Status pesanan harus dalam status terverifikasi (<strong className="text-[#183B56]">VERIFIED</strong>).</li>
                     <li>Tiket belum pernah digunakan untuk pemindaian gate check-in di lokasi venue.</li>
                     <li>Proses audit dan pencairan dana dilaksanakan tim Finance dalam 1–3 hari kerja.</li>
                   </ul>
@@ -336,18 +336,18 @@ export const RefundPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-white text-[#171717] hover:bg-white/90 font-normal py-4 px-8 text-xs uppercase tracking-[0.15em] transition-all cursor-pointer flex items-center justify-center gap-3 rounded-none disabled:opacity-50"
+                  className="w-full bg-[#183B56] text-white hover:bg-[#10293E] font-normal py-4 px-8 text-xs uppercase tracking-[0.15em] transition-all cursor-pointer flex items-center justify-center gap-3 rounded-none disabled:opacity-50"
                 >
                   {loading ? (
                     <>
-                      <RefreshCw className="w-4 h-4 animate-spin text-[#171717]" />
+                      <RefreshCw className="w-4 h-4 animate-spin text-white" />
                       <span>Memverifikasi Kode Pesanan...</span>
                     </>
                   ) : (
                     <>
-                      <KeyRound className="w-4 h-4 text-[#171717]" strokeWidth={1.5} />
+                      <KeyRound className="w-4 h-4 text-white" strokeWidth={1.5} />
                       <span>Minta Kode Verifikasi OTP Email</span>
-                      <ArrowRight className="w-4 h-4 text-[#171717]" strokeWidth={1.5} />
+                      <ArrowRight className="w-4 h-4 text-white" strokeWidth={1.5} />
                     </>
                   )}
                 </button>
@@ -358,8 +358,8 @@ export const RefundPage: React.FC = () => {
             {step === 2 && (
               <form onSubmit={handleSubmitRefund} className="space-y-8 max-w-2xl">
                 {/* OTP Code Box */}
-                <div className="p-6 border border-white/30 text-left space-y-3 bg-transparent rounded-none">
-                  <label className="block text-xs font-light text-white uppercase tracking-[0.15em]">
+                <div className="p-6 border border-[#E5E7EB] text-left space-y-3 bg-transparent rounded-none">
+                  <label className="block text-xs font-light text-[#183B56] uppercase tracking-[0.15em]">
                     Kode Verifikasi OTP (6-Digit) *
                   </label>
                   <input
@@ -369,14 +369,14 @@ export const RefundPage: React.FC = () => {
                     placeholder="123456"
                     value={otpCode}
                     onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
-                    className="w-full bg-[#171717] border border-white/30 px-4 py-3.5 text-2xl font-mono tracking-[0.6em] text-center text-white placeholder-[#9a9a9a]/40 outline-none focus:border-white transition-colors rounded-none"
+                    className="w-full bg-white border border-[#E5E7EB] px-4 py-3.5 text-2xl font-mono tracking-[0.6em] text-center text-[#183B56] placeholder-[#94A3B8]/40 outline-none focus:border-[#183B56] transition-colors rounded-none"
                   />
-                  <div className="flex justify-between items-center text-[11px] text-[#9a9a9a] pt-1">
+                  <div className="flex justify-between items-center text-[11px] text-[#94A3B8] pt-1">
                     <span>Kode OTP telah dikirimkan ke email Anda (berlaku 10 menit).</span>
                     <button
                       type="button"
                       onClick={handleRequestOTP}
-                      className="text-white underline hover:opacity-70 bg-transparent border-none cursor-pointer p-0"
+                      className="text-[#183B56] underline hover:opacity-70 bg-transparent border-none cursor-pointer p-0"
                     >
                       Kirim Ulang OTP
                     </button>
@@ -385,7 +385,7 @@ export const RefundPage: React.FC = () => {
 
                 {/* Bank Selector Presets */}
                 <div className="space-y-3">
-                  <label className="block text-xs font-light text-[#9a9a9a] uppercase tracking-[0.15em]">
+                  <label className="block text-xs font-light text-[#94A3B8] uppercase tracking-[0.15em]">
                     Pilih Bank / E-Wallet Tujuan *
                   </label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
@@ -396,8 +396,8 @@ export const RefundPage: React.FC = () => {
                         onClick={() => setBankName(bp.name)}
                         className={`py-3 px-3 text-xs font-mono border transition-all text-center cursor-pointer rounded-none ${
                           bankName === bp.name
-                            ? 'border-white bg-white text-[#171717] font-medium'
-                            : 'border-white/15 bg-transparent text-[#9a9a9a] hover:border-white/40 hover:text-white'
+                            ? 'border-[#183B56] bg-[#183B56] text-[#183B56] font-medium'
+                            : 'border-[#E5E7EB] bg-transparent text-[#94A3B8] hover:border-[#E5E7EB] hover:text-[#183B56]'
                         }`}
                       >
                         {bp.name}
@@ -411,48 +411,48 @@ export const RefundPage: React.FC = () => {
                     placeholder="Atau tuliskan nama bank lain (Contoh: Bank Danamon)"
                     value={bankName}
                     onChange={(e) => setBankName(e.target.value)}
-                    className="w-full bg-[#171717] border border-white/20 px-4 py-3 text-sm text-white placeholder-[#9a9a9a]/50 outline-none focus:border-white transition-colors rounded-none"
+                    className="w-full bg-white border border-[#E5E7EB] px-4 py-3 text-sm text-[#183B56] placeholder-[#94A3B8]/50 outline-none focus:border-[#183B56] transition-colors rounded-none"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
-                    <label className="block text-xs font-light text-[#9a9a9a] uppercase tracking-[0.15em]">
+                    <label className="block text-xs font-light text-[#94A3B8] uppercase tracking-[0.15em]">
                       Nomor Rekening / No. E-Wallet *
                     </label>
                     <div className="relative">
-                      <CreditCard className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9a9a9a]" strokeWidth={1.5} />
+                      <CreditCard className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8]" strokeWidth={1.5} />
                       <input
                         type="text"
                         required
                         placeholder="1234567890"
                         value={accountNumber}
                         onChange={(e) => setAccountNumber(e.target.value)}
-                        className="w-full bg-[#171717] border border-white/20 pl-10 pr-4 py-3.5 text-sm font-mono text-white placeholder-[#9a9a9a]/50 outline-none focus:border-white transition-colors rounded-none"
+                        className="w-full bg-white border border-[#E5E7EB] pl-10 pr-4 py-3.5 text-sm font-mono text-[#183B56] placeholder-[#94A3B8]/50 outline-none focus:border-[#183B56] transition-colors rounded-none"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-xs font-light text-[#9a9a9a] uppercase tracking-[0.15em]">
+                    <label className="block text-xs font-light text-[#94A3B8] uppercase tracking-[0.15em]">
                       Nama Pemilik Rekening *
                     </label>
                     <div className="relative">
-                      <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9a9a9a]" strokeWidth={1.5} />
+                      <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8]" strokeWidth={1.5} />
                       <input
                         type="text"
                         required
                         placeholder="Nama sesuai rekening tabungan"
                         value={accountHolder}
                         onChange={(e) => setAccountHolder(e.target.value)}
-                        className="w-full bg-[#171717] border border-white/20 pl-10 pr-4 py-3.5 text-sm text-white placeholder-[#9a9a9a]/50 outline-none focus:border-white transition-colors rounded-none"
+                        className="w-full bg-white border border-[#E5E7EB] pl-10 pr-4 py-3.5 text-sm text-[#183B56] placeholder-[#94A3B8]/50 outline-none focus:border-[#183B56] transition-colors rounded-none"
                       />
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-xs font-light text-[#9a9a9a] uppercase tracking-[0.15em]">
+                  <label className="block text-xs font-light text-[#94A3B8] uppercase tracking-[0.15em]">
                     Alasan Pembatalan (Opsional)
                   </label>
                   <textarea
@@ -460,7 +460,7 @@ export const RefundPage: React.FC = () => {
                     placeholder="Tuliskan catatan alasan permohonan refund..."
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
-                    className="w-full bg-[#171717] border border-white/20 px-4 py-3.5 text-sm text-white placeholder-[#9a9a9a]/50 outline-none focus:border-white transition-colors resize-none rounded-none"
+                    className="w-full bg-white border border-[#E5E7EB] px-4 py-3.5 text-sm text-[#183B56] placeholder-[#94A3B8]/50 outline-none focus:border-[#183B56] transition-colors resize-none rounded-none"
                   />
                 </div>
 
@@ -468,23 +468,23 @@ export const RefundPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setStep(1)}
-                    className="w-1/3 bg-transparent border border-white/30 text-white hover:border-white font-normal py-4 px-6 text-xs uppercase tracking-[0.15em] transition-all cursor-pointer rounded-none"
+                    className="w-1/3 bg-transparent border border-[#E5E7EB] text-[#183B56] hover:border-[#183B56] font-normal py-4 px-6 text-xs uppercase tracking-[0.15em] transition-all cursor-pointer rounded-none"
                   >
                     Kembali
                   </button>
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-2/3 bg-white text-[#171717] hover:bg-white/90 font-normal py-4 px-8 text-xs uppercase tracking-[0.15em] transition-all cursor-pointer flex items-center justify-center gap-3 rounded-none disabled:opacity-50"
+                    className="w-2/3 bg-[#183B56] text-white hover:bg-[#10293E] font-normal py-4 px-8 text-xs uppercase tracking-[0.15em] transition-all cursor-pointer flex items-center justify-center gap-3 rounded-none disabled:opacity-50"
                   >
                     {loading ? (
                       <>
-                        <RefreshCw className="w-4 h-4 animate-spin text-[#171717]" />
+                        <RefreshCw className="w-4 h-4 animate-spin text-white" />
                         <span>Memproses Pengajuan...</span>
                       </>
                     ) : (
                       <>
-                        <ShieldCheck className="w-4 h-4 text-[#171717]" strokeWidth={1.5} />
+                        <ShieldCheck className="w-4 h-4 text-white" strokeWidth={1.5} />
                         <span>Kirim Permohonan Refund</span>
                       </>
                     )}
@@ -496,65 +496,65 @@ export const RefundPage: React.FC = () => {
             {/* STEP 3: TAMPILAN RESI & STAGE STATUS */}
             {step === 3 && submittedData && (
               <div className="space-y-10 max-w-2xl">
-                <div className="p-8 border border-white/30 space-y-6">
-                  <div className="flex items-center gap-3 text-white">
-                    <CheckCircle2 className="w-6 h-6 text-white" strokeWidth={1.5} />
+                <div className="p-8 border border-[#E5E7EB] space-y-6">
+                  <div className="flex items-center gap-3 text-[#183B56]">
+                    <CheckCircle2 className="w-6 h-6 text-[#183B56]" strokeWidth={1.5} />
                     <h3 className="text-xl sm:text-2xl font-light tracking-[-0.02em] m-0">
                       Permohonan Refund Berhasil Dicatat
                     </h3>
                   </div>
 
-                  <p className="text-sm font-light text-[#9a9a9a] leading-relaxed m-0">
-                    Permohonan pengembalian dana untuk Kode Pesanan <strong className="text-white font-mono">{submittedData.orderCode}</strong> telah tersimpan di sistem verifikasi Finance SymphoniaTic.
+                  <p className="text-sm font-light text-[#94A3B8] leading-relaxed m-0">
+                    Permohonan pengembalian dana untuk Kode Pesanan <strong className="text-[#183B56] font-mono">{submittedData.orderCode}</strong> telah tersimpan di sistem verifikasi Finance SymphoniaTic.
                   </p>
 
                   {/* Resi Table Details */}
-                  <div className="border border-white/10 p-6 space-y-4 text-xs font-light">
-                    <div className="flex justify-between items-center border-b border-white/10 pb-3">
-                      <span className="text-[10px] text-[#9a9a9a] uppercase tracking-[0.2em] font-mono">RESI PENGAJUAN</span>
-                      <span className="px-2.5 py-1 border border-white/30 text-white text-[10px] font-mono uppercase tracking-widest">
+                  <div className="border border-[#E5E7EB] p-6 space-y-4 text-xs font-light">
+                    <div className="flex justify-between items-center border-b border-[#E5E7EB] pb-3">
+                      <span className="text-[10px] text-[#94A3B8] uppercase tracking-[0.2em] font-mono">RESI PENGAJUAN</span>
+                      <span className="px-2.5 py-1 border border-[#E5E7EB] text-[#183B56] text-[10px] font-mono uppercase tracking-widest">
                         [ PENDING REVIEW ]
                       </span>
                     </div>
 
                     <div className="space-y-3 pt-1">
                       <div className="flex justify-between">
-                        <span className="text-[#9a9a9a]">Kode Pesanan:</span>
-                        <span className="text-white font-mono">{submittedData.orderCode}</span>
+                        <span className="text-[#94A3B8]">Kode Pesanan:</span>
+                        <span className="text-[#64748B] font-mono">{submittedData.orderCode}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-[#9a9a9a]">Bank / E-Wallet Tujuan:</span>
-                        <span className="text-white">{submittedData.bankName}</span>
+                        <span className="text-[#94A3B8]">Bank / E-Wallet Tujuan:</span>
+                        <span className="text-[#64748B]">{submittedData.bankName}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-[#9a9a9a]">Nomor Rekening:</span>
-                        <span className="text-white font-mono">{submittedData.accountNumber}</span>
+                        <span className="text-[#94A3B8]">Nomor Rekening:</span>
+                        <span className="text-[#64748B] font-mono">{submittedData.accountNumber}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-[#9a9a9a]">Atas Nama Rekening:</span>
-                        <span className="text-white">{submittedData.accountHolder}</span>
+                        <span className="text-[#94A3B8]">Atas Nama Rekening:</span>
+                        <span className="text-[#64748B]">{submittedData.accountHolder}</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Processing Stages Timeline */}
                   <div className="space-y-3 pt-2">
-                    <span className="text-xs font-light text-[#9a9a9a] uppercase tracking-[0.15em] block">
+                    <span className="text-xs font-light text-[#94A3B8] uppercase tracking-[0.15em] block">
                       Tahapan Pemrosesan:
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                      <div className="p-4 border border-white text-white">
-                        <span className="font-mono text-[10px] block text-[#9a9a9a] mb-1">STAGE 01</span>
+                      <div className="p-4 border border-[#183B56] text-[#183B56]">
+                        <span className="font-mono text-[10px] block text-[#94A3B8] mb-1">STAGE 01</span>
                         <span className="font-medium block">1. Diterima</span>
-                        <span className="text-[10px] text-[#9a9a9a] block mt-1">System Recorded</span>
+                        <span className="text-[10px] text-[#94A3B8] block mt-1">System Recorded</span>
                       </div>
-                      <div className="p-4 border border-white/20 text-[#9a9a9a]">
-                        <span className="font-mono text-[10px] block text-[#9a9a9a] mb-1">STAGE 02</span>
-                        <span className="font-medium block text-white">2. Peninjauan</span>
+                      <div className="p-4 border border-[#E5E7EB] text-[#94A3B8]">
+                        <span className="font-mono text-[10px] block text-[#94A3B8] mb-1">STAGE 02</span>
+                        <span className="font-medium block text-[#183B56]">2. Peninjauan</span>
                         <span className="text-[10px] block mt-1">1–3 Hari Kerja</span>
                       </div>
-                      <div className="p-4 border border-white/10 text-[#9a9a9a]/60">
-                        <span className="font-mono text-[10px] block text-[#9a9a9a]/40 mb-1">STAGE 03</span>
+                      <div className="p-4 border border-[#E5E7EB] text-[#94A3B8]/60">
+                        <span className="font-mono text-[10px] block text-[#94A3B8]/40 mb-1">STAGE 03</span>
                         <span className="font-medium block">3. Pencairan</span>
                         <span className="text-[10px] block mt-1">Transfer Bank</span>
                       </div>
@@ -564,7 +564,7 @@ export const RefundPage: React.FC = () => {
                   <div className="pt-4 flex flex-col sm:flex-row gap-4">
                     <button
                       onClick={() => { setStep(1); setSubmittedData(null); setOrderCode(''); setUserEmail(''); setOtpCode(''); }}
-                      className="bg-transparent border border-white/30 text-white hover:border-white font-normal py-3.5 px-6 text-xs uppercase tracking-[0.15em] cursor-pointer transition-colors rounded-none"
+                      className="bg-transparent border border-[#E5E7EB] text-[#183B56] hover:border-[#183B56] font-normal py-3.5 px-6 text-xs uppercase tracking-[0.15em] cursor-pointer transition-colors rounded-none"
                     >
                       Ajukan Refund Lain
                     </button>
@@ -574,7 +574,7 @@ export const RefundPage: React.FC = () => {
                         setLookupCode(submittedData.orderCode);
                         setLookupEmail(userEmail);
                       }}
-                      className="bg-white text-[#171717] hover:bg-white/90 font-normal py-3.5 px-6 text-xs uppercase tracking-[0.15em] cursor-pointer transition-colors rounded-none"
+                      className="bg-[#183B56] text-white hover:bg-[#10293E] font-normal py-3.5 px-6 text-xs uppercase tracking-[0.15em] cursor-pointer transition-colors rounded-none"
                     >
                       Pantau Status Refund
                     </button>
@@ -596,7 +596,7 @@ export const RefundPage: React.FC = () => {
             <form onSubmit={handleCheckStatus} className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div className="space-y-2">
-                  <label className="block text-xs font-light text-[#9a9a9a] uppercase tracking-[0.15em]">
+                  <label className="block text-xs font-light text-[#94A3B8] uppercase tracking-[0.15em]">
                     Kode Pesanan (Order Code) *
                   </label>
                   <input
@@ -605,12 +605,12 @@ export const RefundPage: React.FC = () => {
                     placeholder="Contoh: SYM-893472"
                     value={lookupCode}
                     onChange={(e) => setLookupCode(e.target.value.toUpperCase())}
-                    className="w-full bg-[#171717] border border-white/20 px-4 py-3.5 text-sm font-mono text-white placeholder-[#9a9a9a]/50 outline-none focus:border-white transition-colors rounded-none"
+                    className="w-full bg-white border border-[#E5E7EB] px-4 py-3.5 text-sm font-mono text-[#183B56] placeholder-[#94A3B8]/50 outline-none focus:border-[#183B56] transition-colors rounded-none"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-xs font-light text-[#9a9a9a] uppercase tracking-[0.15em]">
+                  <label className="block text-xs font-light text-[#94A3B8] uppercase tracking-[0.15em]">
                     Email Pemegang Tiket *
                   </label>
                   <input
@@ -619,14 +619,14 @@ export const RefundPage: React.FC = () => {
                     placeholder="nama@domain.com"
                     value={lookupEmail}
                     onChange={(e) => setLookupEmail(e.target.value)}
-                    className="w-full bg-[#171717] border border-white/20 px-4 py-3.5 text-sm text-white placeholder-[#9a9a9a]/50 outline-none focus:border-white transition-colors rounded-none"
+                    className="w-full bg-white border border-[#E5E7EB] px-4 py-3.5 text-sm text-[#183B56] placeholder-[#94A3B8]/50 outline-none focus:border-[#183B56] transition-colors rounded-none"
                   />
                 </div>
               </div>
 
               {lookupError && (
-                <div className="p-4 border border-white/30 bg-white/[0.03] text-white text-xs font-light flex items-center gap-3 rounded-none">
-                  <AlertCircle className="w-4 h-4 shrink-0 text-white/70" strokeWidth={1.5} />
+                <div className="p-4 border border-[#E5E7EB] bg-[#F8FAFC] text-[#183B56] text-xs font-light flex items-center gap-3 rounded-none">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-[#94A3B8]" strokeWidth={1.5} />
                   <span>{lookupError}</span>
                 </div>
               )}
@@ -634,16 +634,16 @@ export const RefundPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={lookupLoading}
-                className="w-full bg-white text-[#171717] hover:bg-white/90 font-normal py-4 px-8 text-xs uppercase tracking-[0.15em] transition-all flex items-center justify-center gap-3 cursor-pointer disabled:opacity-50 rounded-none"
+                className="w-full bg-[#183B56] text-white hover:bg-[#10293E] font-normal py-4 px-8 text-xs uppercase tracking-[0.15em] transition-all flex items-center justify-center gap-3 cursor-pointer disabled:opacity-50 rounded-none"
               >
                 {lookupLoading ? (
                   <>
-                    <RefreshCw className="w-4 h-4 animate-spin text-[#171717]" />
+                    <RefreshCw className="w-4 h-4 animate-spin text-white" />
                     <span>Mencari Data Refund...</span>
                   </>
                 ) : (
                   <>
-                    <Search className="w-4 h-4 text-[#171717]" strokeWidth={1.5} />
+                    <Search className="w-4 h-4 text-white" strokeWidth={1.5} />
                     <span>Cek Status Permohonan</span>
                   </>
                 )}
@@ -655,14 +655,14 @@ export const RefundPage: React.FC = () => {
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="border border-white/20 p-8 space-y-6"
+                className="border border-[#E5E7EB] p-8 space-y-6"
               >
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/10 pb-6">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-[#E5E7EB] pb-6">
                   <div>
-                    <span className="text-[10px] text-[#9a9a9a] uppercase tracking-[0.2em] font-mono block mb-1">
+                    <span className="text-[10px] text-[#94A3B8] uppercase tracking-[0.2em] font-mono block mb-1">
                       KODE PESANAN TIKET
                     </span>
-                    <h3 className="text-2xl sm:text-3xl font-mono text-white font-light m-0">
+                    <h3 className="text-2xl sm:text-3xl font-mono text-[#183B56] font-light m-0">
                       {statusResult.refundDetail.orderCode}
                     </h3>
                   </div>
@@ -670,20 +670,20 @@ export const RefundPage: React.FC = () => {
                   {/* Status Badge Tag */}
                   <div>
                     {statusResult.refundDetail.status === 'PENDING' && (
-                      <span className="inline-flex items-center gap-2 px-3.5 py-1.5 border border-white/30 text-white text-xs font-mono uppercase tracking-widest">
-                        <Clock className="w-3.5 h-3.5 text-[#9a9a9a]" strokeWidth={1.5} />
+                      <span className="inline-flex items-center gap-2 px-3.5 py-1.5 border border-[#E5E7EB] text-[#183B56] text-xs font-mono uppercase tracking-widest">
+                        <Clock className="w-3.5 h-3.5 text-[#94A3B8]" strokeWidth={1.5} />
                         <span>[ PENDING REVIEW ]</span>
                       </span>
                     )}
                     {(statusResult.refundDetail.status === 'APPROVED' || statusResult.refundDetail.status === 'COMPLETED') && (
-                      <span className="inline-flex items-center gap-2 px-3.5 py-1.5 border border-white text-white bg-white/10 text-xs font-mono uppercase tracking-widest">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-white" strokeWidth={1.5} />
+                      <span className="inline-flex items-center gap-2 px-3.5 py-1.5 border border-[#183B56] text-[#183B56] bg-[#EFF3F8] text-xs font-mono uppercase tracking-widest">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#183B56]" strokeWidth={1.5} />
                         <span>[ REFUND DISETUJUI ]</span>
                       </span>
                     )}
                     {statusResult.refundDetail.status === 'REJECTED' && (
-                      <span className="inline-flex items-center gap-2 px-3.5 py-1.5 border border-white/30 text-[#9a9a9a] text-xs font-mono uppercase tracking-widest">
-                        <XCircle className="w-3.5 h-3.5 text-[#9a9a9a]" strokeWidth={1.5} />
+                      <span className="inline-flex items-center gap-2 px-3.5 py-1.5 border border-[#E5E7EB] text-[#94A3B8] text-xs font-mono uppercase tracking-widest">
+                        <XCircle className="w-3.5 h-3.5 text-[#94A3B8]" strokeWidth={1.5} />
                         <span>[ PERMOHONAN DITOLAK ]</span>
                       </span>
                     )}
@@ -693,28 +693,28 @@ export const RefundPage: React.FC = () => {
                 {/* Detailed Table Matrix */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs font-light">
                   <div className="space-y-1">
-                    <span className="text-[#9a9a9a] block uppercase tracking-[0.15em] text-[10px]">Pertunjukan:</span>
-                    <span className="text-white block text-sm font-normal">{statusResult.refundDetail.eventTitle || '-'}</span>
+                    <span className="text-[#94A3B8] block uppercase tracking-[0.15em] text-[10px]">Pertunjukan:</span>
+                    <span className="text-[#64748B] block text-sm font-normal">{statusResult.refundDetail.eventTitle || '-'}</span>
                   </div>
                   <div className="space-y-1">
-                    <span className="text-[#9a9a9a] block uppercase tracking-[0.15em] text-[10px]">Kategori &amp; Kuota Tiket:</span>
-                    <span className="text-white block text-sm">{statusResult.refundDetail.categoryName || '-'} ({statusResult.refundDetail.quantity || 1} Tiket)</span>
+                    <span className="text-[#94A3B8] block uppercase tracking-[0.15em] text-[10px]">Kategori &amp; Kuota Tiket:</span>
+                    <span className="text-[#64748B] block text-sm">{statusResult.refundDetail.categoryName || '-'} ({statusResult.refundDetail.quantity || 1} Tiket)</span>
                   </div>
                   <div className="space-y-1">
-                    <span className="text-[#9a9a9a] block uppercase tracking-[0.15em] text-[10px]">Nominal Pengembalian:</span>
-                    <span className="text-white font-mono text-lg block font-normal">{formatIDR(statusResult.refundDetail.refundAmount)}</span>
+                    <span className="text-[#94A3B8] block uppercase tracking-[0.15em] text-[10px]">Nominal Pengembalian:</span>
+                    <span className="text-[#64748B] font-mono text-lg block font-normal">{formatIDR(statusResult.refundDetail.refundAmount)}</span>
                   </div>
                   <div className="space-y-1">
-                    <span className="text-[#9a9a9a] block uppercase tracking-[0.15em] text-[10px]">Rekening Tujuan:</span>
-                    <span className="text-white font-mono block text-sm">{statusResult.refundDetail.bankName} - {statusResult.refundDetail.accountNumber} ({statusResult.refundDetail.accountHolder})</span>
+                    <span className="text-[#94A3B8] block uppercase tracking-[0.15em] text-[10px]">Rekening Tujuan:</span>
+                    <span className="text-[#64748B] font-mono block text-sm">{statusResult.refundDetail.bankName} - {statusResult.refundDetail.accountNumber} ({statusResult.refundDetail.accountHolder})</span>
                   </div>
                 </div>
 
                 {/* Admin Note if available */}
                 {statusResult.refundDetail.adminNote && (
-                  <div className="p-5 border border-white/10 text-xs space-y-1.5">
-                    <span className="text-[#9a9a9a] uppercase tracking-[0.15em] text-[10px] block">Catatan Tim Finance:</span>
-                    <p className="text-white font-light m-0 leading-relaxed">{statusResult.refundDetail.adminNote}</p>
+                  <div className="p-5 border border-[#E5E7EB] text-xs space-y-1.5">
+                    <span className="text-[#94A3B8] uppercase tracking-[0.15em] text-[10px] block">Catatan Tim Finance:</span>
+                    <p className="text-[#64748B] font-light m-0 leading-relaxed">{statusResult.refundDetail.adminNote}</p>
                   </div>
                 )}
               </motion.div>
@@ -724,10 +724,10 @@ export const RefundPage: React.FC = () => {
       </main>
 
       {/* Footer Minimalist */}
-      <footer className="border-t border-white/[0.08] py-8 text-center text-xs font-light text-[#9a9a9a]">
+      <footer className="border-t border-[#E5E7EB] py-8 text-center text-xs font-light text-[#94A3B8]">
         <div className="max-w-[1200px] mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-4">
           <span>&copy; {new Date().getFullYear()} SymphoniaTic Production. Layanan Refund Tiket Resmi.</span>
-          <span className="text-[10px] font-mono tracking-widest text-[#9a9a9a]/70">MIDNIGHT MONOCHROME ATELIER</span>
+          <span className="text-[10px] font-mono tracking-widest text-[#94A3B8]/70">MIDNIGHT MONOCHROME ATELIER</span>
         </div>
       </footer>
     </div>

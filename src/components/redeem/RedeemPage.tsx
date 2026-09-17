@@ -137,7 +137,7 @@ export const RedeemPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#171717] text-white flex flex-col justify-between selection:bg-white selection:text-[#171717] relative">
+    <div className="min-h-screen bg-white text-[#183B56] flex flex-col justify-between selection:bg-[#183B56] selection:text-white relative">
       {/* Toast Notification */}
       <AnimatePresence>
         {toastMessage && (
@@ -145,27 +145,27 @@ export const RedeemPage: React.FC = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed top-20 right-6 z-50 bg-[#171717] border border-white/20 text-white px-4 py-3 shadow-2xl text-xs font-light tracking-wide flex items-center gap-2 rounded-none"
+            className="fixed top-20 right-6 z-50 bg-white border border-[#E5E7EB] text-[#183B56] px-4 py-3 shadow-2xl text-xs font-light tracking-wide flex items-center gap-2 rounded-none"
           >
-            <Check className="w-4 h-4 text-white" strokeWidth={1} />
+            <Check className="w-4 h-4 text-[#183B56]" strokeWidth={1} />
             <span>{toastMessage}</span>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Navigation Header */}
-      <header className="sticky top-0 z-40 bg-[#171717]/95 backdrop-blur-md border-b border-white/[0.08]">
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#E5E7EB]">
         <div className="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
           <a
             href="/"
-            className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors"
+            className="inline-flex items-center gap-2 text-[#4A5A6A] hover:text-[#183B56] transition-colors"
           >
-            <ArrowLeft className="w-4 h-4 text-[#9a9a9a]" strokeWidth={1} />
+            <ArrowLeft className="w-4 h-4 text-[#94A3B8]" strokeWidth={1} />
             <span className="text-xs font-light tracking-wide">Kembali ke Beranda</span>
           </a>
           <div className="flex items-center gap-2">
-            <QrCode className="w-4 h-4 text-[#9a9a9a]" strokeWidth={1} />
-            <span className="text-xs font-light tracking-widest text-[#9a9a9a] uppercase">
+            <QrCode className="w-4 h-4 text-[#94A3B8]" strokeWidth={1} />
+            <span className="text-xs font-light tracking-widest text-[#94A3B8] uppercase">
               Portal Cek Tiket
             </span>
           </div>
@@ -176,23 +176,23 @@ export const RedeemPage: React.FC = () => {
       <main className="flex-1 max-w-[960px] w-full mx-auto px-6 py-12 sm:py-16 flex flex-col gap-16 sm:gap-20">
         {/* Title Header Section */}
         <div className="flex flex-col items-start max-w-2xl">
-          <span className="text-xs font-light tracking-[0.2em] uppercase text-[#9a9a9a] border border-white/10 px-3.5 py-1 mb-5">
+          <span className="text-xs font-light tracking-[0.2em] uppercase text-[#94A3B8] border border-[#E5E7EB] px-3.5 py-1 mb-5">
             [ VERIFIKASI RESMI TIKET SIMFONI ]
           </span>
-          <h1 className="text-3xl sm:text-5xl tracking-[-0.03em] font-light text-white leading-[1.1]">
+          <h1 className="text-3xl sm:text-5xl tracking-[-0.03em] font-light text-[#183B56] leading-[1.1]">
             Cek E-Ticket Konser Anda
           </h1>
-          <p className="text-sm sm:text-base font-light text-[#9a9a9a] mt-4 leading-relaxed max-w-xl">
+          <p className="text-sm sm:text-base font-light text-[#94A3B8] mt-4 leading-relaxed max-w-xl">
             Masukkan kode unik pesanan Anda untuk mengakses pass digital resmi, QR Code scanner gate, informasi lokasi venue, serta dokumen E-Ticket cetak PDF.
           </p>
         </div>
 
         {/* Search Bar & Input Form Card */}
-        <div className="bg-[#171717] border border-white/15 p-6 sm:p-10 relative">
+        <div className="bg-white border border-[#E5E7EB] p-6 sm:p-10 relative">
           <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
               <Search
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9a9a9a]"
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8]"
                 strokeWidth={1}
               />
               <input
@@ -200,14 +200,14 @@ export const RedeemPage: React.FC = () => {
                 value={searchCode}
                 onChange={(e) => setSearchCode(e.target.value.toUpperCase())}
                 placeholder="MASUKKAN KODE PESANAN (SYM-XXXXXX)..."
-                className="w-full bg-[#171717] border border-white/20 pl-11 pr-10 py-3.5 text-sm font-mono tracking-wider text-white uppercase outline-none focus:border-white transition-colors"
+                className="w-full bg-white border border-[#E5E7EB] pl-11 pr-10 py-3.5 text-sm font-mono tracking-wider text-[#183B56] uppercase outline-none focus:border-[#183B56] transition-colors"
                 autoFocus
               />
               {searchCode && (
                 <button
                   type="button"
                   onClick={() => setSearchCode('')}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9a9a9a] hover:text-white text-xs px-1 py-0.5 cursor-pointer"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#183B56] text-xs px-1 py-0.5 cursor-pointer"
                 >
                   ✕
                 </button>
@@ -217,7 +217,7 @@ export const RedeemPage: React.FC = () => {
             <button
               type="submit"
               disabled={isLoading || !searchCode.trim()}
-              className={`px-8 py-3.5 text-xs font-light tracking-wider uppercase bg-white text-[#171717] flex items-center justify-center gap-2 cursor-pointer hover:bg-white/90 transition-all shrink-0 ${
+              className={`px-8 py-3.5 text-xs font-light tracking-wider uppercase bg-[#183B56] text-white flex items-center justify-center gap-2 cursor-pointer hover:bg-[#10293E] transition-all shrink-0 ${
                 isLoading || !searchCode.trim() ? 'opacity-40 cursor-not-allowed' : ''
               }`}
             >
@@ -233,12 +233,12 @@ export const RedeemPage: React.FC = () => {
           </form>
 
           {/* Helper Actions */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[#9a9a9a] pt-4 mt-3 border-t border-white/10">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[#94A3B8] pt-4 mt-3 border-t border-[#E5E7EB]">
             <span className="font-mono text-[11px]">Contoh format kode: SYM-893472</span>
             <button
               type="button"
               onClick={handlePasteFromClipboard}
-              className="inline-flex items-center gap-1.5 text-xs text-[#9a9a9a] hover:text-white transition-colors underline cursor-pointer bg-transparent border-none p-0 w-fit"
+              className="inline-flex items-center gap-1.5 text-xs text-[#94A3B8] hover:text-[#183B56] transition-colors underline cursor-pointer bg-transparent border-none p-0 w-fit"
             >
               <Copy className="w-3.5 h-3.5" strokeWidth={1} />
               <span>Tempel dari Clipboard</span>
@@ -246,8 +246,8 @@ export const RedeemPage: React.FC = () => {
           </div>
 
           {/* Sample Codes Chip Selection */}
-          <div className="mt-6 pt-5 border-t border-white/10">
-            <span className="text-[11px] font-light uppercase tracking-widest text-[#9a9a9a] block mb-3">
+          <div className="mt-6 pt-5 border-t border-[#E5E7EB]">
+            <span className="text-[11px] font-light uppercase tracking-widest text-[#94A3B8] block mb-3">
               Sampel Kode Tiket (Klik untuk verifikasi langsung):
             </span>
             <div className="flex flex-wrap gap-2">
@@ -256,11 +256,11 @@ export const RedeemPage: React.FC = () => {
                   key={item.code}
                   type="button"
                   onClick={() => handleSelectSampleCode(item.code)}
-                  className="px-3 py-1.5 bg-[#171717] hover:bg-white/10 border border-white/15 text-xs font-mono text-white transition-colors flex items-center gap-2 cursor-pointer"
+                  className="px-3 py-1.5 bg-[#F8FAFC] hover:bg-[#EFF3F8] border border-[#E5E7EB] text-xs font-mono text-[#183B56] transition-colors flex items-center gap-2 cursor-pointer"
                 >
-                  <Ticket className="w-3 h-3 text-[#9a9a9a]" strokeWidth={1} />
+                  <Ticket className="w-3 h-3 text-[#94A3B8]" strokeWidth={1} />
                   <span>{item.code}</span>
-                  <span className="text-[11px] text-[#9a9a9a] font-sans font-light">
+                  <span className="text-[11px] text-[#94A3B8] font-sans font-light">
                     ({item.label})
                   </span>
                 </button>
@@ -279,12 +279,12 @@ export const RedeemPage: React.FC = () => {
             <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" strokeWidth={1} />
             <div className="text-sm font-light leading-relaxed flex-1">
               <p className="font-normal text-red-300 text-base mb-1">Tiket Tidak Ditemukan</p>
-              <p className="text-[#9a9a9a]">{errorMessage}</p>
+              <p className="text-[#94A3B8]">{errorMessage}</p>
               <div className="mt-4 pt-3 border-t border-red-500/20 flex flex-wrap items-center gap-4 text-xs">
                 <span className="text-red-200">Bantuan pencarian:</span>
                 <a
                   href="/login"
-                  className="text-white underline hover:opacity-80 transition-opacity"
+                  className="text-[#183B56] underline hover:opacity-80 transition-opacity"
                 >
                   Masuk ke Akun Saya untuk melihat daftar tiket
                 </a>
@@ -295,41 +295,41 @@ export const RedeemPage: React.FC = () => {
 
         {/* 3-Step Process Section */}
         <section className="flex flex-col gap-6">
-          <div className="flex items-center justify-between border-b border-white/10 pb-4">
-            <h2 className="text-lg sm:text-xl font-light text-white tracking-tight flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-[#9a9a9a]" strokeWidth={1} />
+          <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-4">
+            <h2 className="text-lg sm:text-xl font-light text-[#183B56] tracking-tight flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-[#94A3B8]" strokeWidth={1} />
               <span>Panduan Alur Verifikasi Tiket</span>
             </h2>
-            <span className="text-xs text-[#9a9a9a] font-mono">PROSES VERIFIKASI</span>
+            <span className="text-xs text-[#94A3B8] font-mono">PROSES VERIFIKASI</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="border border-white/10 p-6 flex flex-col gap-3">
-              <span className="text-xs font-mono text-[#9a9a9a] border border-white/10 px-2 py-0.5 w-fit">
+            <div className="border border-[#E5E7EB] p-6 flex flex-col gap-3">
+              <span className="text-xs font-mono text-[#94A3B8] border border-[#E5E7EB] px-2 py-0.5 w-fit">
                 01
               </span>
-              <h3 className="text-base font-light text-white mt-1">1. Masukkan Kode Unik</h3>
-              <p className="text-xs font-light text-[#9a9a9a] leading-relaxed">
-                Ketikkan kode unik transaksi Anda (contoh: <code className="text-white bg-white/10 px-1 font-mono">SYM-893472</code>) yang dikirim melalui email atau tercantum di akun Anda.
+              <h3 className="text-base font-light text-[#183B56] mt-1">1. Masukkan Kode Unik</h3>
+              <p className="text-xs font-light text-[#94A3B8] leading-relaxed">
+                Ketikkan kode unik transaksi Anda (contoh: <code className="text-[#183B56] bg-[#EFF3F8] px-1 font-mono">SYM-893472</code>) yang dikirim melalui email atau tercantum di akun Anda.
               </p>
             </div>
 
-            <div className="border border-white/10 p-6 flex flex-col gap-3">
-              <span className="text-xs font-mono text-[#9a9a9a] border border-white/10 px-2 py-0.5 w-fit">
+            <div className="border border-[#E5E7EB] p-6 flex flex-col gap-3">
+              <span className="text-xs font-mono text-[#94A3B8] border border-[#E5E7EB] px-2 py-0.5 w-fit">
                 02
               </span>
-              <h3 className="text-base font-light text-white mt-1">2. Periksa Keabsahan Tiket</h3>
-              <p className="text-xs font-light text-[#9a9a9a] leading-relaxed">
+              <h3 className="text-base font-light text-[#183B56] mt-1">2. Periksa Keabsahan Tiket</h3>
+              <p className="text-xs font-light text-[#94A3B8] leading-relaxed">
                 Sistem secara otomatis memverifikasi keaktifan tiket, rincian tempat duduk, waktu pertunjukan, serta status pendaftaran gate.
               </p>
             </div>
 
-            <div className="border border-white/10 p-6 flex flex-col gap-3">
-              <span className="text-xs font-mono text-[#9a9a9a] border border-white/10 px-2 py-0.5 w-fit">
+            <div className="border border-[#E5E7EB] p-6 flex flex-col gap-3">
+              <span className="text-xs font-mono text-[#94A3B8] border border-[#E5E7EB] px-2 py-0.5 w-fit">
                 03
               </span>
-              <h3 className="text-base font-light text-white mt-1">3. Tunjukkan QR Code Gate</h3>
-              <p className="text-xs font-light text-[#9a9a9a] leading-relaxed">
+              <h3 className="text-base font-light text-[#183B56] mt-1">3. Tunjukkan QR Code Gate</h3>
+              <p className="text-xs font-light text-[#94A3B8] leading-relaxed">
                 Tunjukkan QR Code digital di pintu masuk hall konser (Open Gate) atau simpan dokumen E-Ticket cetak format PDF/PNG ke perangkat Anda.
               </p>
             </div>
@@ -339,93 +339,93 @@ export const RedeemPage: React.FC = () => {
         {/* Sample E-Ticket Stub Preview & Concert Rules Grid */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* E-Ticket Sample Visual Preview Stub */}
-          <div className="lg:col-span-7 border border-white/15 p-6 sm:p-8 flex flex-col justify-between relative bg-[#171717]">
+          <div className="lg:col-span-7 border border-[#E5E7EB] p-6 sm:p-8 flex flex-col justify-between relative bg-white">
             <div>
-              <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
-                <span className="text-xs font-light text-[#9a9a9a] tracking-widest uppercase flex items-center gap-2">
-                  <Ticket className="w-4 h-4 text-[#9a9a9a]" strokeWidth={1} />
+              <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-4 mb-6">
+                <span className="text-xs font-light text-[#94A3B8] tracking-widest uppercase flex items-center gap-2">
+                  <Ticket className="w-4 h-4 text-[#94A3B8]" strokeWidth={1} />
                   <span>CONTOH PRATINJAU PASS DIGITAL</span>
                 </span>
-                <span className="px-2.5 py-0.5 border border-white/20 text-[10px] uppercase font-mono tracking-wider text-white">
+                <span className="px-2.5 py-0.5 border border-[#E5E7EB] text-[10px] uppercase font-mono tracking-wider text-[#183B56]">
                   VERIFIED PASS
                 </span>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <span className="text-[11px] text-[#9a9a9a] uppercase tracking-wider block mb-1">
+                  <span className="text-[11px] text-[#94A3B8] uppercase tracking-wider block mb-1">
                     Pertunjukan Simfoni
                   </span>
-                  <h4 className="text-xl font-light text-white tracking-tight">
+                  <h4 className="text-xl font-light text-[#183B56] tracking-tight">
                     Symphony No. 5 in C minor — Ludwig van Beethoven
                   </h4>
-                  <p className="text-xs font-light text-[#9a9a9a] mt-1">
+                  <p className="text-xs font-light text-[#94A3B8] mt-1">
                     Royal Philharmonic Orchestra & Jakarta Choral Society
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 pt-3 border-t border-white/10">
+                <div className="grid grid-cols-2 gap-4 pt-3 border-t border-[#E5E7EB]">
                   <div>
-                    <span className="text-[10px] text-[#9a9a9a] uppercase block">Tanggal & Waktu</span>
-                    <span className="text-xs text-white font-light">Sabtu, 18 April 2026 (19:30 WIB)</span>
+                    <span className="text-[10px] text-[#94A3B8] uppercase block">Tanggal & Waktu</span>
+                    <span className="text-xs text-[#183B56] font-light">Sabtu, 18 April 2026 (19:30 WIB)</span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-[#9a9a9a] uppercase block">Venue Hall</span>
-                    <span className="text-xs text-white font-light">Aula Simfonia Jakarta</span>
+                    <span className="text-[10px] text-[#94A3B8] uppercase block">Venue Hall</span>
+                    <span className="text-xs text-[#183B56] font-light">Aula Simfonia Jakarta</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="mt-8 pt-4 border-t border-dashed border-white/20 flex items-center justify-between">
+            <div className="mt-8 pt-4 border-t border-dashed border-[#E5E7EB] flex items-center justify-between">
               <div>
-                <span className="text-[10px] text-[#9a9a9a] uppercase block">Kode Unik Ticket</span>
-                <span className="text-sm font-mono text-white tracking-wider">SYM-893472</span>
+                <span className="text-[10px] text-[#94A3B8] uppercase block">Kode Unik Ticket</span>
+                <span className="text-sm font-mono text-[#183B56] tracking-wider">SYM-893472</span>
               </div>
-              <div className="flex items-center gap-2 border border-white/10 px-3 py-1.5 text-xs text-[#9a9a9a]">
-                <QrCode className="w-4 h-4 text-white" strokeWidth={1} />
+              <div className="flex items-center gap-2 border border-[#E5E7EB] px-3 py-1.5 text-xs text-[#94A3B8]">
+                <QrCode className="w-4 h-4 text-[#183B56]" strokeWidth={1} />
                 <span>QR Gate Ready</span>
               </div>
             </div>
           </div>
 
           {/* Concert Entry Guidelines & Rules */}
-          <div className="lg:col-span-5 border border-white/15 bg-[#171717] p-6 sm:p-8 flex flex-col justify-between gap-6">
+          <div className="lg:col-span-5 border border-[#E5E7EB] bg-white p-6 sm:p-8 flex flex-col justify-between gap-6">
             <div>
-              <h3 className="text-base font-light text-white tracking-tight flex items-center gap-2 mb-4">
-                <UserCheck className="w-4 h-4 text-[#9a9a9a]" strokeWidth={1} />
+              <h3 className="text-base font-light text-[#183B56] tracking-tight flex items-center gap-2 mb-4">
+                <UserCheck className="w-4 h-4 text-[#94A3B8]" strokeWidth={1} />
                 <span>Aturan Pemeriksaan Gate</span>
               </h3>
 
-              <ul className="space-y-3.5 text-xs font-light text-[#9a9a9a]">
+              <ul className="space-y-3.5 text-xs font-light text-[#94A3B8]">
                 <li className="flex items-start gap-2.5">
-                  <Clock className="w-4 h-4 text-white shrink-0 mt-0.5" strokeWidth={1} />
+                  <Clock className="w-4 h-4 text-[#183B56] shrink-0 mt-0.5" strokeWidth={1} />
                   <span>
-                    <strong className="text-white font-normal">Open Gate:</strong> Pintu hall dibuka 90 menit sebelum pertunjukan dimulai. Pengunjung disarankan hadir lebih awal.
+                    <strong className="text-[#183B56] font-normal">Open Gate:</strong> Pintu hall dibuka 90 menit sebelum pertunjukan dimulai. Pengunjung disarankan hadir lebih awal.
                   </span>
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <Smartphone className="w-4 h-4 text-white shrink-0 mt-0.5" strokeWidth={1} />
+                  <Smartphone className="w-4 h-4 text-[#183B56] shrink-0 mt-0.5" strokeWidth={1} />
                   <span>
-                    <strong className="text-white font-normal">Kecerahan Layar HP:</strong> Atur kecerahan layar ponsel secara maksimal saat memindai Kode QR E-Ticket di scanner gate.
+                    <strong className="text-[#183B56] font-normal">Kecerahan Layar HP:</strong> Atur kecerahan layar ponsel secara maksimal saat memindai Kode QR E-Ticket di scanner gate.
                   </span>
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <FileText className="w-4 h-4 text-white shrink-0 mt-0.5" strokeWidth={1} />
+                  <FileText className="w-4 h-4 text-[#183B56] shrink-0 mt-0.5" strokeWidth={1} />
                   <span>
-                    <strong className="text-white font-normal">Identitas Resmi:</strong> Siapkan KTP/SIM/Paspor sesuai nama pemesan tiket untuk verifikasi acak.
+                    <strong className="text-[#183B56] font-normal">Identitas Resmi:</strong> Siapkan KTP/SIM/Paspor sesuai nama pemesan tiket untuk verifikasi acak.
                   </span>
                 </li>
                 <li className="flex items-start gap-2.5">
-                  <AlertTriangle className="w-4 h-4 text-white shrink-0 mt-0.5" strokeWidth={1} />
+                  <AlertTriangle className="w-4 h-4 text-[#183B56] shrink-0 mt-0.5" strokeWidth={1} />
                   <span>
-                    <strong className="text-white font-normal">Dress Code:</strong> Pengunjung wajib mengenakan pakaian Rapi & Sopan (Formal, Smart Casual, atau Batik).
+                    <strong className="text-[#183B56] font-normal">Dress Code:</strong> Pengunjung wajib mengenakan pakaian Rapi & Sopan (Formal, Smart Casual, atau Batik).
                   </span>
                 </li>
               </ul>
             </div>
 
-            <div className="p-3 border border-white/10 text-[11px] text-[#9a9a9a] leading-relaxed">
+            <div className="p-3 border border-[#E5E7EB] text-[11px] text-[#94A3B8] leading-relaxed">
               Catatan: E-Ticket hanya dapat digunakan 1x untuk akses masuk gate hall pertunjukan.
             </div>
           </div>
@@ -433,12 +433,12 @@ export const RedeemPage: React.FC = () => {
 
         {/* FAQs Section */}
         <section className="flex flex-col gap-6">
-          <div className="flex items-center justify-between border-b border-white/10 pb-4">
-            <h2 className="text-lg sm:text-xl font-light text-white tracking-tight flex items-center gap-2">
-              <HelpCircle className="w-4 h-4 text-[#9a9a9a]" strokeWidth={1} />
+          <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-4">
+            <h2 className="text-lg sm:text-xl font-light text-[#183B56] tracking-tight flex items-center gap-2">
+              <HelpCircle className="w-4 h-4 text-[#94A3B8]" strokeWidth={1} />
               <span>Pertanyaan Sering Diajukan (FAQ)</span>
             </h2>
-            <span className="text-xs text-[#9a9a9a] font-mono">INFORMASI PERTANYAAN</span>
+            <span className="text-xs text-[#94A3B8] font-mono">INFORMASI PERTANYAAN</span>
           </div>
 
           <div className="flex flex-col gap-3">
@@ -447,17 +447,17 @@ export const RedeemPage: React.FC = () => {
               return (
                 <div
                   key={idx}
-                  className="border border-white/10 bg-[#171717] overflow-hidden transition-colors"
+                  className="border border-[#E5E7EB] bg-white overflow-hidden transition-colors"
                 >
                   <button
                     type="button"
                     onClick={() => toggleFaq(idx)}
-                    className="w-full p-5 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-white/[0.03] transition-colors"
+                    className="w-full p-5 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-[#F8FAFC] transition-colors"
                   >
-                    <span className="text-sm sm:text-base font-light text-white">{faq.question}</span>
+                    <span className="text-sm sm:text-base font-light text-[#183B56]">{faq.question}</span>
                     <ChevronDown
-                      className={`w-4 h-4 text-[#9a9a9a] transition-transform duration-200 shrink-0 ${
-                        isOpen ? 'rotate-180 text-white' : ''
+                      className={`w-4 h-4 text-[#94A3B8] transition-transform duration-200 shrink-0 ${
+                        isOpen ? 'rotate-180 text-[#183B56]' : ''
                       }`}
                       strokeWidth={1}
                     />
@@ -470,7 +470,7 @@ export const RedeemPage: React.FC = () => {
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.2 }}
                       >
-                        <div className="px-5 pb-5 pt-1 text-xs sm:text-sm font-light text-[#9a9a9a] leading-relaxed border-t border-white/[0.06]">
+                        <div className="px-5 pb-5 pt-1 text-xs sm:text-sm font-light text-[#94A3B8] leading-relaxed border-t border-[#E5E7EB]">
                           {faq.answer}
                         </div>
                       </motion.div>
@@ -483,24 +483,24 @@ export const RedeemPage: React.FC = () => {
         </section>
 
         {/* Help & Account Access Bar */}
-        <section className="border border-white/15 bg-[#171717] p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <section className="border border-[#E5E7EB] bg-[#F8FAFC] p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="space-y-1 text-center sm:text-left">
-            <h3 className="text-base font-light text-white">Kesulitan Menemukan Kode Tiket Anda?</h3>
-            <p className="text-xs font-light text-[#9a9a9a]">
+            <h3 className="text-base font-light text-[#183B56]">Kesulitan Menemukan Kode Tiket Anda?</h3>
+            <p className="text-xs font-light text-[#94A3B8]">
               Masuk ke akun SymphoniaTic Anda untuk melihat semua tiket aktif, riwayat transaksi, dan refund.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3 shrink-0">
             <a
               href="/login"
-              className="px-5 py-2.5 text-xs font-light tracking-wider uppercase bg-white text-[#171717] hover:bg-white/90 transition-colors inline-flex items-center gap-2"
+              className="px-5 py-2.5 text-xs font-light tracking-wider uppercase bg-[#183B56] text-white hover:bg-[#10293E] transition-colors inline-flex items-center gap-2"
             >
               <span>Masuk Akun Saya</span>
               <ArrowRight className="w-3.5 h-3.5" strokeWidth={1} />
             </a>
             <a
               href="/refund"
-              className="px-5 py-2.5 text-xs font-light tracking-wider uppercase border border-white/20 text-white hover:bg-white/10 transition-colors"
+              className="px-5 py-2.5 text-xs font-light tracking-wider uppercase border border-[#E5E7EB] text-[#183B56] hover:bg-[#F8FAFC] transition-colors"
             >
               Layanan Refund
             </a>
@@ -509,7 +509,7 @@ export const RedeemPage: React.FC = () => {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-white/[0.08] py-8 text-center text-xs text-[#9a9a9a] font-light mt-12">
+      <footer className="border-t border-[#E5E7EB] py-8 text-center text-xs text-[#94A3B8] font-light mt-12">
         &copy; 2026 SymphoniaTic Official Ticket Redemption Portal. All rights reserved.
       </footer>
     </div>

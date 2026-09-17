@@ -18,11 +18,11 @@ interface RecEvent {
 }
 
 const CATEGORY_COLORS: Record<RecCategory, string> = {
-  Konser: 'bg-emerald-500',
-  Pameran: 'bg-pink-500',
-  Teater: 'bg-[#6C2BD9]',
-  Festival: 'bg-amber-500',
-  Konferensi: 'bg-[#6C2BD9]',
+  Konser: 'bg-brand',
+  Pameran: 'bg-brand-accent',
+  Teater: 'bg-brand',
+  Festival: 'bg-brand-accent',
+  Konferensi: 'bg-brand',
 };
 
 const TABS: (RecCategory | 'Semua')[] = [
@@ -100,11 +100,11 @@ const EventCard: React.FC<{ ev: RecEvent; hero?: boolean }> = ({ ev, hero }) => 
       </div>
       <div className="flex items-center gap-2 shrink-0">
         <span className="text-[13px] font-semibold text-ink whitespace-nowrap">
-          <Zap className="w-3 h-3 inline text-[#6C2BD9]" strokeWidth={2.5} /> mulai {PRICE_FMT(ev.price)}rb
+          <Zap className="w-3 h-3 inline text-brand-accent" strokeWidth={2.5} /> mulai {PRICE_FMT(ev.price)}rb
         </span>
         <a
           href={`/concert/${ev.id}`}
-          className="text-[11px] font-bold text-white uppercase px-4 py-2 rounded-full bg-[#6C2BD9] hover:bg-[#5a23b8] transition-colors"
+          className="text-[11px] font-bold text-white uppercase px-4 py-2 rounded-full bg-brand hover:bg-brand-dark transition-colors"
         >
           Tiket
         </a>
@@ -135,8 +135,8 @@ export const RecommendedSection: React.FC = () => {
                 onClick={() => setActiveTab(tab)}
                 className={`shrink-0 px-4 py-2 text-[13px] font-semibold rounded-full border transition-all duration-200 cursor-pointer ${
                   activeTab === tab
-                    ? 'bg-[#6C2BD9] text-white border-[#6C2BD9] shadow-sm'
-                    : 'bg-white text-ink-soft border-line hover:border-[#6C2BD9]/40 hover:text-[#6C2BD9]'
+                    ? 'bg-brand text-white border-brand shadow-sm'
+                    : 'bg-white text-ink-soft border-line hover:border-brand/40 hover:text-brand'
                 }`}
               >
                 {tab}
@@ -144,7 +144,7 @@ export const RecommendedSection: React.FC = () => {
             ))}
             <button
               aria-label="Lainnya"
-              className="shrink-0 w-9 h-9 flex items-center justify-center rounded-full border border-line text-ink-soft hover:border-[#6C2BD9]/40 hover:text-[#6C2BD9] transition-colors cursor-pointer"
+              className="shrink-0 w-9 h-9 flex items-center justify-center rounded-full border border-line text-ink-soft hover:border-brand/40 hover:text-brand transition-colors cursor-pointer"
             >
               <MoreHorizontal size={16} strokeWidth={2.5} />
             </button>
