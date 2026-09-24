@@ -4,7 +4,7 @@ import { CONCERT_EVENTS, fetchEventsAPI, formatIDR } from './data';
 import { parseDate, MONTHS } from './Sections';
 import type { EventItem } from './data';
 import { Footer } from './Footer';
-import { Layout } from './components/landing/Layout.tsx';
+import { Header } from './Layout';
 
 /* ── Data helpers ── */
 
@@ -90,7 +90,7 @@ const EventCard: React.FC<{ event: EventItem; saved: boolean; onToggleSave: () =
       href={`/concert/${event.id}`}
       className="group flex flex-col focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2"
     >
-      <div className="relative overflow-hidden rounded-2xl bg-[#F1F5F9] aspect-[4/5]">
+      <div className="relative overflow-hidden rounded-xl bg-[#F1F5F9] aspect-[6/7]">
         <img
           src={event.image}
           alt={event.title}
@@ -99,7 +99,7 @@ const EventCard: React.FC<{ event: EventItem; saved: boolean; onToggleSave: () =
             isClosed ? 'grayscale brightness-50' : 'brightness-[0.94] group-hover:brightness-100'
           }`}
         />
-        {!isClosed && <DateBlock date={event.date} />}
+        {/* {!isClosed && <DateBlock date={event.date} />} */}
         <FavoriteButton active={saved} onToggle={onToggleSave} />
 
         {isClosed && (
@@ -112,7 +112,7 @@ const EventCard: React.FC<{ event: EventItem; saved: boolean; onToggleSave: () =
       </div>
 
       <div className="flex flex-1 flex-col pt-4">
-        <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-accent">
+        <span className="text-[13px] font-bold text-brand-accent">
           {titleCase(event.category || 'Konser')}
         </span>
         <h3 className="mt-1.5 line-clamp-2 text-[17px] font-bold leading-snug tracking-[-0.01em] text-[#183B56]">
@@ -303,7 +303,7 @@ const EventsPage: React.FC = () => {
     <div className="min-h-screen bg-white text-[#183B56]">
       {/* ═══════════ TOP BAR ═══════════ */}
       <header className="sticky top-0 z-40 border-b border-[#E5E7EB] bg-white/95 backdrop-blur-md">
-        <Layout />
+        <Header />
       </header>
 
       {/* ═══════════ DISCOVERY HERO ═══════════ */}
@@ -321,7 +321,7 @@ const EventsPage: React.FC = () => {
                 Temukan konser yang ingin kamu dengarkan.
               </h1>
               <p className="mt-5 max-w-[540px] text-base md:text-lg leading-relaxed text-[#64748B]">
-                Jelajahi pertunjukan orkestra, simfoni, balet, dan ansambel terbaik musim ini — pilih,
+                Jelajahi pertunjukan orkestra, simfoni, balet, dan ansambel terbaik musim ini pilih,
                 pesan, dan dapatkan E-Ticket kamu dalam hitungan detik.
               </p>
 
@@ -356,29 +356,13 @@ const EventsPage: React.FC = () => {
                 )}
               </form>
 
-              {/* Suggestion chips */}
-              {suggestions.length > 0 && !hasCriteria && (
-                <div className="mt-4 flex flex-wrap items-center gap-2">
-                  <span className="text-xs font-medium text-[#94A3B8]">Populer:</span>
-                  {suggestions.map((s) => (
-                    <button
-                      key={s}
-                      onClick={() => setQuery(s)}
-                      className="rounded-full border border-[#E5E7EB] bg-white px-3.5 py-1.5 text-xs font-semibold text-[#64748B] transition-colors hover:border-brand-accent hover:text-brand-accent cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent"
-                    >
-                      {s}
-                    </button>
-                  ))}
-                </div>
-              )}
-
               {/* Context chips */}
               <div className="mt-7 flex flex-wrap items-center gap-3">
-                <span className="inline-flex items-center gap-2 rounded-full bg-[#F8FAFC] border border-[#E5E7EB] px-4 py-2 text-sm font-semibold text-[#183B56]">
+                <span className="inline-flex items-center gap-2 rounded-md bg-[#F8FAFC] border border-[#E5E7EB] px-4 py-2 text-sm font-semibold text-[#183B56]">
                   <MapPin size={14} strokeWidth={2} className="text-brand-accent" />
                   Jakarta, ID
                 </span>
-                <span className="inline-flex items-center gap-2 rounded-full bg-[#F8FAFC] border border-[#E5E7EB] px-4 py-2 text-sm font-semibold text-[#183B56]">
+                <span className="inline-flex items-center gap-2 rounded-md bg-[#F8FAFC] border border-[#E5E7EB] px-4 py-2 text-sm font-semibold text-[#183B56]">
                   <Calendar size={14} strokeWidth={2} className="text-brand-accent" />
                   Musim 2026
                 </span>
@@ -388,8 +372,8 @@ const EventsPage: React.FC = () => {
             {/* Right: season snapshot */}
             <div className="hidden lg:block lg:col-span-5">
               <div className="sticky top-24 rounded-2xl border border-[#E5E7EB] bg-white p-8">
-                <p className="text-xs font-bold uppercase tracking-[0.22em] text-brand-accent">
-                  Musim Ini · Jakarta
+                <p className="text-xl font-bold text-brand-accent">
+                  Temukan Musik Mu!
                 </p>
                 <div className="mt-6 flex items-baseline gap-2">
                   <span className="text-[64px] font-bold leading-none tracking-[-0.04em] text-[#183B56] tabular-nums">
@@ -412,7 +396,7 @@ const EventsPage: React.FC = () => {
                   </div>
                 </div>
                 <div className="mt-6 rounded-xl bg-[#F8FAFC] px-4 py-3.5 text-xs leading-relaxed text-[#64748B]">
-                  E-Ticket ber-Kode QR dikirim langsung ke akun kamu setelah pemesanan — siap di scan saat Open Gate.
+                  E-Ticket ber-Kode QR dikirim langsung ke akun kamu setelah pemesanan siap di scan saat Open Gate.
                 </div>
               </div>
             </div>
@@ -420,8 +404,8 @@ const EventsPage: React.FC = () => {
         </div>
       </section>
 
-      {/* ═══════════ QUICK FILTERS ═══════════ */}
-      <div className="sticky top-16 z-30 border-y border-[#E5E7EB] bg-white/95 backdrop-blur-md">
+
+      <div className="sticky top-14 z-30 border-y border-[#E5E7EB] bg-white/95 backdrop-blur-md">
         <div className="mx-auto max-w-[1360px] px-5 sm:px-10">
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-3">
             {filterChips.map((chip) => {
@@ -431,7 +415,7 @@ const EventsPage: React.FC = () => {
                   key={chip.id}
                   onClick={() => selectFilter(chip.id)}
                   aria-pressed={active}
-                  className={`flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2 ${
+                  className={`flex shrink-0 items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2 ${
                     active
                       ? 'bg-brand-accent text-white'
                       : 'bg-white text-[#64748B] border border-[#E5E7EB] hover:border-brand-accent/50 hover:text-brand-accent'
@@ -458,7 +442,7 @@ const EventsPage: React.FC = () => {
           <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
             <div>
               <p className="inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.22em] text-brand-accent">
-                <span className="h-px w-9 bg-brand-accent" aria-hidden />
+              
                 Hasil Pencarian
               </p>
               <h2 className="mt-3 text-2xl sm:text-3xl font-bold tracking-[-0.02em] text-[#183B56]">
@@ -485,9 +469,9 @@ const EventsPage: React.FC = () => {
             </button>
           </div>
         ) : (
-          <div className="mb-10">
+          <div className="mb-3">
             <p className="inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.22em] text-brand-accent">
-              <span className="h-px w-9 bg-brand-accent" aria-hidden />
+              
               Agenda Konser
             </p>
             <h2 className="mt-3 text-3xl sm:text-4xl font-bold tracking-[-0.03em] text-[#183B56]">
@@ -530,7 +514,7 @@ const EventsPage: React.FC = () => {
 
             <div className="lg:col-span-5">
               <p className="inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.22em] text-brand-accent">
-                <span className="h-px w-9 bg-brand-accent" aria-hidden />
+                
                 Featured
               </p>
               <h2 className="mt-4 text-3xl sm:text-4xl lg:text-[44px] font-bold leading-[1.06] tracking-[-0.03em] text-[#183B56]">
@@ -544,7 +528,7 @@ const EventsPage: React.FC = () => {
                     key={m.label}
                     className="flex items-center justify-between gap-6 border-b border-[#E5E7EB] pb-4"
                   >
-                    <span className="text-xs font-bold uppercase tracking-[0.1em] text-[#94A3B8]">
+                    <span className="text-sm text-[#94A3B8]">
                       {m.label}
                     </span>
                     <span className="text-right text-sm font-bold text-[#183B56]">{m.value}</span>
@@ -561,7 +545,7 @@ const EventsPage: React.FC = () => {
                 </div>
                 <a
                   href={`/concert/${featured.id}`}
-                  className="group/btn inline-flex items-center justify-center gap-2 rounded-full bg-[#183B56] px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-brand-accent sm:ml-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2"
+                  className="group/btn inline-flex items-center justify-center gap-2 rounded-sm bg-[#183B56] px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-brand-accent sm:ml-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2"
                 >
                   <Ticket size={16} strokeWidth={2} />
                   Lihat Event & Tiket
@@ -626,14 +610,14 @@ const EventsPage: React.FC = () => {
         )}
       </section>
 
-      {/* ═══════════ CATEGORY DISCOVERY ═══════════ */}
+      
       {categories.length > 1 && (
         <section className="border-t border-[#E5E7EB] bg-[#F8FAFC]/60 py-16">
           <div className="mx-auto max-w-[1360px] px-5 sm:px-10">
             <div className="mb-10 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
               <div>
                 <p className="inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.22em] text-brand-accent">
-                  <span className="h-px w-9 bg-brand-accent" aria-hidden />
+                  
                   Telusuri Pengalaman
                 </p>
                 <h2 className="mt-3 text-2xl sm:text-3xl font-bold tracking-[-0.02em] text-[#183B56]">

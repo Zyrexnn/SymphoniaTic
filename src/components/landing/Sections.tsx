@@ -335,7 +335,7 @@ const ConcertEventCard: React.FC<{ event: EventItem }> = ({ event }) => {
   );
 };
 
-/* â•â•â•â•â•â•â•â•â•â•â• SECTION (hidden "Jelajahi" block removed entirely) â•â•â•â•â•â•â•â•â•â•â• */
+
 
 export const BentoSection: React.FC<SectionProps> = ({ events }) => {
   const sourceEvents = (events && events.length > 0) ? events : CONCERT_EVENTS;
@@ -344,7 +344,7 @@ export const BentoSection: React.FC<SectionProps> = ({ events }) => {
 
   return (
     <div className="bg-canvas text-ink">
-      {/* â”€â”€ ARTIST DISCOVERY â”€â”€ */}
+      
       <section className="mx-auto max-w-[1440px] px-6 sm:px-8 md:px-12 pt-20 sm:pt-24 lg:pt-28">
         <SectionHeading
           eyebrow="Jelajahi Artis"
@@ -356,7 +356,7 @@ export const BentoSection: React.FC<SectionProps> = ({ events }) => {
         <ArtistRail />
       </section>
 
-      {/* â”€â”€ UPCOMING CONCERTS (primary) â”€â”€ */}
+
       <section className="mx-auto max-w-[1440px] px-6 sm:px-8 md:px-12 py-20 sm:py-24 lg:py-28">
         <SectionHeading
           eyebrow="Jadwal Konser"
