@@ -19,23 +19,24 @@
   --color-destructive-foreground: var(--destructive-foreground);
   --color-ring: var(--ring);
 
-  /* Color system — SymphoniaTic premium dark mode */
-  --color-obsidian: #171717;
+  /* Color system — SymphoniaTic white-first editorial palette
+     WHITE = canvas  ·  DARK BLUE (#183B56) = structure  ·  CORAL (#E76F51) = accent */
+  --color-obsidian: #183B56;
   --color-chalk: #ffffff;
-  --color-ash: #9a9a9a;
-  --color-brand: #6C2BD9;
-  --color-brand-dark: #5a23b8;
-  --color-brand-light: #F3EBFF;
-  --color-ink: #0F172A;
-  --color-ink-soft: #334155;
+  --color-ash: #94A3B8;
+  --color-brand: #183B56;
+  --color-brand-dark: #10293E;
+  --color-brand-light: #EFF3F8;
+  --color-ink: #183B56;
+  --color-ink-soft: #4A5A6A;
   --color-muted: #64748B;
-  --color-line: #E2E8F0;
+  --color-line: #E5E7EB;
   --color-canvas: #FFFFFF;
   --color-canvas-alt: #F8FAFC;
 
-  /* Primary brand tokens — reduced accent usage */
-  --color-brand-accent: #6C2BD9;
-  --color-brand-accent-hover: #5a23b8;
+  /* Primary brand tokens — coral as intentional accent only */
+  --color-brand-accent: #E76F51;
+  --color-brand-accent-hover: #D9603F;
 
   --font-display: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
 
@@ -102,7 +103,7 @@
   --radius-nav: 0px;
 
   /* Surfaces */
-  --surface-obsidian-canvas: #171717;
+  --surface-obsidian-canvas: #183B56;
 }
 
 /* ============================================
@@ -114,16 +115,16 @@
     font-family: var(--font-display);
     font-feature-settings: "rlig" 1, "calt" 1;
     scroll-behavior: smooth;
-    background: #171717;
-    color: #ffffff;
+    background: #ffffff;
+    color: #183b56;
   }
 
   body {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    background: #171717;
-    color: #ffffff;
+    background: #ffffff;
+    color: #183b56;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -135,7 +136,7 @@
   }
 
   ::selection {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(24, 59, 86, 0.92);
     color: #ffffff;
   }
 
@@ -143,7 +144,7 @@
     -webkit-appearance: none;
     appearance: none;
     height: 2px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(24, 59, 86, 0.15);
     outline: none;
     border-radius: 0;
   }
@@ -152,14 +153,14 @@
     appearance: none;
     width: 10px;
     height: 10px;
-    background: #ffffff;
+    background: #183b56;
     cursor: pointer;
     border-radius: 0;
   }
   input[type="range"]::-moz-range-thumb {
     width: 10px;
     height: 10px;
-    background: #ffffff;
+    background: #183b56;
     cursor: pointer;
     border-radius: 0;
     border: none;
@@ -171,8 +172,8 @@
   }
 
   ::-webkit-scrollbar { width: 2px; }
-  ::-webkit-scrollbar-track { background: #171717; }
-  ::-webkit-scrollbar-thumb { background: #333; }
+  ::-webkit-scrollbar-track { background: #ffffff; }
+  ::-webkit-scrollbar-thumb { background: #CBD5E1; }
 
   @keyframes fade-in {
     from { opacity: 0; }
@@ -199,23 +200,23 @@
    COMPONENT STYLES
    ============================================ */
 
-/* Buttons — 0px radius per DESIGN.md, accent only on :focus and :hover */
+/* Buttons — 0px radius per DESIGN.md; navy primary, navy outline secondary */
 .btn {
   @apply inline-flex items-center gap-2 rounded-none px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer;
 }
 .btn--primary {
-  @apply bg-[--color-brand-accent] text-[--color-obsidian] hover:bg-[--color-brand-accent-hover] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-brand-accent] focus-visible:ring-offset-2;
+  @apply bg-[--color-brand] text-[--color-chalk] hover:bg-[--color-brand-dark] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-brand-accent] focus-visible:ring-offset-2;
 }
 .btn--secondary {
-  @apply bg-transparent border border-[--color-brand-accent]/40 text-[--color-brand-accent] hover:bg-[--color-brand-accent]/10 hover:text-[--color-obsidian] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-brand-accent] focus-visible:ring-offset-2;
+  @apply bg-transparent border border-[--color-brand]/40 text-[--color-brand] hover:bg-[--color-brand]/5 hover:text-[--color-brand-dark] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-brand-accent] focus-visible:ring-offset-2;
 }
 .btn--ghost {
-  @apply bg-transparent text-[--color-chalk] hover:bg-[--color-obsidian]/50 hover:text-[--color-chalk] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-brand-accent] focus-visible:ring-offset-2;
+  @apply bg-transparent text-[--color-brand] hover:bg-[--color-brand]/5 hover:text-[--color-brand-dark] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-brand-accent] focus-visible:ring-offset-2;
 }
 
 /* Cards — 0px radius per DESIGN.md */
 .card {
-  @apply rounded-none bg-[--color-card] border border-white/[0.08] transition-all duration-300 hover:border-white/[0.12];
+  @apply rounded-none bg-[--color-card] border border-[--color-line] transition-all duration-300 hover:border-[#CBD5E1];
 }
 
 /* Badges — 0px radius */
@@ -228,10 +229,10 @@
   @apply relative py-1 text-sm xl:text-base tracking-[-0.02em] transition-colors duration-200;
 }
 .nav-link::after {
-  @apply absolute bottom-0 left-0 h-[1px] bg-white transition-all duration-300;
+  @apply absolute bottom-0 left-0 h-[1px] bg-brand transition-all duration-300;
 }
 .nav-link--active {
-  @apply text-white font-normal;
+  @apply text-brand font-normal;
 }
 .nav-link--active::after {
   @apply w-full;

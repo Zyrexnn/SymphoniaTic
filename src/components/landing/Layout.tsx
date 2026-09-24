@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ArrowUpRight, Ticket, ShieldCheck, ChevronRight, User, LogOut, LayoutDashboard, Search, Music2 } from 'lucide-react';
 import type { UserRecord } from './data';
@@ -14,7 +14,7 @@ interface HeaderProps {
   onLogout?: () => void;
 }
 
-/* Real existing routes only — no fake anchors */
+/* Real existing routes only â€” no fake anchors */
 const mainNavItems = [
   { label: 'Konser', href: '/events', primary: true },
   { label: 'Edukasi', href: '/edukasi', primary: false },
@@ -26,23 +26,21 @@ const BrandMark: React.FC<{ light?: boolean }> = ({ light }) => {
   return (
     <a
       href="/"
-      aria-label="SymphoniaTic — Beranda"
+      aria-label="SymphoniaTic â€” Beranda"
       className="group flex items-center gap-3 cursor-pointer no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2"
     >
-      <span className="h-10 w-10 rounded-[12px] bg-brand-accent flex items-center justify-center text-white shadow-[0_8px_20px_-8px_rgba(108,43,217,0.9)] transition-transform duration-300 group-hover:scale-[1.04]">
-        <Music2 size={20} strokeWidth={2} />
-      </span>
+
       <span className="flex flex-col leading-none">
         <span
           className={`text-[17px] font-bold tracking-[-0.03em] uppercase transition-colors duration-300 ${
-            light ? 'text-white' : 'text-[#111111]'
+            light ? 'text-white' : 'text-[#183B56]'
           }`}
         >
           SymphoniaTic
         </span>
         <span
           className={`mt-1 text-[9px] font-semibold tracking-[0.24em] uppercase transition-colors duration-300 ${
-            light ? 'text-white/60' : 'text-[#999999]'
+            light ? 'text-white/60' : 'text-[#94A3B8]'
           }`}
         >
           Concert Ticketing
@@ -52,7 +50,7 @@ const BrandMark: React.FC<{ light?: boolean }> = ({ light }) => {
   );
 };
 
-/* Expandable search pill — navigates to /events?q=… */
+/* Expandable search pill â€” navigates to /events?q=â€¦ */
 const SearchPill: React.FC<{ light?: boolean; onNavigate?: () => void }> = ({ light, onNavigate }) => {
   const [q, setQ] = useState('');
 
@@ -70,14 +68,14 @@ const SearchPill: React.FC<{ light?: boolean; onNavigate?: () => void }> = ({ li
       className={`group flex items-center rounded-full transition-all duration-300 focus-within:w-72 w-44 ${
         light
           ? 'bg-white/10 border border-white/15 focus-within:border-white/40'
-          : 'bg-[#F7F7F7] border border-[#E5E5E5] focus-within:border-brand-accent focus-within:ring-2 focus-within:ring-brand-accent/15'
+          : 'bg-[#F8FAFC] border border-[#E5E7EB] focus-within:border-brand-accent focus-within:ring-2 focus-within:ring-brand-accent/15'
       }`}
     >
       <button type="submit" aria-label="Cari" className="pl-3.5 pr-1 py-2 flex items-center cursor-pointer">
         <Search
           size={16}
           strokeWidth={2}
-          className={light ? 'text-white/70 group-focus-within:text-white' : 'text-[#666666] group-focus-within:text-brand-accent transition-colors'}
+          className={light ? 'text-white/70 group-focus-within:text-white' : 'text-[#64748B] group-focus-within:text-brand-accent transition-colors'}
         />
       </button>
       <input
@@ -89,7 +87,7 @@ const SearchPill: React.FC<{ light?: boolean; onNavigate?: () => void }> = ({ li
         className={`bg-transparent py-2 pr-4 text-sm outline-none truncate min-w-0 flex-1 transition-colors duration-300 ${
           light
             ? 'text-white placeholder-white/45'
-            : 'text-[#111111] placeholder-[#999999] focus-visible:outline-none focus-visible:ring-0'
+            : 'text-[#183B56] placeholder-[#999999] focus-visible:outline-none focus-visible:ring-0'
         }`}
       />
     </form>
@@ -130,11 +128,11 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <>
-      {/* ═══════════ DESKTOP NAVBAR ═══════════ */}
+      
       <header
         className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
           scrolled
-            ? 'bg-white/95 backdrop-blur-md border-b border-[#E5E5E5] shadow-[0_1px_2px_rgba(17,17,17,0.04)] py-2.5'
+            ? 'bg-white/95 backdrop-blur-md border-b border-[#E5E7EB] shadow-[0_1px_2px_rgba(17,17,17,0.04)] py-2.5'
             : 'bg-gradient-to-b from-black/60 via-black/25 to-transparent py-4 md:py-5'
         }`}
       >
@@ -154,7 +152,7 @@ export const Header: React.FC<HeaderProps> = ({
                     isActive
                       ? 'font-semibold text-brand-accent'
                       : scrolled
-                        ? 'font-medium text-[#444444] hover:text-brand-accent'
+                        ? 'font-medium text-[#64748B] hover:text-brand-accent'
                         : 'font-normal text-white/80 hover:text-white'
                   }`}
                 >
@@ -180,7 +178,7 @@ export const Header: React.FC<HeaderProps> = ({
                 title="Tiket Saya"
                 className={`relative hidden sm:inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-medium transition-colors cursor-pointer ${
                   scrolled
-                    ? 'bg-[#F7F7F7] text-[#111111] hover:bg-brand-accent hover:text-white'
+                    ? 'bg-[#F8FAFC] text-[#183B56] hover:bg-brand-accent hover:text-white'
                     : 'bg-white/10 text-white hover:bg-white/20 border border-white/15'
                 }`}
               >
@@ -192,7 +190,7 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             )}
 
-            {/* Admin — only for admin role */}
+            {/* Admin â€” only for admin role */}
             {isAdmin && (
               <a
                 href="/admin"
@@ -205,7 +203,7 @@ export const Header: React.FC<HeaderProps> = ({
                 title="Portal Admin"
                 className={`hidden md:inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition-colors ${
                   scrolled
-                    ? 'text-[#666666] hover:text-brand-accent hover:bg-[#F7F7F7]'
+                    ? 'text-[#64748B] hover:text-brand-accent hover:bg-[#F8FAFC]'
                     : 'text-white/70 hover:text-white'
                 }`}
               >
@@ -214,7 +212,7 @@ export const Header: React.FC<HeaderProps> = ({
               </a>
             )}
 
-            {/* Auth — logged in */}
+            {/* Auth â€” logged in */}
             {user ? (
               <div className="hidden sm:flex items-center gap-2.5">
                 <a
@@ -222,8 +220,8 @@ export const Header: React.FC<HeaderProps> = ({
                   title="Dashboard"
                   className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
                     scrolled
-                      ? 'bg-[#111111] text-white hover:bg-brand-accent'
-                      : 'bg-white text-[#111111] hover:bg-brand-accent hover:text-white'
+                      ? 'bg-[#183B56] text-white hover:bg-brand-accent'
+                      : 'bg-white text-[#183B56] hover:bg-brand-accent hover:text-white'
                   }`}
                 >
                   <LayoutDashboard size={15} strokeWidth={2} className={scrolled ? 'text-brand-accent' : 'text-brand-accent'} />
@@ -235,7 +233,7 @@ export const Header: React.FC<HeaderProps> = ({
                     title="Keluar"
                     aria-label="Keluar"
                     className={`inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors cursor-pointer ${
-                      scrolled ? 'bg-[#F7F7F7] text-[#666666] hover:bg-brand-accent hover:text-white' : 'text-white/80 hover:bg-white/15 hover:text-white'
+                      scrolled ? 'bg-[#F8FAFC] text-[#64748B] hover:bg-brand-accent hover:text-white' : 'text-white/80 hover:bg-white/15 hover:text-white'
                     }`}
                   >
                     <LogOut size={16} strokeWidth={2} />
@@ -243,12 +241,12 @@ export const Header: React.FC<HeaderProps> = ({
                 )}
               </div>
             ) : (
-              /* Auth — logged out: Masuk (secondary) + Daftar (primary) */
+              /* Auth â€” logged out: Masuk (secondary) + Daftar (primary) */
               <div className="hidden sm:flex items-center gap-2">
                 <a
                   href="/login"
                   className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-medium transition-colors cursor-pointer ${
-                    scrolled ? 'text-[#444444] hover:text-brand-accent' : 'text-white/85 hover:text-white'
+                    scrolled ? 'text-[#64748B] hover:text-brand-accent' : 'text-white/85 hover:text-white'
                   }`}
                 >
                   <User size={15} strokeWidth={2} />
@@ -256,7 +254,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </a>
                 <a
                   href="/register"
-                  className="inline-flex items-center gap-1.5 rounded-full bg-brand-accent px-4.5 py-2 text-sm font-semibold text-white hover:bg-brand-accent-hover transition-colors shadow-[0_10px_24px_-10px_rgba(108,43,217,0.9)]"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-brand-accent px-4.5 py-2 text-sm font-semibold text-white hover:bg-brand-accent-hover transition-colors shadow-[0_10px_24px_-10px_rgba(231,111,81,0.55)]"
                 >
                   Daftar
                   <ArrowUpRight size={15} strokeWidth={2} />
@@ -269,7 +267,7 @@ export const Header: React.FC<HeaderProps> = ({
               onClick={handleToggleMenu}
               aria-label={menuOpen ? 'Tutup menu navigasi' : 'Buka menu navigasi'}
               className={`lg:hidden cursor-pointer h-10 w-10 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full transition-colors ${
-                scrolled ? 'bg-[#111111] text-white hover:bg-brand-accent' : 'bg-white text-[#111111]'
+                scrolled ? 'bg-[#183B56] text-white hover:bg-brand-accent' : 'bg-white text-[#183B56]'
               }`}
             >
               {menuOpen ? <X size={20} strokeWidth={2} /> : <Menu size={20} strokeWidth={2} />}
@@ -278,7 +276,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </header>
 
-      {/* ═══════════ MOBILE DRAWER ═══════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â• MOBILE DRAWER â•â•â•â•â•â•â•â•â•â•â• */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -294,7 +292,7 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 onClick={handleToggleMenu}
                 aria-label="Tutup menu"
-                className="h-11 w-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full bg-[#F7F7F7] text-[#111111] hover:bg-brand-accent hover:text-white transition-colors cursor-pointer"
+                className="h-11 w-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full bg-[#F8FAFC] text-[#183B56] hover:bg-brand-accent hover:text-white transition-colors cursor-pointer"
               >
                 <X size={20} strokeWidth={2} />
               </button>
@@ -303,7 +301,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Drawer search */}
             <div className="px-5 sm:px-8 pb-4">
               <SearchPill onNavigate={handleToggleMenu} />
-              <p className="mt-2 text-xs text-[#999999] font-light">
+              <p className="mt-2 text-xs text-[#94A3B8] font-light">
                 Cari konser, artis, atau venue favoritmu.
               </p>
             </div>
@@ -325,20 +323,20 @@ export const Header: React.FC<HeaderProps> = ({
                     transition={{ duration: 0.18, delay: idx * 0.04 }}
                     onClick={handleToggleMenu}
                     className={`group flex items-center justify-between rounded-xl px-4 py-4 my-0.5 transition-colors ${
-                      isActive ? 'bg-[#F3EBFF] text-brand-accent' : 'text-[#111111] hover:bg-[#F7F7F7]'
+                      isActive ? 'bg-brand-light text-brand-accent' : 'text-[#183B56] hover:bg-[#F8FAFC]'
                     }`}
                   >
                     <span className="flex items-center gap-4 text-lg font-semibold tracking-tight">
                       <span
                         className={`font-mono text-xs font-bold ${
-                          isActive ? 'text-brand-accent' : 'text-[#999999] group-hover:text-brand-accent'
+                          isActive ? 'text-brand-accent' : 'text-[#94A3B8] group-hover:text-brand-accent'
                         }`}
                       >
                         0{idx + 1}
                       </span>
                       {item.label}
                     </span>
-                    <ChevronRight size={20} strokeWidth={1.5} className="text-[#999999] group-hover:text-brand-accent group-hover:translate-x-0.5 transition-all" />
+                    <ChevronRight size={20} strokeWidth={1.5} className="text-[#94A3B8] group-hover:text-brand-accent group-hover:translate-x-0.5 transition-all" />
                   </motion.a>
                 );
               })}
@@ -351,10 +349,10 @@ export const Header: React.FC<HeaderProps> = ({
                   <a
                     href="/dashboard"
                     onClick={handleToggleMenu}
-                    className="flex items-center justify-center gap-2 rounded-full bg-[#111111] text-white py-3.5 text-sm font-semibold hover:bg-brand-accent transition-colors min-h-[48px]"
+                    className="flex items-center justify-center gap-2 rounded-full bg-[#183B56] text-white py-3.5 text-sm font-semibold hover:bg-brand-accent transition-colors min-h-[48px]"
                   >
                     <LayoutDashboard size={16} strokeWidth={2} className="text-brand-accent" />
-                    Dashboard — {user.name}
+                    Dashboard â€” {user.name}
                   </a>
                   {onLogout && (
                     <button
@@ -362,7 +360,7 @@ export const Header: React.FC<HeaderProps> = ({
                         handleToggleMenu();
                         onLogout();
                       }}
-                      className="flex items-center justify-center gap-2 rounded-full border border-[#E5E5E5] text-[#666666] py-3.5 text-sm font-semibold hover:border-brand-accent hover:text-brand-accent transition-colors min-h-[48px] cursor-pointer"
+                      className="flex items-center justify-center gap-2 rounded-full border border-[#E5E7EB] text-[#64748B] py-3.5 text-sm font-semibold hover:border-brand-accent hover:text-brand-accent transition-colors min-h-[48px] cursor-pointer"
                     >
                       <LogOut size={16} strokeWidth={2} />
                       Keluar
@@ -374,7 +372,7 @@ export const Header: React.FC<HeaderProps> = ({
                   <a
                     href="/login"
                     onClick={handleToggleMenu}
-                    className="flex items-center justify-center gap-2 rounded-full border border-[#E5E5E5] text-[#111111] py-3.5 text-sm font-semibold hover:border-brand-accent hover:text-brand-accent transition-colors min-h-[48px]"
+                    className="flex items-center justify-center gap-2 rounded-full border border-[#E5E7EB] text-[#183B56] py-3.5 text-sm font-semibold hover:border-brand-accent hover:text-brand-accent transition-colors min-h-[48px]"
                   >
                     <User size={16} strokeWidth={2} />
                     Masuk
@@ -403,22 +401,22 @@ export const Header: React.FC<HeaderProps> = ({
                       onOpenAdmin();
                     }
                   }}
-                  className="flex items-center justify-between rounded-xl border border-dashed border-[#E5E5E5] px-4 py-3.5 text-sm font-semibold text-[#666666] hover:text-brand-accent hover:border-brand-accent transition-colors"
+                  className="flex items-center justify-between rounded-xl border border-dashed border-[#E5E7EB] px-4 py-3.5 text-sm font-semibold text-[#64748B] hover:text-brand-accent hover:border-brand-accent transition-colors"
                 >
                   <span className="flex items-center gap-2.5">
                     <ShieldCheck size={16} strokeWidth={2} />
                     Portal Admin
                   </span>
-                  <ChevronRight size={16} className="text-[#999999]" />
+                  <ChevronRight size={16} className="text-[#94A3B8]" />
                 </a>
               </div>
             )}
 
             {/* Drawer footer */}
-            <div className="px-5 sm:px-8 pt-8 pb-10 mt-auto text-xs text-[#999999] font-light flex flex-col gap-2">
+            <div className="px-5 sm:px-8 pt-8 pb-10 mt-auto text-xs text-[#94A3B8] font-light flex flex-col gap-2">
               <p>&copy; 2026 SymphoniaTic Official Concert Booking Platform.</p>
               <p className="text-[10px] tracking-[0.18em] text-brand-accent font-semibold uppercase">
-                Beethoven · Vivaldi · ABBA · Trust
+                Beethoven Â· Vivaldi Â· ABBA Â· Trust
               </p>
             </div>
           </motion.div>

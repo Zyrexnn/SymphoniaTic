@@ -110,13 +110,13 @@ function RegisterFormInner() {
 
   const header = (
     <div className="mb-10">
-      <span className="text-[10px] font-mono uppercase tracking-[0.35em] text-white">
+      <span className="text-[10px] font-mono uppercase tracking-[0.35em] text-[#94A3B8]">
         SymphoniaTic
       </span>
-      <h1 className="text-[28px] sm:text-[32px] leading-[1.15] tracking-[-0.02em] font-light text-white mt-3">
+      <h1 className="text-[28px] sm:text-[32px] leading-[1.15] tracking-[-0.02em] font-light text-[#183B56] mt-3">
         Buat Akun Baru
       </h1>
-      <p className="text-[13px] text-white/35 mt-2.5 font-light leading-relaxed max-w-sm">
+      <p className="text-[13px] text-[#64748B] mt-2.5 font-light leading-relaxed max-w-sm">
         Daftar untuk memesan tiket dan kelola riwayat pertunjukan Anda.
       </p>
     </div>
@@ -125,7 +125,7 @@ function RegisterFormInner() {
   /* ─── Render ─── */
 
   return (
-    <div className="h-screen w-screen flex overflow-hidden bg-[#171717]">
+    <div className="h-screen w-screen flex overflow-hidden bg-white">
 
       {/* ── Left Panel — Form ── */}
       <div className="w-full lg:w-[55%] flex flex-col justify-center  px-8 sm:px-16 lg:px-40 py-12 overflow-y-auto order-2 lg:order-1">
@@ -134,7 +134,7 @@ function RegisterFormInner() {
         <div className="lg:hidden mb-8">
           <a
             href="/"
-            className="inline-flex items-center gap-1.5 text-[11px] font-mono text-white/30 hover:text-white/60 transition-colors group"
+            className="inline-flex items-center gap-1.5 text-[11px] font-mono text-[#64748B] hover:text-[#183B56] transition-colors group"
           >
             <ArrowLeft size={13} strokeWidth={1.5} className="group-hover:-translate-x-0.5 transition-transform" />
             Kembali
@@ -178,9 +178,9 @@ function RegisterFormInner() {
         {/* Step 2: OTP + Password */}
         {step === 2 && (
           <form onSubmit={verify} className="flex flex-col gap-5 max-w-md">
-            <p className="text-[11px] text-white/30 font-light">
-              Nama: <span className="text-white/60">{name}</span>{' '}
-              · Email: <span className="text-white/60">{email}</span>
+            <p className="text-[11px] text-[#64748B] font-light">
+              Nama: <span className="text-[#183B56]">{name}</span>{' '}
+              · Email: <span className="text-[#183B56]">{email}</span>
             </p>
             <Field
               label="Kode OTP (6 digit)"
@@ -230,7 +230,7 @@ function RegisterFormInner() {
                 setOtpCode('');
                 resetMessages();
               }}
-              className="text-[11px] text-white/25 hover:text-white/50 transition-colors"
+              className="text-[11px] text-[#94A3B8] hover:text-[#183B56] transition-colors"
             >
               Ubah data pendaftaran
             </button>
@@ -238,11 +238,11 @@ function RegisterFormInner() {
         )}
 
         {/* Footer */}
-        <div className="mt-12 pt-6 border-t border-white/[0.06] text-[11px] font-light text-white/30 max-w-md">
+        <div className="mt-12 pt-6 border-t border-[#E5E7EB] text-[11px] font-light text-[#64748B] max-w-md">
           Sudah punya akun?{' '}
           <a
             href="/login"
-            className="text-white/70 underline underline-offset-4 decoration-white/20 hover:decoration-white/40 hover:text-white transition-all"
+            className="text-[#183B56] underline underline-offset-4 decoration-[#CBD5E1] hover:decoration-brand hover:text-brand-dark transition-all"
           >
             Masuk di sini
           </a>
@@ -255,7 +255,7 @@ function RegisterFormInner() {
           className="absolute inset-0 bg-cover bg-center bg-no-repeat rounded-tr-[4rem]"
           style={{ backgroundImage: 'url(/assets/register-image.jpg)' }}
         />
-        <div className="absolute inset-0 bg-[#171717]/40" />
+        <div className="absolute inset-0 bg-[#183B56]/40" />
 
         <div className="relative z-10">
           <a

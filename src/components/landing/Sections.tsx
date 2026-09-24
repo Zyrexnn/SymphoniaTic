@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+﻿import React, { useRef } from 'react';
 import { Heart, ArrowUpRight, MapPin, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { CONCERT_EVENTS, ARTISTS_LINEUP, formatIDR } from './data';
 import type { EventItem } from './data';
@@ -12,12 +12,12 @@ const goToConcert = (event: EventItem) => {
   window.location.href = `/concert/${event.id}`;
 };
 
-const getMinPrice = (event: EventItem) => event.categories?.[0]?.price ?? 0;
+export const getMinPrice = (event: EventItem) => event.categories?.[0]?.price ?? 0;
 
-const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGU', 'SEP', 'OKT', 'NOV', 'DES'];
+export const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGU', 'SEP', 'OKT', 'NOV', 'DES'];
 
-/* Parse date string like "Sabtu, 18 April 2026" or "2026-04-18" → { day, month, year } */
-const parseDate = (date?: string) => {
+/* Parse date string like "Sabtu, 18 April 2026" or "2026-04-18" â†’ { day, month, year } */
+export const parseDate = (date?: string) => {
   if (!date) return { day: '', month: '', year: '', weekday: '' };
   let day = '';
   let month = '';
@@ -44,7 +44,7 @@ const parseDate = (date?: string) => {
   return { day, month, year, weekday };
 };
 
-/* ── Reusable editorial section header ── */
+/* â”€â”€ Reusable editorial section header â”€â”€ */
 const SectionHeading: React.FC<{
   eyebrow: string;
   title: string;
@@ -62,13 +62,13 @@ const SectionHeading: React.FC<{
         <h2 className="mt-4 text-3xl sm:text-4xl lg:text-[42px] font-bold tracking-[-0.03em] leading-[1.08] text-ink">
           {title}
         </h2>
-        <p className="mt-4 text-sm sm:text-base leading-relaxed text-[#666666] max-w-xl">
+        <p className="mt-4 text-sm sm:text-base leading-relaxed text-[#64748B] max-w-xl">
           {support}
         </p>
       </div>
       <a
         href={actionHref}
-        className="group/btn inline-flex items-center gap-2 rounded-full bg-black text-white px-5 py-2.5 text-sm font-semibold hover:bg-brand-accent transition-colors shrink-0"
+        className="group/btn inline-flex items-center gap-2 rounded-full bg-[#183B56] text-white px-5 py-2.5 text-sm font-semibold hover:bg-brand-accent transition-colors shrink-0"
       >
         {actionLabel}
         <ArrowUpRight
@@ -80,7 +80,7 @@ const SectionHeading: React.FC<{
   );
 };
 
-/* ═══════════ ARTIST DISCOVERY — horizontal portrait rail ═══════════ */
+/* â•â•â•â•â•â•â•â•â•â•â• ARTIST DISCOVERY â€” horizontal portrait rail â•â•â•â•â•â•â•â•â•â•â• */
 
 const ArtistCard: React.FC<{ image: string; name: string; genre: string; shows: string }> = ({
   image,
@@ -91,7 +91,7 @@ const ArtistCard: React.FC<{ image: string; name: string; genre: string; shows: 
   return (
     <a
       href="/events"
-      className="group relative block w-[74vw] sm:w-[280px] lg:w-[320px] shrink-0 snap-start overflow-hidden rounded-2xl bg-[#EEEEEE] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2"
+      className="group relative block w-[74vw] sm:w-[280px] lg:w-[320px] shrink-0 snap-start overflow-hidden rounded-2xl bg-[#F1F5F9] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2"
     >
       <img
         src={image}
@@ -132,14 +132,14 @@ const ArtistRail: React.FC = () => {
         <button
           onClick={() => scroll(-1)}
           aria-label="Geser artist ke kiri"
-          className="h-11 w-11 rounded-full bg-[#F7F7F7] text-ink flex items-center justify-center hover:bg-brand-accent hover:text-white transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent"
+          className="h-11 w-11 rounded-full bg-[#F8FAFC] text-ink flex items-center justify-center hover:bg-brand-accent hover:text-white transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent"
         >
           <ChevronLeft size={18} />
         </button>
         <button
           onClick={() => scroll(1)}
           aria-label="Geser artist ke kanan"
-          className="h-11 w-11 rounded-full bg-[#F7F7F7] text-ink flex items-center justify-center hover:bg-brand-accent hover:text-white transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent"
+          className="h-11 w-11 rounded-full bg-[#F8FAFC] text-ink flex items-center justify-center hover:bg-brand-accent hover:text-white transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent"
         >
           <ChevronRight size={18} />
         </button>
@@ -163,14 +163,14 @@ const ArtistRail: React.FC = () => {
   );
 };
 
-/* ═══════════ UPCOMING CONCERTS — editorial discovery ═══════════ */
+/* â•â•â•â•â•â•â•â•â•â•â• UPCOMING CONCERTS â€” editorial discovery â•â•â•â•â•â•â•â•â•â•â• */
 
 /* Ticket-stub date badge */
 const DateBlock: React.FC<{ event: EventItem; size?: 'sm' | 'lg' }> = ({ event, size = 'sm' }) => {
   const { day, month, year } = parseDate(event.date);
   return (
     <div
-      className={`rounded-xl bg-white text-ink text-center shadow-[0_8px_24px_-8px_rgba(17,17,17,0.4)] ${
+      className={`rounded-xl bg-white text-ink text-center shadow-[0_8px_24px_-8px_rgba(24,59,86,0.2)] ${
         size === 'lg' ? 'px-4 py-3' : 'px-2.5 py-1.5'
       }`}
     >
@@ -178,23 +178,23 @@ const DateBlock: React.FC<{ event: EventItem; size?: 'sm' | 'lg' }> = ({ event, 
         {month || 'KONSER'}
       </div>
       <div className={`font-black leading-none text-ink ${size === 'lg' ? 'text-3xl' : 'text-sm'}`}>
-        {day || '—'}
+        {day || 'â€”'}
       </div>
-      <div className={`font-semibold text-[#999999] ${size === 'lg' ? 'text-[10px] mt-0.5' : 'text-[8px]'}`}>
+      <div className={`font-semibold text-[#94A3B8] ${size === 'lg' ? 'text-[10px] mt-0.5' : 'text-[8px]'}`}>
         {year || ''}
       </div>
     </div>
   );
 };
 
-/* Featured editorial card — artwork as hero */
+/* Featured editorial card â€” artwork as hero */
 const FeaturedConcert: React.FC<{ event: EventItem }> = ({ event }) => {
   const minPrice = getMinPrice(event);
 
   return (
     <div
       onClick={() => goToConcert(event)}
-      className="group relative overflow-hidden rounded-2xl bg-black cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2"
+      className="group relative overflow-hidden rounded-2xl bg-[#183B56] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2"
     >
       <div className="relative h-[440px] sm:h-[500px] lg:h-[560px] overflow-hidden">
         <img
@@ -218,13 +218,13 @@ const FeaturedConcert: React.FC<{ event: EventItem }> = ({ event }) => {
         </button>
       </div>
 
-      {/* Bottom: minimal overlay — let artwork speak */}
+      {/* Bottom: minimal overlay â€” let artwork speak */}
       <div className="absolute inset-x-0 bottom-0 z-10 p-5 sm:p-8">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] sm:text-xs font-bold uppercase tracking-[0.18em] text-white/70">
           <span>{event.category || 'Konser'}</span>
-          <span className="opacity-50" aria-hidden>·</span>
+          <span className="opacity-50" aria-hidden>Â·</span>
           <span>{event.venue}</span>
-          <span className="opacity-50" aria-hidden>·</span>
+          <span className="opacity-50" aria-hidden>Â·</span>
           <span className="normal-case tracking-normal">{event.time}</span>
         </div>
 
@@ -262,9 +262,9 @@ const ConcertEventCard: React.FC<{ event: EventItem }> = ({ event }) => {
   return (
     <div
       onClick={() => goToConcert(event)}
-      className="group rounded-2xl bg-[#F7F7F7] overflow-hidden cursor-pointer hover:shadow-[0_20px_50px_-24px_rgba(17,17,17,0.35)] hover:-translate-y-1 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2"
+      className="group rounded-2xl bg-[#F8FAFC] overflow-hidden cursor-pointer hover:shadow-[0_20px_50px_-24px_rgba(17,17,17,0.35)] hover:-translate-y-1 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2"
     >
-      <div className="relative aspect-[16/10] overflow-hidden bg-[#EEEEEE]">
+      <div className="relative aspect-[16/10] overflow-hidden bg-[#F1F5F9]">
         <img
           src={event.image}
           alt={event.title}
@@ -274,7 +274,7 @@ const ConcertEventCard: React.FC<{ event: EventItem }> = ({ event }) => {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
         {event.isClosed && (
-          <div className="absolute inset-0 bg-black/55 flex items-center justify-center">
+          <div className="absolute inset-0 bg-[#183B56]/55 flex items-center justify-center">
             <span className="rounded-full bg-white px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-black">
               Tutup
             </span>
@@ -303,14 +303,14 @@ const ConcertEventCard: React.FC<{ event: EventItem }> = ({ event }) => {
         <h4 className="mt-1.5 text-lg sm:text-xl font-bold leading-snug tracking-tight text-ink line-clamp-2">
           {event.title}
         </h4>
-        <p className="mt-1.5 text-sm text-[#666666] line-clamp-1">
+        <p className="mt-1.5 text-sm text-[#64748B] line-clamp-1">
           {event.artist}
         </p>
 
-        <div className="mt-4 flex items-center gap-2 text-xs text-[#666666]">
+        <div className="mt-4 flex items-center gap-2 text-xs text-[#64748B]">
           <Calendar size={13} className="text-brand-accent shrink-0" />
           <span>{event.time}</span>
-          <span className="opacity-40" aria-hidden>·</span>
+          <span className="opacity-40" aria-hidden>Â·</span>
           <span className="inline-flex items-center gap-1 min-w-0">
             <MapPin size={13} className="text-brand-accent shrink-0" />
             <span className="truncate">{event.venue}</span>
@@ -319,14 +319,14 @@ const ConcertEventCard: React.FC<{ event: EventItem }> = ({ event }) => {
 
         <div className="mt-5 flex items-center justify-between gap-3">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#999999]">
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#94A3B8]">
               Mulai dari
             </p>
             <p className="text-lg font-bold text-ink">
               {event.isClosed ? 'Tutup' : formatIDR(minPrice)}
             </p>
           </div>
-          <span className="h-11 w-11 rounded-full bg-black text-white flex items-center justify-center group-hover:bg-brand-accent transition-colors duration-300">
+          <span className="h-11 w-11 rounded-full bg-[#183B56] text-white flex items-center justify-center group-hover:bg-brand-accent transition-colors duration-300">
             <ArrowUpRight size={18} />
           </span>
         </div>
@@ -335,7 +335,7 @@ const ConcertEventCard: React.FC<{ event: EventItem }> = ({ event }) => {
   );
 };
 
-/* ═══════════ SECTION (hidden "Jelajahi" block removed entirely) ═══════════ */
+
 
 export const BentoSection: React.FC<SectionProps> = ({ events }) => {
   const sourceEvents = (events && events.length > 0) ? events : CONCERT_EVENTS;
@@ -344,19 +344,19 @@ export const BentoSection: React.FC<SectionProps> = ({ events }) => {
 
   return (
     <div className="bg-canvas text-ink">
-      {/* ── ARTIST DISCOVERY ── */}
+      
       <section className="mx-auto max-w-[1440px] px-6 sm:px-8 md:px-12 pt-20 sm:pt-24 lg:pt-28">
         <SectionHeading
           eyebrow="Jelajahi Artis"
           title="Orkestra & Ensemble Musim Ini"
-          support="Dari orkestra simfoni kelas dunia hingga chamber ensemble — kenali penampil yang siap menghidupkan panggung SymphoniaTic."
+          support="Dari orkestra simfoni kelas dunia hingga chamber ensemble â€” kenali penampil yang siap menghidupkan panggung SymphoniaTic."
           actionLabel="Semua Artis"
           actionHref="/events"
         />
         <ArtistRail />
       </section>
 
-      {/* ── UPCOMING CONCERTS (primary) ── */}
+
       <section className="mx-auto max-w-[1440px] px-6 sm:px-8 md:px-12 py-20 sm:py-24 lg:py-28">
         <SectionHeading
           eyebrow="Jadwal Konser"

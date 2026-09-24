@@ -6,18 +6,18 @@ import { ArrowLeft, Loader2, Eye, EyeOff } from 'lucide-react';
 
 export const inputClass = [
   'w-full bg-transparent',
-  'border border-white/[0.08] focus:border-white/25',
-  'px-4 py-3 text-sm text-white',
-  'placeholder:text-white/20',
+  'border border-[#E5E7EB] focus:border-brand',
+  'px-4 py-3 text-sm text-[#183B56]',
+  'placeholder:text-[#94A3B8]',
   'outline-none transition-all duration-200',
 ].join(' ');
 
 export const btnPrimary = [
   'w-full inline-flex items-center justify-center gap-2',
   'px-6 py-3.5',
-  'bg-white text-[#171717]',
+  'bg-brand text-white',
   'text-xs font-mono font-medium tracking-wider uppercase',
-  'hover:bg-neutral-200 active:bg-neutral-300',
+  'hover:bg-brand-dark',
   'transition-all duration-200',
   'disabled:opacity-40 disabled:cursor-not-allowed',
 ].join(' ');
@@ -25,10 +25,10 @@ export const btnPrimary = [
 export const btnGhost = [
   'inline-flex items-center justify-center gap-2',
   'px-4 py-2.5',
-  'border border-white/15 text-white/50',
+  'border border-[#CBD5E1] text-[#183B56]',
   'text-xs font-mono tracking-wider uppercase',
-  'hover:border-white/25 hover:text-white/70 hover:bg-white/[0.03]',
-  'active:bg-white/[0.06]',
+  'hover:border-brand hover:text-brand-dark hover:bg-[#F8FAFC]',
+  'active:bg-[#EFF3F8]',
   'transition-all duration-200',
   'disabled:opacity-40 disabled:cursor-not-allowed',
 ].join(' ');
@@ -46,7 +46,7 @@ export const Field: React.FC<{
   maxLength?: number;
 }> = ({ label, type = 'text', value, onChange, placeholder, required, autoComplete, maxLength }) => (
   <label className="block">
-    <span className="block text-[10px] font-mono uppercase tracking-[0.2em] text-white/30 mb-2">
+    <span className="block text-[10px] font-mono uppercase tracking-[0.2em] text-[#64748B] mb-2">
       {label}
     </span>
     <input
@@ -74,7 +74,7 @@ export const PasswordField: React.FC<{
 
   return (
     <label className="block">
-      <span className="block text-[10px] font-mono uppercase tracking-[0.2em] text-white/30 mb-2">
+      <span className="block text-[10px] font-mono uppercase tracking-[0.2em] text-[#64748B] mb-2">
         {label}
       </span>
       <div className="relative">
@@ -90,7 +90,7 @@ export const PasswordField: React.FC<{
         <button
           type="button"
           onClick={() => setVisible((v) => !v)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-white/25 hover:text-white/50 transition-colors"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#183B56] transition-colors"
           tabIndex={-1}
         >
           {visible ? <EyeOff size={16} strokeWidth={1.5} /> : <Eye size={16} strokeWidth={1.5} />}
@@ -103,14 +103,14 @@ export const PasswordField: React.FC<{
 export const ErrorText: React.FC<{ children?: ReactNode }> = ({ children }) =>
   children ? (
     <div className="px-3 py-2.5 rounded-lg bg-red-500/[0.08] border border-red-500/15">
-      <span className="text-[11px] text-red-400/80 font-light leading-relaxed">{children}</span>
+      <span className="text-[11px] text-red-500/80 font-light leading-relaxed">{children}</span>
     </div>
   ) : null;
 
 export const InfoText: React.FC<{ children?: ReactNode }> = ({ children }) =>
   children ? (
-    <div className="px-3 py-2.5 rounded-lg bg-white/[0.04] border border-white/[0.06]">
-      <span className="text-[11px] text-white/45 font-light leading-relaxed">{children}</span>
+    <div className="px-3 py-2.5 rounded-lg bg-[#F8FAFC] border border-[#E5E7EB]">
+      <span className="text-[11px] text-[#64748B] font-light leading-relaxed">{children}</span>
     </div>
   ) : null;
 
@@ -124,31 +124,31 @@ export const AuthShell: React.FC<{
   children: ReactNode;
   backHref?: string;
 }> = ({ title, subtitle, children, backHref }) => (
-  <div className="min-h-screen bg-[#111111] text-white flex items-center justify-center px-4 py-12 sm:py-16">
+  <div className="min-h-screen bg-white text-[#183B56] flex items-center justify-center px-4 py-12 sm:py-16">
     <div
       className="fixed inset-0 pointer-events-none"
       style={{
-        background: 'radial-gradient(ellipse 60% 50% at 50% 0%, rgba(255,255,255,0.02) 0%, transparent 70%)',
+        background: 'radial-gradient(ellipse 60% 50% at 50% 0%, rgba(24,59,86,0.05) 0%, transparent 70%)',
       }}
     />
     <div className="relative w-full max-w-[400px]">
       {backHref && (
         <a
           href={backHref}
-          className="inline-flex items-center gap-1.5 text-[11px] font-mono text-white/30 hover:text-white/60 transition-colors mb-8 group"
+          className="inline-flex items-center gap-1.5 text-[11px] font-mono text-[#64748B] hover:text-[#183B56] transition-colors mb-8 group"
         >
           <ArrowLeft size={13} strokeWidth={1.5} className="group-hover:-translate-x-0.5 transition-transform" />
           Kembali
         </a>
       )}
       <div className="mb-8">
-        <span className="text-[10px] font-mono uppercase tracking-[0.35em] text-white/25">
+        <span className="text-[10px] font-mono uppercase tracking-[0.35em] text-[#94A3B8]">
           SymphoniaTic
         </span>
-        <h1 className="text-[28px] sm:text-[32px] leading-[1.15] tracking-[-0.02em] font-light text-white mt-3">
+        <h1 className="text-[28px] sm:text-[32px] leading-[1.15] tracking-[-0.02em] font-light text-[#183B56] mt-3">
           {title}
         </h1>
-        <p className="text-[13px] text-white/40 mt-2.5 font-light leading-relaxed">
+        <p className="text-[13px] text-[#64748B] mt-2.5 font-light leading-relaxed">
           {subtitle}
         </p>
       </div>

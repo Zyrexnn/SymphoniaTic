@@ -21,16 +21,16 @@ export const EventsPanel: React.FC<EventsPanelProps> = ({
 }) => (
   <div className="flex flex-col gap-6 pb-12">
     {/* Panel Header */}
-    <div className="border border-white/[0.08] bg-[#1a1a1a]/90 p-5 sm:p-6 backdrop-blur-md flex justify-between items-center gap-4 flex-wrap">
+    <div className="border border-[#E5E7EB] bg-white p-5 sm:p-6 flex justify-between items-center gap-4 flex-wrap">
       <div>
-        <h3 className="text-base font-light text-white tracking-tight m-0">Postingan Konser & Kategori Tiket</h3>
-        <p className="text-xs font-light text-[#9a9a9a] mt-1 m-0">
+        <h3 className="text-base font-light text-[#183B56] tracking-tight m-0">Postingan Konser & Kategori Tiket</h3>
+        <p className="text-xs font-light text-[#64748B] mt-1 m-0">
           Kelola data event, jam open gate, penutupan order tiket, lokasi venue, serta kuota tempat duduk
         </p>
       </div>
       <button
         onClick={onAddEvent}
-        className="px-4 py-2.5 text-[13px] font-light text-[#171717] bg-white hover:bg-white/90 transition-all cursor-pointer flex items-center gap-2 shadow-md active:scale-95"
+        className="px-4 py-2.5 text-[13px] font-light text-white bg-brand hover:bg-brand-dark transition-all cursor-pointer flex items-center gap-2 shadow-md active:scale-95"
       >
         <Plus size={15} strokeWidth={1.5} />
         <span>Tambah Konser Baru</span>

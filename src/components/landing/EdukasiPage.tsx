@@ -73,36 +73,36 @@ const EdukasiPage: React.FC = () => {
   const [openComposer, setOpenComposer] = useState<number | null>(0);
 
   return (
-    <div className="min-h-screen bg-[#171717] text-white">
+    <div className="min-h-screen bg-white text-[#183B56]">
       {/* Header */}
-      <div className="border-b border-white/[0.06]">
+      <div className="border-b border-line">
         <div className="mx-auto max-w-[1400px] px-10 pt-[80px] pb-10">
-          <a href="/" className="inline-flex items-center gap-2 text-base font-light tracking-[-0.05px] text-[#9a9a9a] hover:opacity-60 transition-opacity mb-8">
+          <a href="/" className="inline-flex items-center gap-2 text-base font-light tracking-[-0.05px] text-[#64748B] hover:opacity-60 transition-opacity mb-8">
             <ArrowLeft size={16} strokeWidth={1} />
             <span>Kembali ke Beranda</span>
           </a>
-          <p className="text-base font-light tracking-[-0.05px] text-[#9a9a9a] mb-6">
+          <p className="text-base font-light tracking-[-0.05px] text-[#64748B] mb-6">
             Panduan Penonton
           </p>
           <h1 className="text-[clamp(32px,5vw,56px)] leading-[1.0] tracking-[-0.056em] font-light m-0">
             Etika, Sejarah & Glosarium<br />Musik Klasik.
           </h1>
-          <p className="text-xl tracking-[-0.01em] font-light text-[#9a9a9a] mt-5 max-w-[720px]">
+          <p className="text-xl tracking-[-0.01em] font-light text-[#64748B] mt-5 max-w-[720px]">
             Pelajari tata krama pertunjukan simfoni, kenali komponis di balik mahakarya, dan pahami istilah musik klasik sebelum menikmati konser.
           </p>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="sticky top-0 z-30 bg-[--color-obsidian]/95 border-b border-white/[0.06]">
+      <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-line">
         <div className="mx-auto max-w-[1400px] px-10">
           <div className="flex overflow-x-auto no-scrollbar">
             {SECTIONS.map((s) => (
               <button key={s.id} onClick={() => setSection(s.id)}
                 className={`whitespace-nowrap cursor-pointer bg-transparent border-none text-base font-light tracking-[-0.05px] px-6 pt-4 pb-[14px] ${
                   section === s.id
-                    ? 'text-white border-b border-white'
-                    : 'text-[#9a9a9a] border-b border-transparent'
+                    ? 'text-[#183B56] border-b-2 border-brand font-medium'
+                    : 'text-[#64748B] border-b border-transparent'
                 }`}>
                 {s.label}
               </button>
@@ -126,12 +126,12 @@ const EdukasiPage: React.FC = () => {
               {VENUE_RULES.map((rule, i) => {
                 const Icon = rule.icon;
                 return (
-                  <div key={i} className="border-b border-white/[0.06] pb-6">
+                  <div key={i} className="border-b border-line pb-6">
                     <div className="flex items-center gap-3 mb-3">
-                      <Icon size={18} strokeWidth={1} className="text-white" />
-                      <h3 className="text-xl tracking-[-0.01em] font-light text-white">{rule.title}</h3>
+                      <Icon size={18} strokeWidth={1} className="text-[#183B56]" />
+                      <h3 className="text-xl tracking-[-0.01em] font-light text-[#183B56]">{rule.title}</h3>
                     </div>
-                    <p className="text-base font-light text-[#9a9a9a] leading-[1.6]">{rule.desc}</p>
+                    <p className="text-base font-light text-[#64748B] leading-[1.6]">{rule.desc}</p>
                   </div>
                 );
               })}
@@ -141,11 +141,11 @@ const EdukasiPage: React.FC = () => {
             <h2 className="text-[28px] tracking-[-0.02em] font-light mb-8">Panduan Pakaian (Dress Code)</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-[1000px]">
               {DRESS_CODES.map((dc, i) => (
-                <div key={i} className="border rounded-lg p-6 hover:border-white/20 transition-colors">
-                  <span className="inline-block text-[11px] font-light tracking-[0.12em] uppercase text-[#9a9a9a] border border-white/12 px-3 py-1 mb-4">
+                <div key={i} className="border rounded-lg p-6 hover:border-brand/40 transition-colors">
+                  <span className="inline-block text-[11px] font-light tracking-[0.12em] uppercase text-[#64748B] border border-line px-3 py-1 mb-4">
                     {dc.label}
                   </span>
-                  <p className="text-base font-light text-[#9a9a9a] leading-[1.6]">{dc.description}</p>
+                  <p className="text-base font-light text-[#64748B] leading-[1.6]">{dc.description}</p>
                 </div>
               ))}
             </div>
@@ -161,10 +161,10 @@ const EdukasiPage: React.FC = () => {
             className="max-w-[800px]"
           >
             <h2 className="text-[28px] tracking-[-0.02em] font-light mb-10">Spotlight Komponis & Sejarah Karya</h2>
-            <p className="text-base font-light text-[#9a9a9a] leading-[1.7] mb-12 max-w-[720px]">
+            <p className="text-base font-light text-[#64748B] leading-[1.7] mb-12 max-w-[720px]">
               Kenali sosok di balik mahakarya yang akan Anda dengarkan. Setiap komponis membawa konteks zaman, perjuangan, dan visi estetik yang membentuk nada-nada di balik pertunjukan.
             </p>
-            <div className="divide-y divide-white/[0.06]">
+            <div className="divide-y divide-line">
               {COMPOSERS.map((c, i) => {
                 const isOpen = openComposer === i;
                 return (
@@ -174,13 +174,13 @@ const EdukasiPage: React.FC = () => {
                       className="w-full flex items-center justify-between text-left cursor-pointer bg-transparent border-none"
                     >
                       <div>
-                        <h3 className="text-xl tracking-[-0.01em] font-light text-white">{c.name}</h3>
-                        <p className="text-base font-light text-[#9a9a9a] mt-1">{c.period}</p>
+                        <h3 className="text-xl tracking-[-0.01em] font-light text-[#183B56]">{c.name}</h3>
+                        <p className="text-base font-light text-[#64748B] mt-1">{c.period}</p>
                       </div>
                       <ChevronDown
                         size={16}
                         strokeWidth={1}
-                        className={`text-[#9a9a9a] transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
+                        className={`text-[#64748B] transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
                       />
                     </button>
                     {isOpen && (
@@ -190,13 +190,13 @@ const EdukasiPage: React.FC = () => {
                         transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                         className="overflow-hidden"
                       >
-                        <p className="text-base font-light text-[#9a9a9a] leading-[1.7] mt-5 mb-6">
+                        <p className="text-base font-light text-[#64748B] leading-[1.7] mt-5 mb-6">
                           {c.context}
                         </p>
-                        <p className="text-[11px] font-light tracking-[0.12em] uppercase text-[#9a9a9a] mb-3">Karya Terpilih</p>
+                        <p className="text-[11px] font-light tracking-[0.12em] uppercase text-[#64748B] mb-3">Karya Terpilih</p>
                         <ul className="space-y-2">
                           {c.works.map((w, j) => (
-                            <li key={j} className="text-base font-light text-white leading-[1.5]">{w}</li>
+                            <li key={j} className="text-base font-light text-[#183B56] leading-[1.5]">{w}</li>
                           ))}
                         </ul>
                       </motion.div>
@@ -217,22 +217,22 @@ const EdukasiPage: React.FC = () => {
             className="max-w-[800px]"
           >
             <h2 className="text-[28px] tracking-[-0.02em] font-light mb-10 flex items-center gap-3">
-              <BookOpen size={20} strokeWidth={1} className="text-white" />
+              <BookOpen size={20} strokeWidth={1} className="text-[#183B56]" />
               Glosarium Musik Klasik
             </h2>
 
-            <div className="flex items-center gap-3 mb-10 max-w-[400px] border-b border-white/[0.08] pb-2">
-              <Search size={14} strokeWidth={1} className="text-[#9a9a9a]" />
+            <div className="flex items-center gap-3 mb-10 max-w-[400px] border-b border-line pb-2">
+              <Search size={14} strokeWidth={1} className="text-[#64748B]" />
               <input
                 type="text"
                 placeholder="Cari istilah musik..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="text-base font-light tracking-[-0.05px] text-white bg-transparent border-b border-white/20 outline-none py-1"
+                className="text-base font-light tracking-[-0.05px] text-[#183B56] bg-transparent border-b border-[#CBD5E1] outline-none py-1 focus:border-brand transition-colors"
               />
             </div>
 
-            <div className="divide-y divide-white/[0.06]">
+            <div className="divide-y divide-line">
               {GLOSSARY
                 .filter((g) =>
                   !search ||
@@ -241,8 +241,8 @@ const EdukasiPage: React.FC = () => {
                 )
                 .map((g, i) => (
                   <div key={i} className="py-5">
-                    <h3 className="text-xl tracking-[-0.01em] font-light text-white mb-1.5">{g.term}</h3>
-                    <p className="text-base font-light text-[#9a9a9a] leading-[1.6]">{g.definition}</p>
+                    <h3 className="text-xl tracking-[-0.01em] font-light text-[#183B56] mb-1.5">{g.term}</h3>
+                    <p className="text-base font-light text-[#64748B] leading-[1.6]">{g.definition}</p>
                   </div>
                 ))}
             </div>
@@ -252,7 +252,7 @@ const EdukasiPage: React.FC = () => {
               g.term.toLowerCase().includes(search.toLowerCase()) ||
               g.definition.toLowerCase().includes(search.toLowerCase())
             ).length === 0 && (
-              <p className="text-base font-light text-[#9a9a9a] py-10">Istilah tidak ditemukan.</p>
+              <p className="text-base font-light text-[#64748B] py-10">Istilah tidak ditemukan.</p>
             )}
           </motion.div>
         )}
