@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { RefreshCw, X } from 'lucide-react';
-import type { EventItem, TicketCategory, OrderRecord, AdminMetricsData } from '../landing/data';
+import type { EventItem, TicketCategory, OrderRecord, AdminMetricsData, AdminRole } from '../landing/data';
 import {
   CONCERT_EVENTS, adminLoginAPI, fetchAdminMetricsAPI, fetchEventsAPI, createEventAPI, updateEventAPI,
   deleteEventAPI, createTicketCategoryAPI, updateTicketCategoryAPI,
@@ -14,6 +14,7 @@ import { MetricsPanel } from './MetricsPanel';
 import { EventsPanel } from './EventsPanel';
 import { OrdersPanel } from './OrdersPanel';
 import { RefundsPanel, type RefundRecord } from './RefundsPanel';
+import { GateScannerPanel } from './GateScannerPanel';
 import { EventFormModal } from './EventFormModal';
 import { CategoryFormModal } from './CategoryFormModal';
 
@@ -123,12 +124,26 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
       return false;
     }
   });
+  const [currentRole, setCurrentRole] = useState<AdminRole>(() => {
+    try {
+      return (sessionStorage.getItem('symphoniatic_admin_role') as AdminRole) || 'ADMIN';
+    } catch {
+      return 'ADMIN';
+    }
+  });
   const [username, setUsername] = useState('admin');
   const [password, setPassword] = useState('123');
   const [authError, setAuthError] = useState('');
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
-  const [activeTab, setActiveTab] = useState<TabId>('METRICS');
+  const [activeTab, setActiveTab] = useState<TabId>(() => {
+    try {
+      const savedRole = sessionStorage.getItem('symphoniatic_admin_role');
+      return savedRole === 'PETUGAS' ? 'SCANNER' : 'METRICS';
+    } catch {
+      return 'METRICS';
+    }
+  });
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   const [metrics, setMetrics] = useState<AdminMetricsData | null>(MOCK_ADMIN_METRICS);
@@ -181,12 +196,28 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
     setAuthError('');
     setIsAuthenticating(true);
 
-    if (username.trim() === 'admin' && password.trim() === '123') {
+    const cleanUser = username.trim().toLowerCase();
+    const cleanPass = password.trim();
+
+    if (cleanUser === 'admin' && cleanPass === '123') {
       try {
-        if (typeof window !== 'undefined') {
-          sessionStorage.setItem('symphoniatic_admin_token', 'authenticated');
-        }
+        sessionStorage.setItem('symphoniatic_admin_token', 'authenticated');
+        sessionStorage.setItem('symphoniatic_admin_role', 'ADMIN');
       } catch {}
+      setCurrentRole('ADMIN');
+      setActiveTab('METRICS');
+      setIsAuthenticated(true);
+      setIsAuthenticating(false);
+      return;
+    }
+
+    if (cleanUser === 'petugas' && cleanPass === '123') {
+      try {
+        sessionStorage.setItem('symphoniatic_admin_token', 'authenticated-petugas');
+        sessionStorage.setItem('symphoniatic_admin_role', 'PETUGAS');
+      } catch {}
+      setCurrentRole('PETUGAS');
+      setActiveTab('SCANNER');
       setIsAuthenticated(true);
       setIsAuthenticating(false);
       return;
@@ -196,10 +227,11 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
       const res = await adminLoginAPI(username, password);
       if (res.success) {
         try {
-          if (typeof window !== 'undefined') {
-            sessionStorage.setItem('symphoniatic_admin_token', res.data?.token || 'authenticated');
-          }
+          sessionStorage.setItem('symphoniatic_admin_token', res.data?.token || 'authenticated');
+          sessionStorage.setItem('symphoniatic_admin_role', 'ADMIN');
         } catch {}
+        setCurrentRole('ADMIN');
+        setActiveTab('METRICS');
         setIsAuthenticated(true);
       } else {
         setAuthError(res.message || 'Username atau Password Admin salah');
@@ -213,9 +245,8 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
 
   const handleLogout = () => {
     try {
-      if (typeof window !== 'undefined') {
-        sessionStorage.removeItem('symphoniatic_admin_token');
-      }
+      sessionStorage.removeItem('symphoniatic_admin_token');
+      sessionStorage.removeItem('symphoniatic_admin_role');
     } catch {}
     setIsAuthenticated(false);
   };
@@ -448,6 +479,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
   }
 
   const tabLabels: Record<TabId, { title: string; subtitle: string }> = {
+    SCANNER: { title: 'Pemindai Kamera Gate & Validasi Check-In', subtitle: 'SymphoniaTic Gate Entry Control System' },
     METRICS: { title: 'Dashboard Metrik & Pendapatan Finansial', subtitle: 'SymphoniaTic Executive Management Portal' },
     EVENTS: { title: 'Manajemen Postingan Tiket Konser', subtitle: 'SymphoniaTic Executive Management Portal' },
     ORDERS: { title: 'Pengelolaan Pesanan & Laporan Transaksi', subtitle: 'SymphoniaTic Executive Management Portal' },
@@ -489,6 +521,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
     <div className="min-h-screen w-full bg-[#171717] text-white flex flex-col md:flex-row font-sans">
       <AdminSidebar
         activeTab={activeTab}
+        role={currentRole}
         onTabChange={setActiveTab}
         onLogout={handleLogout}
         eventsCount={eventsList.length}
@@ -499,6 +532,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
 
       <MobileHeader
         activeTab={activeTab}
+        role={currentRole}
         onTabChange={setActiveTab}
         onLogout={handleLogout}
         isOpen={isMobileSidebarOpen}
@@ -535,6 +569,9 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
         </header>
 
         <div className="flex-1 p-6 sm:p-8 overflow-y-auto max-w-[1200px] mx-auto w-full">
+          {activeTab === 'SCANNER' && (
+            <GateScannerPanel />
+          )}
           {activeTab === 'METRICS' && (
             <MetricsPanel metrics={metrics} eventsCount={eventsList.length} onGoToOrders={() => setActiveTab('ORDERS')} />
           )}
@@ -592,7 +629,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
         </div>
       </main>
 
-      <MobileBottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+      <MobileBottomNav activeTab={activeTab} role={currentRole} onTabChange={setActiveTab} />
 
       <EventFormModal
         isOpen={showAddEventModal || !!editingEvent}

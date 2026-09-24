@@ -64,6 +64,8 @@ export interface OrderRecord {
   userId?: string;
 }
 
+export type AdminRole = 'ADMIN' | 'PETUGAS';
+
 export interface UserRecord {
   id: string;
   email: string;
@@ -541,6 +543,44 @@ export const updateOrderStatusAPI = async (orderId: string, status: string) => {
     body: JSON.stringify({ status }),
   });
   return res.json();
+};
+
+export const checkInTicketAPI = async (code: string) => {
+  const cleanCode = code.trim().replace(/^QR-/, '');
+  const lookupRes = await lookupTicketAPI(cleanCode);
+  if (!lookupRes.success || !lookupRes.data) {
+    return { success: false, message: lookupRes.message || 'Tiket tidak ditemukan' };
+  }
+  const order = lookupRes.data;
+  if (order.status === 'CHECKED_IN') {
+    return {
+      success: false,
+      isAlreadyUsed: true,
+      data: order,
+      message: `Tiket (${order.orderCode}) SUDAH DIGUNAKAN sebelumnya!`,
+    };
+  }
+  if (order.status === 'REFUNDED' || order.status === 'CANCELLED') {
+    return {
+      success: false,
+      isVoid: true,
+      data: order,
+      message: `Tiket (${order.orderCode}) TIDAK VALID / TELAH DI-REFUND!`,
+    };
+  }
+
+  const updateRes = await updateOrderStatusAPI(order.id, 'CHECKED_IN');
+  if (updateRes.success) {
+    return {
+      success: true,
+      data: { ...order, status: 'CHECKED_IN' },
+      message: `Check-in Berhasil! Selamat menikmati konser.`,
+    };
+  }
+  return {
+    success: false,
+    message: updateRes.message || 'Gagal mengubah status check-in tiket.',
+  };
 };
 
 export const fetchAdminRefundsAPI = async () => {
