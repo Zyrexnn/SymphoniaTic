@@ -90,7 +90,7 @@ const EventCard: React.FC<{ event: EventItem; saved: boolean; onToggleSave: () =
       href={`/concert/${event.id}`}
       className="group flex flex-col focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2"
     >
-      <div className="relative overflow-hidden rounded-xl bg-[#F1F5F9] aspect-[6/7]">
+      <div className="relative overflow-hidden rounded-xl bg-[#F1F5F9] aspect-[7/6]">
         <img
           src={event.image}
           alt={event.title}
