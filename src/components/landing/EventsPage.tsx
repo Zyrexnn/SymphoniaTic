@@ -5,6 +5,7 @@ import { parseDate, MONTHS } from './Sections';
 import type { EventItem } from './data';
 import { Footer } from './Footer';
 import { Header } from './Layout';
+import { EventCategoriesSection } from './EventCategoriesSection';
 
 /* ── Data helpers ── */
 
@@ -36,21 +37,18 @@ const DateBlock: React.FC<{ date?: string; size?: 'sm' | 'lg' }> = ({ date, size
   const { day, month, year } = parseDate(date);
   return (
     <div
-      className={`absolute left-4 rounded-xl bg-white/95 backdrop-blur-sm shadow-[0_4px_16px_-6px_rgba(17,17,17,0.25)] text-center ${
-        size === 'lg' ? 'px-3.5 py-2.5 left-5' : 'px-2.5 py-2'
-      }`}
+      className={`absolute left-4 rounded-xl bg-white/95 backdrop-blur-sm shadow-[0_4px_16px_-6px_rgba(17,17,17,0.25)] text-center ${size === 'lg' ? 'px-3.5 py-2.5 left-5' : 'px-2.5 py-2'
+        }`}
     >
       <span
-        className={`block leading-none font-bold text-[#183B56] tabular-nums ${
-          size === 'lg' ? 'text-2xl' : 'text-lg'
-        }`}
+        className={`block leading-none font-bold text-[#183B56] tabular-nums ${size === 'lg' ? 'text-2xl' : 'text-lg'
+          }`}
       >
         {day}
       </span>
       <span
-        className={`block mt-1 leading-none font-bold tracking-[0.16em] text-brand-accent ${
-          size === 'lg' ? 'text-[11px]' : 'text-[10px]'
-        }`}
+        className={`block mt-1 leading-none font-bold tracking-[0.16em] text-brand-accent ${size === 'lg' ? 'text-[11px]' : 'text-[10px]'
+          }`}
       >
         {month} {size === 'lg' ? year : ''}
       </span>
@@ -95,9 +93,8 @@ const EventCard: React.FC<{ event: EventItem; saved: boolean; onToggleSave: () =
           src={event.image}
           alt={event.title}
           loading="lazy"
-          className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 group-hover:scale-[1.05] ${
-            isClosed ? 'grayscale brightness-50' : 'brightness-[0.94] group-hover:brightness-100'
-          }`}
+          className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 group-hover:scale-[1.05] ${isClosed ? 'grayscale brightness-50' : 'brightness-[0.94] group-hover:brightness-100'
+            }`}
         />
         {/* {!isClosed && <DateBlock date={event.date} />} */}
         <FavoriteButton active={saved} onToggle={onToggleSave} />
@@ -140,40 +137,6 @@ const EventCard: React.FC<{ event: EventItem; saved: boolean; onToggleSave: () =
         </div>
       </div>
     </a>
-  );
-};
-
-/* ── Category discovery card ── */
-
-const CategoryCard: React.FC<{ name: string; count: number; image: string; onSelect: () => void }> = ({
-  name,
-  count,
-  image,
-  onSelect,
-}) => {
-  return (
-    <button
-      onClick={onSelect}
-      className="group relative block w-[74vw] sm:w-[300px] shrink-0 snap-start overflow-hidden rounded-2xl bg-[#F1F5F9] text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2"
-    >
-      <img
-        src={image}
-        alt={name}
-        loading="lazy"
-        className="aspect-[3/4] w-full object-cover brightness-[0.82] transition-all duration-700 group-hover:scale-[1.05] group-hover:brightness-[0.9]"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
-      <span className="absolute right-4 top-4 rounded-full bg-white/95 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[#183B56]">
-        {count} konser
-      </span>
-      <div className="absolute bottom-5 left-5 right-5">
-        <h3 className="text-xl font-bold leading-tight tracking-tight text-white">{name}</h3>
-        <span className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-white opacity-0 translate-y-1 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-          Telusuri {name}
-          <ChevronRight size={15} strokeWidth={2} />
-        </span>
-      </div>
-    </button>
   );
 };
 
@@ -367,6 +330,7 @@ const EventsPage: React.FC = () => {
                   Musim 2026
                 </span>
               </div>
+
             </div>
 
             {/* Right: season snapshot */}
@@ -400,8 +364,16 @@ const EventsPage: React.FC = () => {
                 </div>
               </div>
             </div>
+
+
           </div>
+
         </div>
+        <EventCategoriesSection
+          categories={categories}
+          events={sourceEvents}
+          onSelect={selectFilter}
+        />
       </section>
 
 
@@ -415,17 +387,15 @@ const EventsPage: React.FC = () => {
                   key={chip.id}
                   onClick={() => selectFilter(chip.id)}
                   aria-pressed={active}
-                  className={`flex shrink-0 items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2 ${
-                    active
+                  className={`flex shrink-0 items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2 ${active
                       ? 'bg-brand-accent text-white'
                       : 'bg-white text-[#64748B] border border-[#E5E7EB] hover:border-brand-accent/50 hover:text-brand-accent'
-                  }`}
+                    }`}
                 >
                   {chip.label}
                   <span
-                    className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold tabular-nums ${
-                      active ? 'bg-white/20 text-white' : 'bg-[#F8FAFC] text-[#94A3B8]'
-                    }`}
+                    className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold tabular-nums ${active ? 'bg-white/20 text-white' : 'bg-[#F8FAFC] text-[#94A3B8]'
+                      }`}
                   >
                     {chip.count}
                   </span>
@@ -442,7 +412,7 @@ const EventsPage: React.FC = () => {
           <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
             <div>
               <p className="inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.22em] text-brand-accent">
-              
+
                 Hasil Pencarian
               </p>
               <h2 className="mt-3 text-2xl sm:text-3xl font-bold tracking-[-0.02em] text-[#183B56]">
@@ -471,7 +441,7 @@ const EventsPage: React.FC = () => {
         ) : (
           <div className="mb-3">
             <p className="inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.22em] text-brand-accent">
-              
+
               Agenda Konser
             </p>
             <h2 className="mt-3 text-3xl sm:text-4xl font-bold tracking-[-0.03em] text-[#183B56]">
@@ -514,7 +484,7 @@ const EventsPage: React.FC = () => {
 
             <div className="lg:col-span-5">
               <p className="inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.22em] text-brand-accent">
-                
+
                 Featured
               </p>
               <h2 className="mt-4 text-3xl sm:text-4xl lg:text-[44px] font-bold leading-[1.06] tracking-[-0.03em] text-[#183B56]">
@@ -609,49 +579,6 @@ const EventsPage: React.FC = () => {
           </div>
         )}
       </section>
-
-      
-      {categories.length > 1 && (
-        <section className="border-t border-[#E5E7EB] bg-[#F8FAFC]/60 py-16">
-          <div className="mx-auto max-w-[1360px] px-5 sm:px-10">
-            <div className="mb-10 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-              <div>
-                <p className="inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.22em] text-brand-accent">
-                  
-                  Telusuri Pengalaman
-                </p>
-                <h2 className="mt-3 text-2xl sm:text-3xl font-bold tracking-[-0.02em] text-[#183B56]">
-                  Jelajahi Berdasarkan Kategori
-                </h2>
-              </div>
-              <p className="text-sm text-[#64748B] max-w-sm sm:text-right">
-                Temukan arah konser yang sesuai dengan seleramu musim ini.
-              </p>
-            </div>
-
-            <div className="flex gap-5 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-2 -mx-5 sm:mx-0 px-5 sm:px-0">
-              {categories.map((cat) => {
-                const rep = sourceEvents.find(
-                  (e) => (e.category || '').trim().toUpperCase() === cat
-                );
-                const count = sourceEvents.filter(
-                  (e) => (e.category || '').trim().toUpperCase() === cat
-                ).length;
-                if (!rep) return null;
-                return (
-                  <CategoryCard
-                    key={cat}
-                    name={titleCase(cat)}
-                    count={count}
-                    image={rep.image}
-                    onSelect={() => selectFilter(cat)}
-                  />
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      )}
 
       <Footer />
     </div>
