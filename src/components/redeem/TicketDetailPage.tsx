@@ -257,6 +257,7 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
           ctx.fillRect(qrX + qrPad + c * cellSize, qrY + qrPad + r * cellSize, cellSize - 1, cellSize - 1);
         }
       }
+    }
 
     const domQrCanvas = document.getElementById('ticket-real-qrcode') as HTMLCanvasElement | null;
     if (domQrCanvas) {
@@ -633,6 +634,7 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
                       isRefunded || isCheckedIn ? 'opacity-20 blur-[2px]' : ''
                     }`}
                     strokeWidth={1}
+                  />
 
                   <QRCodeCanvas
                     id="ticket-real-qrcode"
@@ -641,7 +643,6 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
                     level="H"
                     includeMargin={false}
                     className={`block ${isRefunded || isCheckedIn ? 'opacity-20 blur-[2px]' : ''}`}
-
                   />
 
                   {isRefunded && (
