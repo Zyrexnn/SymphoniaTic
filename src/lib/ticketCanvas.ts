@@ -129,6 +129,7 @@ export function drawTicketCanvas(order: OrderRecord): HTMLCanvasElement {
         ctx.fillRect(qrX + qrPad + c * cellSize, qrY + qrPad + r * cellSize, cellSize - 1, cellSize - 1);
       }
     }
+  }
 
   const domQrCanvas = (typeof document !== 'undefined' ? document.getElementById('ticket-real-qrcode') : null) as HTMLCanvasElement | null;
   if (domQrCanvas) {
