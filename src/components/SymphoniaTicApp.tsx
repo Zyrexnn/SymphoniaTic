@@ -5,7 +5,8 @@ import { CONCERT_EVENTS, fetchEventsAPI, getUserOrdersAPI } from './landing/data
 import type { EventItem, TicketCategory, OrderRecord } from './landing/data';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 
-import { Header, Hero } from './landing/Layout';
+import { Header } from './landing/Navbar';
+import { Hero } from './landing/Layout';
 import { Footer } from './landing/Footer';
 import { AudioPlayer } from './landing/AudioPlayer';
 import { RecommendedSection } from './landing/RecommendedSection';

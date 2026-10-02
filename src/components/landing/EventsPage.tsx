@@ -4,7 +4,7 @@ import { CONCERT_EVENTS, fetchEventsAPI, formatIDR } from './data';
 import { parseDate, MONTHS } from './Sections';
 import type { EventItem } from './data';
 import { Footer } from './Footer';
-import { Header } from './Layout';
+import { Header } from './Navbar';
 import { EventCategoriesSection } from './EventCategoriesSection';
 
 /* ── Data helpers ── */
