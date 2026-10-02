@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { QRCodeCanvas } from 'qrcode.react';
 import {
   QrCode,
   CheckCircle2,
@@ -229,8 +230,7 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
     const qrSize = 200;
     const qrX = (width - qrSize) / 2;
     const qrY = 630;
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(qrX, qrY, qrSize, qrSize);
+
 
     ctx.fillStyle = '#183B56';
     const drawFinder = (fx: number, fy: number) => {
@@ -257,6 +257,15 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
           ctx.fillRect(qrX + qrPad + c * cellSize, qrY + qrPad + r * cellSize, cellSize - 1, cellSize - 1);
         }
       }
+
+    const domQrCanvas = document.getElementById('ticket-real-qrcode') as HTMLCanvasElement | null;
+    if (domQrCanvas) {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(qrX - 10, qrY - 10, qrSize + 20, qrSize + 20);
+      ctx.drawImage(domQrCanvas, qrX, qrY, qrSize, qrSize);
+    } else {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(qrX, qrY, qrSize, qrSize);
     }
 
     ctx.fillStyle = '#ffffff';
@@ -618,11 +627,21 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
                 </div>
 
                 <div className="relative p-4 bg-white border border-white shrink-0 shadow-xl">
+
                   <QrCode
                     className={`w-44 h-44 sm:w-52 sm:h-52 text-[#183B56] ${
                       isRefunded || isCheckedIn ? 'opacity-20 blur-[2px]' : ''
                     }`}
                     strokeWidth={1}
+
+                  <QRCodeCanvas
+                    id="ticket-real-qrcode"
+                    value={foundOrder.orderCode}
+                    size={180}
+                    level="H"
+                    includeMargin={false}
+                    className={`block ${isRefunded || isCheckedIn ? 'opacity-20 blur-[2px]' : ''}`}
+
                   />
 
                   {isRefunded && (
@@ -855,7 +874,17 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
               <span className="text-xs font-mono text-[#94A3B8] uppercase tracking-widest">
                 SCANNER GATE QR CODE
               </span>
+
               <QrCode className="w-64 h-64 text-[#183B56]" strokeWidth={1} />
+
+              <QRCodeCanvas
+                value={foundOrder.orderCode}
+                size={240}
+                level="H"
+                includeMargin={true}
+                className="block shadow-md"
+              />
+
               <div className="space-y-1">
                 <p className="text-xl font-mono font-bold tracking-widest">{foundOrder.orderCode}</p>
                 <p className="text-xs text-[#64748B] font-light">{foundOrder.eventTitle}</p>

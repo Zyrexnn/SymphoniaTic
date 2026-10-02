@@ -35,8 +35,13 @@ export function drawTicketCanvas(order: OrderRecord): HTMLCanvasElement {
   ctx.lineTo(750, 105);
   ctx.stroke();
 
-  // Event Info
+// Event Info
   ctx.fillStyle = '#94A3B8';
+
+
+  // Event Info 
+  ctx.fillStyle = '#9a9a9a';
+
   ctx.font = '300 12px sans-serif';
   ctx.fillText('PERTUNJUKAN RESMI', 50, 130);
 
@@ -97,8 +102,7 @@ export function drawTicketCanvas(order: OrderRecord): HTMLCanvasElement {
   const qrSize = 190;
   const qrX = (width - qrSize) / 2;
   const qrY = 640;
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(qrX, qrY, qrSize, qrSize);
+
 
   ctx.fillStyle = '#183B56';
   const drawFinder = (fx: number, fy: number) => {
@@ -125,6 +129,16 @@ export function drawTicketCanvas(order: OrderRecord): HTMLCanvasElement {
         ctx.fillRect(qrX + qrPad + c * cellSize, qrY + qrPad + r * cellSize, cellSize - 1, cellSize - 1);
       }
     }
+
+  const domQrCanvas = (typeof document !== 'undefined' ? document.getElementById('ticket-real-qrcode') : null) as HTMLCanvasElement | null;
+  if (domQrCanvas) {
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(qrX - 10, qrY - 10, qrSize + 20, qrSize + 20);
+    ctx.drawImage(domQrCanvas, qrX, qrY, qrSize, qrSize);
+  } else {
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(qrX, qrY, qrSize, qrSize);
+
   }
 
   ctx.fillStyle = '#94A3B8';
