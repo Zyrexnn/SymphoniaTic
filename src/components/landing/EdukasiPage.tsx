@@ -52,7 +52,6 @@ const EdukasiPage: React.FC = () => {
         <ConcertGuide />
       </main>
       <EducationCTA />
-      <Footer />
     </div>
   );
 };
