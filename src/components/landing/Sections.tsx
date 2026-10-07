@@ -2,6 +2,7 @@
 import { Heart, ArrowUpRight, MapPin, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { CONCERT_EVENTS, ARTISTS_LINEUP, formatIDR } from './data';
 import type { EventItem } from './data';
+import { SectionHeading } from './SectionHeading';
 
 interface SectionProps {
   events?: EventItem[];
@@ -16,7 +17,7 @@ export const getMinPrice = (event: EventItem) => event.categories?.[0]?.price ??
 
 export const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGU', 'SEP', 'OKT', 'NOV', 'DES'];
 
-/* Parse date string like "Sabtu, 18 April 2026" or "2026-04-18" â†’ { day, month, year } */
+/* Parse date string like "Sabtu, 18 April 2026" or "2026-04-18" → { day, month, year } */
 export const parseDate = (date?: string) => {
   if (!date) return { day: '', month: '', year: '', weekday: '' };
   let day = '';
@@ -44,43 +45,7 @@ export const parseDate = (date?: string) => {
   return { day, month, year, weekday };
 };
 
-/* â”€â”€ Reusable editorial section header â”€â”€ */
-const SectionHeading: React.FC<{
-  eyebrow: string;
-  title: string;
-  support: string;
-  actionLabel: string;
-  actionHref: string;
-}> = ({ eyebrow, title, support, actionLabel, actionHref }) => {
-  return (
-    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10 sm:mb-14">
-      <div className="max-w-2xl">
-        <p className="inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.22em] text-brand-accent">
-          <span className="h-px w-9 bg-brand-accent" aria-hidden />
-          {eyebrow}
-        </p>
-        <h2 className="mt-4 text-3xl sm:text-4xl lg:text-[42px] font-bold tracking-[-0.03em] leading-[1.08] text-ink">
-          {title}
-        </h2>
-        <p className="mt-4 text-sm sm:text-base leading-relaxed text-[#64748B] max-w-xl">
-          {support}
-        </p>
-      </div>
-      <a
-        href={actionHref}
-        className="group/btn inline-flex items-center gap-2 rounded-full bg-[#183B56] text-white px-5 py-2.5 text-sm font-semibold hover:bg-brand-accent transition-colors shrink-0"
-      >
-        {actionLabel}
-        <ArrowUpRight
-          size={16}
-          className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform"
-        />
-      </a>
-    </div>
-  );
-};
-
-/* â•â•â•â•â•â•â•â•â•â•â• ARTIST DISCOVERY â€” horizontal portrait rail â•â•â•â•â•â•â•â•â•â•â• */
+/* ─── ARTIST DISCOVERY — horizontal portrait rail ─── */
 
 const ArtistCard: React.FC<{ image: string; name: string; genre: string; shows: string }> = ({
   image,
@@ -163,220 +128,160 @@ const ArtistRail: React.FC = () => {
   );
 };
 
-/* â•â•â•â•â•â•â•â•â•â•â• UPCOMING CONCERTS â€” editorial discovery â•â•â•â•â•â•â•â•â•â•â• */
+/* ─── TRENDING CONCERTS — "Yang Lagi Ramai" ─── */
 
-/* Ticket-stub date badge */
-const DateBlock: React.FC<{ event: EventItem; size?: 'sm' | 'lg' }> = ({ event, size = 'sm' }) => {
-  const { day, month, year } = parseDate(event.date);
-  return (
-    <div
-      className={`rounded-xl bg-white text-ink text-center shadow-[0_8px_24px_-8px_rgba(24,59,86,0.2)] ${
-        size === 'lg' ? 'px-4 py-3' : 'px-2.5 py-1.5'
-      }`}
-    >
-      <div className={`font-black tracking-[0.18em] text-brand-accent ${size === 'lg' ? 'text-[10px]' : 'text-[8px]'}`}>
-        {month || 'KONSER'}
-      </div>
-      <div className={`font-black leading-none text-ink ${size === 'lg' ? 'text-3xl' : 'text-sm'}`}>
-        {day || 'â€”'}
-      </div>
-      <div className={`font-semibold text-[#94A3B8] ${size === 'lg' ? 'text-[10px] mt-0.5' : 'text-[8px]'}`}>
-        {year || ''}
-      </div>
-    </div>
-  );
+type BadgeTone = 'accent' | 'navy' | 'muted';
+
+interface TrendBadge {
+  label: string;
+  tone: BadgeTone;
+}
+
+/* Scarcity badge derived from existing ticket quota data — no new data structure */
+const getTrendBadge = (event: EventItem, index: number): TrendBadge => {
+  const total = event.categories?.reduce((sum, c) => sum + (c.quota ?? 0), 0) ?? 0;
+  const remaining = event.categories?.reduce((sum, c) => sum + (c.remainingQuota ?? c.quota ?? 0), 0) ?? 0;
+
+  if (event.isClosed) return { label: 'TIKET TUTUP', tone: 'muted' };
+
+  if (total > 0 && remaining < total) {
+    const ratio = remaining / total;
+    if (ratio <= 0.15) return { label: 'HAMPIR HABIS', tone: 'accent' };
+    if (ratio <= 0.45) return { label: 'TIKET TERBATAS', tone: 'accent' };
+  }
+
+  return { label: 'TRENDING', tone: index === 1 ? 'navy' : 'accent' };
 };
 
-/* Featured editorial card â€” artwork as hero */
-const FeaturedConcert: React.FC<{ event: EventItem }> = ({ event }) => {
-  const minPrice = getMinPrice(event);
-
-  return (
-    <div
-      onClick={() => goToConcert(event)}
-      className="group relative overflow-hidden rounded-2xl bg-[#183B56] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2"
-    >
-      <div className="relative h-[440px] sm:h-[500px] lg:h-[560px] overflow-hidden">
-        <img
-          src={event.image}
-          alt={event.title}
-          className="w-full h-full object-cover brightness-[0.82] group-hover:scale-[1.04] group-hover:brightness-100 transition-all duration-[900ms] ease-out"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/10" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent" />
-      </div>
-
-      {/* Top row */}
-      <div className="absolute top-4 left-4 sm:top-6 sm:left-6 right-4 sm:right-6 z-10 flex items-start justify-between gap-3">
-        <DateBlock event={event} size="lg" />
-        <button
-          aria-label="Simpan ke favorit"
-          onClick={(e) => e.stopPropagation()}
-          className="h-10 w-10 rounded-full bg-white/90 text-black flex items-center justify-center hover:bg-brand-accent hover:text-white transition-colors cursor-pointer"
-        >
-          <Heart size={16} />
-        </button>
-      </div>
-
-      {/* Bottom: minimal overlay â€” let artwork speak */}
-      <div className="absolute inset-x-0 bottom-0 z-10 p-5 sm:p-8">
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] sm:text-xs font-bold uppercase tracking-[0.18em] text-white/70">
-          <span>{event.category || 'Konser'}</span>
-          <span className="opacity-50" aria-hidden>Â·</span>
-          <span>{event.venue}</span>
-          <span className="opacity-50" aria-hidden>Â·</span>
-          <span className="normal-case tracking-normal">{event.time}</span>
-        </div>
-
-        <h3 className="mt-3 text-2xl sm:text-4xl lg:text-[44px] font-bold tracking-[-0.03em] leading-[1.05] text-white max-w-3xl line-clamp-2">
-          {event.title}
-        </h3>
-        <p className="mt-2 text-sm sm:text-base text-white/75 line-clamp-1 max-w-2xl">
-          {event.artist}
-        </p>
-
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-5 border-t border-white/15 pt-5">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/60">
-              Mulai dari
-            </p>
-            <p className="text-xl sm:text-2xl font-bold text-white">
-              {event.isClosed ? 'Tiket Tutup' : formatIDR(minPrice)}
-            </p>
-          </div>
-          <span className="inline-flex items-center gap-2 rounded-full bg-brand-accent px-5 py-3 text-sm font-semibold text-white hover:bg-brand-accent-hover transition-colors">
-            Detail Konser & Tiket
-            <ArrowUpRight size={16} />
-          </span>
-        </div>
-      </div>
-    </div>
-  );
+const BADGE_TONE: Record<BadgeTone, string> = {
+  accent: 'bg-brand-accent text-white',
+  navy: 'bg-[#183B56] text-white',
+  muted: 'bg-[#183B56]/85 text-white',
 };
 
-/* Borderless soft-surface event card */
-const ConcertEventCard: React.FC<{ event: EventItem }> = ({ event }) => {
+const TrendingConcertCard: React.FC<{ event: EventItem; index: number }> = ({ event, index }) => {
   const minPrice = getMinPrice(event);
   const { day, month } = parseDate(event.date);
+  const badge = getTrendBadge(event, index);
+  const dateLabel = day && month ? `${day} ${month} ${new Date().getFullYear()}` : event.date;
 
   return (
-    <div
+    <article
       onClick={() => goToConcert(event)}
-      className="group rounded-2xl bg-[#F8FAFC] overflow-hidden cursor-pointer hover:shadow-[0_20px_50px_-24px_rgba(17,17,17,0.35)] hover:-translate-y-1 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2"
+      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white cursor-pointer transition-all duration-300 ease-out hover:-translate-y-1 hover:border-brand-accent/45 hover:shadow-[0_24px_48px_-28px_rgba(24,59,86,0.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2"
     >
-      <div className="relative aspect-[16/10] overflow-hidden bg-[#F1F5F9]">
+      {/* Artwork */}
+      <div className="relative aspect-[4/5] overflow-hidden bg-[#F1F5F9]">
         <img
           src={event.image}
           alt={event.title}
-          className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.06] ${
-            event.isClosed ? 'grayscale' : 'brightness-[0.98]'
+          loading="lazy"
+          className={`absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.05] ${
+            event.isClosed ? 'grayscale' : ''
           }`}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-        {event.isClosed && (
-          <div className="absolute inset-0 bg-[#183B56]/55 flex items-center justify-center">
-            <span className="rounded-full bg-white px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-black">
-              Tutup
-            </span>
-          </div>
-        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
 
-        <span className="absolute top-3 left-3 rounded-lg bg-white/95 px-2.5 py-1.5 text-[11px] font-bold text-black shadow-sm">
-          {day && month ? `${day} ${month}` : event.date}
+        <span
+          className={`absolute left-3 top-3 rounded-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.14em] shadow-sm transition-colors duration-300 ${BADGE_TONE[badge.tone]}`}
+        >
+          {badge.label}
         </span>
 
         <button
           aria-label="Simpan ke favorit"
           onClick={(e) => e.stopPropagation()}
-          className="absolute top-3 right-3 h-8 w-8 rounded-full bg-white/95 text-black flex items-center justify-center hover:bg-brand-accent hover:text-white transition-colors cursor-pointer"
+          className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-[#183B56] shadow-sm transition-all duration-300 hover:bg-brand-accent hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent"
         >
-          <Heart size={14} />
+          <Heart size={15} />
         </button>
+
+        <span className="absolute bottom-3 left-3 rounded-lg bg-white/95 px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-wider text-[#183B56] shadow-sm">
+          {dateLabel}
+        </span>
       </div>
 
-      <div className="p-5 sm:p-6">
+      {/* Body */}
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
         {event.category && (
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-accent">
             {event.category}
           </p>
         )}
-        <h4 className="mt-1.5 text-lg sm:text-xl font-bold leading-snug tracking-tight text-ink line-clamp-2">
+
+        <h3 className="mt-2 text-lg font-bold leading-snug tracking-tight text-ink line-clamp-2">
           {event.title}
-        </h4>
+        </h3>
+
         <p className="mt-1.5 text-sm text-[#64748B] line-clamp-1">
           {event.artist}
         </p>
 
-        <div className="mt-4 flex items-center gap-2 text-xs text-[#64748B]">
-          <Calendar size={13} className="text-brand-accent shrink-0" />
-          <span>{event.time}</span>
-          <span className="opacity-40" aria-hidden>Â·</span>
-          <span className="inline-flex items-center gap-1 min-w-0">
-            <MapPin size={13} className="text-brand-accent shrink-0" />
+        <div className="mt-4 space-y-2 text-xs text-[#64748B]">
+          <p className="flex items-center gap-2">
+            <Calendar size={13} className="shrink-0 text-brand-accent" />
+            <span className="truncate">{event.time}</span>
+          </p>
+          <p className="flex items-center gap-2">
+            <MapPin size={13} className="shrink-0 text-brand-accent" />
             <span className="truncate">{event.venue}</span>
-          </span>
+          </p>
         </div>
 
-        <div className="mt-5 flex items-center justify-between gap-3">
-          <div>
+        {/* Footer pinned so heights stay consistent across the grid */}
+        <div className="mt-auto flex items-center justify-between gap-3 border-t border-[#E5E7EB] pt-5">
+          <div className="min-w-0">
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#94A3B8]">
               Mulai dari
             </p>
-            <p className="text-lg font-bold text-ink">
+            <p className="truncate text-lg font-bold text-ink">
               {event.isClosed ? 'Tutup' : formatIDR(minPrice)}
             </p>
           </div>
-          <span className="h-11 w-11 rounded-full bg-[#183B56] text-white flex items-center justify-center group-hover:bg-brand-accent transition-colors duration-300">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#183B56] text-white transition-all duration-300 ease-out group-hover:bg-brand-accent group-hover:rotate-45">
             <ArrowUpRight size={18} />
           </span>
         </div>
       </div>
-    </div>
+    </article>
   );
 };
 
-
-
 export const BentoSection: React.FC<SectionProps> = ({ events }) => {
   const sourceEvents = (events && events.length > 0) ? events : CONCERT_EVENTS;
-  const featured = sourceEvents[0];
-  const rest = sourceEvents.slice(1);
+  const trending = sourceEvents.slice(0, 4);
 
   return (
     <div className="bg-canvas text-ink">
-      
       <section className="mx-auto max-w-[1440px] px-6 sm:px-8 md:px-12 pt-20 sm:pt-24 lg:pt-28">
         <SectionHeading
           eyebrow="Jelajahi Artis"
           title="Orkestra & Ensemble Musim Ini"
-          support="Dari orkestra simfoni kelas dunia hingga chamber ensemble â€” kenali penampil yang siap menghidupkan panggung SymphoniaTic."
+          support="Dari orkestra simfoni kelas dunia hingga chamber ensemble — kenali penampil yang siap menghidupkan panggung SymphoniaTic."
           actionLabel="Semua Artis"
           actionHref="/events"
         />
         <ArtistRail />
       </section>
 
-
       <section className="mx-auto max-w-[1440px] px-6 sm:px-8 md:px-12 py-20 sm:py-24 lg:py-28">
         <SectionHeading
-          eyebrow="Jadwal Konser"
-          title="Konser Mendatang"
-          support="Pilih konser favoritmu, cek detail line-up dan jadwal, lalu amankan tiketmu sebelum sold out."
+          eyebrow="Sedang Ramai"
+          title="Yang Lagi Ramai"
+          support="Konser yang paling banyak diminati dan tiketnya mulai terbatas."
           actionLabel="Lihat Semua"
           actionHref="/events"
         />
 
-        {featured && (
-          <div className="mb-6 md:mb-8">
-            <FeaturedConcert event={featured} />
-          </div>
-        )}
-
-        {rest.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {rest.map((event) => (
-              <ConcertEventCard key={event.id} event={event} />
+        {trending.length > 0 ? (
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
+            {trending.map((event, index) => (
+              <TrendingConcertCard key={event.id} event={event} index={index} />
             ))}
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-dashed border-[#E5E7EB] bg-[#F8FAFC] px-6 py-16 text-center">
+            <p className="text-sm text-[#64748B]">Belum ada konser yang sedang ramai saat ini.</p>
           </div>
         )}
       </section>
