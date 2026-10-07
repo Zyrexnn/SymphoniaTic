@@ -8,6 +8,7 @@ import { ComposerSpotlight } from './ComposerSpotlight';
 import { GlossarySection } from './GlossarySection';
 import { ConcertGuide } from './ConcertGuide';
 import { EducationCTA } from './EducationCTA';
+import { Footer } from './Footer';
 import { EDUKASI_NAV, type EdukasiSectionId } from './edukasiData';
 
 const EdukasiPage: React.FC = () => {
@@ -51,6 +52,7 @@ const EdukasiPage: React.FC = () => {
         <ConcertGuide />
       </main>
       <EducationCTA />
+      <Footer />
     </div>
   );
 };
