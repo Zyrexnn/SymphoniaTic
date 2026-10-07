@@ -108,15 +108,12 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 px-2 pb-2 sm:px-4 sm:pb-3">
-      {/* Main Glassmorphism Player Card */}
       <div className="relative mx-auto max-w-6xl overflow-hidden rounded-2xl sm:rounded-3xl border border-white/10 bg-[#171717]/80 p-3 sm:p-4 shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-2xl transition-all duration-300">
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-white/[0.04] via-transparent to-white/[0.02] pointer-events-none" />
 
         <div className="flex flex-col gap-3">
-          {/* Main Controls Row */}
           <div className="flex items-center justify-between gap-3 sm:gap-6">
             
-            {/* Left: Track Info & Thumbnail */}
             <div className="flex items-center gap-3 min-w-0 flex-1 md:flex-initial">
               <div className="relative h-11 w-11 sm:h-14 sm:w-14 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-white/20 via-white/5 to-transparent shadow-inner">
                 {activeTrack.image ? (
@@ -167,7 +164,6 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
               </Button>
             </div>
 
-            {/* Center: Playback Controls & Progress (Desktop & Tablet) */}
             <div className="hidden md:flex flex-col items-center gap-1.5 flex-1 max-w-md mx-4">
               <div className="flex items-center gap-3">
                 <Button
@@ -223,7 +219,6 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
                 </Button>
               </div>
 
-              {/* Progress Bar */}
               <div className="w-full flex items-center gap-2 text-[11px] font-mono text-white/50">
                 <span className="w-8 text-right">{formatTime(currentTime)}</span>
                 <div 
@@ -244,7 +239,6 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
               </div>
             </div>
 
-            {/* Mobile Play Controls */}
             <div className="flex md:hidden items-center gap-2">
               <Button
                 onClick={togglePlay}
@@ -264,7 +258,6 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
               </Button>
             </div>
 
-            {/* Right: Volume & Playlist Drawer Toggle */}
             <div className="flex items-center gap-2">
               <div className="hidden lg:flex items-center gap-2 border-r border-white/10 pr-4 mr-1">
                 <Button 
@@ -301,7 +294,6 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
             </div>
           </div>
 
-          {/* Mobile Progress Bar */}
           <div className="md:hidden flex items-center gap-2 text-[10px] font-mono text-white/50 pt-1">
             <span>{formatTime(currentTime)}</span>
             <div 
@@ -322,7 +314,6 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
           </div>
         </div>
 
-        {/* Expanded Glassmorphism Playlist Panel */}
         <AnimatePresence>
           {isExpanded && (
             <motion.div

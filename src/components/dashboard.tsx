@@ -38,19 +38,16 @@ export const Dashboard: React.FC<DashboardProps> = ({ metrics, eventsCount = 4, 
   const remainingQuota = metrics ? (metrics.remainingQuota ?? 0) : 0;
   const totalEvents = metrics ? (metrics.totalEvents ?? eventsCount) : eventsCount;
 
-  // Real-time timeline from database or mock fallback
   const timelineData = metrics?.revenueTimeline && metrics.revenueTimeline.length > 0
     ? metrics.revenueTimeline
     : REVENUE_TIMELINE;
 
-  // Real-time category distribution from database or mock fallback
   const categoryData = metrics?.categoryDistribution && metrics.categoryDistribution.length > 0
     ? metrics.categoryDistribution
     : CATEGORY_DISTRIBUTION;
 
   return (
     <div className="flex flex-col gap-6 sm:gap-8 pb-12 w-full text-[#183B56]">
-      {/* Financial KPI Banner */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPIWidget
           label="Total Pendapatan Tiket"
@@ -86,9 +83,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ metrics, eventsCount = 4, 
         />
       </div>
 
-      {/* Main Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Revenue Growth Trend (2 Cols) */}
         <div className="lg:col-span-2 border border-[#E5E7EB] bg-white p-5 sm:p-6 flex flex-col justify-between shadow-xl">
           <div>
             <div className="border-b border-[#E5E7EB] pb-4 flex flex-wrap items-center justify-between gap-3">
@@ -139,7 +134,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ metrics, eventsCount = 4, 
           </div>
         </div>
 
-        {/* Category Share Donut Chart (1 Col) */}
         <div className="border border-[#E5E7EB] bg-white p-5 sm:p-6 flex flex-col justify-between shadow-xl">
           <div>
             <div className="border-b border-[#E5E7EB] pb-4">

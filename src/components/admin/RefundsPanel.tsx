@@ -71,7 +71,6 @@ export const RefundsPanel: React.FC<RefundsPanelProps> = ({
 
   return (
     <div className="flex flex-col gap-6 pb-12">
-      {/* Top Filter Bar */}
       <div className="border border-white/[0.08] bg-[#1a1a1a]/90 p-4 sm:p-5 backdrop-blur-md flex justify-between items-center gap-4 flex-wrap">
         <div className="flex gap-3 items-center flex-1 min-w-[240px] flex-wrap">
           <div className="relative flex-1 min-w-[200px]">
@@ -97,7 +96,6 @@ export const RefundsPanel: React.FC<RefundsPanelProps> = ({
         </div>
       </div>
 
-      {/* Desktop Table View */}
       <div className="hidden md:block border border-white/[0.08] bg-[#1a1a1a] overflow-hidden shadow-xl">
         <table className="w-full border-collapse text-xs font-light text-left">
           <thead>
@@ -173,7 +171,6 @@ export const RefundsPanel: React.FC<RefundsPanelProps> = ({
         </table>
       </div>
 
-      {/* Mobile Card View */}
       <div className="block md:hidden space-y-4">
         {refunds.length > 0 ? (
           refunds.map((rf) => (
@@ -231,7 +228,6 @@ export const RefundsPanel: React.FC<RefundsPanelProps> = ({
         )}
       </div>
 
-      {/* Confirmation Modal */}
       {selectedRefund && modalAction && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-[#171717] border border-white/20 p-6 max-w-[480px] w-full space-y-4 shadow-2xl">

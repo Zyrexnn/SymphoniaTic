@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import type { ReactNode } from 'react';
 import { ArrowLeft, Loader2, Eye, EyeOff } from 'lucide-react';
 
-/* ─── Class Strings ─── */
-
 export const inputClass = [
   'w-full bg-transparent',
   'border border-[#E5E7EB] focus:border-brand',
@@ -32,8 +30,6 @@ export const btnGhost = [
   'transition-all duration-200',
   'disabled:opacity-40 disabled:cursor-not-allowed',
 ].join(' ');
-
-/* ─── Components ─── */
 
 export const Field: React.FC<{
   label: string;
@@ -156,8 +152,6 @@ export const AuthShell: React.FC<{
     </div>
   </div>
 );
-
-/* ─── Hook ─── */
 
 export function useCooldown(seconds = 60) {
   const [left, setLeft] = useState(0);

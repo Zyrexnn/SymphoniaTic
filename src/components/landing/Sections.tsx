@@ -17,7 +17,6 @@ export const getMinPrice = (event: EventItem) => event.categories?.[0]?.price ??
 
 export const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGU', 'SEP', 'OKT', 'NOV', 'DES'];
 
-/* Parse date string like "Sabtu, 18 April 2026" or "2026-04-18" → { day, month, year } */
 export const parseDate = (date?: string) => {
   if (!date) return { day: '', month: '', year: '', weekday: '' };
   let day = '';
@@ -44,8 +43,6 @@ export const parseDate = (date?: string) => {
   }
   return { day, month, year, weekday };
 };
-
-/* ─── ARTIST DISCOVERY — horizontal portrait rail ─── */
 
 const ArtistCard: React.FC<{ image: string; name: string; genre: string; shows: string }> = ({
   image,
@@ -128,8 +125,6 @@ const ArtistRail: React.FC = () => {
   );
 };
 
-/* ─── TRENDING CONCERTS — "Yang Lagi Ramai" ─── */
-
 type BadgeTone = 'accent' | 'navy' | 'muted';
 
 interface TrendBadge {
@@ -137,7 +132,6 @@ interface TrendBadge {
   tone: BadgeTone;
 }
 
-/* Scarcity badge derived from existing ticket quota data — no new data structure */
 const getTrendBadge = (event: EventItem, index: number): TrendBadge => {
   const total = event.categories?.reduce((sum, c) => sum + (c.quota ?? 0), 0) ?? 0;
   const remaining = event.categories?.reduce((sum, c) => sum + (c.remainingQuota ?? c.quota ?? 0), 0) ?? 0;
@@ -170,7 +164,6 @@ const TrendingConcertCard: React.FC<{ event: EventItem; index: number }> = ({ ev
       onClick={() => goToConcert(event)}
       className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white cursor-pointer transition-all duration-300 ease-out hover:-translate-y-1 hover:border-brand-accent/45 hover:shadow-[0_24px_48px_-28px_rgba(24,59,86,0.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2"
     >
-      {/* Artwork */}
       <div className="relative aspect-[4/5] overflow-hidden bg-[#F1F5F9]">
         <img
           src={event.image}
@@ -201,7 +194,6 @@ const TrendingConcertCard: React.FC<{ event: EventItem; index: number }> = ({ ev
         </span>
       </div>
 
-      {/* Body */}
       <div className="flex flex-1 flex-col p-5 sm:p-6">
         {event.category && (
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-accent">
@@ -228,7 +220,6 @@ const TrendingConcertCard: React.FC<{ event: EventItem; index: number }> = ({ ev
           </p>
         </div>
 
-        {/* Footer pinned so heights stay consistent across the grid */}
         <div className="mt-auto flex items-center justify-between gap-3 border-t border-[#E5E7EB] pt-5">
           <div className="min-w-0">
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#94A3B8]">

@@ -33,7 +33,6 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   return (
     <aside className="hidden md:flex flex-col justify-between h-screen w-64 border-r border-white/[0.08] bg-[#171717] p-6 shrink-0 sticky top-0">
       <div>
-        {/* Brand Header */}
         <a href="/" className="flex items-center gap-3 px-1 mb-8 no-underline group">
           <div className="w-10 h-10 border border-white/20 bg-white/[0.02] flex items-center justify-center group-hover:border-white/40 transition-colors">
             <span className="text-sm font-light text-white tracking-[0.1em]">S</span>
@@ -46,7 +45,6 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
           </div>
         </a>
 
-        {/* Navigation Links */}
         <nav className="space-y-1">
           <p className="px-3 text-[10px] font-light text-[#9a9a9a] tracking-[0.15em] uppercase mb-3">
             {role === 'PETUGAS' ? 'Menu Petugas Gate' : 'Menu Utama'}
@@ -86,7 +84,6 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
         </nav>
       </div>
 
-      {/* Footer Navigation */}
       <div className="border-t border-white/10 pt-4 space-y-1">
         <a
           href="/"
@@ -127,7 +124,6 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
 
   return (
     <>
-      {/* Top Mobile Bar */}
       <div className="md:hidden flex items-center justify-between px-4 py-3 bg-[#171717]/95 backdrop-blur-md border-b border-white/[0.08] sticky top-0 z-40">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 border border-white/20 bg-white/[0.02] flex items-center justify-center">
@@ -156,7 +152,6 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
         </div>
       </div>
 
-      {/* Mobile Drawer Overlay */}
       {isOpen && (
         <div className="md:hidden fixed inset-0 top-[53px] bg-[#171717]/95 backdrop-blur-xl z-50 p-6 flex flex-col justify-between overflow-y-auto">
           <div className="space-y-4">

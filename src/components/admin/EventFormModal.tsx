@@ -52,7 +52,6 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
         </div>
 
         <form onSubmit={handleFormSubmit} className="p-6 flex flex-col gap-5 overflow-y-auto flex-1">
-          {/* Main Info */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <InputField label="Judul Konser" required value={form.title} onChange={(v) => update({ title: v })} placeholder="Simfoni Beethoven No. 9" />
             <InputField label="Musisi / Orkestra" required value={form.artist} onChange={(v) => update({ artist: v })} placeholder="Royal Philharmonic Orchestra" />
@@ -150,7 +149,6 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
             </div>
           </div>
 
-          {/* Details */}
           <div className="border border-[#E5E7EB] bg-[#F8FAFC] p-4 flex flex-col gap-4">
             <span className="text-xs font-light text-[#183B56] uppercase tracking-wider">Spesifikasi Acara</span>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -173,7 +171,6 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
             </div>
           </div>
 
-          {/* Rundown Builder */}
           <div className="border border-[#E5E7EB] bg-[#F8FAFC] p-4 flex flex-col gap-3">
             <div className="flex justify-between items-center">
               <span className="text-xs font-light text-[#183B56] uppercase tracking-wider">Rangkaian Acara (Rundown)</span>
@@ -306,12 +303,10 @@ interface DatePickerFieldProps {
 }
 
 const DatePickerField: React.FC<DatePickerFieldProps> = ({ label, value, onChange }) => {
-  // Convert standard date string or YYYY-MM-DD to date input format
   const getIsoDate = (strVal: string): string => {
     if (!strVal) return '';
     if (/^\d{4}-\d{2}-\d{2}$/.test(strVal)) return strVal;
     try {
-      // Try parsing custom strings like "Sabtu, 18 April 2026"
       const parts = strVal.replace(/^[A-Za-z]+,\s*/, '').split(' ');
       if (parts.length >= 3) {
         const day = parts[0].padStart(2, '0');
@@ -329,7 +324,7 @@ const DatePickerField: React.FC<DatePickerFieldProps> = ({ label, value, onChang
   const isoValue = getIsoDate(value);
 
   const handleDateSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawVal = e.target.value; // YYYY-MM-DD
+    const rawVal = e.target.value;
     if (!rawVal) {
       onChange('');
       return;
@@ -338,7 +333,6 @@ const DatePickerField: React.FC<DatePickerFieldProps> = ({ label, value, onChang
     const dateObj = new Date(Number(yearStr), Number(monthStr) - 1, Number(dayStr));
     const dayName = dateObj.toLocaleDateString('id-ID', { weekday: 'long' });
     const monthName = dateObj.toLocaleDateString('id-ID', { month: 'long' });
-    // Format: "Sabtu, 18 April 2026"
     const formatted = `${dayName}, ${dateObj.getDate()} ${monthName} ${dateObj.getFullYear()}`;
     onChange(formatted);
   };
@@ -380,7 +374,7 @@ const TimePickerField: React.FC<TimePickerFieldProps> = ({ label, value, onChang
   const timeValue = getRawTime(value);
 
   const handleTimeSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawVal = e.target.value; // HH:mm
+    const rawVal = e.target.value;
     if (!rawVal) {
       onChange('');
       return;

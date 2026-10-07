@@ -138,7 +138,6 @@ export const RedeemPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white text-[#183B56] flex flex-col justify-between selection:bg-[#183B56] selection:text-white relative">
-      {/* Toast Notification */}
       <AnimatePresence>
         {toastMessage && (
           <motion.div
@@ -153,7 +152,6 @@ export const RedeemPage: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* Navigation Header */}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#E5E7EB]">
         <div className="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
           <a
@@ -172,9 +170,7 @@ export const RedeemPage: React.FC = () => {
         </div>
       </header>
 
-      {/* Main Content Area */}
       <main className="flex-1 max-w-[960px] w-full mx-auto px-6 py-12 sm:py-16 flex flex-col gap-16 sm:gap-20">
-        {/* Title Header Section */}
         <div className="flex flex-col items-start max-w-2xl">
           <span className="text-xs font-light tracking-[0.2em] uppercase text-[#94A3B8] border border-[#E5E7EB] px-3.5 py-1 mb-5">
             [ VERIFIKASI RESMI TIKET SIMFONI ]
@@ -187,7 +183,6 @@ export const RedeemPage: React.FC = () => {
           </p>
         </div>
 
-        {/* Search Bar & Input Form Card */}
         <div className="bg-white border border-[#E5E7EB] p-6 sm:p-10 relative">
           <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
@@ -232,7 +227,6 @@ export const RedeemPage: React.FC = () => {
             </button>
           </form>
 
-          {/* Helper Actions */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[#94A3B8] pt-4 mt-3 border-t border-[#E5E7EB]">
             <span className="font-mono text-[11px]">Contoh format kode: SYM-893472</span>
             <button
@@ -245,7 +239,6 @@ export const RedeemPage: React.FC = () => {
             </button>
           </div>
 
-          {/* Sample Codes Chip Selection */}
           <div className="mt-6 pt-5 border-t border-[#E5E7EB]">
             <span className="text-[11px] font-light uppercase tracking-widest text-[#94A3B8] block mb-3">
               Sampel Kode Tiket (Klik untuk verifikasi langsung):
@@ -269,7 +262,6 @@ export const RedeemPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Error State Banner */}
         {hasSearched && errorMessage && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -293,7 +285,6 @@ export const RedeemPage: React.FC = () => {
           </motion.div>
         )}
 
-        {/* 3-Step Process Section */}
         <section className="flex flex-col gap-6">
           <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-4">
             <h2 className="text-lg sm:text-xl font-light text-[#183B56] tracking-tight flex items-center gap-2">
@@ -336,9 +327,7 @@ export const RedeemPage: React.FC = () => {
           </div>
         </section>
 
-        {/* Sample E-Ticket Stub Preview & Concert Rules Grid */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* E-Ticket Sample Visual Preview Stub */}
           <div className="lg:col-span-7 border border-[#E5E7EB] p-6 sm:p-8 flex flex-col justify-between relative bg-white">
             <div>
               <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-4 mb-6">
@@ -389,7 +378,6 @@ export const RedeemPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Concert Entry Guidelines & Rules */}
           <div className="lg:col-span-5 border border-[#E5E7EB] bg-white p-6 sm:p-8 flex flex-col justify-between gap-6">
             <div>
               <h3 className="text-base font-light text-[#183B56] tracking-tight flex items-center gap-2 mb-4">
@@ -431,7 +419,6 @@ export const RedeemPage: React.FC = () => {
           </div>
         </section>
 
-        {/* FAQs Section */}
         <section className="flex flex-col gap-6">
           <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-4">
             <h2 className="text-lg sm:text-xl font-light text-[#183B56] tracking-tight flex items-center gap-2">
@@ -482,7 +469,6 @@ export const RedeemPage: React.FC = () => {
           </div>
         </section>
 
-        {/* Help & Account Access Bar */}
         <section className="border border-[#E5E7EB] bg-[#F8FAFC] p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="space-y-1 text-center sm:text-left">
             <h3 className="text-base font-light text-[#183B56]">Kesulitan Menemukan Kode Tiket Anda?</h3>
@@ -508,7 +494,6 @@ export const RedeemPage: React.FC = () => {
         </section>
       </main>
 
-      {/* Footer */}
       <footer className="border-t border-[#E5E7EB] py-8 text-center text-xs text-[#94A3B8] font-light mt-12">
         &copy; 2026 SymphoniaTic Official Ticket Redemption Portal. All rights reserved.
       </footer>

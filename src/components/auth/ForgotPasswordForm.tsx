@@ -16,11 +16,7 @@ import {
   useCooldown,
 } from './ui';
 
-/* ─── Constants ─── */
-
 const OTP_RESEND_SECONDS = 60;
-
-/* ─── Component ─── */
 
 export const ForgotPasswordForm: React.FC = () => {
   const [step, setStep] = useState<1 | 2 | 3>(1);
@@ -29,7 +25,6 @@ export const ForgotPasswordForm: React.FC = () => {
   const [info, setInfo] = useState<string | null>(null);
   const [done, setDone] = useState(false);
 
-  // Form state
   const [email, setEmail] = useState('');
   const [otpCode, setOtpCode] = useState('');
   const [resetToken, setResetToken] = useState('');
@@ -45,14 +40,10 @@ export const ForgotPasswordForm: React.FC = () => {
     };
   }, []);
 
-  /* ─── Helpers ─── */
-
   const resetMessages = () => {
     setError(null);
     setInfo(null);
   };
-
-  /* ─── Handlers ─── */
 
   const requestOtp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,8 +110,6 @@ export const ForgotPasswordForm: React.FC = () => {
     setLoading(false);
   };
 
-  /* ─── Success State ─── */
-
   if (done) {
     return (
       <AuthShell
@@ -135,8 +124,6 @@ export const ForgotPasswordForm: React.FC = () => {
     );
   }
 
-  /* ─── Render ─── */
-
   const subtitles: Record<number, string> = {
     1: 'Masukkan email akun Anda untuk menerima kode OTP.',
     2: 'Masukkan kode OTP yang dikirim ke email Anda.',
@@ -149,7 +136,6 @@ export const ForgotPasswordForm: React.FC = () => {
       subtitle={subtitles[step]}
       backHref="/login"
     >
-      {/* Step 1: Email */}
       {step === 1 && (
         <form onSubmit={requestOtp} className="flex flex-col gap-5">
           <Field
@@ -172,7 +158,6 @@ export const ForgotPasswordForm: React.FC = () => {
         </form>
       )}
 
-      {/* Step 2: OTP Verification */}
       {step === 2 && (
         <form onSubmit={verify} className="flex flex-col gap-5">
           <Field
@@ -203,7 +188,6 @@ export const ForgotPasswordForm: React.FC = () => {
         </form>
       )}
 
-      {/* Step 3: New Password */}
       {step === 3 && (
         <form onSubmit={reset} className="flex flex-col gap-5">
           <PasswordField

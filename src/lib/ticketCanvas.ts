@@ -9,16 +9,13 @@ export function drawTicketCanvas(order: OrderRecord): HTMLCanvasElement {
   const ctx = canvas.getContext('2d');
   if (!ctx) return canvas;
 
-  // Background Canvas
   ctx.fillStyle = '#183B56';
   ctx.fillRect(0, 0, width, height);
 
-  // Border Frame
   ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
   ctx.lineWidth = 2;
   ctx.strokeRect(20, 20, width - 40, height - 40);
 
-  // Header Branding
   ctx.fillStyle = '#ffffff';
   ctx.font = '600 34px Inter, system-ui, sans-serif';
   ctx.fillText('SymphoniaTic Pass', 50, 80);
@@ -35,11 +32,9 @@ export function drawTicketCanvas(order: OrderRecord): HTMLCanvasElement {
   ctx.lineTo(750, 105);
   ctx.stroke();
 
-// Event Info
   ctx.fillStyle = '#94A3B8';
 
 
-  // Event Info 
   ctx.fillStyle = '#9a9a9a';
 
   ctx.font = '300 12px sans-serif';
@@ -66,7 +61,6 @@ export function drawTicketCanvas(order: OrderRecord): HTMLCanvasElement {
   drawInfo(290, 'Pemegang Tiket', order.userName);
   drawInfo(345, 'Kategori Tiket', `${order.categoryName} (${order.quantity}x Tiket)`);
 
-  // Divider Line
   ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
   ctx.setLineDash([6, 6]);
   ctx.beginPath();
@@ -75,7 +69,6 @@ export function drawTicketCanvas(order: OrderRecord): HTMLCanvasElement {
   ctx.stroke();
   ctx.setLineDash([]);
 
-  // Map Location Box Section
   ctx.fillStyle = '#10293E';
   ctx.fillRect(50, 425, 700, 180);
   ctx.strokeStyle = '#1E3A50';
@@ -98,7 +91,6 @@ export function drawTicketCanvas(order: OrderRecord): HTMLCanvasElement {
   ctx.font = '300 11px sans-serif';
   ctx.fillText('Tunjukkan dokumen E-Ticket ini saat memasuki gerbang pemeriksaan (Open Gate).', 75, 570);
 
-  // QR Code Section
   const qrSize = 190;
   const qrX = (width - qrSize) / 2;
   const qrY = 640;

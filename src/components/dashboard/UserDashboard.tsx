@@ -84,7 +84,6 @@ function KPICard({
   );
 }
 
-// ─── Fullscreen Ticket Modal ───
 function TicketModal({ order, onClose }: { order: OrderRecord; onClose: () => void }) {
   const [downloading, setDownloading] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -153,7 +152,6 @@ function TicketModal({ order, onClose }: { order: OrderRecord; onClose: () => vo
         </h2>
         <p className="text-sm text-[#64748B] font-light mb-6">{order.artist}</p>
 
-        {/* High Brightness QR Gate Container */}
         <div className="bg-white p-6 flex flex-col items-center justify-center text-center mb-6 border border-[#E5E7EB]">
           <QrCode className="w-48 h-48 text-brand" strokeWidth={1} />
           <div className="mt-4 flex items-center gap-3 bg-brand text-white px-4 py-2">
@@ -167,7 +165,6 @@ function TicketModal({ order, onClose }: { order: OrderRecord; onClose: () => vo
           </span>
         </div>
 
-        {/* Info Grid */}
         <div className="grid grid-cols-2 gap-4 text-xs border-y border-[#E5E7EB] py-4 mb-6">
           <div>
             <span className="text-[#64748B] block mb-1">Tanggal & Waktu</span>
@@ -189,7 +186,6 @@ function TicketModal({ order, onClose }: { order: OrderRecord; onClose: () => vo
           </div>
         </div>
 
-        {/* Action Buttons */}
         <div className="grid grid-cols-2 gap-3">
           <button
             onClick={dlPNG}
@@ -213,7 +209,6 @@ function TicketModal({ order, onClose }: { order: OrderRecord; onClose: () => vo
   );
 }
 
-// ─── Ticket Stub Card ───
 function TicketCard({ order, onOpenModal }: { order: OrderRecord; onOpenModal: (order: OrderRecord) => void }) {
   const [downloading, setDownloading] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -266,7 +261,6 @@ function TicketCard({ order, onOpenModal }: { order: OrderRecord; onOpenModal: (
 
   return (
     <div className="border border-[#E5E7EB] bg-white flex flex-col justify-between transition-all hover:border-brand group">
-      {/* Header Bar */}
       <div className="flex flex-wrap items-center justify-between gap-3 p-4 border-b border-[#E5E7EB] bg-[#F8FAFC]">
         <div className="flex flex-col">
           <span className="text-[10px] font-mono text-[#64748B] uppercase tracking-wider">
@@ -280,7 +274,6 @@ function TicketCard({ order, onOpenModal }: { order: OrderRecord; onOpenModal: (
         </div>
       </div>
 
-      {/* Main Ticket Body */}
       <div className="p-5 flex flex-col gap-5">
         <div>
           <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#64748B] block mb-1">Pertunjukan Resmi</span>
@@ -318,7 +311,6 @@ function TicketCard({ order, onOpenModal }: { order: OrderRecord; onOpenModal: (
           </div>
         </div>
 
-        {/* QR Section & Action */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-1">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-white border border-[#E5E7EB] flex items-center justify-center shrink-0">
@@ -345,7 +337,6 @@ function TicketCard({ order, onOpenModal }: { order: OrderRecord; onOpenModal: (
         </div>
       </div>
 
-      {/* Ticket Footer Action Bar */}
       <div className="p-4 bg-[#F8FAFC] border-t border-[#E5E7EB] grid grid-cols-2 gap-2">
         <button
           onClick={dlPNG}
@@ -368,7 +359,6 @@ function TicketCard({ order, onOpenModal }: { order: OrderRecord; onOpenModal: (
   );
 }
 
-// ─── Summary Panel Component ───
 function SummaryPanel({ onSelectTab }: { onSelectTab: (t: Tab) => void }) {
   const [summary, setSummary] = useState<UserDashboardSummary | null>(null);
   const [orders, setOrders] = useState<OrderRecord[]>([]);
@@ -401,7 +391,6 @@ function SummaryPanel({ onSelectTab }: { onSelectTab: (t: Tab) => void }) {
 
   return (
     <div className="flex flex-col gap-10 animate-fade-in">
-      {/* Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
           icon={ShoppingBag}
@@ -433,7 +422,6 @@ function SummaryPanel({ onSelectTab }: { onSelectTab: (t: Tab) => void }) {
         />
       </div>
 
-      {/* Featured Next Event / Active Pass Section */}
       {activeTicket ? (
         <div className="border border-[#E5E7EB] bg-white p-6 sm:p-8 flex flex-col lg:flex-row justify-between gap-6">
           <div className="flex flex-col justify-between max-w-xl">
@@ -506,7 +494,6 @@ function SummaryPanel({ onSelectTab }: { onSelectTab: (t: Tab) => void }) {
         </div>
       )}
 
-      {/* Quick Access Menu Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div
           onClick={() => onSelectTab('orders')}
@@ -547,7 +534,6 @@ function SummaryPanel({ onSelectTab }: { onSelectTab: (t: Tab) => void }) {
   );
 }
 
-// ─── Orders Panel Component ───
 function OrdersPanel() {
   const [orders, setOrders] = useState<OrderRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -566,7 +552,6 @@ function OrdersPanel() {
 
   return (
     <div className="flex flex-col gap-6 animate-fade-in">
-      {/* Filter Tabs Bar */}
       <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 border-b border-[#E5E7EB]">
         <button
           onClick={() => setFilter('')}
@@ -615,7 +600,6 @@ function OrdersPanel() {
   );
 }
 
-// ─── Refunds Panel Component ───
 function RefundsPanel() {
   const [refunds, setRefunds] = useState<RefundRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -670,7 +654,6 @@ function RefundsPanel() {
               </div>
             </div>
 
-            {/* Pipeline Step Visualizer */}
             <div className="grid grid-cols-3 gap-2 py-2 border-b border-[#E5E7EB] text-center">
               <div className={`p-2 border ${conf.step >= 1 ? 'border-brand text-brand bg-brand/10' : 'border-[#E5E7EB] text-[#64748B]'}`}>
                 <span className="text-[10px] font-mono block">01. DIAJUKAN</span>
@@ -683,7 +666,6 @@ function RefundsPanel() {
               </div>
             </div>
 
-            {/* Bank Details Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
               <div>
                 <span className="text-[#64748B] block mb-0.5">Bank Tujuan</span>
@@ -703,7 +685,6 @@ function RefundsPanel() {
               </div>
             </div>
 
-            {/* Reason & Notes */}
             <div className="flex flex-col gap-2 pt-2 border-t border-[#E5E7EB] text-xs">
               <div>
                 <span className="text-[#64748B] block mb-1">Alasan Pengajuan:</span>
@@ -723,7 +704,6 @@ function RefundsPanel() {
   );
 }
 
-// ─── Profile & Security Panel Component ───
 function ProfilePanel() {
   const { user, updateUser } = useAuth();
   const [name, setName] = useState(user?.name || '');
@@ -792,7 +772,6 @@ function ProfilePanel() {
 
   return (
     <div className="flex flex-col gap-8 animate-fade-in">
-      {/* Account Overview Header Card */}
       <div className="border border-[#E5E7EB] bg-white p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
         <div className="flex items-center gap-5">
           <div className="w-16 h-16 bg-brand text-white font-mono text-xl font-light flex items-center justify-center shrink-0 border border-brand">
@@ -815,9 +794,7 @@ function ProfilePanel() {
         </div>
       </div>
 
-      {/* Forms 2-Column Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Profile Data Form */}
         <form onSubmit={saveProfile} className="border border-[#E5E7EB] bg-white p-6 sm:p-8 flex flex-col gap-5">
           <div className="flex items-center gap-2 border-b border-[#E5E7EB] pb-4">
             <UserCheck className="w-4 h-4 text-brand" strokeWidth={1.5} />
@@ -855,7 +832,6 @@ function ProfilePanel() {
           </button>
         </form>
 
-        {/* Change Password Form */}
         <form onSubmit={changePwd} className="border border-[#E5E7EB] bg-white p-6 sm:p-8 flex flex-col gap-5">
           <div className="flex items-center gap-2 border-b border-[#E5E7EB] pb-4">
             <Lock className="w-4 h-4 text-brand" strokeWidth={1.5} />
@@ -917,7 +893,6 @@ function ProfilePanel() {
   );
 }
 
-// ─── Dashboard Root Inner ───
 function DashboardInner() {
   const { user, status, logout } = useAuth();
   const [tab, setTab] = useState<Tab>('summary');
@@ -946,7 +921,6 @@ function DashboardInner() {
 
   return (
     <div className="min-h-screen bg-white text-[#183B56] selection:bg-brand selection:text-white font-sans antialiased">
-      {/* Top Header Navigation */}
       <header className="border-b border-[#E5E7EB] bg-white sticky top-0 z-30 backdrop-blur-md bg-white/90">
         <div className="mx-auto max-w-7xl px-4 sm:px-8 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-4 sm:gap-6">
@@ -978,9 +952,7 @@ function DashboardInner() {
         </div>
       </header>
 
-      {/* Main Console Content */}
       <main className="mx-auto max-w-7xl px-4 sm:px-8 py-8 sm:py-12">
-        {/* Welcome Section */}
         <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[#E5E7EB] pb-8">
           <div>
             <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.3em] text-[#64748B] mb-2">
@@ -1001,7 +973,6 @@ function DashboardInner() {
           </div>
         </div>
 
-        {/* Tab Navigation */}
         <div className="flex items-center border-b border-[#E5E7EB] mb-10 overflow-x-auto no-scrollbar gap-1">
           {tabs.map((t) => {
             const Icon = t.icon;
@@ -1023,7 +994,6 @@ function DashboardInner() {
           })}
         </div>
 
-        {/* Tab Panels */}
         {tab === 'summary' && <SummaryPanel onSelectTab={(t) => setTab(t)} />}
         {tab === 'orders' && <OrdersPanel />}
         {tab === 'refunds' && <RefundsPanel />}

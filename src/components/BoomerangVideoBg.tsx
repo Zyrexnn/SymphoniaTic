@@ -20,7 +20,6 @@ export const BoomerangVideoBg: React.FC = () => {
     video.addEventListener('error', onError);
     video.addEventListener('playing', onPlay);
 
-    // Try to play
     video.play().catch(() => setVideoFailed(true));
 
     return () => {
