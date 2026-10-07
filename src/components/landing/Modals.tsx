@@ -75,7 +75,6 @@ export const BookingModal: React.FC<BookingProps> = ({ event, initialCategory, o
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
-            {/* Kategori */}
             <div className="px-6 pt-5">
               <p className="text-[13px] font-light text-[#64748B] tracking-wider uppercase mb-2.5">Kategori</p>
               <div className="flex gap-2">
@@ -91,7 +90,6 @@ export const BookingModal: React.FC<BookingProps> = ({ event, initialCategory, o
               </div>
             </div>
 
-            {/* Jumlah */}
             <div className="px-6 pt-5">
               <div className="flex items-center justify-between mb-8">
                 <p className="text-[13px] font-light text-[#64748B] tracking-wider uppercase">Jumlah</p>
@@ -111,7 +109,6 @@ export const BookingModal: React.FC<BookingProps> = ({ event, initialCategory, o
               </div>
             </div>
 
-            {/* Data Pemesan */}
             <div className="px-6 pt-5">
               <p className="text-[13px] font-light text-[#64748B] tracking-wider uppercase mb-3">Data Pemesan</p>
               <div className="space-y-3">
@@ -122,7 +119,6 @@ export const BookingModal: React.FC<BookingProps> = ({ event, initialCategory, o
               </div>
             </div>
 
-            {/* Total & Submit */}
             <div className="px-6 pb-6 mt-2">
               <div className="flex items-center justify-between border-t border-line pt-5">
                 <div>
@@ -142,9 +138,6 @@ export const BookingModal: React.FC<BookingProps> = ({ event, initialCategory, o
   );
 };
 
-// ════════════════════════════════════════════════════════════════════
-// E-TICKET CONFIRMATION
-// ════════════════════════════════════════════════════════════════════
 interface ConfirmProps { order: OrderRecord; onClose: () => void; }
 
 export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) => {
@@ -217,7 +210,6 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
           <h3 className="text-[22px] tracking-[-0.02em] font-light text-[#183B56] leading-[1.2]">Simpan kode atau unduh tiket Anda</h3>
         </div>
 
-        {/* Order Code */}
         <div className="px-6 pt-5">
           <div className="flex items-center justify-between">
             <div>
@@ -232,7 +224,6 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
           </div>
         </div>
 
-        {/* Mailpit Info Banner */}
         <div className="px-6 pt-4">
           <div className="flex items-start gap-3 p-3 text-left bg-[rgba(24,59,86,0.06)] border border-[rgba(24,59,86,0.16)] rounded-lg">
             <Mail className="w-4 h-4 text-brand-accent shrink-0 mt-0.5" strokeWidth={1.5} />
@@ -247,7 +238,6 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
           </div>
         </div>
 
-        {/* E-Ticket Card */}
         <div ref={ticketRef} data-ticket-card="true" className="px-6 pt-5">
           <div className="flex items-center justify-between pb-4 mb-4 border-b border-line">
             <span className="text-sm font-light text-[#183B56]">SymphoniaTic Pass</span>
@@ -291,7 +281,6 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
           </div>
         </div>
 
-        {/* Download buttons */}
         <div className="px-6 pb-6 pt-5">
           <div className="grid grid-cols-2 gap-3">
             <button onClick={handleDownloadPNG} disabled={!!isDownloading}
@@ -311,9 +300,6 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
   );
 };
 
-// ════════════════════════════════════════════════════════════════════
-// ORDERS & TICKET LOOKUP DRAWER
-// ════════════════════════════════════════════════════════════════════
 interface OrdersProps { orders: OrderRecord[]; onClose: () => void; onShowTicket: (o: OrderRecord) => void; }
 
 export const OrdersDrawer: React.FC<OrdersProps> = ({ orders, onClose, onShowTicket }) => {
@@ -367,7 +353,6 @@ export const OrdersDrawer: React.FC<OrdersProps> = ({ orders, onClose, onShowTic
             </a>
           </div>
 
-          {/* Local Orders */}
           <div>
             <h3 className="text-base font-light text-[#64748B] mb-3">E-Ticket Di Perangkat Ini</h3>
             {orders.length === 0 ? (

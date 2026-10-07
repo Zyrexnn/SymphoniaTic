@@ -40,7 +40,6 @@ const BANK_PRESETS = [
 export const RefundPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'request' | 'status'>('request');
 
-  // Step 1 State: Request OTP
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [orderCode, setOrderCode] = useState('');
   const [userEmail, setUserEmail] = useState('');
@@ -48,14 +47,12 @@ export const RefundPage: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-  // Step 2 State: OTP & Bank Form
   const [otpCode, setOtpCode] = useState('');
   const [bankName, setBankName] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
   const [accountHolder, setAccountHolder] = useState('');
   const [reason, setReason] = useState('');
 
-  // Step 3 Result State
   const [submittedData, setSubmittedData] = useState<{
     orderCode: string;
     bankName: string;
@@ -63,7 +60,6 @@ export const RefundPage: React.FC = () => {
     accountNumber: string;
   } | null>(null);
 
-  // Status Lookup State
   const [lookupCode, setLookupCode] = useState('');
   const [lookupEmail, setLookupEmail] = useState('');
   const [lookupLoading, setLookupLoading] = useState(false);
@@ -73,7 +69,6 @@ export const RefundPage: React.FC = () => {
     refundDetail: RefundDetail;
   } | null>(null);
 
-  // Handlers
   const handleRequestOTP = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!orderCode.trim() || !userEmail.trim()) {
@@ -186,7 +181,6 @@ export const RefundPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white text-[#183B56] flex flex-col justify-between selection:bg-[#183B56] selection:text-white font-sans">
-      {/* Top Header — Minimalist Atelier Bar */}
       <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-[#E5E7EB]">
         <div className="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
           <a href="/" className="inline-flex items-center gap-2 text-[#183B56] hover:opacity-60 transition-opacity no-underline">
@@ -200,9 +194,7 @@ export const RefundPage: React.FC = () => {
         </div>
       </header>
 
-      {/* Main Content Area */}
       <main className="flex-1 max-w-[920px] w-full mx-auto px-6 py-16 sm:py-24">
-        {/* Left-Aligned Editorial Hero Headline Block */}
         <div className="mb-16 space-y-4">
           <div className="text-xs font-light tracking-[0.2em] uppercase text-[#94A3B8] flex items-center gap-2">
             <span>↓</span>
@@ -218,7 +210,6 @@ export const RefundPage: React.FC = () => {
           </p>
         </div>
 
-        {/* Minimalist Tab Navigation Bar */}
         <div className="flex items-center gap-8 sm:gap-12 border-b border-[#E5E7EB] pb-4 mb-12">
           <button
             onClick={() => { setActiveTab('request'); setErrorMsg(null); setSuccessMsg(null); }}
@@ -242,7 +233,6 @@ export const RefundPage: React.FC = () => {
           </button>
         </div>
 
-        {/* TAB 1: FORM PENGAJUAN REFUND */}
         {activeTab === 'request' && (
           <motion.div
             initial={{ opacity: 0, y: 8 }}
@@ -250,7 +240,6 @@ export const RefundPage: React.FC = () => {
             transition={{ duration: 0.25 }}
             className="space-y-10"
           >
-            {/* Step Progress Stepper */}
             {step < 3 && (
               <div className="flex items-center gap-6 sm:gap-8 border-b border-[#E5E7EB] pb-6 text-xs uppercase tracking-[0.15em] font-light">
                 <div className={`flex items-center gap-2.5 ${step >= 1 ? 'text-[#183B56] font-medium' : 'text-[#94A3B8]'}`}>
@@ -269,7 +258,6 @@ export const RefundPage: React.FC = () => {
               </div>
             )}
 
-            {/* Error & Success Feedback Alerts */}
             {errorMsg && (
               <div className="p-4 border border-[#E5E7EB] bg-[#F8FAFC] text-[#183B56] text-xs font-light flex items-center gap-3 rounded-none">
                 <AlertCircle className="w-4 h-4 shrink-0 text-[#94A3B8]" strokeWidth={1.5} />
@@ -283,7 +271,6 @@ export const RefundPage: React.FC = () => {
               </div>
             )}
 
-            {/* STEP 1: VALIDASI TIKET */}
             {step === 1 && (
               <form onSubmit={handleRequestOTP} className="space-y-8 max-w-2xl">
                 <div className="space-y-2.5">
@@ -320,7 +307,6 @@ export const RefundPage: React.FC = () => {
                   </p>
                 </div>
 
-                {/* Terms and Eligibility Notice */}
                 <div className="p-6 border border-[#E5E7EB] space-y-3 text-xs text-[#94A3B8] rounded-none bg-transparent">
                   <div className="flex items-center gap-2 text-[#183B56] font-medium uppercase tracking-[0.15em] text-[11px]">
                     <Info className="w-3.5 h-3.5 text-[#64748B]" strokeWidth={1.5} />
@@ -354,10 +340,8 @@ export const RefundPage: React.FC = () => {
               </form>
             )}
 
-            {/* STEP 2: OTP & BANK TRANSFER FORM */}
             {step === 2 && (
               <form onSubmit={handleSubmitRefund} className="space-y-8 max-w-2xl">
-                {/* OTP Code Box */}
                 <div className="p-6 border border-[#E5E7EB] text-left space-y-3 bg-transparent rounded-none">
                   <label className="block text-xs font-light text-[#183B56] uppercase tracking-[0.15em]">
                     Kode Verifikasi OTP (6-Digit) *
@@ -383,7 +367,6 @@ export const RefundPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Bank Selector Presets */}
                 <div className="space-y-3">
                   <label className="block text-xs font-light text-[#94A3B8] uppercase tracking-[0.15em]">
                     Pilih Bank / E-Wallet Tujuan *
@@ -493,7 +476,6 @@ export const RefundPage: React.FC = () => {
               </form>
             )}
 
-            {/* STEP 3: TAMPILAN RESI & STAGE STATUS */}
             {step === 3 && submittedData && (
               <div className="space-y-10 max-w-2xl">
                 <div className="p-8 border border-[#E5E7EB] space-y-6">
@@ -508,7 +490,6 @@ export const RefundPage: React.FC = () => {
                     Permohonan pengembalian dana untuk Kode Pesanan <strong className="text-[#183B56] font-mono">{submittedData.orderCode}</strong> telah tersimpan di sistem verifikasi Finance SymphoniaTic.
                   </p>
 
-                  {/* Resi Table Details */}
                   <div className="border border-[#E5E7EB] p-6 space-y-4 text-xs font-light">
                     <div className="flex justify-between items-center border-b border-[#E5E7EB] pb-3">
                       <span className="text-[10px] text-[#94A3B8] uppercase tracking-[0.2em] font-mono">RESI PENGAJUAN</span>
@@ -537,7 +518,6 @@ export const RefundPage: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Processing Stages Timeline */}
                   <div className="space-y-3 pt-2">
                     <span className="text-xs font-light text-[#94A3B8] uppercase tracking-[0.15em] block">
                       Tahapan Pemrosesan:
@@ -585,7 +565,6 @@ export const RefundPage: React.FC = () => {
           </motion.div>
         )}
 
-        {/* TAB 2: CEK STATUS REFUND TIKET */}
         {activeTab === 'status' && (
           <motion.div
             initial={{ opacity: 0, y: 8 }}
@@ -650,7 +629,6 @@ export const RefundPage: React.FC = () => {
               </button>
             </form>
 
-            {/* STATUS RESULT CARD */}
             {statusResult && statusResult.refundDetail && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
@@ -667,7 +645,6 @@ export const RefundPage: React.FC = () => {
                     </h3>
                   </div>
 
-                  {/* Status Badge Tag */}
                   <div>
                     {statusResult.refundDetail.status === 'PENDING' && (
                       <span className="inline-flex items-center gap-2 px-3.5 py-1.5 border border-[#E5E7EB] text-[#183B56] text-xs font-mono uppercase tracking-widest">
@@ -690,7 +667,6 @@ export const RefundPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Detailed Table Matrix */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs font-light">
                   <div className="space-y-1">
                     <span className="text-[#94A3B8] block uppercase tracking-[0.15em] text-[10px]">Pertunjukan:</span>
@@ -710,7 +686,6 @@ export const RefundPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Admin Note if available */}
                 {statusResult.refundDetail.adminNote && (
                   <div className="p-5 border border-[#E5E7EB] text-xs space-y-1.5">
                     <span className="text-[#94A3B8] uppercase tracking-[0.15em] text-[10px] block">Catatan Tim Finance:</span>
@@ -723,7 +698,6 @@ export const RefundPage: React.FC = () => {
         )}
       </main>
 
-      {/* Footer Minimalist */}
       <footer className="border-t border-[#E5E7EB] py-8 text-center text-xs font-light text-[#94A3B8]">
         <div className="max-w-[1200px] mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-4">
           <span>&copy; {new Date().getFullYear()} SymphoniaTic Production. Layanan Refund Tiket Resmi.</span>

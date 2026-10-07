@@ -28,20 +28,17 @@ const BuyCard: React.FC<{ event: EventItem; onBuy: () => void }> = ({ event, onB
 
   const purchaseContent = (
     <>
-      {/* ── HEADER ── */}
       <div className="mb-6">
         <h3 className="text-lg font-bold text-[#183B56] tracking-[-0.01em]">Pilih Tiket</h3>
         <p className="text-sm text-[#94A3B8] mt-1">Pilih kategori dan jumlah tiket yang ingin kamu pesan.</p>
       </div>
 
-      {/* ── CLOSED NOTICE ── */}
       {isClosed && (
         <div className="mb-5 p-3 border border-red-200 bg-red-50 text-red-600 text-xs font-medium rounded-lg">
           ⚠️ <strong>Penjualan Ditutup</strong> — Pertunjukan ini sudah dimulai atau penjualan tiket telah dihentikan.
         </div>
       )}
 
-      {/* ── TICKET CATEGORIES ── */}
       <div className="mb-6">
         <span className="text-[11px] font-bold text-[#94A3B8] tracking-[0.1em] uppercase block mb-3">
           Kategori Tiket
@@ -64,7 +61,6 @@ const BuyCard: React.FC<{ event: EventItem; onBuy: () => void }> = ({ event, onB
                 }`}
               >
                 <div className="flex items-center gap-3.5">
-                  {/* Radio indicator */}
                   <span
                     className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200 ${
                       isSelected
@@ -102,7 +98,6 @@ const BuyCard: React.FC<{ event: EventItem; onBuy: () => void }> = ({ event, onB
         </div>
       </div>
 
-      {/* ── QUANTITY ── */}
       {!isClosed && (
         <div className="mb-6">
           <span className="text-[11px] font-bold text-[#94A3B8] tracking-[0.1em] uppercase block mb-3">
@@ -133,10 +128,8 @@ const BuyCard: React.FC<{ event: EventItem; onBuy: () => void }> = ({ event, onB
         </div>
       )}
 
-      {/* ── DIVIDER ── */}
       <div className="border-t border-[#E5E7EB] mb-5" />
 
-      {/* ── TOTAL + CTA ── */}
       <div className="flex items-center justify-between mb-4">
         <span className="text-sm font-medium text-[#64748B]">Total Pembayaran</span>
         <span className="text-xl font-bold text-[#183B56] tabular-nums tracking-[-0.01em]">
@@ -166,19 +159,16 @@ const BuyCard: React.FC<{ event: EventItem; onBuy: () => void }> = ({ event, onB
 
   return (
     <>
-      {/* ═══════════ DESKTOP — STICKY SIDEBAR (NO CARD) ═══════════ */}
       <div className="hidden lg:block lg:col-span-1">
         <div className="sticky top-24">
           {purchaseContent}
         </div>
       </div>
 
-      {/* ═══════════ MOBILE — INLINE CONTENT (CTA in bottom bar) ═══════════ */}
       <div className="lg:hidden pt-2">
         {purchaseContent}
       </div>
 
-      {/* ═══════════ MOBILE — STICKY BOTTOM BAR ═══════════ */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#E5E7EB] pb-[env(safe-area-inset-bottom)]">
         <div className="flex items-center justify-between gap-4 px-5 py-3.5">
           <div className="min-w-0">
@@ -280,12 +270,10 @@ const ConcertDetailPage: React.FC<Props> = ({ eventId }) => {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Image */}
       <div className="relative w-full h-[55vh] min-h-[380px] md:h-[60vh]">
         <img src={event.image} alt={event.title} className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent" />
 
-        {/* Back button */}
         <div className="absolute top-0 left-0 right-0 px-6 sm:px-10 py-5">
           <a
             href="/events"
@@ -296,7 +284,6 @@ const ConcertDetailPage: React.FC<Props> = ({ eventId }) => {
           </a>
         </div>
 
-        {/* Title overlay */}
         <div className="absolute bottom-0 left-0 right-0 max-w-[1400px] px-6 sm:px-10 pb-10 md:pb-12">
           <p className="text-sm font-bold tracking-[0.08em] uppercase text-brand-accent mb-2">
             {event.category}
@@ -310,9 +297,7 @@ const ConcertDetailPage: React.FC<Props> = ({ eventId }) => {
         </div>
       </div>
 
-      {/* Content */}
       <div className="mx-auto max-w-[1400px] px-6 sm:px-10 pb-20 lg:pb-20 pb-32 lg:pb-20">
-        {/* Quick Info Bar */}
         <div className="flex flex-wrap items-center gap-8 pt-10 pb-10 border-b border-[#E5E7EB]">
           {[
             { label: 'Tanggal', value: event.date },
@@ -327,7 +312,6 @@ const ConcertDetailPage: React.FC<Props> = ({ eventId }) => {
           ))}
         </div>
 
-        {/* Tabs */}
         <div className="flex overflow-x-auto no-scrollbar border-b border-[#E5E7EB] mt-10 -mb-px">
           {TABS.map((t) => (
             <button
@@ -344,9 +328,7 @@ const ConcertDetailPage: React.FC<Props> = ({ eventId }) => {
           ))}
         </div>
 
-        {/* Content Grid: Tab Content + Purchase Module */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-14 pt-12">
-          {/* Left: Tab Content */}
           <div className="lg:col-span-2">
             {tab === 'INFO' && (
               <div className="space-y-8">
@@ -483,12 +465,10 @@ const ConcertDetailPage: React.FC<Props> = ({ eventId }) => {
             )}
           </div>
 
-          {/* Right: Purchase Module */}
           <BuyCard event={event} onBuy={() => openBooking(event)} />
         </div>
       </div>
 
-      {/* Booking Modal */}
       {bookingEvent && bookingCategory && (
         <BookingModal
           event={bookingEvent}
@@ -498,7 +478,6 @@ const ConcertDetailPage: React.FC<Props> = ({ eventId }) => {
         />
       )}
 
-      {/* E-Ticket Confirmation */}
       {activeSuccessOrder && (
         <ETicketConfirmation order={activeSuccessOrder} onClose={() => setActiveSuccessOrder(null)} />
       )}

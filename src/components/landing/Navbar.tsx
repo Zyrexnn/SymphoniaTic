@@ -14,7 +14,6 @@ interface HeaderProps {
   onLogout?: () => void;
 }
 
-/* Real existing routes only â€” no fake anchors */
 const mainNavItems = [
   { label: 'Events', href: '/events', primary: true },
   { label: 'Edukasi', href: '/edukasi', primary: false },
@@ -50,7 +49,6 @@ const BrandMark: React.FC<{ light?: boolean }> = ({ light }) => {
   );
 };
 
-/* Expandable search pill â€” navigates to /events?q=â€¦ */
 const SearchPill: React.FC<{ light?: boolean; onNavigate?: () => void }> = ({ light, onNavigate }) => {
   const [q, setQ] = useState('');
 
@@ -139,7 +137,6 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center justify-between gap-6 mx-auto max-w-[1440px] px-4 sm:px-8 md:px-12">
           <BrandMark light={!scrolled} />
 
-          {/* Desktop primary navigation */}
           <nav className="hidden lg:flex items-center gap-8 xl:gap-9" aria-label="Navigasi utama">
             {mainNavItems.map((item) => {
               const isActive =
@@ -167,11 +164,9 @@ export const Header: React.FC<HeaderProps> = ({
             })}
           </nav>
 
-          {/* Right utilities */}
           <div className="flex items-center gap-2.5 sm:gap-3.5">
             <SearchPill light={!scrolled} />
 
-            {/* My tickets / orders */}
             {ordersCount > 0 && (
               <button
                 onClick={onOpenOrders}
@@ -190,7 +185,6 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             )}
 
-            {/* Admin â€” only for admin role */}
             {isAdmin && (
               <a
                 href="/admin"
@@ -212,7 +206,6 @@ export const Header: React.FC<HeaderProps> = ({
               </a>
             )}
 
-            {/* Auth â€” logged in */}
             {user ? (
               <div className="hidden sm:flex items-center gap-2.5">
                 <a
@@ -241,7 +234,6 @@ export const Header: React.FC<HeaderProps> = ({
                 )}
               </div>
             ) : (
-              /* Auth â€” logged out: Masuk (secondary) + Daftar (primary) */
               <div className="hidden sm:flex items-center gap-2">
                 <a
                   href="/login"
@@ -262,7 +254,6 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
             )}
 
-            {/* Mobile menu trigger */}
             <button
               onClick={handleToggleMenu}
               aria-label={menuOpen ? 'Tutup menu navigasi' : 'Buka menu navigasi'}
@@ -285,7 +276,6 @@ export const Header: React.FC<HeaderProps> = ({
             transition={{ duration: 0.2 }}
             className="fixed inset-0 z-50 bg-white flex flex-col lg:hidden overflow-y-auto"
           >
-            {/* Drawer top bar */}
             <div className="flex items-center justify-between px-5 sm:px-8 pt-4 pb-5">
               <BrandMark />
               <button
@@ -297,7 +287,6 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             </div>
 
-            {/* Drawer search */}
             <div className="px-5 sm:px-8 pb-4">
               <SearchPill onNavigate={handleToggleMenu} />
               <p className="mt-2 text-xs text-[#94A3B8] font-light">
@@ -305,7 +294,6 @@ export const Header: React.FC<HeaderProps> = ({
               </p>
             </div>
 
-            {/* Drawer navigation */}
             <nav className="flex flex-col px-5 sm:px-8 py-3" aria-label="Navigasi menu seluler">
               <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-brand-accent mb-2 px-1">
                 Navigasi Utama
@@ -341,7 +329,6 @@ export const Header: React.FC<HeaderProps> = ({
               })}
             </nav>
 
-            {/* Account actions */}
             <div className="px-5 sm:px-8 mt-4">
               {user ? (
                 <div className="grid gap-2.5">
@@ -388,7 +375,6 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </div>
 
-            {/* Admin (conditional) */}
             {isAdmin && (
               <div className="px-5 sm:px-8 mt-5">
                 <a
@@ -411,7 +397,6 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
             )}
 
-            {/* Drawer footer */}
             <div className="px-5 sm:px-8 pt-8 pb-10 mt-auto text-xs text-[#94A3B8] font-light flex flex-col gap-2">
               <p>&copy; 2026 SymphoniaTic Official Concert Booking Platform.</p>
               <p className="text-[10px] tracking-[0.18em] text-brand-accent font-semibold uppercase">

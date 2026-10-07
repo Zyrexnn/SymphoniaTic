@@ -19,7 +19,6 @@ export const OrdersPanel: React.FC<OrdersPanelProps> = ({
   onUpdateStatus, onExportCSV,
 }) => (
   <div className="flex flex-col gap-6 pb-12">
-    {/* Filter & Action Bar */}
     <div className="border border-white/[0.08] bg-[#1a1a1a]/90 p-4 sm:p-5 backdrop-blur-md flex justify-between items-center gap-4 flex-wrap">
       <div className="flex gap-3 items-center flex-1 min-w-[240px] flex-wrap">
         <div className="relative flex-1 min-w-[200px]">
@@ -53,7 +52,6 @@ export const OrdersPanel: React.FC<OrdersPanelProps> = ({
       </button>
     </div>
 
-    {/* Desktop View: Styled Table */}
     <div className="hidden md:block border border-white/[0.08] bg-[#1a1a1a] overflow-hidden shadow-xl">
       <table className="w-full border-collapse text-xs font-light text-left">
         <thead>
@@ -110,7 +108,6 @@ export const OrdersPanel: React.FC<OrdersPanelProps> = ({
       </table>
     </div>
 
-    {/* Mobile View: Cards Grid */}
     <div className="block md:hidden space-y-4">
       {orders.length > 0 ? (
         orders.map((ord) => (

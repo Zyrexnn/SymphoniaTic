@@ -7,8 +7,6 @@ import { Footer } from './Footer';
 import { Header } from './Navbar';
 import { EventCategoriesSection } from './EventCategoriesSection';
 
-/* ── Data helpers ── */
-
 const lowestPrice = (event: EventItem): number => {
   if (!event.categories?.length) return 0;
   return Math.min(...event.categories.map((c) => Number(c.price) || 0));
@@ -30,8 +28,6 @@ const isWeekend = (event: EventItem): boolean => {
 
 const titleCase = (s: string): string =>
   (s.charAt(0) + s.slice(1).toLowerCase()).trim();
-
-/* ── Small pieces ── */
 
 const DateBlock: React.FC<{ date?: string; size?: 'sm' | 'lg' }> = ({ date, size = 'sm' }) => {
   const { day, month, year } = parseDate(date);
@@ -75,8 +71,6 @@ const FavoriteButton: React.FC<{ active: boolean; onToggle: () => void }> = ({ a
   </button>
 );
 
-/* ── Event poster card ── */
-
 const EventCard: React.FC<{ event: EventItem; saved: boolean; onToggleSave: () => void }> = ({
   event,
   saved,
@@ -96,7 +90,6 @@ const EventCard: React.FC<{ event: EventItem; saved: boolean; onToggleSave: () =
           className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 group-hover:scale-[1.05] ${isClosed ? 'grayscale brightness-50' : 'brightness-[0.94] group-hover:brightness-100'
             }`}
         />
-        {/* {!isClosed && <DateBlock date={event.date} />} */}
         <FavoriteButton active={saved} onToggle={onToggleSave} />
 
         {isClosed && (
@@ -139,8 +132,6 @@ const EventCard: React.FC<{ event: EventItem; saved: boolean; onToggleSave: () =
     </a>
   );
 };
-
-/* ── Main page ── */
 
 const EventsPage: React.FC = () => {
   const [query, setQuery] = useState(() => {
@@ -264,12 +255,10 @@ const EventsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white text-[#183B56]">
-      {/* ═══════════ TOP BAR ═══════════ */}
       <header className="sticky top-0 z-40 border-b border-[#E5E7EB] bg-white/95 backdrop-blur-md">
         <Header />
       </header>
 
-      {/* ═══════════ DISCOVERY HERO ═══════════ */}
       <section className="relative overflow-hidden">
         <div
           aria-hidden
@@ -278,7 +267,6 @@ const EventsPage: React.FC = () => {
         />
         <div className="mx-auto max-w-[1360px] px-5 sm:px-10 pt-14 pb-12 md:pt-20 md:pb-16">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
-            {/* Left: headline + search */}
             <div className="lg:col-span-7 max-w-[720px]">
               <h1 className="mt-5 text-[clamp(34px,5.5vw,60px)] leading-[1.04] font-bold tracking-[-0.04em] text-[#183B56]">
                 Temukan konser yang ingin kamu dengarkan.
@@ -288,7 +276,6 @@ const EventsPage: React.FC = () => {
                 pesan, dan dapatkan E-Ticket kamu dalam hitungan detik.
               </p>
 
-              {/* Central search */}
               <form
                 role="search"
                 onSubmit={(e) => e.preventDefault()}
@@ -319,7 +306,6 @@ const EventsPage: React.FC = () => {
                 )}
               </form>
 
-              {/* Context chips */}
               <div className="mt-7 flex flex-wrap items-center gap-3">
                 <span className="inline-flex items-center gap-2 rounded-md bg-[#F8FAFC] border border-[#E5E7EB] px-4 py-2 text-sm font-semibold text-[#183B56]">
                   <MapPin size={14} strokeWidth={2} className="text-brand-accent" />
@@ -333,7 +319,6 @@ const EventsPage: React.FC = () => {
 
             </div>
 
-            {/* Right: season snapshot */}
             <div className="hidden lg:block lg:col-span-5">
               <div className="sticky top-24 rounded-2xl border border-[#E5E7EB] bg-white p-8">
                 <p className="text-xl font-bold text-brand-accent">
@@ -406,7 +391,6 @@ const EventsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ═══════════ RESULTS ═══════════ */}
       <div ref={resultsRef} className="mx-auto max-w-[1360px] px-5 sm:px-10 pt-14 pb-6 scroll-mt-28">
         {hasCriteria ? (
           <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
@@ -451,7 +435,6 @@ const EventsPage: React.FC = () => {
         )}
       </div>
 
-      {/* ═══════════ FEATURED EVENT ═══════════ */}
       {featured && !hasCriteria && (
         <section className="mx-auto max-w-[1360px] px-5 sm:px-10 pb-16">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
@@ -531,7 +514,6 @@ const EventsPage: React.FC = () => {
         </section>
       )}
 
-      {/* ═══════════ EVENT GRID ═══════════ */}
       <section className="mx-auto max-w-[1360px] px-5 sm:px-10 pb-20">
         {isBrowsingAll ? (
           mainEvents.length > 0 && (
@@ -558,7 +540,6 @@ const EventsPage: React.FC = () => {
             ))}
           </div>
         ) : (
-          /* ── Empty state ── */
           <div className="mx-auto max-w-md py-16 text-center">
             <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#F8FAFC]">
               <Search size={24} strokeWidth={1.5} className="text-[#94A3B8]" />

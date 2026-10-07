@@ -160,14 +160,12 @@ const App: React.FC = () => {
         onLogout={logout}
       />
 
-      {/* Hero with video bg */}
       <div className="relative overflow-hidden bg-[#183B56]">
         <BoomerangVideoBg />
         <div className="absolute inset-0 z-[1] bg-gradient-to-b from-[#183B56]/50 via-[#183B56]/20 to-white" />
         <Hero />
       </div>
 
-      {/* Content */}
       <RecommendedSection />
 
       <BentoSection events={displayEvents} onBuyTicket={openBooking} />
@@ -176,26 +174,8 @@ const App: React.FC = () => {
 
       <Footer />
 
-      {/* Bottom padding for fixed audio bar */}
       <div className="h-16" />
 
-      {/* Audio player */}
-      {/* <AudioPlayer
-        audioRef={audioRef}
-        currentTrackIndex={currentTrackIndex}
-        isPlaying={isPlayingAudio}
-        currentTime={currentTime}
-        duration={duration}
-        volume={volume}
-        isMuted={isMuted}
-        onSetCurrentTrackIndex={setCurrentTrackIndex}
-        onSetIsPlaying={setIsPlayingAudio}
-        onSetVolume={setVolume}
-        onSetIsMuted={setIsMuted}
-        onSeek={handleSeek}
-      /> */}
-
-      {/* Modals */}
       <AnimatePresence>
         {bookingEvent && bookingCategory && (
           <BookingModal

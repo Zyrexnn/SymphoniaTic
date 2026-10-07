@@ -20,7 +20,6 @@ export const EventsPanel: React.FC<EventsPanelProps> = ({
   onAddCategory, onEditCategory, onDeleteCategory,
 }) => (
   <div className="flex flex-col gap-6 pb-12">
-    {/* Panel Header */}
     <div className="border border-[#E5E7EB] bg-white p-5 sm:p-6 flex justify-between items-center gap-4 flex-wrap">
       <div>
         <h3 className="text-base font-light text-[#183B56] tracking-tight m-0">Postingan Konser & Kategori Tiket</h3>
@@ -37,7 +36,6 @@ export const EventsPanel: React.FC<EventsPanelProps> = ({
       </button>
     </div>
 
-    {/* Event Cards Grid */}
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {events.map((evt) => (
         <EventCard
@@ -70,7 +68,6 @@ const EventCard: React.FC<EventCardProps> = ({
 }) => (
   <div className="border border-white/[0.08] bg-[#1a1a1a] p-5 sm:p-6 flex flex-col justify-between gap-5 hover:border-white/20 transition-all shadow-xl">
     <div>
-      {/* Top row: Cover image & Main Info */}
       <div className="flex gap-4">
         <div className="relative w-20 h-20 sm:w-24 sm:h-24 shrink-0 overflow-hidden border border-white/10 bg-[#141414]">
           <img src={evt.image} alt={evt.title} className="w-full h-full object-cover" />
@@ -120,7 +117,6 @@ const EventCard: React.FC<EventCardProps> = ({
         </div>
       </div>
 
-      {/* Grid Specs */}
       <div className="grid grid-cols-2 gap-2 mt-4">
         <DetailBox icon={MapPin} label="Venue" value={evt.venue} />
         <DetailBox icon={Calendar} label="Jadwal" value={`${evt.date} (${evt.time})`} />
@@ -128,7 +124,6 @@ const EventCard: React.FC<EventCardProps> = ({
         {evt.openGate && <DetailBox icon={Clock} label="Open Gate" value={evt.openGate} />}
       </div>
 
-      {/* Ticket Categories List */}
       <div className="border-t border-white/[0.08] mt-5 pt-4">
         <div className="flex justify-between items-center mb-3">
           <span className="text-xs font-light text-[#9a9a9a] uppercase tracking-wider">Kategori Tiket & Sisa Kuota</span>

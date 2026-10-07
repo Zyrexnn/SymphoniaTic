@@ -22,12 +22,10 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
 
   return (
     <div className="min-h-screen w-full bg-[#171717] text-white flex items-center justify-center p-4 sm:p-6 relative overflow-hidden font-sans">
-      {/* Background ambient lighting */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-white/[0.02] rounded-full blur-3xl pointer-events-none" />
 
       <div className="w-full max-w-[400px] relative z-10">
         <div className="border border-white/[0.08] bg-[#1a1a1a] p-8 sm:p-10 space-y-6 shadow-2xl">
-          {/* Header Branding */}
           <div className="text-center">
             <div className="mb-4 inline-flex">
               <div className="w-12 h-12 border border-white/20 flex items-center justify-center bg-white/[0.02]">
@@ -44,7 +42,6 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
             </p>
           </div>
 
-          {/* Form */}
           <form onSubmit={onSubmit} className="space-y-4">
             {error && (
               <div className="p-3 border border-rose-500/30 bg-rose-500/10 text-rose-300 text-xs font-light leading-relaxed">
@@ -86,7 +83,6 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
               </div>
             </div>
 
-            {/* Quick Demo Fill Buttons */}
             <div className="space-y-1.5 pt-1">
               <p className="text-[10px] text-[#7a7a7a] font-light uppercase tracking-wider mb-1">Pilihan Login Cepat Demo:</p>
               <button

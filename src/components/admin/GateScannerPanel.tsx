@@ -97,7 +97,6 @@ export const GateScannerPanel: React.FC = () => {
     const code = rawCode.trim().replace(/^QR-/, '');
     const nowTs = Date.now();
 
-    // Prevent duplicate triggers for the same QR code within 3 seconds
     if (lastScannedCodeRef.current === code && nowTs - lastScannedTimeRef.current < 3000) {
       return;
     }
@@ -187,14 +186,12 @@ export const GateScannerPanel: React.FC = () => {
         () => {}
       );
 
-      // Re-fetch cameras after permission granted if list was empty
       if (cameras.length === 0) {
         const devices = await Html5Qrcode.getCameras().catch(() => []);
         if (devices.length > 0) setCameras(devices);
       }
     } catch (err: any) {
       console.error('Failed to start scanner:', err);
-      // Fallback attempt with user facing camera constraint if specific device failed
       try {
         if (html5QrCodeRef.current) {
           await html5QrCodeRef.current.start(

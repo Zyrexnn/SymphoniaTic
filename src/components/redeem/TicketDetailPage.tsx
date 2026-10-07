@@ -74,7 +74,6 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
     lookup();
   }, [code]);
 
-  // Countdown Timer Logic
   useEffect(() => {
     if (!foundOrder) return;
 
@@ -127,7 +126,6 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
         showToast('Tautan E-Ticket berhasil disalin');
       }
     } catch {
-      // User cancelled share
     }
   };
 
@@ -393,7 +391,6 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
 
   return (
     <div className="min-h-screen bg-white text-[#183B56] selection:bg-[#183B56] selection:text-white pb-24 md:pb-12 relative">
-      {/* Toast Banner */}
       <AnimatePresence>
         {toastMessage && (
           <motion.div
@@ -408,7 +405,6 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
         )}
       </AnimatePresence>
 
-      {/* Header Bar */}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#E5E7EB] print:hidden">
         <div className="max-w-[1100px] mx-auto px-6 h-16 flex items-center justify-between">
           <a
@@ -441,14 +437,12 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
         </div>
       </header>
 
-      {/* Main Content Area */}
       <main className="max-w-[960px] w-full mx-auto px-6 py-8 sm:py-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="flex flex-col gap-8"
         >
-          {/* Status Alert Banner */}
           <div className="p-5 border border-[#E5E7EB] bg-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               {isCheckedIn ? (
@@ -483,12 +477,10 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
             </div>
           </div>
 
-          {/* MAIN E-TICKET PASS STUB CONTAINER */}
           <div
             ref={ticketCardRef}
             className="bg-[#183B56] border border-white/20 relative overflow-hidden"
           >
-            {/* Top Event Hero Banner */}
             <div className="relative h-48 sm:h-64 overflow-hidden border-b border-white/15">
               <img
                 src={
@@ -500,7 +492,6 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#183B56] via-[#183B56]/60 to-transparent" />
 
-              {/* Event Badge Overlay */}
               <div className="absolute top-4 left-4 sm:top-6 sm:left-6 flex flex-wrap items-center gap-2">
                 <span className="px-3 py-1 bg-white text-[#183B56] text-[11px] font-mono tracking-widest uppercase">
                   {foundOrder.categoryName}
@@ -510,7 +501,6 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
                 </span>
               </div>
 
-              {/* Event Title in Banner */}
               <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 right-4 sm:right-6">
                 <span className="text-xs font-light text-[#94A3B8] tracking-widest uppercase block mb-1">
                   PERTUNJUKAN SIMFONI
@@ -525,7 +515,6 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
               </div>
             </div>
 
-            {/* Countdown Bar */}
             {!timeLeft.isPast && !isRefunded && (
               <div className="bg-[#183B56] border-b border-white/10 px-4 sm:px-6 py-3 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs font-light">
                 <span className="text-[#94A3B8] flex items-center gap-1.5">
@@ -544,9 +533,7 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
               </div>
             )}
 
-            {/* Ticket Stub Middle Body */}
             <div className="p-6 sm:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 relative">
-              {/* Left Column: Specs */}
               <div className="lg:col-span-7 flex flex-col gap-6">
                 <div>
                   <h3 className="text-xs font-light text-[#94A3B8] tracking-widest uppercase mb-3 flex items-center gap-2">
@@ -575,7 +562,6 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
                   </div>
                 </div>
 
-                {/* Date & Location Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="border border-white/10 p-4 bg-[#183B56]">
                     <div className="flex items-center gap-2 text-[#94A3B8] text-xs font-light mb-1">
@@ -596,7 +582,6 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
                   </div>
                 </div>
 
-                {/* Order Code Box */}
                 <div className="border border-white/20 bg-[#183B56] p-5 flex items-center justify-between gap-4">
                   <div>
                     <span className="text-[11px] font-light text-[#94A3B8] uppercase tracking-wider block">
@@ -618,7 +603,6 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
                 </div>
               </div>
 
-              {/* Right Column: QR Code Scanner */}
               <div className="lg:col-span-5 border border-white/15 p-6 flex flex-col items-center justify-between text-center gap-6 relative bg-[#183B56]">
                 <div className="w-full flex items-center justify-between border-b border-white/10 pb-3">
                   <span className="text-xs font-mono text-[#94A3B8] uppercase">SCANNER GATEPASS</span>
@@ -683,7 +667,6 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
             </div>
           </div>
 
-          {/* Interactive Navigation Tabs */}
           <div className="border border-[#E5E7EB] bg-white p-6 flex flex-col gap-6">
             <div className="flex border-b border-[#E5E7EB] gap-2 overflow-x-auto no-scrollbar">
               <button
@@ -718,7 +701,6 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
               </button>
             </div>
 
-            {/* Tab 1: Rundown */}
             {activeTab === 'rundown' && (
               <div className="space-y-4">
                 <h4 className="text-xs font-light text-[#94A3B8] tracking-widest uppercase">
@@ -747,7 +729,6 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
               </div>
             )}
 
-            {/* Tab 2: Venue */}
             {activeTab === 'venue' && (
               <div className="space-y-4">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -783,7 +764,6 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
               </div>
             )}
 
-            {/* Tab 3: Rules */}
             {activeTab === 'rules' && (
               <div className="space-y-4 text-xs font-light text-[#94A3B8]">
                 <h4 className="text-xs font-light text-[#94A3B8] tracking-widest uppercase">
@@ -811,7 +791,6 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
             )}
           </div>
 
-          {/* Primary Actions Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 print:hidden">
             <button
               onClick={handleDownloadPDF}
@@ -842,7 +821,6 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
         </motion.div>
       </main>
 
-      {/* MOBILE STICKY BOTTOM ACTIONS BAR */}
       <div className="fixed bottom-0 left-0 w-full z-40 bg-white/95 backdrop-blur-lg border-t border-[#E5E7EB] p-3 sm:hidden flex items-center justify-between gap-2 print:hidden shadow-2xl">
         <button
           onClick={() => setShowQrModal(true)}
@@ -862,7 +840,6 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
         </button>
       </div>
 
-      {/* QR Code Fullscreen Modal */}
       <AnimatePresence>
         {showQrModal && (
           <motion.div
@@ -902,7 +879,6 @@ export const TicketDetailPage: React.FC<Props> = ({ code }) => {
         )}
       </AnimatePresence>
 
-      {/* Footer */}
       <footer className="border-t border-[#E5E7EB] py-8 text-center text-xs text-[#94A3B8] font-light print:hidden">
         &copy; 2026 SymphoniaTic Official Ticket Redemption Portal. All rights reserved.
       </footer>

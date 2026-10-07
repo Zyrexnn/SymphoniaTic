@@ -9,7 +9,6 @@ export interface SectionHeadingProps {
   actionHref: string;
 }
 
-/* ─── Reusable editorial section header ─── */
 export const SectionHeading: React.FC<SectionHeadingProps> = ({
   eyebrow,
   title,

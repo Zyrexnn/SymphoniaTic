@@ -1,4 +1,3 @@
-// ─── Types ───
 export interface APIResponse<T = any> {
   success: boolean;
   message: string;
@@ -103,7 +102,6 @@ export interface RefundRecord {
   updatedAt: string;
 }
 
-// ─── Utils ───
 const idrFormatter = new Intl.NumberFormat('id-ID', {
   style: 'currency',
   currency: 'IDR',
@@ -127,7 +125,6 @@ export const formatTime = (secs: number): string => {
   return `${mins}:${remainingSecs < 10 ? '0' : ''}${remainingSecs}`;
 };
 
-// ─── Data ───
 export const CONCERT_EVENTS: EventItem[] = [
   {
     id: 1,
@@ -270,7 +267,6 @@ export const NAV_PAGES = [
   { label: 'Refund', href: '/refund' },
 ];
 
-// ─── Admin API Types & Helpers ───
 export interface AdminMetricsData {
   totalRevenue: number;
   ticketsSold: number;
@@ -606,7 +602,6 @@ export const updateRefundStatusAPI = async (refundId: string, status: string, ad
   return res.json();
 };
 
-// ─── User Auth & Account API ───
 const USER_TOKEN_KEY = 'symphoniatic_user_token';
 
 export const getUserToken = (): string | null => {
@@ -636,7 +631,6 @@ const postJSON = (path: string, body: any, auth = false) =>
         : fetch(`${getApiBaseUrl()}${path}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }))
     .then(r => r.json());
 
-// Auth (public)
 export const requestRegisterOtpAPI = (email: string, name: string): Promise<APIResponse<null>> =>
   postJSON('/auth/register/request-otp', { email, name });
 
@@ -661,7 +655,6 @@ export const verifyForgotPasswordOtpAPI = (email: string, otpCode: string): Prom
 export const resetPasswordAPI = (resetToken: string, newPassword: string): Promise<APIResponse<null>> =>
   postJSON('/auth/forgot-password/reset', { resetToken, newPassword });
 
-// Auth & User (protected)
 export const getMeAPI = (): Promise<APIResponse<UserRecord>> =>
   authFetch('/auth/me').then(r => r.json());
 

@@ -74,7 +74,6 @@ const EdukasiPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white text-[#183B56]">
-      {/* Header */}
       <div className="border-b border-line">
         <div className="mx-auto max-w-[1400px] px-10 pt-[80px] pb-10">
           <a href="/" className="inline-flex items-center gap-2 text-base font-light tracking-[-0.05px] text-[#64748B] hover:opacity-60 transition-opacity mb-8">
@@ -93,7 +92,6 @@ const EdukasiPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Tabs */}
       <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-line">
         <div className="mx-auto max-w-[1400px] px-10">
           <div className="flex overflow-x-auto no-scrollbar">
@@ -111,16 +109,13 @@ const EdukasiPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Content */}
       <div className="mx-auto max-w-[1400px] px-10 py-20">
-        {/* ETIKA */}
         {section === 'ETIKA' && (
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
           >
-            {/* Aturan Ruang */}
             <h2 className="text-[28px] tracking-[-0.02em] font-light mb-8">Aturan Ruang Pertunjukan</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10 mb-16 max-w-[1000px]">
               {VENUE_RULES.map((rule, i) => {
@@ -137,7 +132,6 @@ const EdukasiPage: React.FC = () => {
               })}
             </div>
 
-            {/* Dress Code */}
             <h2 className="text-[28px] tracking-[-0.02em] font-light mb-8">Panduan Pakaian (Dress Code)</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-[1000px]">
               {DRESS_CODES.map((dc, i) => (
@@ -152,7 +146,6 @@ const EdukasiPage: React.FC = () => {
           </motion.div>
         )}
 
-        {/* KOMPONIS */}
         {section === 'KOMPONIS' && (
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -208,7 +201,6 @@ const EdukasiPage: React.FC = () => {
           </motion.div>
         )}
 
-        {/* GLOSARIUM */}
         {section === 'GLOSARIUM' && (
           <motion.div
             initial={{ opacity: 0, y: 16 }}

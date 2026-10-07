@@ -17,12 +17,9 @@ export const MetricsPanel: React.FC<MetricsPanelProps> = ({ metrics, eventsCount
 
   return (
     <div className="flex flex-col gap-6 sm:gap-8 pb-12">
-      {/* Interactive Financial Dashboard with Recharts */}
       <Dashboard metrics={metrics} eventsCount={eventsCount} onGoToOrders={onGoToOrders} />
 
-      {/* Detailed Analytics Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Revenue per Event */}
         <div className="border border-white/[0.08] bg-[#1a1a1a]/90 p-5 sm:p-6 backdrop-blur-md flex flex-col justify-between shadow-xl">
           <div>
             <div className="border-b border-white/[0.08] pb-4 flex items-center justify-between">
@@ -62,7 +59,6 @@ export const MetricsPanel: React.FC<MetricsPanelProps> = ({ metrics, eventsCount
           </div>
         </div>
 
-        {/* Recent Transactions */}
         <div className="border border-white/[0.08] bg-[#1a1a1a]/90 p-5 sm:p-6 backdrop-blur-md flex flex-col justify-between shadow-xl">
           <div>
             <div className="border-b border-white/[0.08] pb-4 flex items-center justify-between">

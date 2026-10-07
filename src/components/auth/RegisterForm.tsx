@@ -16,11 +16,7 @@ import {
   useCooldown,
 } from './ui';
 
-/* ─── Constants ─── */
-
 const OTP_RESEND_SECONDS = 60;
-
-/* ─── Component ─── */
 
 function RegisterFormInner() {
   const { login } = useAuth();
@@ -45,14 +41,10 @@ function RegisterFormInner() {
     };
   }, []);
 
-  /* ─── Helpers ─── */
-
   const resetMessages = () => {
     setError(null);
     setInfo(null);
   };
-
-  /* ─── Handlers ─── */
 
   const requestOtp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,8 +98,6 @@ function RegisterFormInner() {
     setLoading(false);
   };
 
-  /* ─── Shared Header ─── */
-
   const header = (
     <div className="mb-10">
       <span className="text-[10px] font-mono uppercase tracking-[0.35em] text-[#94A3B8]">
@@ -122,15 +112,11 @@ function RegisterFormInner() {
     </div>
   );
 
-  /* ─── Render ─── */
-
   return (
     <div className="h-screen w-screen flex overflow-hidden bg-white">
 
-      {/* ── Left Panel — Form ── */}
       <div className="w-full lg:w-[55%] flex flex-col justify-center  px-8 sm:px-16 lg:px-40 py-12 overflow-y-auto order-2 lg:order-1">
 
-        {/* Mobile back link */}
         <div className="lg:hidden mb-8">
           <a
             href="/"
@@ -141,10 +127,8 @@ function RegisterFormInner() {
           </a>
         </div>
 
-        {/* Header */}
         {header}
 
-        {/* Step 1: Basic Info */}
         {step === 1 && (
           <form onSubmit={requestOtp} className="flex flex-col gap-5 max-w-md">
             <Field
@@ -175,7 +159,6 @@ function RegisterFormInner() {
           </form>
         )}
 
-        {/* Step 2: OTP + Password */}
         {step === 2 && (
           <form onSubmit={verify} className="flex flex-col gap-5 max-w-md">
             <p className="text-[11px] text-[#64748B] font-light">
@@ -237,7 +220,6 @@ function RegisterFormInner() {
           </form>
         )}
 
-        {/* Footer */}
         <div className="mt-12 pt-6 border-t border-[#E5E7EB] text-[11px] font-light text-[#64748B] max-w-md">
           Sudah punya akun?{' '}
           <a
@@ -249,7 +231,6 @@ function RegisterFormInner() {
         </div>
       </div>
 
-      {/* ── Right Panel — Image ── */}
       <div className="hidden lg:flex lg:w-[65%] rounded-tl-[4rem] relative flex-col justify-between p-12 overflow-hidden order-1 lg:order-2">
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat rounded-tr-[4rem]"
@@ -289,8 +270,6 @@ function RegisterFormInner() {
     </div>
   );
 }
-
-/* ─── Export ─── */
 
 export const RegisterForm: React.FC = () => (
   <AuthProvider>
