@@ -7,7 +7,7 @@ export const ComposerSpotlight: React.FC = () => {
   const composer = COMPOSERS[activeIndex];
 
   return (
-    <section id="komponis" className="scroll-mt-20 border-b border-[#E5E7EB] py-20 sm:py-24 lg:py-32">
+    <section id="komponis" className="scroll-mt-28 border-b border-[#E5E7EB] py-20 sm:py-24 lg:py-32">
       <div className="mx-auto max-w-[1400px] px-6 sm:px-8 md:px-10">
         <Reveal>
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#64748B]">

@@ -4,7 +4,7 @@ import { Reveal } from './Reveal';
 
 export const EtiquetteSection: React.FC = () => {
   return (
-    <section id="etika" className="scroll-mt-20 border-b border-[#E5E7EB] py-20 sm:py-24 lg:py-32">
+    <section id="etika" className="scroll-mt-28 border-b border-[#E5E7EB] py-20 sm:py-24 lg:py-32">
       <div className="mx-auto max-w-[1400px] px-6 sm:px-8 md:px-10">
         <div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
           <Reveal className="lg:col-span-4">

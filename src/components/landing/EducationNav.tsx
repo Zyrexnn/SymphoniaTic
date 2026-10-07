@@ -8,7 +8,7 @@ interface EducationNavProps {
 
 export const EducationNav: React.FC<EducationNavProps> = ({ active, onSelect }) => {
   return (
-    <nav aria-label="Bagian halaman edukasi" className="sticky top-0 z-30 border-b border-[#E5E7EB] bg-white/95 backdrop-blur-md">
+    <nav aria-label="Bagian halaman edukasi" className="sticky top-[61px] z-20 border-b border-[#E5E7EB] bg-white/95 backdrop-blur-md">
       <div className="mx-auto max-w-[1400px] px-6 sm:px-8 md:px-10">
         <ul className="no-scrollbar flex gap-8 overflow-x-auto">
           {EDUKASI_NAV.map((item) => {

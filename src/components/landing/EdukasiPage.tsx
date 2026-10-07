@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { Header } from './Navbar';
 import { EducationHero } from './EducationHero';
 import { EducationNav } from './EducationNav';
 import { EtiquetteSection } from './EtiquetteSection';
@@ -39,6 +40,7 @@ const EdukasiPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white text-[#183B56]">
+      <Header isScrolled />
       <EducationHero />
       <EducationNav active={active} onSelect={scrollTo} />
       <main>

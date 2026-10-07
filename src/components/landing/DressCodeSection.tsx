@@ -4,7 +4,7 @@ import { Reveal } from './Reveal';
 
 export const DressCodeSection: React.FC = () => {
   return (
-    <section id="pakaian" className="scroll-mt-20 border-b border-[#E5E7EB] py-20 sm:py-24 lg:py-32">
+    <section id="pakaian" className="scroll-mt-28 border-b border-[#E5E7EB] py-20 sm:py-24 lg:py-32">
       <div className="mx-auto max-w-[1400px] px-6 sm:px-8 md:px-10">
         <Reveal>
           <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">

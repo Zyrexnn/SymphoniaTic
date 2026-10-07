@@ -9,7 +9,7 @@ const META = ['Classical Music', 'Concert Guide', '2026'];
 export const EducationHero: React.FC = () => {
   return (
     <section className="border-b border-[#E5E7EB]">
-      <div className="mx-auto max-w-[1400px] px-6 pt-10 sm:px-8 md:px-10 md:pt-14">
+      <div className="mx-auto max-w-[1400px] px-6 pt-24 sm:px-8 md:px-10 md:pt-28">
         <a
           href="/"
           className="inline-flex min-h-11 items-center gap-2 text-sm font-normal text-[#64748B] transition-colors duration-200 hover:text-[#183B56] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2"
