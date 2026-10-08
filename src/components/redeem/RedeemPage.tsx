@@ -20,6 +20,7 @@ import {
   UserCheck
 } from 'lucide-react';
 import { Header } from '../landing/Navbar';
+import { Footer } from '../landing/Footer';
 
 interface SampleCode {
   code: string;
@@ -498,9 +499,7 @@ export const RedeemPage: React.FC = () => {
         </div>
       </main>
 
-      <footer className="border-t border-line py-8 text-center text-xs text-muted">
-        &copy; 2026 SymphoniaTic Official Ticket Redemption Portal. All rights reserved.
-      </footer>
+      <Footer />
     </div>
   );
 };
