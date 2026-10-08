@@ -19,6 +19,7 @@ import {
   HelpCircle,
   UserCheck
 } from 'lucide-react';
+import { Header } from '../landing/Navbar';
 
 interface SampleCode {
   code: string;
@@ -156,27 +157,27 @@ export const RedeemPage: React.FC = () => {
         )}
       </AnimatePresence>
 
-      <header className="sticky top-0 z-40 border-b border-line bg-white/95 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-6">
-          <a
-            href="/"
-            className={`inline-flex min-h-11 items-center gap-2 text-xs text-muted transition-colors duration-200 hover:text-ink ${focusRing}`}
-          >
-            <ArrowLeft className="h-4 w-4 text-brand-accent" strokeWidth={1.5} />
-            <span>Kembali ke Beranda</span>
-          </a>
-          <div className="flex items-center gap-2">
-            <QrCode className="h-4 w-4 text-brand-accent" strokeWidth={1.5} />
-            <span className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-soft">
-              Portal Cek Tiket
-            </span>
-          </div>
-        </div>
-      </header>
+      <Header isScrolled />
 
-      <main className="mx-auto flex w-full max-w-[1200px] flex-1 flex-col gap-16 px-6 py-12 sm:gap-20 sm:py-16">
+      <main className="mx-auto w-full max-w-[1440px] px-4 sm:px-8 md:px-12 pt-24 sm:pt-28">
+        <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-16 pb-12 sm:gap-20 sm:pb-16">
         <div className="flex max-w-3xl flex-col items-start">
-          <p className={`mb-5 flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.16em] text-ink ${focusRing}`}>
+          <div className="mb-6 flex w-full flex-wrap items-center justify-between gap-4">
+            <a
+              href="/"
+              className={`inline-flex min-h-11 items-center gap-2 text-xs text-muted transition-colors duration-200 hover:text-ink ${focusRing}`}
+            >
+              <ArrowLeft className="h-4 w-4 text-brand-accent" strokeWidth={1.5} />
+              <span>Kembali ke Beranda</span>
+            </a>
+            <div className="flex items-center gap-2">
+              <QrCode className="h-4 w-4 text-brand-accent" strokeWidth={1.5} />
+              <span className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-soft">
+                Portal Cek Tiket
+              </span>
+            </div>
+          </div>
+          <p className="mb-5 flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.16em] text-ink">
             <span className="h-2 w-2 bg-brand-accent" aria-hidden />
             Verifikasi Resmi Tiket Simfoni
           </p>
@@ -494,9 +495,10 @@ export const RedeemPage: React.FC = () => {
             </a>
           </div>
         </section>
+        </div>
       </main>
 
-      <footer className="mt-12 border-t border-line py-8 text-center text-xs text-muted">
+      <footer className="border-t border-line py-8 text-center text-xs text-muted">
         &copy; 2026 SymphoniaTic Official Ticket Redemption Portal. All rights reserved.
       </footer>
     </div>
