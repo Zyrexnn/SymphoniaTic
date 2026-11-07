@@ -114,12 +114,8 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
                       const formData = new FormData();
                       formData.append('image', file);
                       try {
-                        const { getApiBaseUrl } = await import('../landing/data');
-                        const res = await fetch(`${getApiBaseUrl()}/admin/upload`, {
-                          method: 'POST',
-                          body: formData,
-                        });
-                        const data = await res.json();
+                        const { uploadAdminImageAPI } = await import('../landing/data');
+                        const data = await uploadAdminImageAPI(formData);
                         if (data.success && data.data?.url) {
                           update({ image: data.data.url });
                         } else {

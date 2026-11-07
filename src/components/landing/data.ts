@@ -385,9 +385,38 @@ export const adminLoginAPI = async (username: string, password: string) => {
   return res.json();
 };
 
+const ADMIN_TOKEN_KEY = 'symphoniatic_admin_token';
+
+export const getAdminToken = (): string | null => {
+  try {
+    return typeof window !== 'undefined' ? sessionStorage.getItem(ADMIN_TOKEN_KEY) : null;
+  } catch {
+    return null;
+  }
+};
+
+export const getAdminAuthHeaders = (): Record<string, string> => {
+  const token = getAdminToken();
+  if (token) {
+    return { 'Authorization': `Bearer ${token}` };
+  }
+  return {};
+};
+
+export const uploadAdminImageAPI = async (formData: FormData) => {
+  const res = await fetch(`${getApiBaseUrl()}/admin/upload`, {
+    method: 'POST',
+    headers: getAdminAuthHeaders(),
+    body: formData,
+  });
+  return res.json();
+};
+
 export const fetchAdminMetricsAPI = async (): Promise<AdminMetricsData | null> => {
   try {
-    const res = await fetch(`${getApiBaseUrl()}/admin/dashboard`);
+    const res = await fetch(`${getApiBaseUrl()}/admin/dashboard`, {
+      headers: getAdminAuthHeaders(),
+    });
     const data = await res.json();
     if (data.success && data.data) {
       const d = data.data;
@@ -438,7 +467,7 @@ export const fetchAdminMetricsAPI = async (): Promise<AdminMetricsData | null> =
 export const createEventAPI = async (payload: CreateEventInput) => {
   const res = await fetch(`${getApiBaseUrl()}/admin/events`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...getAdminAuthHeaders() },
     body: JSON.stringify(payload),
   });
   return res.json();
@@ -448,7 +477,7 @@ export const updateEventAPI = async (eventId: string | number, payload: Partial<
   const cleanId = String(eventId).trim();
   const res = await fetch(`${getApiBaseUrl()}/admin/events/${cleanId}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...getAdminAuthHeaders() },
     body: JSON.stringify(payload),
   });
   return res.json();
@@ -458,6 +487,7 @@ export const deleteEventAPI = async (eventId: string | number) => {
   const cleanId = String(eventId).trim();
   const res = await fetch(`${getApiBaseUrl()}/admin/events/${cleanId}`, {
     method: 'DELETE',
+    headers: getAdminAuthHeaders(),
   });
   return res.json();
 };
@@ -466,6 +496,7 @@ export const toggleEventCloseAPI = async (eventId: string | number) => {
   const cleanId = String(eventId).trim();
   const res = await fetch(`${getApiBaseUrl()}/admin/events/${cleanId}/toggle-close`, {
     method: 'PATCH',
+    headers: getAdminAuthHeaders(),
   });
   return res.json();
 };
@@ -474,7 +505,7 @@ export const createTicketCategoryAPI = async (eventId: string | number, payload:
   const cleanId = String(eventId).trim();
   const res = await fetch(`${getApiBaseUrl()}/admin/events/${cleanId}/categories`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...getAdminAuthHeaders() },
     body: JSON.stringify(payload),
   });
   return res.json();
@@ -484,7 +515,7 @@ export const updateTicketCategoryAPI = async (catId: string, payload: { name: st
   const cleanId = String(catId).trim();
   const res = await fetch(`${getApiBaseUrl()}/admin/categories/${cleanId}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...getAdminAuthHeaders() },
     body: JSON.stringify(payload),
   });
   return res.json();
@@ -494,6 +525,7 @@ export const deleteTicketCategoryAPI = async (catId: string) => {
   const cleanId = String(catId).trim();
   const res = await fetch(`${getApiBaseUrl()}/admin/categories/${cleanId}`, {
     method: 'DELETE',
+    headers: getAdminAuthHeaders(),
   });
   return res.json();
 };
@@ -503,7 +535,9 @@ export const fetchAdminOrdersAPI = async (search = '', status = '') => {
     const params = new URLSearchParams();
     if (search) params.append('search', search);
     if (status) params.append('status', status);
-    const res = await fetch(`${getApiBaseUrl()}/admin/orders?${params.toString()}`);
+    const res = await fetch(`${getApiBaseUrl()}/admin/orders?${params.toString()}`, {
+      headers: getAdminAuthHeaders(),
+    });
     const data = await res.json();
     if (data.success && Array.isArray(data.data)) {
       return data.data.map((o: any) => ({
@@ -535,7 +569,7 @@ export const fetchAdminOrdersAPI = async (search = '', status = '') => {
 export const updateOrderStatusAPI = async (orderId: string, status: string) => {
   const res = await fetch(`${getApiBaseUrl()}/admin/orders/${orderId}/status`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...getAdminAuthHeaders() },
     body: JSON.stringify({ status }),
   });
   return res.json();
@@ -581,7 +615,9 @@ export const checkInTicketAPI = async (code: string) => {
 
 export const fetchAdminRefundsAPI = async () => {
   try {
-    const res = await fetch(`${getApiBaseUrl()}/admin/refunds`);
+    const res = await fetch(`${getApiBaseUrl()}/admin/refunds`, {
+      headers: getAdminAuthHeaders(),
+    });
     const data = await res.json();
     if (data.success && Array.isArray(data.data)) {
       return data.data;
@@ -596,7 +632,7 @@ export const fetchAdminRefundsAPI = async () => {
 export const updateRefundStatusAPI = async (refundId: string, status: string, adminNote: string) => {
   const res = await fetch(`${getApiBaseUrl()}/admin/refunds/${refundId}/status`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...getAdminAuthHeaders() },
     body: JSON.stringify({ status, adminNote }),
   });
   return res.json();

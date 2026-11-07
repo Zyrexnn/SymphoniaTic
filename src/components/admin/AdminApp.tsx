@@ -197,47 +197,23 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
     setIsAuthenticating(true);
 
     const cleanUser = username.trim().toLowerCase();
-    const cleanPass = password.trim();
-
-    if (cleanUser === 'admin' && cleanPass === '123') {
-      try {
-        sessionStorage.setItem('symphoniatic_admin_token', 'authenticated');
-        sessionStorage.setItem('symphoniatic_admin_role', 'ADMIN');
-      } catch {}
-      setCurrentRole('ADMIN');
-      setActiveTab('METRICS');
-      setIsAuthenticated(true);
-      setIsAuthenticating(false);
-      return;
-    }
-
-    if (cleanUser === 'petugas' && cleanPass === '123') {
-      try {
-        sessionStorage.setItem('symphoniatic_admin_token', 'authenticated-petugas');
-        sessionStorage.setItem('symphoniatic_admin_role', 'PETUGAS');
-      } catch {}
-      setCurrentRole('PETUGAS');
-      setActiveTab('SCANNER');
-      setIsAuthenticated(true);
-      setIsAuthenticating(false);
-      return;
-    }
 
     try {
       const res = await adminLoginAPI(username, password);
-      if (res.success) {
+      if (res.success && res.data?.token) {
+        const userRole = res.data?.user?.role || (cleanUser === 'petugas' ? 'PETUGAS' : 'ADMIN');
         try {
-          sessionStorage.setItem('symphoniatic_admin_token', res.data?.token || 'authenticated');
-          sessionStorage.setItem('symphoniatic_admin_role', 'ADMIN');
+          sessionStorage.setItem('symphoniatic_admin_token', res.data.token);
+          sessionStorage.setItem('symphoniatic_admin_role', userRole);
         } catch {}
-        setCurrentRole('ADMIN');
-        setActiveTab('METRICS');
+        setCurrentRole(userRole);
+        setActiveTab(userRole === 'PETUGAS' ? 'SCANNER' : 'METRICS');
         setIsAuthenticated(true);
       } else {
         setAuthError(res.message || 'Username atau Password Admin salah');
       }
     } catch {
-      setAuthError('Username atau Password Admin salah');
+      setAuthError('Terjadi kesalahan koneksi saat login');
     } finally {
       setIsAuthenticating(false);
     }
