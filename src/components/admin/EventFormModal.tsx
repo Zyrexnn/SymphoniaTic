@@ -40,14 +40,14 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-2xl bg-white border border-[#E5E7EB] my-auto max-h-[90vh] flex flex-col shadow-2xl"
+        className="w-full max-w-2xl bg-[#14161F] border border-[#272A38] rounded-2xl my-auto max-h-[90vh] flex flex-col shadow-2xl"
       >
-        <div className="flex justify-between items-center border-b border-[#E5E7EB] px-6 py-4 shrink-0 bg-[#F8FAFC]">
-          <h3 className="text-base font-light text-[#183B56] tracking-tight m-0">
+        <div className="flex justify-between items-center border-b border-[#272A38] px-6 py-4 shrink-0 bg-[#0C0D12]/70 rounded-t-2xl">
+          <h3 className="text-base font-semibold text-white tracking-tight m-0">
             {isEdit ? 'Edit Detail Event Konser' : 'Tambah Event Konser Baru'}
           </h3>
-          <button onClick={onClose} className="p-1.5 bg-transparent border border-[#E5E7EB] text-[#64748B] hover:text-brand cursor-pointer transition-colors">
-            <X size={16} strokeWidth={1} />
+          <button onClick={onClose} className="p-1.5 bg-[#0C0D12] border border-[#272A38] rounded-lg text-[#A1A1AA] hover:text-white cursor-pointer transition-colors">
+            <X size={16} strokeWidth={1.5} />
           </button>
         </div>
 
@@ -73,19 +73,15 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs font-light text-[#64748B] tracking-wider uppercase block mb-1.5">Kategori Genre Konser</label>
+              <label className="text-xs font-medium text-[#A1A1AA] tracking-wider uppercase block mb-1.5">Kategori Genre Konser</label>
               <select
                 value={form.category}
                 onChange={(e) => {
                   const val = e.target.value;
-                  let badge = 'bg-brand/[0.08] text-brand border-brand/30';
-                  if (val === 'SIMFONI UTAMA' || val === 'SIMFONI') badge = 'bg-amber-50 text-amber-700 border-amber-500/30';
-                  else if (val === 'KAMAR MUSIK') badge = 'bg-emerald-50 text-emerald-700 border-emerald-500/30';
-                  else if (val === 'PADUAN SUARA') badge = 'bg-brand-accent/10 text-brand-accent border-brand-accent/30';
-                  else if (val === 'SOLO RESITAL') badge = 'bg-brand/[0.08] text-brand border-brand/30';
+                  const badge = 'bg-white/10 text-white border-white/20';
                   update({ category: val, categoryBadgeColor: badge });
                 }}
-                className="w-full bg-white border border-[#E5E7EB] px-3 py-2 text-xs font-light text-[#183B56] outline-none"
+                className="w-full bg-[#0C0D12] border border-[#272A38] rounded-lg px-3 py-2 text-xs font-normal text-white outline-none focus:border-white"
               >
                 <option value="SIMFONI UTAMA">SIMFONI UTAMA</option>
                 <option value="SIMFONI">SIMFONI</option>
@@ -95,14 +91,14 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
               </select>
             </div>
             <div>
-              <label className="text-xs font-light text-[#64748B] tracking-wider uppercase block mb-1.5">Gambar Cover Konser</label>
+              <label className="text-xs font-medium text-[#A1A1AA] tracking-wider uppercase block mb-1.5">Gambar Cover Konser</label>
               <div className="flex flex-col gap-2">
                 <input
                   type="text"
                   placeholder="Masukkan URL gambar atau gunakan tombol upload..."
                   value={form.image}
                   onChange={(e) => update({ image: e.target.value })}
-                  className="w-full bg-white border border-[#E5E7EB] px-3 py-2 text-xs font-light text-[#183B56] outline-none"
+                  className="w-full bg-[#0C0D12] border border-[#272A38] rounded-lg px-3 py-2 text-xs font-normal text-white placeholder-[#71717A] outline-none focus:border-white"
                 />
                 <div className="flex items-center gap-2">
                   <input
@@ -131,12 +127,12 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
                   />
                   <label
                     htmlFor="event-image-upload-input"
-                    className="px-3 py-1.5 border border-[#CBD5E1] bg-white text-[11px] font-light text-[#183B56] hover:border-brand cursor-pointer select-none transition-colors"
+                    className="px-3 py-1.5 border border-[#272A38] bg-[#0C0D12] rounded-lg text-[11px] font-medium text-[#A1A1AA] hover:text-white hover:border-white/40 cursor-pointer select-none transition-colors"
                   >
                     Upload Gambar Lokal
                   </label>
                   {form.image && (
-                    <span className="text-[10px] text-emerald-700 font-mono truncate max-w-[200px]" title={form.image}>
+                    <span className="text-[10px] text-emerald-400 font-mono truncate max-w-[200px]" title={form.image}>
                       ✓ File siap
                     </span>
                   )}
@@ -145,8 +141,8 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
             </div>
           </div>
 
-          <div className="border border-[#E5E7EB] bg-[#F8FAFC] p-4 flex flex-col gap-4">
-            <span className="text-xs font-light text-[#183B56] uppercase tracking-wider">Spesifikasi Acara</span>
+          <div className="border border-[#272A38] bg-[#0C0D12] rounded-xl p-4 flex flex-col gap-4">
+            <span className="text-xs font-semibold text-white uppercase tracking-wider">Spesifikasi Acara</span>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InputField label="Konduktor" value={form.conductor} onChange={(v) => update({ conductor: v })} placeholder="Maestro Alexander Vance" />
               <InputField label="Subtitle / Tagline" value={form.subtitle} onChange={(v) => update({ subtitle: v })} placeholder="Pertunjukan Mahakarya Simfoni" />
@@ -160,31 +156,31 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
                   onChange={(v) => update({ address: v })} 
                   placeholder="Jl. Industri Blok B14 No.1, Kemayoran atau https://maps.google.com/..." 
                 />
-                <span className="text-[10px] text-[#64748B] block mt-1 leading-normal">
+                <span className="text-[10px] text-[#71717A] block mt-1 leading-normal">
                   Info: Kolom ini digunakan untuk rute peta pada e-ticket. Anda bisa memasukkan alamat tekstual biasa atau Link Share Google Maps.
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="border border-[#E5E7EB] bg-[#F8FAFC] p-4 flex flex-col gap-3">
+          <div className="border border-[#272A38] bg-[#0C0D12] rounded-xl p-4 flex flex-col gap-3">
             <div className="flex justify-between items-center">
-              <span className="text-xs font-light text-[#183B56] uppercase tracking-wider">Rangkaian Acara (Rundown)</span>
+              <span className="text-xs font-semibold text-white uppercase tracking-wider">Rangkaian Acara (Rundown)</span>
               <button
                 type="button"
                 onClick={() => {
                   const current = form.rundown || [];
                   update({ rundown: [...current, { time: '18:00 WIB', activity: 'Aktivitas Baru' }] });
                 }}
-                className="text-xs font-light text-[#183B56] bg-white border border-[#CBD5E1] px-2.5 py-1 cursor-pointer hover:border-brand flex items-center gap-1"
+                className="text-xs font-medium text-white bg-[#14161F] border border-[#272A38] hover:border-white/40 rounded-lg px-2.5 py-1 cursor-pointer flex items-center gap-1 transition-colors"
               >
-                <Plus size={12} />
+                <Plus size={12} strokeWidth={1.5} />
                 <span>Item Rundown</span>
               </button>
             </div>
 
             {(!form.rundown || form.rundown.length === 0) ? (
-              <p className="text-xs font-light text-[#64748B] m-0 italic">Belum ada item rundown disetel.</p>
+              <p className="text-xs font-normal text-[#71717A] m-0 italic">Belum ada item rundown disetel.</p>
             ) : (
               <div className="flex flex-col gap-2">
                 {form.rundown.map((item, idx) => (
@@ -198,7 +194,7 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
                         updated[idx].time = e.target.value;
                         update({ rundown: updated });
                       }}
-                      className="w-1/3 bg-white border border-[#E5E7EB] px-2.5 py-1.5 text-xs font-light text-[#183B56] outline-none"
+                      className="w-1/3 bg-[#14161F] border border-[#272A38] rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-white"
                     />
                     <input
                       type="text"
@@ -209,7 +205,7 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
                         updated[idx].activity = e.target.value;
                         update({ rundown: updated });
                       }}
-                      className="flex-1 bg-white border border-[#E5E7EB] px-2.5 py-1.5 text-xs font-light text-[#183B56] outline-none"
+                      className="flex-1 bg-[#14161F] border border-[#272A38] rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-white"
                     />
                     <button
                       type="button"
@@ -217,7 +213,7 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
                         const updated = form.rundown.filter((_, i) => i !== idx);
                         update({ rundown: updated });
                       }}
-                      className="p-1.5 text-rose-700 bg-transparent border border-rose-500/30 cursor-pointer hover:bg-rose-50"
+                      className="p-1.5 text-rose-400 bg-[#14161F] border border-rose-500/30 rounded-lg cursor-pointer hover:bg-rose-500/20"
                     >
                       <Trash2 size={12} />
                     </button>
@@ -228,18 +224,18 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
           </div>
 
           <div>
-            <label className="text-xs font-light text-[#64748B] tracking-wider uppercase block mb-1.5">Deskripsi Konser</label>
+            <label className="text-xs font-medium text-[#A1A1AA] tracking-wider uppercase block mb-1.5">Deskripsi Konser</label>
             <textarea
               rows={3}
               value={form.description}
               onChange={(e) => update({ description: e.target.value })}
-              className="w-full bg-white border border-[#E5E7EB] px-3 py-2 text-xs font-light text-[#183B56] outline-none resize-y"
+              className="w-full bg-[#0C0D12] border border-[#272A38] rounded-lg px-3 py-2 text-xs text-white placeholder-[#71717A] outline-none resize-y focus:border-white"
             />
           </div>
 
           {!isEdit && (
-            <div className="border border-[#E5E7EB] bg-[#F8FAFC] p-4 flex flex-col gap-3">
-              <span className="text-xs font-light text-[#183B56] uppercase tracking-wider">Kategori Tiket Awal</span>
+            <div className="border border-[#272A38] bg-[#0C0D12] rounded-xl p-4 flex flex-col gap-3">
+              <span className="text-xs font-semibold text-white uppercase tracking-wider">Kategori Tiket Awal</span>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <InputField label="Nama Kategori" required value={form.initialCatName} onChange={(v) => update({ initialCatName: v })} />
                 <InputField label="Harga (IDR)" required type="number" value={form.initialCatPrice} onChange={(v) => update({ initialCatPrice: Number(v) })} />
@@ -248,18 +244,18 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
             </div>
           )}
 
-          <div className="border-t border-[#E5E7EB] pt-4 flex justify-end gap-2 shrink-0">
+          <div className="border-t border-[#272A38] pt-4 flex justify-end gap-2 shrink-0">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs font-light text-[#64748B] hover:text-brand bg-transparent border-none cursor-pointer"
+              className="px-4 py-2 text-xs font-medium text-[#A1A1AA] hover:text-white bg-transparent border-none cursor-pointer transition-colors"
             >
               Batal
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className={`px-5 py-2 text-xs font-normal text-white bg-brand hover:bg-brand-dark cursor-pointer transition-all ${
+              className={`px-5 py-2 text-xs font-semibold text-[#0C0D12] bg-white hover:bg-neutral-200 rounded-lg cursor-pointer transition-all shadow-md ${
                 isLoading ? 'opacity-40 cursor-not-allowed' : ''
               }`}
             >
@@ -283,11 +279,11 @@ interface InputFieldProps {
 
 const InputField: React.FC<InputFieldProps> = ({ label, value, onChange, placeholder, required, type = 'text' }) => (
   <div>
-    <label className="text-xs font-light text-[#64748B] tracking-wider uppercase block mb-1.5">{label}</label>
+    <label className="text-xs font-medium text-[#A1A1AA] tracking-wider uppercase block mb-1.5">{label}</label>
     <input
       type={type} required={required} placeholder={placeholder}
       value={value} onChange={(e) => onChange(e.target.value)}
-      className="w-full bg-white border border-[#E5E7EB] px-3 py-2 text-xs font-light text-[#183B56] outline-none"
+      className="w-full bg-[#0C0D12] border border-[#272A38] rounded-lg px-3 py-2 text-xs font-normal text-white placeholder-[#71717A] outline-none focus:border-white transition-colors"
     />
   </div>
 );
@@ -335,17 +331,17 @@ const DatePickerField: React.FC<DatePickerFieldProps> = ({ label, value, onChang
 
   return (
     <div>
-      <label className="text-xs font-light text-[#64748B] tracking-wider uppercase block mb-1.5">{label}</label>
+      <label className="text-xs font-medium text-[#A1A1AA] tracking-wider uppercase block mb-1.5">{label}</label>
       <div className="relative">
         <input
           type="date"
           required
           value={isoValue}
           onChange={handleDateSelect}
-          className="w-full bg-white border border-[#E5E7EB] px-3 py-2 text-xs font-light text-[#183B56] outline-none [color-scheme:light] cursor-pointer"
+          className="w-full bg-[#0C0D12] border border-[#272A38] rounded-lg px-3 py-2 text-xs font-normal text-white outline-none [color-scheme:dark] cursor-pointer focus:border-white"
         />
         {value && (
-          <span className="text-[10px] font-mono text-emerald-700 block mt-1">
+          <span className="text-[10px] font-mono text-[#A1A1AA] block mt-1">
             ✓ Terformat DB: {value}
           </span>
         )}
@@ -380,17 +376,17 @@ const TimePickerField: React.FC<TimePickerFieldProps> = ({ label, value, onChang
 
   return (
     <div>
-      <label className="text-xs font-light text-[#64748B] tracking-wider uppercase block mb-1.5">{label}</label>
+      <label className="text-xs font-medium text-[#A1A1AA] tracking-wider uppercase block mb-1.5">{label}</label>
       <div className="relative">
         <input
           type="time"
           required
           value={timeValue}
           onChange={handleTimeSelect}
-          className="w-full bg-white border border-[#E5E7EB] px-3 py-2 text-xs font-light text-[#183B56] outline-none [color-scheme:light] cursor-pointer"
+          className="w-full bg-[#0C0D12] border border-[#272A38] rounded-lg px-3 py-2 text-xs font-normal text-white outline-none [color-scheme:dark] cursor-pointer focus:border-white"
         />
         {value && (
-          <span className="text-[10px] font-mono text-emerald-700 block mt-1">
+          <span className="text-[10px] font-mono text-[#A1A1AA] block mt-1">
             ✓ Terformat DB: {value}
           </span>
         )}

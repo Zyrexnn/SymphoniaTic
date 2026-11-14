@@ -19,7 +19,7 @@ const CategoryCard: React.FC<{
 }> = ({ name, count, image, onSelect }) => (
   <button
     onClick={onSelect}
-    className="group relative block w-[74vw] sm:w-[300px] shrink-0 snap-start overflow-hidden rounded-2xl bg-[#F1F5F9] text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2"
+    className="group relative block w-[74vw] sm:w-[300px] shrink-0 snap-start overflow-hidden rounded-xl border border-[#272A38] bg-[#14161F] text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0C0D12]"
   >
     <img
       src={image}
@@ -27,8 +27,8 @@ const CategoryCard: React.FC<{
       loading="lazy"
       className="aspect-[3/4] w-full object-cover brightness-[0.82] transition-all duration-700 group-hover:scale-[1.05] group-hover:brightness-[0.9]"
     />
-    <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
-    <span className="absolute right-4 top-4 rounded-full bg-white/95 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[#183B56]">
+    <div className="absolute inset-0 bg-gradient-to-t from-[#0C0D12]/90 via-[#0C0D12]/20 to-transparent" />
+    <span className="absolute right-4 top-4 rounded-md bg-[#0C0D12]/80 border border-white/20 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-sm">
       {count} konser
     </span>
     <div className="absolute bottom-5 left-5 right-5">
@@ -49,18 +49,18 @@ export const EventCategoriesSection: React.FC<EventCategoriesSectionProps> = ({
   if (categories.length <= 1) return null;
 
   return (
-    <section className="border-t border-[#E5E7EB] bg-[#F8FAFC]/60 py-16">
+    <section className="border-t border-[#272A38] bg-[#0C0D12] py-16">
       <div className="mx-auto max-w-[1360px] px-5 sm:px-10">
         <div className="mb-10 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <p className="inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.22em] text-brand-accent">
+            <p className="inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.22em] text-[#A1A1AA]">
               Telusuri Pengalaman
             </p>
-            <h2 className="mt-3 text-2xl sm:text-3xl font-bold tracking-[-0.02em] text-[#183B56]">
+            <h2 className="mt-3 text-2xl sm:text-3xl font-bold tracking-[-0.02em] text-white">
               Jelajahi Berdasarkan Kategori
             </h2>
           </div>
-          <p className="text-sm text-[#64748B] max-w-sm sm:text-right">
+          <p className="text-sm text-[#A1A1AA] max-w-sm sm:text-right">
             Temukan arah konser yang sesuai dengan seleramu musim ini.
           </p>
         </div>

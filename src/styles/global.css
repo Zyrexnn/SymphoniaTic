@@ -1,41 +1,65 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-ring: var(--ring);
+  /* Dark Monochrome Atelier (Strict Black & White System Design) */
+  --color-canvas: #0C0D12;
+  --color-canvas-alt: #14161F;
+  --color-surface: #14161F;
+  --color-surface-raised: #1D202D;
+  --color-border: #272A38;
+  --color-border-subtle: #1F222E;
 
-  --color-obsidian: #183B56;
-  --color-chalk: #ffffff;
-  --color-ash: #94A3B8;
-  --color-brand: #183B56;
-  --color-brand-dark: #10293E;
-  --color-brand-light: #EFF3F8;
-  --color-ink: #183B56;
-  --color-ink-soft: #4A5A6A;
-  --color-muted: #64748B;
-  --color-line: #E5E7EB;
-  --color-canvas: #FFFFFF;
-  --color-canvas-alt: #F8FAFC;
+  /* Monochrome Inks & Typography */
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #A1A1AA;
+  --color-text-tertiary: #71717A;
+  --color-chalk: #FFFFFF;
+  --color-ash: #A1A1AA;
+  --color-ink: #FFFFFF;
+  --color-ink-soft: #A1A1AA;
+  --color-line: #272A38;
+  --color-muted: #71717A;
+  --color-muted-foreground: #A1A1AA;
 
-  --color-brand-accent: #E76F51;
-  --color-brand-accent-hover: #D9603F;
+  /* Primary Brand Action (High-Contrast Pure White) */
+  --color-brand: #FFFFFF;
+  --color-brand-dark: #E4E4E7;
+  --color-brand-light: #1D202D;
+  --color-brand-accent: #FFFFFF;
+  --color-brand-accent-hover: #E4E4E7;
+  --color-primary: #FFFFFF;
+  --color-primary-foreground: #0C0D12;
+  --color-secondary: #1D202D;
+  --color-secondary-foreground: #FFFFFF;
+  --color-accent: #FFFFFF;
+  --color-accent-foreground: #0C0D12;
+  --color-ring: #FFFFFF;
+
+  /* Seats & Status Matrix (Monochrome Discipline) */
+  --color-seat-available: #272A38;
+  --color-seat-selected: #FFFFFF;
+  --color-seat-sold: #181920;
+  --color-status-success: #FFFFFF;
+  --color-status-warning: #A1A1AA;
+  --color-status-danger: #EF4444;
+
+  /* Radius tokens */
+  --radius-btn: 8px;
+  --radius-button: 8px;
+  --radius-card: 12px;
+  --radius-modal: 16px;
+
+  /* Semantic Containers */
+  --color-background: #0C0D12;
+  --color-foreground: #FFFFFF;
+  --color-card: #14161F;
+  --color-card-foreground: #FFFFFF;
+  --color-input: #1D202D;
+
+  --color-obsidian: #0C0D12;
 
   --font-display: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
 
   --text-display: 48px;
   --leading-display: 1.0;
@@ -88,13 +112,13 @@
   --card-padding: 0px;
   --element-gap: 20px;
 
-  --radius-tags: 0px;
-  --radius-cards: 0px;
-  --radius-images: 0px;
-  --radius-buttons: 0px;
-  --radius-nav: 0px;
+  --radius-tags: 6px;
+  --radius-cards: 12px;
+  --radius-images: 8px;
+  --radius-buttons: 8px;
+  --radius-nav: 8px;
 
-  --surface-obsidian-canvas: #183B56;
+  --surface-obsidian-canvas: #0C0D12;
 }
 
 @layer base {
@@ -102,16 +126,16 @@
     font-family: var(--font-display);
     font-feature-settings: "rlig" 1, "calt" 1;
     scroll-behavior: smooth;
-    background: #ffffff;
-    color: #183b56;
+    background: #0C0D12;
+    color: #FFFFFF;
   }
 
   body {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    background: #ffffff;
-    color: #183b56;
+    background: #0C0D12;
+    color: #FFFFFF;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -123,15 +147,15 @@
   }
 
   ::selection {
-    background: rgba(24, 59, 86, 0.92);
-    color: #ffffff;
+    background: #FFFFFF;
+    color: #0C0D12;
   }
 
   input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
     height: 2px;
-    background: rgba(24, 59, 86, 0.15);
+    background: #272A38;
     outline: none;
     border-radius: 0;
   }
@@ -140,14 +164,14 @@
     appearance: none;
     width: 10px;
     height: 10px;
-    background: #183b56;
+    background: #FFFFFF;
     cursor: pointer;
     border-radius: 0;
   }
   input[type="range"]::-moz-range-thumb {
     width: 10px;
     height: 10px;
-    background: #183b56;
+    background: #FFFFFF;
     cursor: pointer;
     border-radius: 0;
     border: none;
@@ -158,9 +182,10 @@
     text-decoration: none;
   }
 
-  ::-webkit-scrollbar { width: 2px; }
-  ::-webkit-scrollbar-track { background: #ffffff; }
-  ::-webkit-scrollbar-thumb { background: #CBD5E1; }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: #14161F; }
+  ::-webkit-scrollbar-thumb { background: #272A38; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3E4357; }
 
   @keyframes fade-in {
     from { opacity: 0; }
@@ -184,34 +209,34 @@
 }
 
 .btn {
-  @apply inline-flex items-center gap-2 rounded-none px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer;
+  @apply inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer;
 }
 .btn--primary {
-  @apply bg-[--color-brand] text-[--color-chalk] hover:bg-[--color-brand-dark] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-brand-accent] focus-visible:ring-offset-2;
+  @apply bg-white text-[#0C0D12] font-semibold hover:bg-neutral-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0C0D12];
 }
 .btn--secondary {
-  @apply bg-transparent border border-[--color-brand]/40 text-[--color-brand] hover:bg-[--color-brand]/5 hover:text-[--color-brand-dark] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-brand-accent] focus-visible:ring-offset-2;
+  @apply bg-transparent border border-white/20 text-[#FFFFFF] hover:bg-white/10 hover:border-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0C0D12];
 }
 .btn--ghost {
-  @apply bg-transparent text-[--color-brand] hover:bg-[--color-brand]/5 hover:text-[--color-brand-dark] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[--color-brand-accent] focus-visible:ring-offset-2;
+  @apply bg-transparent text-[#A1A1AA] hover:text-white hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0C0D12];
 }
 
 .card {
-  @apply rounded-none bg-[--color-card] border border-[--color-line] transition-all duration-300 hover:border-[#CBD5E1];
+  @apply rounded-xl bg-[#14161F] border border-[#272A38] text-[#FFFFFF] transition-all duration-300 hover:border-white/30;
 }
 
 .badge {
-  @apply inline-flex items-center gap-1.5 rounded-none text-xs font-medium uppercase tracking-wider;
+  @apply inline-flex items-center gap-1.5 rounded-md text-xs font-medium uppercase tracking-wider;
 }
 
 .nav-link {
-  @apply relative py-1 text-sm xl:text-base tracking-[-0.02em] transition-colors duration-200;
+  @apply relative py-1 text-sm xl:text-base tracking-[-0.02em] transition-colors duration-200 text-[#A1A1AA] hover:text-white;
 }
 .nav-link::after {
-  @apply absolute bottom-0 left-0 h-[1px] bg-brand transition-all duration-300;
+  @apply absolute bottom-0 left-0 h-[1px] bg-white transition-all duration-300;
 }
 .nav-link--active {
-  @apply text-brand font-normal;
+  @apply text-white font-medium;
 }
 .nav-link--active::after {
   @apply w-full;
@@ -223,8 +248,8 @@
 .focus-visible\:ring-2:focus-visible {
   @apply ring-2 ring-offset-2;
 }
-.focus-visible\:ring-[--color-brand-accent]:focus-visible {
-  @apply ring-[--color-brand-accent];
+.focus-visible\:ring-white:focus-visible {
+  @apply ring-white;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -40,7 +40,7 @@ const EdukasiPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white text-[#183B56]">
+    <div className="min-h-screen bg-[#0C0D12] text-white selection:bg-white selection:text-black">
       <Header isScrolled />
       <EducationHero />
       <EducationNav active={active} onSelect={scrollTo} />

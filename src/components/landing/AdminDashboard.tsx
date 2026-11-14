@@ -10,7 +10,7 @@ interface AdminDashboardProps {
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEventsUpdated }) => {
   return (
-    <div className="fixed inset-0 z-50 flex bg-[#171717]">
+    <div className="fixed inset-0 z-50 flex bg-[#0C0D12]">
       <AdminApp onClose={onClose} onEventsUpdated={onEventsUpdated} />
     </div>
   );

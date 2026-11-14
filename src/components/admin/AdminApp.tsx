@@ -146,10 +146,10 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
   });
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
-  const [metrics, setMetrics] = useState<AdminMetricsData | null>(MOCK_ADMIN_METRICS);
-  const [eventsList, setEventsList] = useState<EventItem[]>(CONCERT_EVENTS);
-  const [ordersList, setOrdersList] = useState<OrderRecord[]>(MOCK_ADMIN_ORDERS);
-  const [refundsList, setRefundsList] = useState<RefundRecord[]>(MOCK_ADMIN_REFUNDS);
+  const [metrics, setMetrics] = useState<AdminMetricsData | null>(null);
+  const [eventsList, setEventsList] = useState<EventItem[]>([]);
+  const [ordersList, setOrdersList] = useState<OrderRecord[]>([]);
+  const [refundsList, setRefundsList] = useState<RefundRecord[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const [orderSearch, setOrderSearch] = useState('');
@@ -494,7 +494,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#171717] text-white flex flex-col md:flex-row font-sans">
+    <div className="min-h-screen w-full bg-[#0C0D12] text-[#F4F4F6] flex flex-col md:flex-row font-sans">
       <AdminSidebar
         activeTab={activeTab}
         role={currentRole}
@@ -517,28 +517,28 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
         isLoading={isLoading}
       />
 
-      <main className="flex flex-col flex-1 min-w-0 bg-[#171717] overflow-y-auto">
-        <header className="sticky top-0 flex items-center justify-between px-6 py-3.5 border-b border-white/10 bg-[#171717] z-20">
+      <main className="flex flex-col flex-1 min-w-0 bg-[#0C0D12] overflow-y-auto">
+        <header className="sticky top-0 flex items-center justify-between px-6 py-3.5 border-b border-[#272A38] bg-[#0C0D12]/95 backdrop-blur-md z-20">
           <div>
-            <h1 className="text-base font-light text-white tracking-tight m-0">{tabLabels[activeTab].title}</h1>
-            <p className="text-[11px] font-light text-[#9a9a9a] mt-0.5 m-0">{tabLabels[activeTab].subtitle}</p>
+            <h1 className="text-base font-semibold text-[#F4F4F6] tracking-tight m-0">{tabLabels[activeTab].title}</h1>
+            <p className="text-[11px] font-normal text-[#94A3B8] mt-0.5 m-0">{tabLabels[activeTab].subtitle}</p>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={refreshData}
               disabled={isLoading}
-              className={`px-3.5 py-1.5 text-xs font-light text-[#9a9a9a] border border-white/[0.1] bg-transparent flex items-center gap-1.5 ${isLoading ? 'opacity-40 cursor-default' : 'cursor-pointer hover:text-white'}`}
+              className={`px-3.5 py-1.5 text-xs font-medium text-[#A1A1AA] border border-[#272A38] bg-[#14161F] rounded-lg flex items-center gap-1.5 transition-colors ${isLoading ? 'opacity-40 cursor-default' : 'cursor-pointer hover:text-white hover:border-white/40'}`}
             >
-              <RefreshCw size={13} strokeWidth={1} className={isLoading ? 'animate-spin' : ''} />
+              <RefreshCw size={13} strokeWidth={1.5} className={isLoading ? 'animate-spin' : ''} />
               <span className="hidden sm:inline">Refresh Data</span>
             </button>
             {onClose && (
               <button
                 onClick={onClose}
-                className="p-1.5 text-[#9a9a9a] hover:text-white border border-white/[0.1] bg-transparent cursor-pointer"
+                className="p-1.5 text-[#94A3B8] hover:text-[#F4F4F6] border border-[#272A38] bg-[#14161F] rounded-lg cursor-pointer transition-colors"
                 title="Tutup Admin"
               >
-                <X size={14} strokeWidth={1} />
+                <X size={14} strokeWidth={1.5} />
               </button>
             )}
           </div>

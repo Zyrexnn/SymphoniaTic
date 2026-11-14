@@ -1,40 +1,33 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { BoomerangVideoBg } from './BoomerangVideoBg';
-import { CONCERT_EVENTS, fetchEventsAPI, getUserOrdersAPI } from './landing/data';
+import { CONCERT_EVENTS, fetchEventsAPI, getUserOrdersAPI, getApiBaseUrl } from './landing/data';
 import type { EventItem, TicketCategory, OrderRecord } from './landing/data';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 
 import { Header } from './landing/Navbar';
 import { Hero } from './landing/Layout';
 import { Footer } from './landing/Footer';
-import { AudioPlayer } from './landing/AudioPlayer';
 import { RecommendedSection } from './landing/RecommendedSection';
 import { BentoSection } from './landing/Sections';
 import FAQSection from './landing/FAQSection';
-import { BookingModal, ETicketConfirmation, OrdersDrawer, AdminDrawer } from './landing/Modals';
+import { BookingModal, ETicketConfirmation, OrdersDrawer } from './landing/Modals';
 
 const App: React.FC = () => {
   const { user, logout } = useAuth();
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
-  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
-  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(0.8);
-  const [isMuted, setIsMuted] = useState(false);
-
-  const [activeDrawer, setActiveDrawer] = useState<'ORDERS' | 'ADMIN' | null>(null);
+  const [activeDrawer, setActiveDrawer] = useState<'ORDERS' | null>(null);
   const [bookingEvent, setBookingEvent] = useState<EventItem | null>(null);
   const [bookingCategory, setBookingCategory] = useState<TicketCategory | null>(null);
   const [activeSuccessOrder, setActiveSuccessOrder] = useState<OrderRecord | null>(null);
   const [orders, setOrders] = useState<OrderRecord[]>([]);
 
   const [liveEvents, setLiveEvents] = useState<EventItem[]>([]);
+  const [isLoadingEvents, setIsLoadingEvents] = useState(true);
+  const [eventsError, setEventsError] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -48,23 +41,62 @@ const App: React.FC = () => {
 
   const loadLiveEvents = useCallback(async () => {
     try {
+      setIsLoadingEvents(true);
       const data = await fetchEventsAPI();
-      setLiveEvents(data);
+      if (Array.isArray(data) && data.length > 0) {
+        setLiveEvents(data);
+        setEventsError(null);
+      } else {
+        try {
+          const res = await fetch(`${getApiBaseUrl()}/events`);
+          if (!res.ok) {
+            setEventsError('Layanan backend API sedang tidak dapat diakses.');
+          }
+        } catch {
+          setEventsError('Tidak dapat terhubung ke server backend.');
+        }
+      }
     } catch (err) {
       console.error('Error fetching live events:', err);
+      setEventsError('Gagal memuat jadwal konser dari server.');
+    } finally {
+      setIsLoadingEvents(false);
     }
   }, []);
 
   useEffect(() => {
     let mounted = true;
-    fetchEventsAPI().then((data) => {
-      if (mounted) setLiveEvents(data);
-    }).catch(console.error);
+    setIsLoadingEvents(true);
+
+    fetchEventsAPI()
+      .then((data) => {
+        if (!mounted) return;
+        if (Array.isArray(data) && data.length > 0) {
+          setLiveEvents(data);
+          setEventsError(null);
+        } else {
+          fetch(`${getApiBaseUrl()}/events`).catch(() => {
+            if (mounted) setEventsError('Tidak dapat terhubung ke server backend.');
+          });
+        }
+      })
+      .catch((err) => {
+        console.error('Error fetching events:', err);
+        if (mounted) setEventsError('Gagal memuat jadwal konser.');
+      })
+      .finally(() => {
+        if (mounted) setIsLoadingEvents(false);
+      });
 
     const interval = setInterval(() => {
-      fetchEventsAPI().then((data) => {
-        if (mounted) setLiveEvents(data);
-      }).catch(console.error);
+      fetchEventsAPI()
+        .then((data) => {
+          if (mounted && Array.isArray(data) && data.length > 0) {
+            setLiveEvents(data);
+            setEventsError(null);
+          }
+        })
+        .catch(console.error);
     }, 30000);
 
     return () => {
@@ -73,54 +105,16 @@ const App: React.FC = () => {
     };
   }, []);
 
-  const displayEvents = useMemo(
-    () => (liveEvents.length > 0 ? liveEvents : CONCERT_EVENTS),
-    [liveEvents]
-  );
-  const activeTrack = useMemo(
-    () => CONCERT_EVENTS[currentTrackIndex] || CONCERT_EVENTS[0],
-    [currentTrackIndex]
-  );
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    const onTime = () => setCurrentTime(audio.currentTime);
-    const onMeta = () => setDuration(audio.duration);
-    const onEnd = () => setCurrentTrackIndex((prev) => (prev + 1) % CONCERT_EVENTS.length);
-    audio.addEventListener('timeupdate', onTime);
-    audio.addEventListener('loadedmetadata', onMeta);
-    audio.addEventListener('ended', onEnd);
-    return () => {
-      audio.removeEventListener('timeupdate', onTime);
-      audio.removeEventListener('loadedmetadata', onMeta);
-      audio.removeEventListener('ended', onEnd);
-    };
-  }, []);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio || !activeTrack) return;
-    if (audio.src !== window.location.origin + activeTrack.audioUrl && audio.getAttribute('src') !== activeTrack.audioUrl) {
-      audio.src = activeTrack.audioUrl;
-      audio.load();
-    }
-    if (isPlayingAudio) {
-      audio.play().catch(() => setIsPlayingAudio(false));
-    }
-  }, [activeTrack, isPlayingAudio]);
+  const displayEvents = useMemo(() => {
+    if (liveEvents.length > 0) return liveEvents;
+    if (eventsError) return [];
+    return CONCERT_EVENTS;
+  }, [liveEvents, eventsError]);
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 40);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  const handleSeek = useCallback((time: number) => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = time;
-      setCurrentTime(time);
-    }
   }, []);
 
   const handleBookingSubmit = useCallback((order: OrderRecord) => {
@@ -137,7 +131,6 @@ const App: React.FC = () => {
   }, []);
 
   const toggleMenu = useCallback(() => setIsMenuOpen((prev) => !prev), []);
-  const openAdmin = useCallback(() => setActiveDrawer('ADMIN'), []);
   const openOrders = useCallback(() => setActiveDrawer('ORDERS'), []);
   const closeDrawer = useCallback(() => setActiveDrawer(null), []);
   const closeBookingModal = useCallback(() => {
@@ -146,29 +139,36 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative min-h-screen w-full bg-white text-[#183B56]">
-      <audio ref={audioRef} preload="metadata" />
-
+    <div className="relative min-h-screen w-full bg-[#0C0D12] text-[#F4F4F6]">
       <Header
         isScrolled={isScrolled}
         isMenuOpen={isMenuOpen}
         ordersCount={orders.length}
         user={user}
         onToggleMenu={toggleMenu}
-        onOpenAdmin={openAdmin}
         onOpenOrders={openOrders}
         onLogout={logout}
       />
 
-      <div className="relative overflow-hidden bg-[#183B56]">
+      <div className="relative overflow-hidden bg-[#0C0D12]">
         <BoomerangVideoBg />
-        <div className="absolute inset-0 z-[1] bg-gradient-to-b from-[#183B56]/50 via-[#183B56]/20 to-white" />
+        <div className="absolute inset-0 z-[1] bg-gradient-to-b from-[#0C0D12]/60 via-[#0C0D12]/30 to-[#0C0D12]" />
         <Hero />
       </div>
 
-      <RecommendedSection />
+      <RecommendedSection
+        events={displayEvents}
+        onBuyTicket={openBooking}
+        isLoading={isLoadingEvents}
+        error={eventsError}
+      />
 
-      <BentoSection events={displayEvents} onBuyTicket={openBooking} />
+      <BentoSection
+        events={displayEvents}
+        onBuyTicket={openBooking}
+        isLoading={isLoadingEvents}
+        error={eventsError}
+      />
 
       <FAQSection />
 
@@ -202,15 +202,6 @@ const App: React.FC = () => {
             orders={orders}
             onClose={closeDrawer}
             onShowTicket={setActiveSuccessOrder}
-          />
-        )}
-      </AnimatePresence>
-      <AnimatePresence>
-        {activeDrawer === 'ADMIN' && (
-          <AdminDrawer
-            onClose={closeDrawer}
-            onEventsUpdated={loadLiveEvents}
-            allEvents={displayEvents}
           />
         )}
       </AnimatePresence>

@@ -129,7 +129,7 @@ export const CONCERT_EVENTS: EventItem[] = [
   {
     id: 1,
     title: "Symphony No. 5 in C minor",
-    subtitle: "Opus 67 — I. Allegro con brio Masterpiece",
+    subtitle: "Opus 67: I. Allegro con brio Masterpiece",
     artist: "Royal Philharmonic Orchestra & Jakarta Choral Society",
     conductor: "Maestro Alexander Vance",
     venue: "Aula Simfonia Jakarta",
@@ -138,7 +138,7 @@ export const CONCERT_EVENTS: EventItem[] = [
     time: "19:30 WIB",
     openGate: "18:00 WIB",
     category: "SIMFONI",
-    categoryBadgeColor: "bg-amber-500/20 text-amber-300 border-amber-500/40",
+    categoryBadgeColor: "bg-white/10 text-white border-white/20",
     image: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&w=1200&q=80",
     audioUrl: "/audio/Ludwig van Beethoven - Symphony n.5 in C minor, Op.67, I.Allegro con brio.mp3",
     organizer: "Royal Philharmonic Foundation & SymphoniaTic Events",
@@ -169,7 +169,7 @@ export const CONCERT_EVENTS: EventItem[] = [
     time: "20:00 WIB",
     openGate: "18:30 WIB",
     category: "KAMAR MUSIK",
-    categoryBadgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
+    categoryBadgeColor: "bg-white/10 text-white border-white/20",
     image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1200&q=80",
     audioUrl: "/audio/coldplay - Viva La Vida I COLDPLAY & OASIS AND BAND MUSIC ORCHESTRA FESTA.mp3",
     organizer: "Jakarta Chamber Society & Modern Orchestra",
@@ -198,7 +198,7 @@ export const CONCERT_EVENTS: EventItem[] = [
     time: "19:00 WIB",
     openGate: "17:30 WIB",
     category: "BALET & OPERA",
-    categoryBadgeColor: "bg-purple-500/20 text-purple-300 border-purple-500/40",
+    categoryBadgeColor: "bg-white/10 text-white border-white/20",
     image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80",
     audioUrl: "/audio/ABBA - The Winner Takes It All  Epic Orchestra (2020).mp3",
     organizer: "Indonesian Classical Ballet Theatre",
@@ -227,7 +227,7 @@ export const CONCERT_EVENTS: EventItem[] = [
     time: "19:00 WIB",
     openGate: "17:30 WIB",
     category: "NUSANTARA SYMPHONY",
-    categoryBadgeColor: "bg-blue-500/20 text-blue-300 border-blue-500/40",
+    categoryBadgeColor: "bg-white/10 text-white border-white/20",
     image: "https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?auto=format&fit=crop&w=1200&q=80",
     audioUrl: "/audio/Laskar Pelangi  TRUST (Trinity Youth Symphony Orchestra).mp3",
     organizer: "TRUST Orchestra & SymphoniaTic Events",
@@ -261,10 +261,11 @@ export const FAQS = [
 ];
 
 export const NAV_PAGES = [
-  { label: 'Jelajah Konser', href: '/events' },
-  { label: 'Edukasi', href: '/edukasi' },
-  { label: 'Cek Tiket', href: '/redeem' },
-  { label: 'Refund', href: '/refund' },
+  { label: 'Jadwal Konser', href: '/events' },
+  { label: 'Lokasi & Venue', href: '/events' },
+  { label: 'Cek E-Ticket', href: '/redeem' },
+  { label: 'Pengajuan Refund', href: '/refund' },
+  { label: 'Syarat & Ketentuan', href: '#syarat-ketentuan' },
 ];
 
 export interface AdminMetricsData {
@@ -327,7 +328,7 @@ export const fetchEventsAPI = async (): Promise<EventItem[]> => {
         time: evt.time,
         openGate: evt.openGate || '18:00 WIB',
         category: evt.category || 'SIMFONI UTAMA',
-        categoryBadgeColor: evt.categoryBadgeColor || 'bg-blue-900/80 text-blue-200 border-blue-500/40',
+        categoryBadgeColor: evt.categoryBadgeColor || 'bg-white/10 text-white border-white/20',
         image: evt.image || 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?q=80&w=1000&auto=format&fit=crop',
         audioUrl: evt.audioUrl || '',
         organizer: evt.organizer || 'SymphoniaTic Production',
@@ -356,6 +357,24 @@ export const fetchEventsAPI = async (): Promise<EventItem[]> => {
   }
 };
 
+
+
+const USER_TOKEN_KEY = 'symphoniatic_user_token';
+
+export const getUserToken = (): string | null => {
+  try {
+    return typeof window !== 'undefined' ? localStorage.getItem(USER_TOKEN_KEY) : null;
+  } catch { return null; }
+};
+
+export const setUserToken = (token: string) => {
+  try { localStorage.setItem(USER_TOKEN_KEY, token); } catch {}
+};
+
+export const clearUserToken = () => {
+  try { localStorage.removeItem(USER_TOKEN_KEY); } catch {}
+};
+
 export const createOrderAPI = async (payload: {
   eventId: string;
   ticketCategoryId: string;
@@ -363,9 +382,14 @@ export const createOrderAPI = async (payload: {
   userName: string;
   userEmail: string;
 }) => {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  const userToken = getUserToken();
+  if (userToken) {
+    headers['Authorization'] = `Bearer ${userToken}`;
+  }
   const res = await fetch(`${getApiBaseUrl()}/orders`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify(payload),
   });
   return res.json();
@@ -577,40 +601,76 @@ export const updateOrderStatusAPI = async (orderId: string, status: string) => {
 
 export const checkInTicketAPI = async (code: string) => {
   const cleanCode = code.trim().replace(/^QR-/, '');
-  const lookupRes = await lookupTicketAPI(cleanCode);
-  if (!lookupRes.success || !lookupRes.data) {
-    return { success: false, message: lookupRes.message || 'Tiket tidak ditemukan' };
-  }
-  const order = lookupRes.data;
-  if (order.status === 'CHECKED_IN') {
+  try {
+    const res = await fetch(`${getApiBaseUrl()}/admin/tickets/checkin`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAdminAuthHeaders(),
+      },
+      body: JSON.stringify({ code: cleanCode }),
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      return {
+        success: true,
+        data: data.data,
+        message: data.message || 'Check-in berhasil. Selamat menikmati pertunjukan!',
+      };
+    }
+    const msg = data.message || 'Gagal memproses check-in tiket.';
+    const isAlreadyUsed = msg.toLowerCase().includes('sudah pernah') || msg.toLowerCase().includes('sudah digunakan');
+    const isVoid = msg.toLowerCase().includes('tidak valid') || msg.toLowerCase().includes('refund') || msg.toLowerCase().includes('dibatalkan');
     return {
       success: false,
-      isAlreadyUsed: true,
-      data: order,
-      message: `Tiket (${order.orderCode}) SUDAH DIGUNAKAN sebelumnya!`,
+      isAlreadyUsed,
+      isVoid,
+      data: data.data,
+      message: msg,
     };
-  }
-  if (order.status === 'REFUNDED' || order.status === 'CANCELLED') {
-    return {
-      success: false,
-      isVoid: true,
-      data: order,
-      message: `Tiket (${order.orderCode}) TIDAK VALID / TELAH DI-REFUND!`,
-    };
-  }
+  } catch {
+    try {
+      const lookupRes = await lookupTicketAPI(cleanCode);
+      if (!lookupRes.success || !lookupRes.data) {
+        return { success: false, message: lookupRes.message || 'Tiket tidak ditemukan' };
+      }
+      const order = lookupRes.data;
+      if (order.status === 'CHECKED_IN') {
+        return {
+          success: false,
+          isAlreadyUsed: true,
+          data: order,
+          message: `Tiket (${order.orderCode}) SUDAH DIGUNAKAN sebelumnya!`,
+        };
+      }
+      if (order.status === 'REFUNDED' || order.status === 'CANCELLED') {
+        return {
+          success: false,
+          isVoid: true,
+          data: order,
+          message: `Tiket (${order.orderCode}) TIDAK VALID / TELAH DI-REFUND!`,
+        };
+      }
 
-  const updateRes = await updateOrderStatusAPI(order.id, 'CHECKED_IN');
-  if (updateRes.success) {
-    return {
-      success: true,
-      data: { ...order, status: 'CHECKED_IN' },
-      message: `Check-in Berhasil! Selamat menikmati konser.`,
-    };
+      const updateRes = await updateOrderStatusAPI(order.id, 'CHECKED_IN');
+      if (updateRes.success) {
+        return {
+          success: true,
+          data: { ...order, status: 'CHECKED_IN' },
+          message: 'Check-in Berhasil! Selamat menikmati konser.',
+        };
+      }
+      return {
+        success: false,
+        message: updateRes.message || 'Gagal mengubah status check-in tiket.',
+      };
+    } catch {
+      return {
+        success: false,
+        message: 'Gagal terhubung ke server backend.',
+      };
+    }
   }
-  return {
-    success: false,
-    message: updateRes.message || 'Gagal mengubah status check-in tiket.',
-  };
 };
 
 export const fetchAdminRefundsAPI = async () => {
@@ -638,21 +698,7 @@ export const updateRefundStatusAPI = async (refundId: string, status: string, ad
   return res.json();
 };
 
-const USER_TOKEN_KEY = 'symphoniatic_user_token';
 
-export const getUserToken = (): string | null => {
-  try {
-    return typeof window !== 'undefined' ? localStorage.getItem(USER_TOKEN_KEY) : null;
-  } catch { return null; }
-};
-
-export const setUserToken = (token: string) => {
-  try { localStorage.setItem(USER_TOKEN_KEY, token); } catch {}
-};
-
-export const clearUserToken = () => {
-  try { localStorage.removeItem(USER_TOKEN_KEY); } catch {}
-};
 
 export const authFetch = (path: string, options: RequestInit = {}): Promise<Response> => {
   const token = getUserToken();

@@ -39,14 +39,14 @@ export const Footer: React.FC = () => (
         <div>
           <p className="text-xs font-semibold text-ink tracking-wide uppercase mb-5">Layanan</p>
           <div className="flex flex-col gap-3">
-            <a href="/admin" className="text-sm text-ink-soft hover:text-brand transition-colors duration-200 no-underline">
-              Portal Admin
-            </a>
             <a href="/redeem" className="text-sm text-ink-soft hover:text-brand transition-colors duration-200 no-underline">
-              Redem E-Tiket
+              Cek E-Ticket
             </a>
             <a href="/refund" className="text-sm text-ink-soft hover:text-brand transition-colors duration-200 no-underline">
-              Pengajuan Refund Tiket
+              Pengajuan Refund
+            </a>
+            <a href="/admin" className="text-sm text-ink-soft hover:text-brand transition-colors duration-200 no-underline">
+              Portal Admin
             </a>
             <span className="text-sm text-muted mt-1">support@symphoniatic.id</span>
           </div>

@@ -230,15 +230,15 @@ export const GateScannerPanel: React.FC = () => {
 
   return (
     <div className="space-y-6 font-sans">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 bg-[#1a1a1a] border border-white/10">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 bg-[#14161F] border border-[#272A38] rounded-xl shadow-xl">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            <h2 className="text-base font-light text-white tracking-wide uppercase m-0">
+            <h2 className="text-base font-semibold text-[#F4F4F6] tracking-wide uppercase m-0">
               Pemindai Gate Masuk (Live QR Scanner)
             </h2>
           </div>
-          <p className="text-xs text-[#9a9a9a] font-light m-0">
+          <p className="text-xs text-[#94A3B8] font-normal m-0">
             Arahkan kamera ke QR Code E-Ticket penonton atau masukkan kode manual untuk validasi pintu masuk.
           </p>
         </div>
@@ -247,8 +247,8 @@ export const GateScannerPanel: React.FC = () => {
           <button
             type="button"
             onClick={() => setSoundEnabled(!soundEnabled)}
-            className={`p-2 border text-xs font-light flex items-center gap-1.5 transition-colors cursor-pointer ${
-              soundEnabled ? 'border-white/20 text-white bg-white/5' : 'border-white/10 text-[#5a5a5a]'
+            className={`p-2 border rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer ${
+              soundEnabled ? 'border-white/30 text-white bg-white/10' : 'border-[#272A38] text-[#71717A] bg-[#0C0D12]'
             }`}
             title={soundEnabled ? 'Suara Beep Aktif' : 'Suara Beep Nonaktif'}
           >
@@ -260,7 +260,7 @@ export const GateScannerPanel: React.FC = () => {
             <button
               type="button"
               onClick={stopScanner}
-              className="px-4 py-2 border border-rose-500/40 bg-rose-500/10 text-rose-300 hover:bg-rose-500/20 text-xs font-light uppercase tracking-wider transition-colors cursor-pointer"
+              className="px-4 py-2 border border-rose-500/40 bg-rose-500/10 text-rose-300 hover:bg-rose-500/20 text-xs font-semibold uppercase tracking-wider rounded-lg transition-colors cursor-pointer"
             >
               Matikan Kamera
             </button>
@@ -268,7 +268,7 @@ export const GateScannerPanel: React.FC = () => {
             <button
               type="button"
               onClick={() => startScanner()}
-              className="px-4 py-2 bg-white text-[#171717] hover:bg-white/90 text-xs font-light uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-2"
+              className="px-4 py-2 bg-white text-[#0C0D12] hover:bg-neutral-200 text-xs font-semibold uppercase tracking-wider rounded-lg transition-colors cursor-pointer flex items-center gap-2 shadow-sm"
             >
               <Camera size={14} />
               <span>Aktifkan Kamera</span>
@@ -279,9 +279,9 @@ export const GateScannerPanel: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-7 flex flex-col gap-5">
-          <div className="border border-white/10 bg-[#141414] p-4 flex flex-col items-center justify-center relative min-h-[340px]">
+          <div className="border border-[#272A38] bg-[#14161F] p-4 rounded-xl flex flex-col items-center justify-center relative min-h-[340px] shadow-xl">
             {cameraError && (
-              <div className="p-3 mb-4 w-full border border-rose-500/30 bg-rose-500/10 text-rose-300 text-xs font-light flex items-center gap-2">
+              <div className="p-3 mb-4 w-full rounded-lg border border-rose-500/30 bg-rose-500/10 text-rose-300 text-xs font-normal flex items-center gap-2">
                 <AlertCircle size={15} className="shrink-0" />
                 <span>{cameraError}</span>
               </div>
@@ -289,26 +289,26 @@ export const GateScannerPanel: React.FC = () => {
 
             <div
               id={scannerContainerId}
-              className={`w-full max-w-[420px] aspect-square bg-[#0f0f0f] border border-white/15 overflow-hidden flex items-center justify-center relative ${
+              className={`w-full max-w-[420px] aspect-square bg-[#0C0D12] border border-[#272A38] rounded-xl overflow-hidden flex items-center justify-center relative ${
                 !isScanning ? 'hidden' : 'block'
               }`}
             />
 
             {!isScanning && (
               <div className="text-center p-8 space-y-3">
-                <div className="w-14 h-14 mx-auto border border-white/20 flex items-center justify-center bg-white/[0.02]">
-                  <Camera size={24} className="text-[#9a9a9a]" />
+                <div className="w-14 h-14 mx-auto rounded-xl border border-[#272A38] flex items-center justify-center bg-[#0C0D12]">
+                  <Camera size={24} className="text-white" />
                 </div>
-                <h3 className="text-sm font-light text-white m-0">Kamera Scanner Sedang Nonaktif</h3>
-                <p className="text-xs text-[#9a9a9a] font-light max-w-xs mx-auto">
+                <h3 className="text-sm font-semibold text-[#F4F4F6] m-0">Kamera Scanner Sedang Nonaktif</h3>
+                <p className="text-xs text-[#A1A1AA] font-normal max-w-xs mx-auto">
                   Klik tombol Aktifkan Kamera di atas untuk mulai memindai QR Code tiket di gate.
                 </p>
               </div>
             )}
 
             {cameras.length > 1 && (
-              <div className="w-full mt-4 pt-3 border-t border-white/10 flex items-center justify-between gap-3 text-xs">
-                <span className="text-[#9a9a9a] font-light flex items-center gap-1.5">
+              <div className="w-full mt-4 pt-3 border-t border-[#272A38] flex items-center justify-between gap-3 text-xs">
+                <span className="text-[#A1A1AA] font-medium flex items-center gap-1.5">
                   <FlipHorizontal size={13} /> Pilih Kamera:
                 </span>
                 <select
@@ -317,7 +317,7 @@ export const GateScannerPanel: React.FC = () => {
                     setSelectedCameraId(e.target.value);
                     if (isScanning) startScanner(e.target.value);
                   }}
-                  className="bg-[#1c1c1c] border border-white/20 text-white text-xs px-2.5 py-1 outline-none"
+                  className="bg-[#0C0D12] border border-[#272A38] text-white rounded text-xs px-2.5 py-1 outline-none focus:border-white"
                 >
                   {cameras.map((c) => (
                     <option key={c.id} value={c.id}>
@@ -329,21 +329,21 @@ export const GateScannerPanel: React.FC = () => {
             )}
           </div>
 
-          <form onSubmit={handleManualSubmit} className="p-4 border border-white/10 bg-[#1a1a1a] flex gap-2">
+          <form onSubmit={handleManualSubmit} className="p-4 border border-[#272A38] bg-[#14161F] rounded-xl flex gap-2 shadow-xl">
             <div className="relative flex-1">
-              <Search size={14} className="text-[#9a9a9a] absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search size={14} className="text-[#A1A1AA] absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="Input kode tiket manual (cth: SYM-893472)..."
                 value={manualCode}
                 onChange={(e) => setManualCode(e.target.value)}
-                className="w-full bg-[#141414] border border-white/10 pl-9 pr-3 py-2 text-xs text-white placeholder-[#5a5a5a] outline-none focus:border-white/30"
+                className="w-full bg-[#0C0D12] border border-[#272A38] rounded-lg pl-9 pr-3 py-2 text-xs text-white placeholder-[#71717A] outline-none focus:border-white"
               />
             </div>
             <button
               type="submit"
               disabled={!manualCode || isProcessing}
-              className="px-5 py-2 bg-white text-[#171717] hover:bg-white/90 text-xs uppercase font-light cursor-pointer disabled:opacity-40"
+              className="px-5 py-2 bg-white text-[#0C0D12] hover:bg-neutral-200 text-xs uppercase font-semibold rounded-lg cursor-pointer disabled:opacity-40 transition-colors shadow-sm"
             >
               {isProcessing ? 'Verifikasi...' : 'Cek Manual'}
             </button>
@@ -351,17 +351,17 @@ export const GateScannerPanel: React.FC = () => {
         </div>
 
         <div className="lg:col-span-5 flex flex-col gap-5">
-          <div className="border border-white/10 bg-[#1a1a1a] p-5 flex flex-col justify-between">
-            <div className="border-b border-white/10 pb-3 mb-4 flex items-center justify-between">
-              <span className="text-xs font-mono text-[#9a9a9a] uppercase tracking-wider">
+          <div className="border border-[#272A38] bg-[#14161F] rounded-xl p-5 flex flex-col justify-between shadow-xl">
+            <div className="border-b border-[#272A38] pb-3 mb-4 flex items-center justify-between">
+              <span className="text-xs font-mono text-[#A1A1AA] uppercase tracking-wider font-medium">
                 STATUS HASIL SCAN TERAKHIR
               </span>
-              {scanResult && <span className="text-[11px] font-mono text-[#9a9a9a]">{scanResult.timestamp}</span>}
+              {scanResult && <span className="text-[11px] font-mono text-white">{scanResult.timestamp}</span>}
             </div>
 
             {scanResult ? (
               <div
-                className={`p-5 border space-y-4 transition-all ${
+                className={`p-5 rounded-xl border space-y-4 transition-all ${
                   scanResult.type === 'SUCCESS'
                     ? 'border-emerald-500/40 bg-emerald-950/20'
                     : scanResult.type === 'ALREADY_USED'
@@ -389,48 +389,48 @@ export const GateScannerPanel: React.FC = () => {
                     >
                       {scanResult.title}
                     </h3>
-                    <p className="text-xs text-white/80 font-light mt-0.5 m-0">{scanResult.message}</p>
+                    <p className="text-xs text-white/80 font-normal mt-0.5 m-0">{scanResult.message}</p>
                   </div>
                 </div>
 
                 {scanResult.order && (
                   <div className="pt-3 border-t border-white/10 grid grid-cols-2 gap-3 text-xs">
                     <div>
-                      <span className="text-[10px] text-[#9a9a9a] uppercase block">Kode Tiket</span>
-                      <span className="font-mono text-white text-sm">{scanResult.order.orderCode}</span>
+                      <span className="text-[10px] text-[#A1A1AA] uppercase block">Kode Tiket</span>
+                      <span className="font-mono text-white font-semibold text-sm">{scanResult.order.orderCode}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] text-[#9a9a9a] uppercase block">Pemegang</span>
-                      <span className="text-white truncate block">{scanResult.order.userName}</span>
+                      <span className="text-[10px] text-[#A1A1AA] uppercase block">Pemegang</span>
+                      <span className="text-white truncate block font-medium">{scanResult.order.userName}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] text-[#9a9a9a] uppercase block">Kategori</span>
+                      <span className="text-[10px] text-[#A1A1AA] uppercase block">Kategori</span>
                       <span className="text-white">{scanResult.order.categoryName} ({scanResult.order.quantity}x)</span>
                     </div>
                     <div>
-                      <span className="text-[10px] text-[#9a9a9a] uppercase block">Event Konser</span>
+                      <span className="text-[10px] text-[#A1A1AA] uppercase block">Event Konser</span>
                       <span className="text-white truncate block">{scanResult.order.eventTitle}</span>
                     </div>
                   </div>
                 )}
               </div>
             ) : (
-              <div className="p-8 text-center border border-dashed border-white/10 text-xs font-light text-[#9a9a9a]">
+              <div className="p-8 text-center border border-dashed border-[#272A38] rounded-xl text-xs font-normal text-[#A1A1AA]">
                 Belum ada tiket yang dipindai pada sesi ini.
               </div>
             )}
           </div>
 
-          <div className="border border-white/10 bg-[#1a1a1a] p-5 flex-1 flex flex-col">
-            <div className="border-b border-white/10 pb-3 mb-3 flex items-center justify-between">
-              <span className="text-xs font-mono text-[#9a9a9a] uppercase tracking-wider">
+          <div className="border border-[#272A38] bg-[#14161F] rounded-xl p-5 flex-1 flex flex-col shadow-xl">
+            <div className="border-b border-[#272A38] pb-3 mb-3 flex items-center justify-between">
+              <span className="text-xs font-mono text-[#A1A1AA] uppercase tracking-wider font-medium">
                 RIWAYAT VERIFIKASI GATE ({scanHistory.length})
               </span>
               {scanHistory.length > 0 && (
                 <button
                   type="button"
                   onClick={() => setScanHistory([])}
-                  className="text-[11px] text-[#9a9a9a] hover:text-white bg-transparent border-none cursor-pointer"
+                  className="text-[11px] text-[#A1A1AA] hover:text-white bg-transparent border-none cursor-pointer"
                 >
                   Bersihkan
                 </button>
@@ -439,12 +439,12 @@ export const GateScannerPanel: React.FC = () => {
 
             <div className="space-y-2 overflow-y-auto max-h-[220px] pr-1">
               {scanHistory.length === 0 ? (
-                <p className="text-xs text-[#5a5a5a] font-light text-center py-4">Riwayat scan kosong.</p>
+                <p className="text-xs text-[#71717A] font-normal text-center py-4">Riwayat scan kosong.</p>
               ) : (
                 scanHistory.map((item, idx) => (
                   <div
                     key={idx}
-                    className="p-2.5 border border-white/5 bg-[#141414] flex items-center justify-between text-xs font-light"
+                    className="p-2.5 border border-[#272A38] bg-[#0C0D12] rounded-lg flex items-center justify-between text-xs"
                   >
                     <div className="flex items-center gap-2 truncate">
                       <span
@@ -456,10 +456,10 @@ export const GateScannerPanel: React.FC = () => {
                             : 'bg-rose-400'
                         }`}
                       />
-                      <span className="font-mono text-white shrink-0">{item.order?.orderCode || 'UNKNOWN'}</span>
-                      <span className="text-[#9a9a9a] truncate">{item.order?.userName || item.title}</span>
+                      <span className="font-mono text-white font-semibold shrink-0">{item.order?.orderCode || 'UNKNOWN'}</span>
+                      <span className="text-[#A1A1AA] truncate">{item.order?.userName || item.title}</span>
                     </div>
-                    <span className="text-[10px] font-mono text-[#7a7a7a] shrink-0">{item.timestamp}</span>
+                    <span className="text-[10px] font-mono text-[#71717A] shrink-0">{item.timestamp}</span>
                   </div>
                 ))
               )}

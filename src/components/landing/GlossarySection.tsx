@@ -33,22 +33,22 @@ export const GlossarySection: React.FC = () => {
   }, [results]);
 
   return (
-    <section id="glosarium" className="scroll-mt-28 border-b border-[#E5E7EB] py-20 sm:py-24 lg:py-32">
+    <section id="glosarium" className="scroll-mt-28 border-b border-[#272A38] py-20 sm:py-24 lg:py-32">
       <div className="mx-auto max-w-[1400px] px-6 sm:px-8 md:px-10">
         <div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
           <Reveal className="lg:col-span-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#64748B]">
+            <p className="text-xs font-mono uppercase tracking-widest text-[#A1A1AA]">
               04 Glosarium Musik
             </p>
-            <h2 className="mt-4 text-3xl font-bold leading-[1.1] tracking-[-0.03em] text-[#183B56] sm:text-4xl lg:text-[44px]">
-              Kenali istilah yang sering kamu dengar.
+            <h2 className="mt-4 text-3xl font-bold leading-[1.1] tracking-tight text-white sm:text-4xl lg:text-[44px]">
+              Glosarium Istilah Musik Simfoni
             </h2>
-            <p className="mt-6 max-w-sm text-sm leading-relaxed text-[#64748B]">
-              Baca sebelum masuk aula. Sekali paham dinamika dan tempo, kamu akan menikmati setiap jeda dalam pertunjukan.
+            <p className="mt-6 max-w-sm text-sm leading-relaxed text-[#A1A1AA]">
+              Pahami istilah tempo, dinamika, dan format ansambel klasik agar Anda dapat menikmati alur pertunjukan dengan utuh.
             </p>
 
-            <div className="mt-8 flex items-center gap-3 border-b border-[#CBD5E1] pb-2 focus-within:border-brand-accent">
-              <Search size={16} strokeWidth={1.5} className="shrink-0 text-[#64748B]" />
+            <div className="mt-8 flex items-center gap-3 border-b border-[#272A38] pb-2 focus-within:border-white">
+              <Search size={16} strokeWidth={1.5} className="shrink-0 text-[#A1A1AA]" />
               <label htmlFor="edukasi-search" className="sr-only">
                 Cari istilah musik
               </label>
@@ -58,7 +58,7 @@ export const GlossarySection: React.FC = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Cari istilah musik..."
-                className="w-full bg-transparent py-1 text-sm text-[#183B56] outline-none placeholder:text-ink-soft"
+                className="w-full bg-transparent py-1 text-sm text-white outline-none placeholder:text-[#71717A]"
               />
             </div>
           </Reveal>
@@ -74,10 +74,10 @@ export const GlossarySection: React.FC = () => {
                       type="button"
                       onClick={() => setLetter(l)}
                       aria-pressed={isActive}
-                      className={`min-h-11 shrink-0 cursor-pointer rounded-lg border px-4 text-xs font-semibold tracking-[0.14em] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2 ${
+                      className={`min-h-11 shrink-0 cursor-pointer rounded-lg border px-4 text-xs font-semibold tracking-wider transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0C0D12] ${
                         isActive
-                          ? 'border-brand-accent bg-brand-accent/10 text-[#183B56]'
-                          : 'border-[#E5E7EB] bg-white text-[#64748B] hover:border-brand-accent/45 hover:text-[#183B56]'
+                          ? 'border-white bg-white text-black font-semibold'
+                          : 'border-[#272A38] bg-[#14161F] text-[#A1A1AA] hover:border-white/40 hover:text-white'
                       }`}
                     >
                       {l}
@@ -88,9 +88,9 @@ export const GlossarySection: React.FC = () => {
             </Reveal>
 
             {results.length === 0 ? (
-              <div className="mt-10 rounded-2xl border border-dashed border-[#E5E7EB] bg-[#F8FAFC] px-6 py-16 text-center">
-                <p className="text-sm text-[#64748B]">
-                  Tidak ada istilah yang cocok dengan pencarianmu.
+              <div className="mt-10 rounded-xl border border-[#272A38] bg-[#14161F] px-6 py-16 text-center">
+                <p className="text-sm text-[#A1A1AA]">
+                  Tidak ada istilah yang cocok dengan pencarian Anda.
                 </p>
                 <button
                   type="button"
@@ -98,7 +98,7 @@ export const GlossarySection: React.FC = () => {
                     setSearch('');
                     setLetter(ALL);
                   }}
-                  className="mt-4 min-h-11 cursor-pointer border-b-2 border-brand-accent px-1 text-sm font-semibold text-[#183B56] transition-colors duration-200 hover:text-brand-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2"
+                  className="mt-4 min-h-11 cursor-pointer border-b border-white px-1 text-sm font-semibold text-white transition-colors duration-200 hover:text-neutral-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
                 >
                   Reset pencarian
                 </button>
@@ -107,21 +107,21 @@ export const GlossarySection: React.FC = () => {
               <div className="mt-10 space-y-10">
                 {Object.entries(grouped).map(([initial, terms]) => (
                   <div key={initial}>
-                    <div className="flex items-baseline gap-4 border-b border-[#E5E7EB] pb-3">
-                      <span className="text-3xl font-bold leading-none tracking-[-0.03em] text-brand-accent">
+                    <div className="flex items-baseline gap-4 border-b border-[#272A38] pb-3">
+                      <span className="text-3xl font-bold leading-none tracking-tight text-white font-mono">
                         {initial}
                       </span>
-                      <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-soft">
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-[#71717A]">
                         {terms.length} istilah
                       </span>
                     </div>
                     <dl className="mt-5 grid gap-x-10 gap-y-6 sm:grid-cols-2">
                       {terms.map((entry) => (
-                        <div key={entry.term} className="border-t border-[#E5E7EB] pt-4">
-                          <dt className="text-base font-bold tracking-[-0.01em] text-[#183B56]">
+                        <div key={entry.term} className="border-t border-[#272A38] pt-4">
+                          <dt className="text-base font-bold tracking-tight text-white">
                             {entry.term}
                           </dt>
-                          <dd className="mt-1.5 text-sm leading-relaxed text-[#64748B]">
+                          <dd className="mt-1.5 text-sm leading-relaxed text-[#A1A1AA]">
                             {entry.definition}
                           </dd>
                         </div>

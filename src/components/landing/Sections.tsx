@@ -1,19 +1,15 @@
 ﻿import React, { useRef } from 'react';
-import { Heart, ArrowUpRight, MapPin, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
-import { CONCERT_EVENTS, ARTISTS_LINEUP, formatIDR } from './data';
+import { ArrowUpRight, MapPin, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ARTISTS_LINEUP, formatIDR } from './data';
 import type { EventItem } from './data';
 import { SectionHeading } from './SectionHeading';
 
-interface SectionProps {
+export interface SectionProps {
   events?: EventItem[];
   onBuyTicket: (event: EventItem) => void;
+  isLoading?: boolean;
+  error?: string | null;
 }
-
-const goToConcert = (event: EventItem) => {
-  window.location.href = `/concert/${event.id}`;
-};
-
-export const getMinPrice = (event: EventItem) => event.categories?.[0]?.price ?? 0;
 
 export const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGU', 'SEP', 'OKT', 'NOV', 'DES'];
 
@@ -44,6 +40,48 @@ export const parseDate = (date?: string) => {
   return { day, month, year, weekday };
 };
 
+const getLowestPrice = (event: EventItem): number => {
+  if (!event.categories || event.categories.length === 0) return 0;
+  return Math.min(...event.categories.map((c) => Number(c.price) || 0));
+};
+
+const getTotalRemaining = (event: EventItem): number => {
+  if (!event.categories || event.categories.length === 0) return 0;
+  return event.categories.reduce((total, cat) => {
+    const rem = cat.remainingQuota !== undefined ? cat.remainingQuota : cat.quota;
+    return total + (typeof rem === 'number' && !isNaN(rem) ? rem : 0);
+  }, 0);
+};
+
+const getQuotaBadge = (event: EventItem, remaining: number) => {
+  if (event.isClosed) {
+    return {
+      label: 'Penjualan Tutup',
+      className: 'bg-[#272A38]/90 text-[#94A3B8] border border-[#3A3F55]',
+      isSoldOut: true,
+    };
+  }
+  if (remaining <= 0) {
+    return {
+      label: 'Tiket Habis',
+      className: 'bg-[#272A38]/90 text-[#94A3B8] border border-[#3A3F55]',
+      isSoldOut: true,
+    };
+  }
+  if (remaining <= 15) {
+    return {
+      label: `Tersisa ${remaining} Kursi`,
+      className: 'bg-[#F59E0B]/20 text-[#F59E0B] border border-[#F59E0B]/50',
+      isSoldOut: false,
+    };
+  }
+  return {
+    label: `Tersisa ${remaining} Kursi`,
+    className: 'bg-[#10B981]/15 text-[#10B981] border border-[#10B981]/30',
+    isSoldOut: false,
+  };
+};
+
 const ArtistCard: React.FC<{ image: string; name: string; genre: string; shows: string }> = ({
   image,
   name,
@@ -53,24 +91,24 @@ const ArtistCard: React.FC<{ image: string; name: string; genre: string; shows: 
   return (
     <a
       href="/events"
-      className="group relative block w-[74vw] sm:w-[280px] lg:w-[320px] shrink-0 snap-start overflow-hidden rounded-2xl bg-[#F1F5F9] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2"
+      className="group relative block w-[74vw] sm:w-[280px] lg:w-[320px] shrink-0 snap-start overflow-hidden rounded-xl border border-[#272A38] bg-[#14161F] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0C0D12]"
     >
       <img
         src={image}
         alt={name}
-        className="w-full aspect-[3/4] h-full object-cover brightness-[0.88] group-hover:scale-[1.05] group-hover:brightness-100 transition-all duration-700"
+        className="w-full aspect-[3/4] h-full object-cover brightness-[0.85] group-hover:scale-[1.05] group-hover:brightness-100 transition-all duration-700"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0C0D12]/90 via-[#0C0D12]/20 to-transparent" />
 
-      <span className="absolute top-4 right-4 rounded-full bg-white/90 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-black">
+      <span className="absolute top-4 right-4 rounded-md bg-[#0C0D12]/80 border border-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-sm">
         {shows}
       </span>
 
       <div className="absolute bottom-5 left-5 right-5">
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/70">
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#94A3B8]">
           {genre}
         </p>
-        <h3 className="mt-1.5 text-xl font-bold leading-snug tracking-tight text-white">
+        <h3 className="mt-1.5 text-xl font-bold leading-snug tracking-tight text-[#F4F4F6]">
           {name}
         </h3>
         <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-white opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-300">
@@ -93,15 +131,15 @@ const ArtistRail: React.FC = () => {
       <div className="mb-6 flex items-center justify-end gap-2">
         <button
           onClick={() => scroll(-1)}
-          aria-label="Geser artist ke kiri"
-          className="h-11 w-11 rounded-full bg-[#F8FAFC] text-ink flex items-center justify-center hover:bg-brand-accent hover:text-white transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent"
+          aria-label="Geser artis ke kiri"
+          className="h-10 w-10 rounded-lg border border-[#272A38] bg-[#14161F] text-[#F4F4F6] flex items-center justify-center hover:bg-white hover:text-black hover:border-white transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
         >
           <ChevronLeft size={18} />
         </button>
         <button
           onClick={() => scroll(1)}
-          aria-label="Geser artist ke kanan"
-          className="h-11 w-11 rounded-full bg-[#F8FAFC] text-ink flex items-center justify-center hover:bg-brand-accent hover:text-white transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent"
+          aria-label="Geser artis ke kanan"
+          className="h-10 w-10 rounded-lg border border-[#272A38] bg-[#14161F] text-[#F4F4F6] flex items-center justify-center hover:bg-white hover:text-black hover:border-white transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
         >
           <ChevronRight size={18} />
         </button>
@@ -125,154 +163,179 @@ const ArtistRail: React.FC = () => {
   );
 };
 
-type BadgeTone = 'accent' | 'navy' | 'muted';
+const SkeletonCard: React.FC = () => (
+  <div className="flex flex-col h-full rounded-xl border border-[#272A38] bg-[#14161F] overflow-hidden animate-pulse">
+    <div className="aspect-[16/9] w-full bg-[#1D202D]" />
+    <div className="p-5 flex-1 flex flex-col justify-between space-y-5">
+      <div className="space-y-2.5">
+        <div className="flex justify-between items-center">
+          <div className="h-3 w-20 bg-[#272A38] rounded" />
+          <div className="h-3 w-16 bg-[#272A38] rounded" />
+        </div>
+        <div className="h-5 w-4/5 bg-[#272A38] rounded" />
+        <div className="h-3.5 w-1/2 bg-[#272A38] rounded" />
+      </div>
+      <div className="pt-4 border-t border-[#272A38] flex items-center justify-between">
+        <div className="h-6 w-24 bg-[#272A38] rounded" />
+        <div className="h-9 w-28 bg-[#272A38] rounded-lg" />
+      </div>
+    </div>
+  </div>
+);
 
-interface TrendBadge {
-  label: string;
-  tone: BadgeTone;
-}
-
-const getTrendBadge = (event: EventItem, index: number): TrendBadge => {
-  const total = event.categories?.reduce((sum, c) => sum + (c.quota ?? 0), 0) ?? 0;
-  const remaining = event.categories?.reduce((sum, c) => sum + (c.remainingQuota ?? c.quota ?? 0), 0) ?? 0;
-
-  if (event.isClosed) return { label: 'TIKET TUTUP', tone: 'muted' };
-
-  if (total > 0 && remaining < total) {
-    const ratio = remaining / total;
-    if (ratio <= 0.15) return { label: 'HAMPIR HABIS', tone: 'accent' };
-    if (ratio <= 0.45) return { label: 'TIKET TERBATAS', tone: 'accent' };
-  }
-
-  return { label: 'TRENDING', tone: index === 1 ? 'navy' : 'accent' };
-};
-
-const BADGE_TONE: Record<BadgeTone, string> = {
-  accent: 'bg-brand-accent text-white',
-  navy: 'bg-[#183B56] text-white',
-  muted: 'bg-[#183B56]/85 text-white',
-};
-
-const TrendingConcertCard: React.FC<{ event: EventItem; index: number }> = ({ event, index }) => {
-  const minPrice = getMinPrice(event);
-  const { day, month } = parseDate(event.date);
-  const badge = getTrendBadge(event, index);
-  const dateLabel = day && month ? `${day} ${month} ${new Date().getFullYear()}` : event.date;
+const TrendingConcertCard: React.FC<{
+  event: EventItem;
+  onBuyTicket: (event: EventItem) => void;
+}> = ({ event, onBuyTicket }) => {
+  const minPrice = getLowestPrice(event);
+  const totalRemaining = getTotalRemaining(event);
+  const badge = getQuotaBadge(event, totalRemaining);
 
   return (
     <article
-      onClick={() => goToConcert(event)}
-      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white cursor-pointer transition-all duration-300 ease-out hover:-translate-y-1 hover:border-brand-accent/45 hover:shadow-[0_24px_48px_-28px_rgba(24,59,86,0.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2"
+      className="group flex flex-col h-full rounded-xl border border-[#272A38] bg-[#14161F] overflow-hidden transition-all duration-300 hover:border-white/40 hover:-translate-y-1 hover:shadow-[0_20px_40px_-20px_rgba(0,0,0,0.7)]"
     >
-      <div className="relative aspect-[4/5] overflow-hidden bg-[#F1F5F9]">
+      <div className="relative aspect-[16/9] overflow-hidden bg-[#1D202D]">
         <img
           src={event.image}
           alt={event.title}
           loading="lazy"
-          className={`absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.05] ${
-            event.isClosed ? 'grayscale' : ''
+          className={`h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 ${
+            badge.isSoldOut ? 'grayscale brightness-75' : ''
           }`}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#14161F] via-[#14161F]/20 to-transparent" />
+
+        <span className="absolute top-3 left-3 rounded-md bg-[#0C0D12]/80 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-white border border-white/20 backdrop-blur-sm">
+          {event.category || 'Simfoni'}
+        </span>
 
         <span
-          className={`absolute left-3 top-3 rounded-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.14em] shadow-sm transition-colors duration-300 ${BADGE_TONE[badge.tone]}`}
+          className={`absolute top-3 right-3 rounded-md px-2.5 py-1 text-[11px] font-semibold tracking-wide backdrop-blur-sm ${badge.className}`}
         >
           {badge.label}
         </span>
 
-        <button
-          aria-label="Simpan ke favorit"
-          onClick={(e) => e.stopPropagation()}
-          className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-[#183B56] shadow-sm transition-all duration-300 hover:bg-brand-accent hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent"
-        >
-          <Heart size={15} />
-        </button>
-
-        <span className="absolute bottom-3 left-3 rounded-lg bg-white/95 px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-wider text-[#183B56] shadow-sm">
-          {dateLabel}
-        </span>
+        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs text-[#94A3B8]">
+          <span className="flex items-center gap-1.5 rounded-md bg-[#0C0D12]/75 px-2 py-1 backdrop-blur-sm">
+            <Calendar size={13} className="text-[#A1A1AA] shrink-0" />
+            <span className="font-medium text-[#F4F4F6]">{event.date}</span>
+          </span>
+          <span className="rounded-md bg-[#0C0D12]/75 px-2 py-1 text-[11px] text-[#94A3B8] backdrop-blur-sm">
+            {event.time}
+          </span>
+        </div>
       </div>
 
-      <div className="flex flex-1 flex-col p-5 sm:p-6">
-        {event.category && (
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-accent">
-            {event.category}
+      <div className="flex flex-1 flex-col p-5 justify-between">
+        <div>
+          <a
+            href={`/concert/${event.id}`}
+            className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
+          >
+            <h3 className="text-lg font-bold leading-snug text-[#F4F4F6] line-clamp-1 group-hover:text-white transition-colors">
+              {event.title}
+            </h3>
+          </a>
+
+          <p className="mt-1 text-xs text-[#94A3B8] line-clamp-1">
+            {event.conductor && event.conductor !== '-' ? `${event.artist} • ${event.conductor}` : event.artist}
           </p>
-        )}
 
-        <h3 className="mt-2 text-lg font-bold leading-snug tracking-tight text-ink line-clamp-2">
-          {event.title}
-        </h3>
-
-        <p className="mt-1.5 text-sm text-[#64748B] line-clamp-1">
-          {event.artist}
-        </p>
-
-        <div className="mt-4 space-y-2 text-xs text-[#64748B]">
-          <p className="flex items-center gap-2">
-            <Calendar size={13} className="shrink-0 text-brand-accent" />
-            <span className="truncate">{event.time}</span>
-          </p>
-          <p className="flex items-center gap-2">
-            <MapPin size={13} className="shrink-0 text-brand-accent" />
+          <div className="mt-3 flex items-center gap-1.5 text-xs text-[#64748B]">
+            <MapPin size={13} className="text-[#94A3B8] shrink-0" />
             <span className="truncate">{event.venue}</span>
-          </p>
+          </div>
         </div>
 
-        <div className="mt-auto flex items-center justify-between gap-3 border-t border-[#E5E7EB] pt-5">
+        <div className="mt-5 pt-4 border-t border-[#272A38] flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#94A3B8]">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-[#64748B]">
               Mulai dari
             </p>
-            <p className="truncate text-lg font-bold text-ink">
-              {event.isClosed ? 'Tutup' : formatIDR(minPrice)}
+            <p className="text-base sm:text-lg font-bold text-[#F4F4F6] truncate tabular-nums">
+              {formatIDR(minPrice)}
             </p>
           </div>
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#183B56] text-white transition-all duration-300 ease-out group-hover:bg-brand-accent group-hover:rotate-45">
-            <ArrowUpRight size={18} />
-          </span>
+
+          {badge.isSoldOut ? (
+            <button
+              disabled
+              className="px-4 py-2 rounded-lg bg-[#272A38] text-[#64748B] text-xs sm:text-sm font-semibold cursor-not-allowed border border-[#3A3F55]"
+            >
+              {event.isClosed ? 'Penjualan Tutup' : 'Tiket Habis'}
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => onBuyTicket(event)}
+              className="px-4 py-2 rounded-lg bg-white text-[#0C0D12] text-xs sm:text-sm font-semibold hover:bg-neutral-200 transition-colors cursor-pointer shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+            >
+              Pesan Tiket
+            </button>
+          )}
         </div>
       </div>
     </article>
   );
 };
 
-export const BentoSection: React.FC<SectionProps> = ({ events }) => {
-  const sourceEvents = (events && events.length > 0) ? events : CONCERT_EVENTS;
-  const trending = sourceEvents.slice(0, 4);
+export const BentoSection: React.FC<SectionProps> = ({
+  events = [],
+  onBuyTicket,
+  isLoading = false,
+  error = null,
+}) => {
+  const trending = events.slice(0, 6);
 
   return (
-    <div className="bg-canvas text-ink">
-      <section className="mx-auto max-w-[1440px] px-6 sm:px-8 md:px-12 pt-20 sm:pt-24 lg:pt-28">
+    <div className="bg-[#0C0D12] text-[#F4F4F6]">
+      <section className="mx-auto max-w-[1400px] px-6 sm:px-8 md:px-12 pt-16 sm:pt-20">
         <SectionHeading
           eyebrow="Jelajahi Artis"
-          title="Orkestra & Ensemble Musim Ini"
-          support="Dari orkestra simfoni kelas dunia hingga chamber ensemble — kenali penampil yang siap menghidupkan panggung SymphoniaTic."
+          title="Orkestra & Ansambel Musim Ini"
+          support="Dari orkestra simfoni kelas dunia hingga kelompok ansambel kamar, kenali penampil yang siap menghidupkan panggung SymphoniaTic."
           actionLabel="Semua Artis"
           actionHref="/events"
         />
         <ArtistRail />
       </section>
 
-      <section className="mx-auto max-w-[1440px] px-6 sm:px-8 md:px-12 py-20 sm:py-24 lg:py-28">
+      <section className="mx-auto max-w-[1400px] px-6 sm:px-8 md:px-12 py-16 sm:py-20">
         <SectionHeading
           eyebrow="Sedang Ramai"
-          title="Yang Lagi Ramai"
-          support="Konser yang paling banyak diminati dan tiketnya mulai terbatas."
+          title="Jadwal Paling Diminati"
+          support="Pertunjukan dengan reservasi tertinggi musim ini. Pesan kursi Anda sebelum kuota tiket habis."
           actionLabel="Lihat Semua"
           actionHref="/events"
         />
 
-        {trending.length > 0 ? (
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
-            {trending.map((event, index) => (
-              <TrendingConcertCard key={event.id} event={event} index={index} />
-            ))}
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
+          </div>
+        ) : error && events.length === 0 ? (
+          <div className="rounded-xl border border-[#EF4444]/30 bg-[#14161F] p-8 text-center">
+            <p className="text-sm font-medium text-[#EF4444]">
+              {error}
+            </p>
+            <p className="mt-1 text-xs text-[#94A3B8]">
+              Pastikan layanan backend API sedang berjalan di port 8082.
+            </p>
+          </div>
+        ) : trending.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-[#272A38] bg-[#14161F] px-6 py-16 text-center">
+            <p className="text-sm text-[#94A3B8]">
+              Belum ada jadwal pertunjukan pada kategori ini.
+            </p>
           </div>
         ) : (
-          <div className="rounded-2xl border border-dashed border-[#E5E7EB] bg-[#F8FAFC] px-6 py-16 text-center">
-            <p className="text-sm text-[#64748B]">Belum ada konser yang sedang ramai saat ini.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {trending.map((event) => (
+              <TrendingConcertCard key={event.id} event={event} onBuyTicket={onBuyTicket} />
+            ))}
           </div>
         )}
       </section>

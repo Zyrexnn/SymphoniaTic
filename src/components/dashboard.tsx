@@ -20,9 +20,9 @@ const REVENUE_TIMELINE = [
 ];
 
 const CATEGORY_DISTRIBUTION = [
-  { name: 'VIP Orchestral Pit', value: 16500000, color: '#183B56' },
-  { name: 'CAT 1 Grand Tier', value: 11200000, color: '#94A3B8' },
-  { name: 'Festival Stalls', value: 6800000, color: '#E76F51' },
+  { name: 'VIP Orchestral Pit', value: 16500000, color: '#FFFFFF' },
+  { name: 'CAT 1 Grand Tier', value: 11200000, color: '#A1A1AA' },
+  { name: 'Festival Stalls', value: 6800000, color: '#71717A' },
 ];
 
 interface DashboardProps {
@@ -47,7 +47,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ metrics, eventsCount = 4, 
     : CATEGORY_DISTRIBUTION;
 
   return (
-    <div className="flex flex-col gap-6 sm:gap-8 pb-12 w-full text-[#183B56]">
+    <div className="flex flex-col gap-6 sm:gap-8 pb-12 w-full text-[#F4F4F6]">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPIWidget
           label="Total Pendapatan Tiket"
@@ -55,7 +55,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ metrics, eventsCount = 4, 
           subtext="Total transaksi berhasil"
           icon={DollarSign}
           badgeText="+18.5% YTD"
-          badgeColor="text-emerald-600 border-emerald-500/30 bg-emerald-50"
+          badgeColor="text-emerald-400 border-emerald-500/30 bg-emerald-500/10"
         />
         <KPIWidget
           label="Tiket Terverifikasi"
@@ -63,7 +63,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ metrics, eventsCount = 4, 
           subtext="Terkonfirmasi sistem gate"
           icon={Ticket}
           badgeText="Verified"
-          badgeColor="text-[#64748B] border-[#E5E7EB] bg-[#F8FAFC]"
+          badgeColor="text-white border-white/20 bg-white/10"
         />
         <KPIWidget
           label="Sisa Kuota Kursi"
@@ -71,39 +71,39 @@ export const Dashboard: React.FC<DashboardProps> = ({ metrics, eventsCount = 4, 
           subtext="Okupansi 72.8%"
           icon={Layers}
           badgeText="Real-time"
-          badgeColor="text-brand border-brand/30 bg-brand/[0.08]"
+          badgeColor="text-[#94A3B8] border-[#272A38] bg-[#0C0D12]"
         />
         <KPIWidget
           label="Konser Active Season"
           value={`${totalEvents} Pertunjukan`}
-          subtext="Musim Semi 2026"
+          subtext="Musim 2026"
           icon={BarChart3}
           badgeText="Live"
-          badgeColor="text-brand-accent border-brand-accent/30 bg-brand-accent/10"
+          badgeColor="text-emerald-400 border-emerald-500/30 bg-emerald-500/10"
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 border border-[#E5E7EB] bg-white p-5 sm:p-6 flex flex-col justify-between shadow-xl">
+        <div className="lg:col-span-2 border border-[#272A38] bg-[#14161F] p-5 sm:p-6 rounded-xl flex flex-col justify-between shadow-xl">
           <div>
-            <div className="border-b border-[#E5E7EB] pb-4 flex flex-wrap items-center justify-between gap-3">
+            <div className="border-b border-[#272A38] pb-4 flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h3 className="text-base font-light text-[#183B56] tracking-tight m-0">Tren Pertumbuhan Pendapatan Simfoni</h3>
-                <p className="text-xs font-light text-[#64748B] mt-0.5 m-0">Visualisasi penjualan tiket &amp; estimasi pendapatan bulanan</p>
+                <h3 className="text-base font-semibold text-[#F4F4F6] tracking-tight m-0">Tren Pertumbuhan Pendapatan Simfoni</h3>
+                <p className="text-xs font-normal text-[#94A3B8] mt-0.5 m-0">Visualisasi penjualan tiket dan estimasi pendapatan bulanan</p>
               </div>
-              <div className="flex items-center gap-1 border border-[#E5E7EB] p-0.5 bg-[#F8FAFC]">
+              <div className="flex items-center gap-1 border border-[#272A38] p-0.5 rounded-lg bg-[#0C0D12]">
                 <button
                   onClick={() => setChartTimeframe('MONTHLY')}
-                  className={`px-3 py-1 text-xs font-light cursor-pointer border-none transition-colors ${
-                    chartTimeframe === 'MONTHLY' ? 'bg-brand text-white font-normal' : 'text-[#64748B] hover:text-brand bg-transparent'
+                  className={`px-3 py-1 text-xs font-medium cursor-pointer rounded border-none transition-colors ${
+                    chartTimeframe === 'MONTHLY' ? 'bg-white text-[#0C0D12] font-semibold' : 'text-[#A1A1AA] hover:text-white bg-transparent'
                   }`}
                 >
                   Bulanan
                 </button>
                 <button
                   onClick={() => setChartTimeframe('WEEKLY')}
-                  className={`px-3 py-1 text-xs font-light cursor-pointer border-none transition-colors ${
-                    chartTimeframe === 'WEEKLY' ? 'bg-brand text-white font-normal' : 'text-[#64748B] hover:text-brand bg-transparent'
+                  className={`px-3 py-1 text-xs font-medium cursor-pointer rounded border-none transition-colors ${
+                    chartTimeframe === 'WEEKLY' ? 'bg-white text-[#0C0D12] font-semibold' : 'text-[#A1A1AA] hover:text-white bg-transparent'
                   }`}
                 >
                   Mingguan
@@ -116,29 +116,29 @@ export const Dashboard: React.FC<DashboardProps> = ({ metrics, eventsCount = 4, 
                 <AreaChart data={timelineData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#183B56" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#183B56" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#FFFFFF" stopOpacity={0.25} />
+                      <stop offset="95%" stopColor="#FFFFFF" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(24,59,86,0.08)" />
-                  <XAxis dataKey="month" stroke="#94A3B8" fontSize={11} tickLine={false} />
-                  <YAxis stroke="#94A3B8" fontSize={11} tickLine={false} tickFormatter={(v) => `${v / 1000000}JT`} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                  <XAxis dataKey="month" stroke="#A1A1AA" fontSize={11} tickLine={false} />
+                  <YAxis stroke="#A1A1AA" fontSize={11} tickLine={false} tickFormatter={(v) => `${v / 1000000}JT`} />
                   <Tooltip
-                    contentStyle={{ backgroundColor: '#FFFFFF', borderColor: '#E5E7EB', color: '#183B56', fontSize: '12px' }}
+                    contentStyle={{ backgroundColor: '#14161F', borderColor: '#272A38', color: '#FFFFFF', fontSize: '12px', borderRadius: '8px' }}
                     formatter={(val: any) => [formatIDR(Number(val)), 'Pendapatan']}
                   />
-                  <Area type="monotone" dataKey="revenue" stroke="#183B56" strokeWidth={1.5} fillOpacity={1} fill="url(#colorRev)" />
+                  <Area type="monotone" dataKey="revenue" stroke="#FFFFFF" strokeWidth={2} fillOpacity={1} fill="url(#colorRev)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
           </div>
         </div>
 
-        <div className="border border-[#E5E7EB] bg-white p-5 sm:p-6 flex flex-col justify-between shadow-xl">
+        <div className="border border-[#272A38] bg-[#14161F] p-5 sm:p-6 rounded-xl flex flex-col justify-between shadow-xl">
           <div>
-            <div className="border-b border-[#E5E7EB] pb-4">
-              <h3 className="text-base font-light text-[#183B56] tracking-tight m-0">Distribusi Kategori Tiket</h3>
-              <p className="text-xs font-light text-[#64748B] mt-0.5 m-0">Komposisi omset berdasarkan kelas kursi</p>
+            <div className="border-b border-[#272A38] pb-4">
+              <h3 className="text-base font-semibold text-[#F4F4F6] tracking-tight m-0">Distribusi Kategori Tiket</h3>
+              <p className="text-xs font-normal text-[#94A3B8] mt-0.5 m-0">Komposisi omset berdasarkan kelas kursi</p>
             </div>
 
             <div className="h-52 w-full mt-4 flex items-center justify-center">
@@ -154,25 +154,25 @@ export const Dashboard: React.FC<DashboardProps> = ({ metrics, eventsCount = 4, 
                     dataKey="value"
                   >
                     {categoryData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} stroke="rgba(24,59,86,0.15)" />
+                      <Cell key={`cell-${index}`} fill={entry.color} stroke="#14161F" />
                     ))}
                   </Pie>
                   <Tooltip
-                    contentStyle={{ backgroundColor: '#FFFFFF', borderColor: '#E5E7EB', color: '#183B56', fontSize: '12px' }}
+                    contentStyle={{ backgroundColor: '#14161F', borderColor: '#272A38', color: '#F4F4F6', fontSize: '12px', borderRadius: '8px' }}
                     formatter={(val: any) => [formatIDR(Number(val)), 'Omset']}
                   />
                 </PieChart>
               </ResponsiveContainer>
             </div>
 
-            <div className="space-y-2 mt-2 pt-2 border-t border-[#E5E7EB]">
+            <div className="space-y-2 mt-2 pt-2 border-t border-[#272A38]">
               {categoryData.map((cat) => (
-                <div key={cat.name} className="flex justify-between items-center text-xs font-light">
+                <div key={cat.name} className="flex justify-between items-center text-xs">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: cat.color }} />
-                    <span className="text-[#64748B]">{cat.name}</span>
+                    <span className="text-[#A1A1AA]">{cat.name}</span>
                   </div>
-                  <span className="text-[#183B56] font-mono">{formatIDR(cat.value)}</span>
+                  <span className="text-white font-mono font-medium">{formatIDR(cat.value)}</span>
                 </div>
               ))}
             </div>
@@ -190,19 +190,19 @@ const KPIWidget: React.FC<{
   icon: any;
   badgeText?: string;
   badgeColor?: string;
-}> = ({ label, value, subtext, icon: Icon, badgeText, badgeColor = 'text-[#64748B] border-[#E5E7EB] bg-[#F8FAFC]' }) => (
-  <div className="p-5 sm:p-6 border border-[#E5E7EB] bg-white relative group hover:border-brand transition-all shadow-lg overflow-hidden">
+}> = ({ label, value, subtext, icon: Icon, badgeText, badgeColor = 'text-[#A1A1AA] border-[#272A38] bg-[#0C0D12]' }) => (
+  <div className="p-5 sm:p-6 border border-[#272A38] bg-[#14161F] rounded-xl relative group hover:border-white/30 transition-all shadow-lg overflow-hidden">
     <div className="flex items-center justify-between mb-3">
-      <span className="text-[11px] font-light text-[#64748B] tracking-wider uppercase">{label}</span>
-      <div className="w-8 h-8 rounded border border-[#E5E7EB] bg-[#F8FAFC] flex items-center justify-center text-[#183B56]">
-        <Icon size={15} strokeWidth={1.25} />
+      <span className="text-[11px] font-medium text-[#A1A1AA] tracking-wider uppercase">{label}</span>
+      <div className="w-8 h-8 rounded-lg border border-[#272A38] bg-[#0C0D12] flex items-center justify-center text-white">
+        <Icon size={15} strokeWidth={1.5} />
       </div>
     </div>
-    <div className="text-2xl sm:text-3xl font-light text-[#183B56] tracking-tight mb-2 font-sans tabular-nums">{value}</div>
-    <div className="flex items-center justify-between text-xs font-light text-[#64748B]">
+    <div className="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-2 font-sans tabular-nums">{value}</div>
+    <div className="flex items-center justify-between text-xs font-normal text-[#A1A1AA]">
       <span className="truncate mr-2">{subtext}</span>
       {badgeText && (
-        <span className={`text-[10px] font-mono px-2 py-0.5 border ${badgeColor}`}>
+        <span className={`text-[10px] font-mono px-2 py-0.5 rounded border ${badgeColor}`}>
           {badgeText}
         </span>
       )}
