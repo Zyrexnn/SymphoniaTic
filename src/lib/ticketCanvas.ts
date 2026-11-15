@@ -1,4 +1,5 @@
 import type { OrderRecord } from '@/components/landing/data';
+import QRCode from 'qrcode';
 
 export function drawTicketCanvas(order: OrderRecord): HTMLCanvasElement {
   const canvas = document.createElement('canvas');
@@ -91,7 +92,7 @@ export function drawTicketCanvas(order: OrderRecord): HTMLCanvasElement {
   ctx.font = '300 11px sans-serif';
   ctx.fillText('Tunjukkan dokumen E-Ticket ini saat memasuki gerbang pemeriksaan (Open Gate).', 75, 570);
 
-  // QR Code Area
+  // Real Scannable QR Code Matrix
   const qrSize = 190;
   const qrX = (width - qrSize) / 2;
   const qrY = 640;
@@ -99,31 +100,26 @@ export function drawTicketCanvas(order: OrderRecord): HTMLCanvasElement {
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(qrX, qrY, qrSize, qrSize);
 
-  ctx.fillStyle = '#0C0D12';
-  const drawFinder = (fx: number, fy: number) => {
-    ctx.fillRect(fx, fy, 38, 38);
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(fx + 5, fy + 5, 28, 28);
+  const qrPayload = order.qrCode || order.orderCode;
+  try {
+    const qr = QRCode.create(qrPayload, { errorCorrectionLevel: 'H' });
+    const moduleCount = qr.modules.size;
+    const quietZone = 2;
+    const totalCount = moduleCount + quietZone * 2;
+    const cellSize = qrSize / totalCount;
+
     ctx.fillStyle = '#0C0D12';
-    ctx.fillRect(fx + 10, fy + 10, 18, 18);
-  };
-
-  const qrPad = 18;
-  const qrInner = qrSize - qrPad * 2;
-  drawFinder(qrX + qrPad, qrY + qrPad);
-  drawFinder(qrX + qrPad + qrInner - 38, qrY + qrPad);
-  drawFinder(qrX + qrPad, qrY + qrPad + qrInner - 38);
-
-  ctx.fillStyle = '#0C0D12';
-  const gridSize = 10;
-  const cellSize = qrInner / gridSize;
-  for (let r = 0; r < gridSize; r++) {
-    for (let c = 0; c < gridSize; c++) {
-      if ((r < 4 && c < 4) || (r < 4 && c >= 6) || (r >= 6 && c < 4)) continue;
-      if ((r + c * 3 + order.orderCode.length) % 3 === 0) {
-        ctx.fillRect(qrX + qrPad + c * cellSize, qrY + qrPad + r * cellSize, cellSize - 1, cellSize - 1);
+    for (let r = 0; r < moduleCount; r++) {
+      for (let c = 0; c < moduleCount; c++) {
+        if (qr.modules.get(r, c)) {
+          const x = qrX + (c + quietZone) * cellSize;
+          const y = qrY + (r + quietZone) * cellSize;
+          ctx.fillRect(x, y, cellSize + 0.5, cellSize + 0.5);
+        }
       }
     }
+  } catch (err) {
+    console.error('Error generating canvas QR code:', err);
   }
 
   // Footer bar

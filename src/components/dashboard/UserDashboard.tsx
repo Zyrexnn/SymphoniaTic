@@ -5,6 +5,7 @@ import {
   ExternalLink, Eye, X, ShieldCheck, Lock, UserCheck, Sparkles, ChevronRight
 } from 'lucide-react';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { QRCodeCanvas, QRCodeSVG } from 'qrcode.react';
 import {
   getUserDashboardSummaryAPI, getUserOrdersAPI, getUserRefundsAPI,
   updateUserProfileAPI, changeUserPasswordAPI, formatIDR,
@@ -153,10 +154,16 @@ function TicketModal({ order, onClose }: { order: OrderRecord; onClose: () => vo
         <p className="text-sm text-[#A1A1AA] font-light mb-6">{order.artist}</p>
 
         <div className="bg-white p-6 rounded-xl flex flex-col items-center justify-center text-center mb-6">
-          <QrCode className="w-48 h-48 text-black" strokeWidth={1} />
+          <QRCodeCanvas
+            value={order.qrCode || order.orderCode}
+            size={180}
+            level="H"
+            includeMargin
+            className="rounded-lg shadow-sm"
+          />
           <div className="mt-4 flex items-center gap-3 bg-[#0C0D12] text-white px-4 py-2 rounded-lg border border-[#272A38]">
             <span className="font-mono text-sm tracking-wider">{order.orderCode}</span>
-            <button onClick={copyCode} className="text-[#A1A1AA] hover:text-white transition-colors">
+            <button onClick={copyCode} className="text-[#A1A1AA] hover:text-white transition-colors cursor-pointer" title="Salin Kode">
               {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
             </button>
           </div>
@@ -313,8 +320,8 @@ function TicketCard({ order, onOpenModal }: { order: OrderRecord; onOpenModal: (
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-1">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-white rounded-lg flex items-center justify-center shrink-0">
-              <QrCode className="w-12 h-12 text-black" strokeWidth={1.2} />
+            <div className="p-1.5 bg-white rounded-lg flex items-center justify-center shrink-0 border border-white/20">
+              <QRCodeSVG value={order.qrCode || order.orderCode} size={48} level="M" />
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-1.5">
@@ -472,7 +479,7 @@ function SummaryPanel({ onSelectTab }: { onSelectTab: (t: Tab) => void }) {
 
           <div className="flex flex-col items-center justify-center p-6 border border-[#272A38] bg-[#0C0D12] rounded-xl text-center min-w-[240px]">
             <div className="p-3 bg-white rounded-lg mb-3">
-              <QrCode className="w-32 h-32 text-black" strokeWidth={1} />
+              <QRCodeSVG value={activeTicket.qrCode || activeTicket.orderCode} size={128} level="H" />
             </div>
             <span className="text-xs font-mono text-white tracking-widest">{activeTicket.orderCode}</span>
             <span className="text-[10px] text-[#71717A] mt-1">Tunjukkan di pintu masuk</span>

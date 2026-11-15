@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { X, Plus, Trash2 } from 'lucide-react';
 import type { EventItem, RundownItem } from '../landing/data';
@@ -24,6 +24,7 @@ interface EventFormModalProps {
 export const EventFormModal: React.FC<EventFormModalProps> = ({
   isOpen, editingEvent, form, isLoading, onFormChange, onClose, onSubmit,
 }) => {
+  const [uploadError, setUploadError] = useState('');
   if (!isOpen) return null;
 
   const update = (partial: Partial<EventFormData>) => onFormChange({ ...form, ...partial });
@@ -113,13 +114,14 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
                         const { uploadAdminImageAPI } = await import('../landing/data');
                         const data = await uploadAdminImageAPI(formData);
                         if (data.success && data.data?.url) {
+                          setUploadError('');
                           update({ image: data.data.url });
                         } else {
-                          alert(data.message || 'Gagal mengunggah gambar');
+                          setUploadError(data.message || 'Gagal mengunggah gambar');
                         }
                       } catch (err) {
                         console.error('Error uploading image:', err);
-                        alert('Terjadi kesalahan koneksi saat mengunggah gambar');
+                        setUploadError('Terjadi kesalahan koneksi saat mengunggah gambar');
                       }
                     }}
                     className="hidden"
@@ -131,6 +133,9 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
                   >
                     Upload Gambar Lokal
                   </label>
+                  {uploadError && (
+                    <span className="text-xs text-rose-400 block">{uploadError}</span>
+                  )}
                   {form.image && (
                     <span className="text-[10px] text-emerald-400 font-mono truncate max-w-[200px]" title={form.image}>
                       ✓ File siap

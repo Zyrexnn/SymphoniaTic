@@ -25,6 +25,8 @@ const CATEGORY_DISTRIBUTION = [
   { name: 'Festival Stalls', value: 6800000, color: '#71717A' },
 ];
 
+const MONOCHROME_PALETTE = ['#FFFFFF', '#E4E4E7', '#A1A1AA', '#71717A', '#52525B'];
+
 interface DashboardProps {
   metrics?: AdminMetricsData | null;
   eventsCount?: number;
@@ -42,9 +44,14 @@ export const Dashboard: React.FC<DashboardProps> = ({ metrics, eventsCount = 4, 
     ? metrics.revenueTimeline
     : REVENUE_TIMELINE;
 
-  const categoryData = metrics?.categoryDistribution && metrics.categoryDistribution.length > 0
+  const rawCategoryData = metrics?.categoryDistribution && metrics.categoryDistribution.length > 0
     ? metrics.categoryDistribution
     : CATEGORY_DISTRIBUTION;
+
+  const categoryData = rawCategoryData.map((cat, idx) => ({
+    ...cat,
+    color: cat.color || MONOCHROME_PALETTE[idx % MONOCHROME_PALETTE.length],
+  }));
 
   return (
     <div className="flex flex-col gap-6 sm:gap-8 pb-12 w-full text-[#F4F4F6]">

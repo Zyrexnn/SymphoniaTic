@@ -55,17 +55,24 @@ export const Footer: React.FC = () => (
         <div>
           <p className="text-xs font-semibold text-ink tracking-wide uppercase mb-5">Ikuti Kami</p>
           <div className="flex flex-col gap-3">
-            {['Instagram', 'Twitter / X', 'YouTube', 'TikTok'].map((s) => (
+            {[
+              { name: 'Instagram', href: 'https://instagram.com' },
+              { name: 'Twitter / X', href: 'https://x.com' },
+              { name: 'YouTube', href: 'https://youtube.com' },
+              { name: 'TikTok', href: 'https://tiktok.com' },
+            ].map((s) => (
               <a
-                key={s}
-                href="#"
+                key={s.name}
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-sm text-ink-soft hover:text-brand transition-colors duration-200 no-underline inline-flex items-center gap-1.5 group"
               >
-                <span>{s}</span>
+                <span>{s.name}</span>
                 <ExternalLink
                   size={10}
                   strokeWidth={1.5}
-                  className="text-muted opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                  className="text-muted opacity-60 group-hover:opacity-100 transition-opacity duration-200"
                 />
               </a>
             ))}
@@ -78,15 +85,18 @@ export const Footer: React.FC = () => (
           &copy; {new Date().getFullYear()} SymphoniaTic Production. Seluruh hak cipta dilindungi.
         </p>
         <div className="flex items-center gap-6">
-          {['Kebijakan Privasi', 'Syarat & Ketentuan'].map((item) => (
-            <a
-              key={item}
-              href="#"
-              className="text-xs text-muted hover:text-brand transition-colors duration-200 no-underline"
-            >
-              {item}
-            </a>
-          ))}
+          <a
+            href="/refund"
+            className="text-xs text-muted hover:text-brand transition-colors duration-200 no-underline"
+          >
+            Kebijakan Tiket & Refund
+          </a>
+          <a
+            href="/events"
+            className="text-xs text-muted hover:text-brand transition-colors duration-200 no-underline"
+          >
+            Panduan Masuk Hall
+          </a>
         </div>
       </div>
     </div>

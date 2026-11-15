@@ -13,20 +13,10 @@ import {
 } from 'lucide-react';
 import { Header } from '../landing/Navbar';
 import { Footer } from '../landing/Footer';
+import { AuthProvider, useAuth } from '@/context/AuthContext';
 
-interface SampleCode {
-  code: string;
-  label: string;
-  status: 'active' | 'checked_in' | 'refunded';
-}
-
-const SAMPLE_CODES: SampleCode[] = [
-  { code: 'SYM-893472', label: 'Beethoven Symphony (Active)', status: 'active' },
-  { code: 'SYM-102948', label: 'Viva La Vida (Checked-in)', status: 'checked_in' },
-  { code: 'SYM-448291', label: 'Laskar Pelangi (Active)', status: 'active' }
-];
-
-export const RedeemPage: React.FC = () => {
+const RedeemPageContent: React.FC = () => {
+  const { user, logout } = useAuth();
   const [searchCode, setSearchCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
@@ -50,7 +40,10 @@ export const RedeemPage: React.FC = () => {
   };
 
   const performLookup = async (codeStr: string) => {
-    const cleanCode = codeStr.trim().toUpperCase();
+    let cleanCode = codeStr.trim().toUpperCase();
+    if (cleanCode.startsWith('QR-')) {
+      cleanCode = cleanCode.substring(3);
+    }
     if (!cleanCode) return;
 
     setIsLoading(true);
@@ -119,7 +112,7 @@ export const RedeemPage: React.FC = () => {
         )}
       </AnimatePresence>
 
-      <Header isScrolled />
+      <Header isScrolled user={user} onLogout={logout} />
 
       <main className="mx-auto w-full max-w-[1200px] px-4 sm:px-6 md:px-8 pt-20 sm:pt-24 pb-16 flex-1">
         <div className="flex flex-col gap-12 max-w-4xl mx-auto">
@@ -205,23 +198,12 @@ export const RedeemPage: React.FC = () => {
             </div>
 
             <div className="mt-6 border-t border-[#272A38] pt-5">
-              <span className="mb-3 block text-[11px] font-mono uppercase tracking-[0.16em] text-[#71717A]">
-                Sampel Kode Tiket, klik untuk verifikasi langsung:
+              <span className="mb-2 block text-[11px] font-mono uppercase tracking-[0.16em] text-[#71717A]">
+                Format Kode Tiket:
               </span>
-              <div className="flex flex-wrap gap-2">
-                {SAMPLE_CODES.map((item) => (
-                  <button
-                    key={item.code}
-                    type="button"
-                    onClick={() => handleSelectSampleCode(item.code)}
-                    className="flex cursor-pointer items-center gap-2 rounded-lg border border-[#272A38] bg-[#0C0D12] px-3 py-2 text-xs font-mono text-white transition-colors duration-200 hover:border-white/50"
-                  >
-                    <Ticket className="h-3.5 w-3.5 text-white" strokeWidth={1.5} />
-                    <span>{item.code}</span>
-                    <span className="font-sans text-[11px] text-[#A1A1AA]">{item.label}</span>
-                  </button>
-                ))}
-              </div>
+              <p className="text-xs text-[#A1A1AA] leading-relaxed">
+                Kode pesanan diawali dengan <span className="font-mono text-white font-semibold">SYM-</span> diikuti 6 digit angka unik (contoh: <span className="font-mono text-neutral-300">SYM-XXXXXX</span>). Kode ini dapat Anda temukan pada subjek email tiket resmi atau riwayat tiket di dashboard akun Anda.
+              </p>
             </div>
           </div>
 
@@ -283,3 +265,9 @@ export const RedeemPage: React.FC = () => {
     </div>
   );
 };
+
+export const RedeemPage: React.FC = () => (
+  <AuthProvider>
+    <RedeemPageContent />
+  </AuthProvider>
+);

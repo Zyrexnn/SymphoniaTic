@@ -22,7 +22,7 @@ interface BuyCardProps {
   event: EventItem;
   selectedCatId: string;
   onSelectCategory: (catId: string) => void;
-  onBuy: (cat: TicketCategory) => void;
+  onBuy: (cat: TicketCategory, qty: number) => void;
 }
 
 const BuyCard: React.FC<BuyCardProps> = ({ event, selectedCatId, onSelectCategory, onBuy }) => {
@@ -181,7 +181,7 @@ const BuyCard: React.FC<BuyCardProps> = ({ event, selectedCatId, onSelectCategor
       </div>
 
       <button
-        onClick={() => selectedCat && onBuy(selectedCat)}
+        onClick={() => selectedCat && onBuy(selectedCat, qty)}
         disabled={isClosed || isSoldOut || !selectedCat}
         className={`w-full py-3.5 text-sm font-bold rounded-xl min-h-[48px] flex items-center justify-center gap-2 transition-all ${
           isClosed || isSoldOut || !selectedCat
@@ -226,7 +226,7 @@ const BuyCard: React.FC<BuyCardProps> = ({ event, selectedCatId, onSelectCategor
             </span>
           </div>
           <button
-            onClick={() => selectedCat && onBuy(selectedCat)}
+            onClick={() => selectedCat && onBuy(selectedCat, qty)}
             disabled={isClosed || isSoldOut || !selectedCat}
             className={`shrink-0 inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold min-h-[44px] transition-all ${
               isClosed || isSoldOut || !selectedCat
@@ -263,6 +263,7 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
   const [selectedCatId, setSelectedCatId] = useState<string>('');
   const [bookingEvent, setBookingEvent] = useState<EventItem | null>(null);
   const [bookingCategory, setBookingCategory] = useState<TicketCategory | null>(null);
+  const [bookingQuantity, setBookingQuantity] = useState<number>(1);
   const [activeSuccessOrder, setActiveSuccessOrder] = useState<OrderRecord | null>(null);
 
   useEffect(() => {
@@ -300,9 +301,10 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
     loadEvent();
   }, [eventId]);
 
-  const openBookingWithCategory = (evt: EventItem, cat: TicketCategory) => {
+  const openBookingWithCategory = (evt: EventItem, cat: TicketCategory, qty: number = 1) => {
     setBookingEvent(evt);
     setBookingCategory(cat);
+    setBookingQuantity(qty);
   };
 
   const handleBookingSubmit = (order: OrderRecord) => {
@@ -600,7 +602,7 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
             event={event}
             selectedCatId={selectedCatId}
             onSelectCategory={(id) => setSelectedCatId(id)}
-            onBuy={(cat) => openBookingWithCategory(event, cat)}
+            onBuy={(cat, qty) => openBookingWithCategory(event, cat, qty)}
           />
         </div>
       </div>
@@ -609,6 +611,7 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
         <BookingModal
           event={bookingEvent}
           initialCategory={bookingCategory}
+          initialQuantity={bookingQuantity}
           onClose={() => {
             setBookingEvent(null);
             setBookingCategory(null);

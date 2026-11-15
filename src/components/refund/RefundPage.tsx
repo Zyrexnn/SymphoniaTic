@@ -7,6 +7,7 @@ import {
 import { formatIDR } from '../landing/data';
 import { Header } from '../landing/Navbar';
 import { Footer } from '../landing/Footer';
+import { AuthProvider, useAuth } from '@/context/AuthContext';
 
 const BANK_PRESETS = [
   { code: 'BCA', name: 'Bank BCA' },
@@ -18,7 +19,8 @@ const BANK_PRESETS = [
   { code: 'DANA', name: 'DANA' },
 ];
 
-export const RefundPage: React.FC = () => {
+const RefundPageContent: React.FC = () => {
+  const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState<'request' | 'status'>('request');
   const [step, setStep] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
@@ -66,7 +68,7 @@ export const RefundPage: React.FC = () => {
         throw new Error(data.message || 'Gagal memproses permohonan OTP.');
       }
 
-      setSuccessMsg(`Kode OTP telah dikirimkan ke email ${userEmail}. Silakan periksa inbox atau Mailpit.`);
+      setSuccessMsg(`Kode OTP telah dikirimkan ke email ${userEmail}. Silakan periksa inbox atau folder spam email Anda.`);
       setStep(2);
     } catch (err: any) {
       setErrorMsg(err.message || 'Terjadi kesalahan sistem saat menghubungi backend.');
@@ -150,7 +152,7 @@ export const RefundPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#0C0D12] text-[#FFFFFF] flex flex-col justify-between selection:bg-white selection:text-[#0C0D12] font-sans">
-      <Header isScrolled />
+      <Header isScrolled user={user} onLogout={logout} />
 
       <main className="flex-1 max-w-[960px] w-full mx-auto px-4 sm:px-6 md:px-8 py-12 sm:py-16">
         <div className="mb-12 space-y-4">
@@ -637,3 +639,9 @@ export const RefundPage: React.FC = () => {
     </div>
   );
 };
+
+export const RefundPage: React.FC = () => (
+  <AuthProvider>
+    <RefundPageContent />
+  </AuthProvider>
+);

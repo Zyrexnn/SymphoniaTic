@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { RefreshCw, X } from 'lucide-react';
+import { RefreshCw, X, AlertCircle, Check } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { EventItem, TicketCategory, OrderRecord, AdminMetricsData, AdminRole } from '../landing/data';
 import {
   CONCERT_EVENTS, adminLoginAPI, fetchAdminMetricsAPI, fetchEventsAPI, createEventAPI, updateEventAPI,
@@ -166,6 +167,14 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
   const [eventForm, setEventForm] = useState(EMPTY_EVENT_FORM);
   const [catForm, setCatForm] = useState(EMPTY_CAT_FORM);
 
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [confirmModal, setConfirmModal] = useState<{ title: string; message: string; onConfirm: () => void } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3500);
+  };
+
   const refreshData = async () => {
     setIsLoading(true);
     try {
@@ -230,7 +239,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
   const handleCreateEvent = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!eventForm.title || !eventForm.artist || !eventForm.venue || !eventForm.date || !eventForm.time) {
-      alert('Judul, Musisi, Venue, Tanggal, dan Waktu wajib diisi!');
+      showToast('Judul, Musisi, Venue, Tanggal, dan Waktu wajib diisi!', 'error');
       return;
     }
     setIsLoading(true);
@@ -257,13 +266,14 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
       if (res.success) {
         setShowAddEventModal(false);
         setEventForm(EMPTY_EVENT_FORM);
+        showToast('Event konser berhasil dibuat', 'success');
         await refreshData();
       } else {
-        alert(res.message || 'Gagal membuat event baru');
+        showToast(res.message || 'Gagal membuat event baru', 'error');
       }
     } catch (err) {
       console.error('Error creating event:', err);
-      alert('Terjadi kesalahan koneksi server');
+      showToast('Terjadi kesalahan koneksi server', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -286,40 +296,48 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
       if (res.success) {
         setEditingEvent(null);
         setEventForm(EMPTY_EVENT_FORM);
+        showToast('Data event konser berhasil diperbarui', 'success');
         await refreshData();
       } else {
-        alert(res.message || 'Gagal mengupdate data event');
+        showToast(res.message || 'Gagal mengupdate data event', 'error');
       }
     } catch (err) {
       console.error('Error updating event:', err);
-      alert('Terjadi kesalahan koneksi server');
+      showToast('Terjadi kesalahan koneksi server', 'error');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleDeleteEvent = async (id: string, title: string) => {
-    if (!confirm(`Apakah Anda yakin ingin menghapus konser "${title}"?`)) return;
-    setIsLoading(true);
-    try {
-      const res = await deleteEventAPI(id);
-      if (res.success) {
-        refreshData();
-      } else {
-        alert(res.message || 'Gagal menghapus event');
-      }
-    } catch (err) {
-      console.error('Error deleting event:', err);
-      alert('Terjadi kesalahan koneksi server');
-    } finally {
-      setIsLoading(false);
-    }
+  const handleDeleteEvent = (id: string, title: string) => {
+    setConfirmModal({
+      title: 'Hapus Event Konser',
+      message: `Apakah Anda yakin ingin menghapus konser "${title}"? Data kategori tiket terkait juga akan terhapus.`,
+      onConfirm: async () => {
+        setConfirmModal(null);
+        setIsLoading(true);
+        try {
+          const res = await deleteEventAPI(id);
+          if (res.success) {
+            showToast('Konser berhasil dihapus', 'success');
+            refreshData();
+          } else {
+            showToast(res.message || 'Gagal menghapus event', 'error');
+          }
+        } catch (err) {
+          console.error('Error deleting event:', err);
+          showToast('Terjadi kesalahan koneksi server', 'error');
+        } finally {
+          setIsLoading(false);
+        }
+      },
+    });
   };
 
   const handleAddCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!showAddCategoryModal || !catForm.name || catForm.price <= 0 || catForm.quota <= 0) {
-      alert('Lengkapi nama, harga (>0), dan kuota (>0) kategori tiket!');
+      showToast('Lengkapi nama, harga (>0), dan kuota (>0) kategori tiket!', 'error');
       return;
     }
     setIsLoading(true);
@@ -330,13 +348,14 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
       if (res.success) {
         setShowAddCategoryModal(null);
         setCatForm(EMPTY_CAT_FORM);
+        showToast('Kategori tiket berhasil ditambahkan', 'success');
         refreshData();
       } else {
-        alert(res.message || 'Gagal menambahkan kategori tiket');
+        showToast(res.message || 'Gagal menambahkan kategori tiket', 'error');
       }
     } catch (err) {
       console.error('Error adding category:', err);
-      alert('Terjadi kesalahan koneksi server');
+      showToast('Terjadi kesalahan koneksi server', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -353,53 +372,62 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
       if (res.success) {
         setEditingCategory(null);
         setCatForm(EMPTY_CAT_FORM);
+        showToast('Kategori tiket berhasil diperbarui', 'success');
         refreshData();
       } else {
-        alert(res.message || 'Gagal mengupdate kategori tiket');
+        showToast(res.message || 'Gagal mengupdate kategori tiket', 'error');
       }
     } catch (err) {
       console.error('Error updating category:', err);
-      alert('Terjadi kesalahan koneksi server');
+      showToast('Terjadi kesalahan koneksi server', 'error');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleDeleteCategory = async (catId: string, name: string) => {
-    if (!confirm(`Hapus kategori tiket "${name}"?`)) return;
-    setIsLoading(true);
-    try {
-      const res = await deleteTicketCategoryAPI(catId);
-      if (res.success) {
-        refreshData();
-      } else {
-        alert(res.message || 'Gagal menghapus kategori tiket');
-      }
-    } catch (err) {
-      console.error('Error deleting category:', err);
-      alert('Terjadi kesalahan koneksi server');
-    } finally {
-      setIsLoading(false);
-    }
+  const handleDeleteCategory = (catId: string, name: string) => {
+    setConfirmModal({
+      title: 'Hapus Kategori Tiket',
+      message: `Hapus kategori tiket "${name}"?`,
+      onConfirm: async () => {
+        setConfirmModal(null);
+        setIsLoading(true);
+        try {
+          const res = await deleteTicketCategoryAPI(catId);
+          if (res.success) {
+            showToast('Kategori tiket berhasil dihapus', 'success');
+            refreshData();
+          } else {
+            showToast(res.message || 'Gagal menghapus kategori tiket', 'error');
+          }
+        } catch (err) {
+          console.error('Error deleting category:', err);
+          showToast('Terjadi kesalahan koneksi server', 'error');
+        } finally {
+          setIsLoading(false);
+        }
+      },
+    });
   };
 
   const handleUpdateStatus = async (orderId: string, status: string) => {
     try {
       const res = await updateOrderStatusAPI(orderId, status);
       if (res.success) {
+        showToast('Status pesanan berhasil diperbarui', 'success');
         refreshData();
       } else {
-        alert(res.message || 'Gagal mengupdate status pesanan');
+        showToast(res.message || 'Gagal mengupdate status pesanan', 'error');
       }
     } catch (err) {
       console.error('Error updating order status:', err);
-      alert('Terjadi kesalahan koneksi server');
+      showToast('Terjadi kesalahan koneksi server', 'error');
     }
   };
 
   const handleExportCSV = () => {
     if (ordersList.length === 0) {
-      alert('Tidak ada data pesanan untuk diekspor!');
+      showToast('Tidak ada data pesanan untuk diekspor!', 'error');
       return;
     }
     const headers = ['Kode Pesanan', 'Event', 'Musisi', 'Venue', 'Tanggal', 'Nama Pemesan', 'Email', 'Kategori Tiket', 'Jumlah', 'Total Harga', 'Status', 'Waktu Transaksi'];
@@ -430,13 +458,14 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
     try {
       const res = await updateRefundStatusAPI(refundId, status, adminNote);
       if (res.success) {
+        showToast('Status refund berhasil diperbarui', 'success');
         refreshData();
       } else {
-        alert(res.message || 'Gagal mengupdate status refund');
+        showToast(res.message || 'Gagal mengupdate status refund', 'error');
       }
     } catch (err) {
       console.error('Error updating refund status:', err);
-      alert('Terjadi kesalahan koneksi server');
+      showToast('Terjadi kesalahan koneksi server', 'error');
     }
   };
 
@@ -480,14 +509,15 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
       const { toggleEventCloseAPI } = await import('../landing/data');
       const res = await toggleEventCloseAPI(id);
       if (res.success) {
+        showToast('Status penjualan tiket konser berhasil diubah', 'success');
         refreshData();
         if (onEventsUpdated) onEventsUpdated();
       } else {
-        alert(res.message || 'Gagal mengubah status penutupan order');
+        showToast(res.message || 'Gagal mengubah status penutupan order', 'error');
       }
     } catch (err) {
       console.error('Error toggling event close:', err);
-      alert('Terjadi kesalahan koneksi server');
+      showToast('Terjadi kesalahan koneksi server', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -573,6 +603,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
                 });
               }}
               onDeleteEvent={handleDeleteEvent}
+              onToggleCloseEvent={handleToggleCloseEvent}
               onAddCategory={(evt) => { setShowAddCategoryModal(evt); setCatForm(EMPTY_CAT_FORM); }}
               onEditCategory={(eventId, cat) => {
                 setEditingCategory({ eventId, cat });
@@ -628,6 +659,71 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
         onAddSubmit={handleAddCategory}
         onEditSubmit={handleUpdateCategory}
       />
+
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl border shadow-2xl text-xs font-medium ${
+              toast.type === 'error'
+                ? 'bg-rose-950/90 border-rose-500/40 text-rose-200'
+                : 'bg-[#181B26] border-[#272A38] text-white'
+            }`}
+          >
+            {toast.type === 'error' ? (
+              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+            ) : (
+              <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+            )}
+            <span>{toast.message}</span>
+            <button
+              onClick={() => setToast(null)}
+              className="ml-2 text-white/40 hover:text-white cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {confirmModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="w-full max-w-md bg-[#14161F] border border-[#272A38] rounded-2xl p-6 shadow-2xl text-white"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <AlertCircle className="w-5 h-5 text-amber-400 shrink-0" />
+                <h3 className="text-base font-semibold text-white">{confirmModal.title}</h3>
+              </div>
+              <p className="text-xs text-[#A1A1AA] leading-relaxed mb-6">
+                {confirmModal.message}
+              </p>
+              <div className="flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setConfirmModal(null)}
+                  className="px-4 py-2 text-xs font-medium text-[#A1A1AA] hover:text-white bg-[#1C1F2E] border border-[#272A38] rounded-lg transition-colors cursor-pointer"
+                >
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  onClick={confirmModal.onConfirm}
+                  className="px-4 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-500 rounded-lg transition-colors cursor-pointer"
+                >
+                  Hapus
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

@@ -6,6 +6,7 @@ import type { EventItem } from './data';
 import { Footer } from './Footer';
 import { Header } from './Navbar';
 import { EventCategoriesSection } from './EventCategoriesSection';
+import { AuthProvider, useAuth } from '@/context/AuthContext';
 
 const lowestPrice = (event: EventItem): number => {
   if (!event.categories?.length) return 0;
@@ -138,7 +139,8 @@ const EventCard: React.FC<{ event: EventItem; saved: boolean; onToggleSave: () =
   );
 };
 
-const EventsPage: React.FC = () => {
+const EventsPageContent: React.FC = () => {
+  const { user, logout } = useAuth();
   const [query, setQuery] = useState(() => {
     if (typeof window !== 'undefined') {
       return new URLSearchParams(window.location.search).get('q') ?? '';
@@ -261,7 +263,7 @@ const EventsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#0C0D12] text-white selection:bg-white selection:text-black">
       <header className="sticky top-0 z-40 border-b border-[#272A38] bg-[#0C0D12]/95 backdrop-blur-md">
-        <Header />
+        <Header user={user} onLogout={logout} />
       </header>
 
       <section className="relative overflow-hidden border-b border-[#272A38]">
@@ -557,5 +559,11 @@ const EventsPage: React.FC = () => {
     </div>
   );
 };
+
+const EventsPage: React.FC = () => (
+  <AuthProvider>
+    <EventsPageContent />
+  </AuthProvider>
+);
 
 export default EventsPage;

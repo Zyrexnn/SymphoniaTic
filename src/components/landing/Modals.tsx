@@ -21,14 +21,15 @@ import { drawTicketCanvas } from '@/lib/ticketCanvas';
 interface BookingProps {
   event: EventItem;
   initialCategory: TicketCategory;
+  initialQuantity?: number;
   onClose: () => void;
   onSubmit: (order: OrderRecord) => void;
 }
 
-export const BookingModal: React.FC<BookingProps> = ({ event, initialCategory, onClose, onSubmit }) => {
+export const BookingModal: React.FC<BookingProps> = ({ event, initialCategory, initialQuantity = 1, onClose, onSubmit }) => {
   const { user } = useAuth();
   const [selectedCat, setSelectedCat] = useState<TicketCategory>(initialCategory);
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(initialQuantity);
   const [userName, setUserName] = useState(user?.name || '');
   const [userEmail, setUserEmail] = useState(user?.email || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -422,7 +423,7 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
                 E-Ticket dan konfirmasi pesanan telah dikirim ke <span className="text-white font-semibold">{order.userEmail}</span>.
               </p>
               <p className="text-[#A1A1AA] mt-1">
-                Untuk pengujian email lokal, buka Mailpit Web: <a href="http://localhost:8025" target="_blank" rel="noreferrer" className="text-white underline hover:text-neutral-300">http://localhost:8025</a>
+                Silakan periksa folder inbox atau spam email Anda untuk mengunduh bukti tanda masuk resmi.
               </p>
             </div>
           </div>

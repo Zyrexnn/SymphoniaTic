@@ -307,7 +307,7 @@ export const TicketDetailPage: React.FC<TicketDetailPageProps> = ({ orderCode, c
               <div className="lg:col-span-4 p-6 sm:p-8 flex flex-col items-center justify-center text-center gap-4 bg-[#0C0D12]">
                 <div className="p-3 bg-white rounded-xl shadow-lg inline-block">
                   <QRCodeCanvas
-                    value={foundOrder.qrCode || `SYM-TICKET:${foundOrder.orderCode}`}
+                    value={foundOrder.qrCode || foundOrder.orderCode}
                     size={160}
                     level="H"
                   />
