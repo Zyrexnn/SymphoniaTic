@@ -8,9 +8,9 @@ interface EducationNavProps {
 
 export const EducationNav: React.FC<EducationNavProps> = ({ active, onSelect }) => {
   return (
-    <nav aria-label="Bagian halaman edukasi" className="sticky top-[61px] z-20 border-b border-[#272A38] bg-[#0C0D12]/95 backdrop-blur-md">
-      <div className="mx-auto max-w-[1400px] px-6 sm:px-8 md:px-10">
-        <ul className="no-scrollbar flex gap-8 overflow-x-auto">
+    <nav aria-label="Bagian halaman edukasi" className="sticky top-[58px] sm:top-[64px] z-20 border-b border-[#272A38] bg-[#0C0D12]/95 backdrop-blur-md">
+      <div className="mx-auto max-w-[1400px] px-4 sm:px-8 md:px-10">
+        <ul className="no-scrollbar flex gap-5 sm:gap-8 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
           {EDUKASI_NAV.map((item) => {
             const isActive = active === item.id;
             return (

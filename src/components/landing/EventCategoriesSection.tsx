@@ -33,7 +33,7 @@ const CategoryCard: React.FC<{
     </span>
     <div className="absolute bottom-5 left-5 right-5">
       <h3 className="text-xl font-bold leading-tight tracking-tight text-white">{name}</h3>
-      <span className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-white opacity-0 translate-y-1 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+      <span className="mt-2 inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-white opacity-90 sm:opacity-0 translate-y-0 sm:translate-y-1 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
         Telusuri {name}
         <ChevronRight size={15} strokeWidth={2} />
       </span>

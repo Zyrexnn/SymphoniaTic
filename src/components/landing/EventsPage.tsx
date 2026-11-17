@@ -34,8 +34,8 @@ const DateBlock: React.FC<{ date?: string; size?: 'sm' | 'lg' }> = ({ date, size
   const { day, month, year } = parseDate(date);
   return (
     <div
-      className={`absolute left-4 rounded-lg bg-[#0C0D12]/85 border border-white/20 backdrop-blur-sm shadow-md text-center ${
-        size === 'lg' ? 'px-3.5 py-2.5 left-5' : 'px-2.5 py-2'
+      className={`absolute top-4 left-4 rounded-lg bg-[#0C0D12]/85 border border-white/20 backdrop-blur-sm shadow-md text-center ${
+        size === 'lg' ? 'px-3.5 py-2.5 sm:left-5' : 'px-2.5 py-2'
       }`}
     >
       <span
@@ -147,9 +147,20 @@ const EventsPageContent: React.FC = () => {
     }
     return '';
   });
+  const FAVORITES_STORAGE_KEY = 'symphoniatic_favorite_events';
   const [activeFilter, setActiveFilter] = useState<string>('SEMUA');
   const [liveEvents, setLiveEvents] = useState<EventItem[]>([]);
-  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [favorites, setFavorites] = useState<Set<string>>(() => {
+    if (typeof window === 'undefined') return new Set();
+    try {
+      const saved = localStorage.getItem(FAVORITES_STORAGE_KEY);
+      if (!saved) return new Set();
+      const parsed = JSON.parse(saved);
+      return Array.isArray(parsed) ? new Set(parsed.map(String)) : new Set();
+    } catch {
+      return new Set();
+    }
+  });
   const resultsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -184,6 +195,8 @@ const EventsPageContent: React.FC = () => {
         if (activeFilter !== 'SEMUA') {
           if (activeFilter === 'AKHIR PEKAN') {
             if (!isWeekend(e)) return false;
+          } else if (activeFilter === 'FAVORIT') {
+            if (!favorites.has(String(e.id))) return false;
           } else if ((e.category || '').trim().toUpperCase() !== activeFilter) {
             return false;
           }
@@ -198,22 +211,25 @@ const EventsPageContent: React.FC = () => {
         return true;
       })
       .sort((a, b) => sortKey(a) - sortKey(b));
-  }, [query, activeFilter, sourceEvents]);
+  }, [query, activeFilter, sourceEvents, favorites]);
 
   const isBrowsingAll = query.trim() === '' && activeFilter === 'SEMUA';
-  const featured = isBrowsingAll ? filtered[0] ?? null : null;
-  const mainEvents = isBrowsingAll ? filtered.slice(1) : filtered;
+  const showFeatured = isBrowsingAll && filtered.length > 1;
+  const featured = showFeatured ? filtered[0] : null;
+  const mainEvents = showFeatured ? filtered.slice(1) : filtered;
 
   const filterChips = useMemo(() => {
     const countFor = (cat: string) =>
       sourceEvents.filter((e) => (e.category || '').trim().toUpperCase() === cat).length;
     const weekendCount = sourceEvents.filter(isWeekend).length;
+    const favoriteCount = sourceEvents.filter((e) => favorites.has(String(e.id))).length;
     return [
       { id: 'SEMUA', label: 'Semua', count: sourceEvents.length },
       ...categories.map((c) => ({ id: c, label: titleCase(c), count: countFor(c) })),
       { id: 'AKHIR PEKAN', label: 'Akhir Pekan', count: weekendCount },
+      { id: 'FAVORIT', label: 'Favorit', count: favoriteCount },
     ];
-  }, [categories, sourceEvents]);
+  }, [categories, sourceEvents, favorites]);
 
   const suggestions = useMemo(() => {
     const seen = new Set<string>();
@@ -238,6 +254,9 @@ const EventsPageContent: React.FC = () => {
       const key = String(id);
       if (next.has(key)) next.delete(key);
       else next.add(key);
+      try {
+        localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(Array.from(next)));
+      } catch {}
       return next;
     });
   };
@@ -262,12 +281,10 @@ const EventsPageContent: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#0C0D12] text-white selection:bg-white selection:text-black">
-      <header className="sticky top-0 z-40 border-b border-[#272A38] bg-[#0C0D12]/95 backdrop-blur-md">
-        <Header user={user} onLogout={logout} />
-      </header>
+      <Header isScrolled user={user} onLogout={logout} />
 
       <section className="relative overflow-hidden border-b border-[#272A38]">
-        <div className="mx-auto max-w-[1360px] px-5 sm:px-10 pt-14 pb-12 md:pt-20 md:pb-16">
+        <div className="mx-auto max-w-[1360px] px-5 sm:px-10 pt-24 pb-12 md:pt-28 md:pb-16">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
             <div className="lg:col-span-7 max-w-[720px]">
               <span className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-white/5 border border-white/10 text-xs font-mono uppercase tracking-widest text-[#A1A1AA]">
@@ -363,9 +380,9 @@ const EventsPageContent: React.FC = () => {
         />
       </section>
 
-      <div className="sticky top-14 z-30 border-y border-[#272A38] bg-[#0C0D12]/95 backdrop-blur-md">
+      <div className="sticky top-[58px] sm:top-[66px] z-30 border-y border-[#272A38] bg-[#0C0D12]/95 backdrop-blur-md">
         <div className="mx-auto max-w-[1360px] px-5 sm:px-10">
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-3">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-3 -mx-5 px-5 sm:mx-0 sm:px-0">
             {filterChips.map((chip) => {
               const active = activeFilter === chip.id;
               return (
@@ -509,22 +526,9 @@ const EventsPageContent: React.FC = () => {
       )}
 
       <section className="mx-auto max-w-[1360px] px-5 sm:px-10 pb-20">
-        {isBrowsingAll ? (
-          mainEvents.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-              {mainEvents.map((event) => (
-                <EventCard
-                  key={String(event.id)}
-                  event={event}
-                  saved={favorites.has(String(event.id))}
-                  onToggleSave={() => toggleSave(event.id)}
-                />
-              ))}
-            </div>
-          )
-        ) : filtered.length > 0 ? (
+        {mainEvents.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-            {filtered.map((event) => (
+            {mainEvents.map((event) => (
               <EventCard
                 key={String(event.id)}
                 event={event}

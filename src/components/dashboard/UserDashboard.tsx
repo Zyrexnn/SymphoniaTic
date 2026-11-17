@@ -15,13 +15,14 @@ import { drawTicketCanvas } from '@/lib/ticketCanvas';
 
 type Tab = 'summary' | 'orders' | 'refunds' | 'profile';
 
-const ORDER_STATUSES = ['ISSUED', 'VERIFIED', 'CHECKED_IN', 'REMINDED', 'REFUNDED', 'CANCELLED'];
+const ORDER_STATUSES = ['ISSUED', 'VERIFIED', 'CHECKED_IN', 'REMINDED', 'REFUND_REQUESTED', 'REFUNDED', 'CANCELLED'];
 
 const STATUS_CONFIG: Record<string, { label: string; style: string }> = {
   ISSUED: { label: 'Aktif / Tiket Terbit', style: 'border-emerald-500/30 text-emerald-400 bg-emerald-500/10' },
   VERIFIED: { label: 'Terverifikasi Gate', style: 'border-white/30 text-white bg-white/10' },
   CHECKED_IN: { label: 'Sudah Check-In', style: 'border-emerald-500/40 text-emerald-300 bg-emerald-500/10' },
   REMINDED: { label: 'Pengingat Dikirim', style: 'border-amber-500/30 text-amber-300 bg-amber-500/10' },
+  REFUND_REQUESTED: { label: 'Menunggu Refund', style: 'border-amber-500/40 text-amber-300 bg-amber-500/15' },
   REFUNDED: { label: 'Direfund', style: 'border-rose-500/30 text-rose-400 bg-rose-500/10' },
   CANCELLED: { label: 'Dibatalkan', style: 'border-white/10 text-[#71717A] bg-white/5' },
 };
@@ -178,6 +179,10 @@ function TicketModal({ order, onClose }: { order: OrderRecord; onClose: () => vo
             <span className="text-white font-light block">{order.date}</span>
           </div>
           <div>
+            <span className="text-[#71717A] block mb-1">Open Gate</span>
+            <span className="text-white font-light block">{order.openGate || 'Sesuai Jadwal Venue'}</span>
+          </div>
+          <div>
             <span className="text-[#71717A] block mb-1">Venue</span>
             <span className="text-white font-light block">{order.venue}</span>
           </div>
@@ -185,7 +190,7 @@ function TicketModal({ order, onClose }: { order: OrderRecord; onClose: () => vo
             <span className="text-[#71717A] block mb-1">Pemegang Tiket</span>
             <span className="text-white font-light block">{order.userName}</span>
           </div>
-          <div>
+          <div className="col-span-2">
             <span className="text-[#71717A] block mb-1">Kategori</span>
             <span className="text-white font-light block">
               {order.categoryName} ({order.quantity}x)
@@ -296,6 +301,10 @@ function TicketCard({ order, onOpenModal }: { order: OrderRecord; onOpenModal: (
             <span className="text-white font-light">{order.date}</span>
           </div>
           <div>
+            <span className="text-[#71717A] block mb-0.5">Open Gate</span>
+            <span className="text-white font-light">{order.openGate || 'Sesuai Jadwal Venue'}</span>
+          </div>
+          <div>
             <span className="text-[#71717A] block mb-0.5">Venue</span>
             <a
               href={mapsUrl}
@@ -348,7 +357,7 @@ function TicketCard({ order, onOpenModal }: { order: OrderRecord; onOpenModal: (
         <button
           onClick={dlPNG}
           disabled={!!downloading}
-          className="inline-flex items-center justify-center gap-1.5 py-2 text-xs font-mono uppercase tracking-wider text-[#A1A1AA] hover:text-white border border-[#272A38] hover:border-white/30 rounded-lg transition-colors disabled:opacity-40 cursor-pointer"
+          className="inline-flex items-center justify-center gap-1.5 py-2.5 text-xs font-mono uppercase tracking-wider text-[#A1A1AA] hover:text-white border border-[#272A38] hover:border-white/30 rounded-lg transition-colors disabled:opacity-40 cursor-pointer min-h-[44px]"
         >
           <Download className="w-3.5 h-3.5" strokeWidth={1.5} />
           <span>{downloading === 'PNG' ? '...' : 'PNG Pass'}</span>
@@ -356,7 +365,7 @@ function TicketCard({ order, onOpenModal }: { order: OrderRecord; onOpenModal: (
         <button
           onClick={dlPDF}
           disabled={!!downloading}
-          className="inline-flex items-center justify-center gap-1.5 py-2 text-xs font-mono uppercase tracking-wider text-[#A1A1AA] hover:text-white border border-[#272A38] hover:border-white/30 rounded-lg transition-colors disabled:opacity-40 cursor-pointer"
+          className="inline-flex items-center justify-center gap-1.5 py-2.5 text-xs font-mono uppercase tracking-wider text-[#A1A1AA] hover:text-white border border-[#272A38] hover:border-white/30 rounded-lg transition-colors disabled:opacity-40 cursor-pointer min-h-[44px]"
         >
           <Download className="w-3.5 h-3.5" strokeWidth={1.5} />
           <span>{downloading === 'PDF' ? '...' : 'PDF Document'}</span>
@@ -376,10 +385,12 @@ function SummaryPanel({ onSelectTab }: { onSelectTab: (t: Tab) => void }) {
     setLoading(true);
     const [sumRes, ordRes] = await Promise.all([
       getUserDashboardSummaryAPI(),
-      getUserOrdersAPI('ISSUED')
+      getUserOrdersAPI()
     ]);
     if (sumRes.success && sumRes.data) setSummary(sumRes.data);
-    if (ordRes.success && Array.isArray(ordRes.data)) setOrders(ordRes.data);
+    if (ordRes.success && Array.isArray(ordRes.data)) {
+      setOrders(ordRes.data.filter((o) => ['ISSUED', 'VERIFIED', 'REMINDED'].includes(o.status)));
+    }
     setLoading(false);
   }, []);
 
@@ -445,6 +456,10 @@ function SummaryPanel({ onSelectTab }: { onSelectTab: (t: Tab) => void }) {
                 <div>
                   <span className="text-[#71717A] block mb-0.5">Tanggal & Jam</span>
                   <span className="text-white font-light">{activeTicket.date}</span>
+                </div>
+                <div>
+                  <span className="text-[#71717A] block mb-0.5">Open Gate</span>
+                  <span className="text-white font-light">{activeTicket.openGate || 'Sesuai Jadwal Venue'}</span>
                 </div>
                 <div>
                   <span className="text-[#71717A] block mb-0.5">Lokasi Venue</span>
@@ -980,7 +995,7 @@ function DashboardInner() {
           </div>
         </div>
 
-        <div className="flex items-center border-b border-[#272A38] mb-10 overflow-x-auto no-scrollbar gap-2">
+        <div className="flex items-center border-b border-[#272A38] mb-10 overflow-x-auto no-scrollbar gap-2 -mx-4 px-4 sm:mx-0 sm:px-0">
           {tabs.map((t) => {
             const Icon = t.icon;
             const isActive = tab === t.id;

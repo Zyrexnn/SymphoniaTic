@@ -201,14 +201,14 @@ const RefundPageContent: React.FC = () => {
             className="space-y-8"
           >
             {step < 3 && (
-              <div className="flex items-center gap-6 sm:gap-8 border-b border-[#272A38] pb-6 text-xs uppercase tracking-[0.15em]">
+              <div className="flex flex-wrap items-center gap-3 sm:gap-6 border-b border-[#272A38] pb-6 text-xs uppercase tracking-[0.15em]">
                 <div className={`flex items-center gap-2.5 ${step >= 1 ? 'text-white font-medium' : 'text-[#71717A]'}`}>
                   <span className={`text-[10px] font-mono px-2 py-0.5 rounded border ${step >= 1 ? 'border-white text-white' : 'border-[#272A38] text-[#71717A]'}`}>
                     01
                   </span>
                   <span>Validasi Tiket</span>
                 </div>
-                <span className="text-[#272A38]">/</span>
+                <span className="text-[#272A38] hidden sm:inline">/</span>
                 <div className={`flex items-center gap-2.5 ${step >= 2 ? 'text-white font-medium' : 'text-[#71717A]'}`}>
                   <span className={`text-[10px] font-mono px-2 py-0.5 rounded border ${step >= 2 ? 'border-white text-white' : 'border-[#272A38] text-[#71717A]'}`}>
                     02
@@ -273,7 +273,7 @@ const RefundPageContent: React.FC = () => {
                     <span>Syarat &amp; Ketentuan Kelayakan Refund:</span>
                   </div>
                   <ul className="list-disc list-inside space-y-1.5 text-[11px] text-[#A1A1AA] leading-relaxed">
-                    <li>Status pesanan harus dalam status terverifikasi (<strong className="text-white">VERIFIED</strong>).</li>
+                    <li>Status pesanan harus dalam keadaan aktif (<strong className="text-white">ISSUED</strong>, <strong className="text-white">VERIFIED</strong>, atau <strong className="text-white">REMINDED</strong>).</li>
                     <li>Tiket belum pernah digunakan untuk pemindaian gate check-in di lokasi venue.</li>
                     <li>Proses audit dan pencairan dana dilaksanakan tim Finance dalam 1 hingga 3 hari kerja.</li>
                   </ul>
@@ -315,12 +315,12 @@ const RefundPageContent: React.FC = () => {
                     onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
                     className="w-full bg-[#0C0D12] border border-[#272A38] px-4 py-3.5 text-2xl font-mono tracking-[0.6em] text-center text-white placeholder-[#71717A] outline-none focus:border-white transition-colors rounded-lg"
                   />
-                  <div className="flex justify-between items-center text-[11px] text-[#A1A1AA] pt-1">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 text-[11px] text-[#A1A1AA] pt-1">
                     <span>Kode OTP telah dikirimkan ke email Anda (berlaku 10 menit).</span>
                     <button
                       type="button"
                       onClick={handleRequestOTP}
-                      className="text-white underline hover:opacity-70 bg-transparent border-none cursor-pointer p-0"
+                      className="text-white underline hover:opacity-70 bg-transparent border-none cursor-pointer p-0 text-left sm:text-right"
                     >
                       Kirim Ulang OTP
                     </button>

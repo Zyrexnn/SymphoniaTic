@@ -161,6 +161,7 @@ export const TicketDetailPage: React.FC<TicketDetailPageProps> = ({ orderCode, c
   }
 
   const isCheckedIn = foundOrder.status === 'CHECKED_IN';
+  const isRefundRequested = foundOrder.status === 'REFUND_REQUESTED';
   const isRefunded = foundOrder.status === 'REFUNDED' || foundOrder.status === 'CANCELLED';
 
   return (
@@ -206,18 +207,28 @@ export const TicketDetailPage: React.FC<TicketDetailPageProps> = ({ orderCode, c
                 <CheckCircle2 className="w-5 h-5 text-white shrink-0" strokeWidth={1.5} />
               ) : isRefunded ? (
                 <AlertCircle className="w-5 h-5 text-red-400 shrink-0" strokeWidth={1.5} />
+              ) : isRefundRequested ? (
+                <AlertCircle className="w-5 h-5 text-amber-400 shrink-0" strokeWidth={1.5} />
               ) : (
                 <ShieldCheck className="w-5 h-5 text-white shrink-0" strokeWidth={1.5} />
               )}
               <div>
                 <p className="text-xs font-mono uppercase tracking-wider text-white">
-                  {isCheckedIn ? 'TIKET SUDAH CHECKED-IN' : isRefunded ? 'TIKET DIBATALKAN / REFUND' : 'E-TICKET RESMI TERVERIFIKASI'}
+                  {isCheckedIn
+                    ? 'TIKET SUDAH CHECKED-IN'
+                    : isRefunded
+                    ? 'TIKET DIBATALKAN / REFUND'
+                    : isRefundRequested
+                    ? 'TIKET DALAM PROSES REFUND'
+                    : 'E-TICKET RESMI TERVERIFIKASI'}
                 </p>
                 <p className="text-xs text-[#A1A1AA] mt-0.5">
                   {isCheckedIn
                     ? 'Tiket telah dipindai di pintu masuk gate'
                     : isRefunded
                     ? 'Tiket ini tidak berlaku untuk masuk hall konser'
+                    : isRefundRequested
+                    ? 'Tiket sedang dalam tinjauan pengajuan refund dan sementara tidak dapat digunakan untuk check-in'
                     : 'Siap digunakan untuk akses masuk hall konser'}
                 </p>
               </div>
@@ -265,6 +276,10 @@ export const TicketDetailPage: React.FC<TicketDetailPageProps> = ({ orderCode, c
                       <span className="text-white font-medium block mt-0.5">{foundOrder.date}</span>
                     </div>
                     <div>
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-[#71717A] block">Open Gate</span>
+                      <span className="text-white font-medium block mt-0.5">{foundOrder.openGate || 'Sesuai Jadwal Venue'}</span>
+                    </div>
+                    <div>
                       <span className="text-[10px] font-mono uppercase tracking-wider text-[#71717A] block">Kategori</span>
                       <span className="text-white font-medium block mt-0.5">{foundOrder.categoryName}</span>
                     </div>
@@ -276,18 +291,18 @@ export const TicketDetailPage: React.FC<TicketDetailPageProps> = ({ orderCode, c
                       <span className="text-[10px] font-mono uppercase tracking-wider text-[#71717A] block">Pemegang Tiket</span>
                       <span className="text-white font-medium block mt-0.5">{foundOrder.userName}</span>
                     </div>
-                    <div className="sm:col-span-2">
+                    <div>
                       <span className="text-[10px] font-mono uppercase tracking-wider text-[#71717A] block">Venue &amp; Lokasi</span>
                       <span className="text-white font-medium block mt-0.5 truncate">{foundOrder.venue}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-8 flex flex-wrap items-center gap-3">
+                <div className="pt-8 flex flex-col sm:flex-row sm:items-center gap-3">
                   <button
                     onClick={handleDownloadPDF}
                     disabled={isDownloading}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-white text-black font-semibold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-colors cursor-pointer disabled:opacity-50"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-white text-black font-semibold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-colors cursor-pointer disabled:opacity-50 min-h-[44px]"
                   >
                     <Download size={14} className="text-black" />
                     <span>Cetak PDF</span>
@@ -295,7 +310,7 @@ export const TicketDetailPage: React.FC<TicketDetailPageProps> = ({ orderCode, c
                   <button
                     onClick={handleDownloadImage}
                     disabled={isDownloading}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-transparent border border-white/20 text-white font-medium text-xs uppercase tracking-wider hover:bg-white/10 transition-colors cursor-pointer disabled:opacity-50"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-transparent border border-white/20 text-white font-medium text-xs uppercase tracking-wider hover:bg-white/10 transition-colors cursor-pointer disabled:opacity-50 min-h-[44px]"
                   >
                     <Download size={14} className="text-white" />
                     <span>Simpan PNG</span>

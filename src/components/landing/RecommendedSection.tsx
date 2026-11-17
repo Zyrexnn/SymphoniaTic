@@ -210,8 +210,8 @@ export const RecommendedSection: React.FC<RecommendedProps> = ({
   }, [events, activeTab]);
 
   return (
-    <section className="bg-[#0C0D12] py-16 sm:py-20 border-t border-[#272A38]/50">
-      <div className="mx-auto max-w-[1400px] px-6 sm:px-8 md:px-12">
+    <section className="bg-[#0C0D12] py-14 sm:py-20 border-t border-[#272A38]/50">
+      <div className="mx-auto max-w-[1400px] px-4 sm:px-8 md:px-12">
         <Reveal>
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10">
             <div>
@@ -224,7 +224,7 @@ export const RecommendedSection: React.FC<RecommendedProps> = ({
               </h2>
             </div>
 
-            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar -mx-2 px-2 pb-1">
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 pb-1">
               {TABS.map((tab) => (
                 <button
                   key={tab}

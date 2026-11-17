@@ -113,8 +113,8 @@ function RegisterFormInner() {
   );
 
   return (
-    <div className="h-screen w-screen flex overflow-hidden bg-[#0C0D12] text-white selection:bg-white selection:text-black">
-      <div className="w-full lg:w-[55%] flex flex-col justify-center px-8 sm:px-16 lg:px-40 py-12 overflow-y-auto order-2 lg:order-1 bg-[#0C0D12]">
+    <div className="min-h-[100dvh] w-full flex overflow-x-hidden bg-[#0C0D12] text-white selection:bg-white selection:text-black">
+      <div className="w-full lg:w-[55%] flex flex-col justify-center px-5 sm:px-12 lg:px-24 xl:px-32 py-10 sm:py-12 overflow-y-auto order-2 lg:order-1 bg-[#0C0D12]">
         <div className="lg:hidden mb-8">
           <a
             href="/"

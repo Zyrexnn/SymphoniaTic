@@ -2,7 +2,7 @@
 import { ArrowUpRight, Ticket } from 'lucide-react';
 
 export const Hero: React.FC = () => (
-  <main className="relative z-10 flex flex-col justify-end mx-auto max-w-[1400px] min-h-[100dvh] px-5 sm:px-8 md:px-10 lg:px-12 pb-[100px] md:pb-[120px]">
+  <main className="relative z-10 flex flex-col justify-end mx-auto max-w-[1400px] min-h-[100dvh] px-5 sm:px-8 md:px-10 lg:px-12 pt-28 sm:pt-32 pb-[80px] md:pb-[120px]">
     <div className="max-w-4xl">
       <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-white/5 border border-white/15 text-xs font-mono text-[#94A3B8] uppercase tracking-widest mb-6">
         <span>[ MUSIM KONSER 2026 ]</span>

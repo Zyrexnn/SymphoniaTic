@@ -38,7 +38,11 @@ const BrandMark: React.FC<{ light?: boolean }> = () => {
   );
 };
 
-const SearchPill: React.FC<{ light?: boolean; onNavigate?: () => void }> = ({ light, onNavigate }) => {
+const SearchPill: React.FC<{ light?: boolean; className?: string; onNavigate?: () => void }> = ({
+  light,
+  className = '',
+  onNavigate,
+}) => {
   const [q, setQ] = useState('');
 
   const submit = (e: React.FormEvent) => {
@@ -52,7 +56,7 @@ const SearchPill: React.FC<{ light?: boolean; onNavigate?: () => void }> = ({ li
     <form
       onSubmit={submit}
       role="search"
-      className={`group flex items-center rounded-lg transition-all duration-300 focus-within:w-72 w-44 ${
+      className={`group flex items-center rounded-lg transition-all duration-300 ${className} ${
         light
           ? 'bg-white/10 border border-white/15 focus-within:border-white focus-within:ring-2 focus-within:ring-white/20'
           : 'bg-[#14161F] border border-[#272A38] focus-within:border-white focus-within:ring-2 focus-within:ring-white/20'
@@ -148,7 +152,9 @@ export const Header: React.FC<HeaderProps> = ({
           </nav>
 
           <div className="flex items-center gap-2.5 sm:gap-3.5">
-            <SearchPill light={!scrolled} />
+            <div className="hidden sm:block">
+              <SearchPill light={!scrolled} className="w-36 md:w-44 focus-within:w-56 md:focus-within:w-72" />
+            </div>
 
             {ordersCount > 0 && (
               <button
@@ -268,7 +274,7 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
 
             <div className="px-5 sm:px-8 pt-5 pb-4">
-              <SearchPill light={false} onNavigate={handleToggleMenu} />
+              <SearchPill light={false} className="w-full" onNavigate={handleToggleMenu} />
               <p className="mt-2 text-xs text-[#94A3B8] font-normal">
                 Cari konser, artis, atau venue favoritmu.
               </p>

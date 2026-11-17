@@ -9,7 +9,7 @@ const META = ['Classical Music', 'Concert Guide', '2026'];
 export const EducationHero: React.FC = () => {
   return (
     <section className="border-b border-[#272A38]">
-      <div className="mx-auto max-w-[1400px] px-6 pt-24 sm:px-8 md:px-10 md:pt-28">
+      <div className="mx-auto max-w-[1400px] px-4 pt-24 sm:px-8 md:px-10 md:pt-28">
         <a
           href="/"
           className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-[#A1A1AA] transition-colors duration-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0C0D12]"
@@ -19,7 +19,7 @@ export const EducationHero: React.FC = () => {
         </a>
       </div>
 
-      <div className="mx-auto max-w-[1400px] px-6 sm:px-8 md:px-10">
+      <div className="mx-auto max-w-[1400px] px-4 sm:px-8 md:px-10">
         <div className="grid items-end gap-10 pb-14 pt-8 lg:grid-cols-12 lg:gap-12 lg:pb-20 lg:pt-14">
           <Reveal className="lg:col-span-7">
             <p className="flex items-center gap-3 text-xs font-mono uppercase tracking-widest text-[#A1A1AA]">
@@ -27,7 +27,7 @@ export const EducationHero: React.FC = () => {
               Panduan Penonton
             </p>
 
-            <h1 className="mt-6 text-[clamp(44px,9vw,104px)] font-bold leading-[0.92] tracking-[-0.045em] text-white">
+            <h1 className="mt-6 text-[clamp(36px,8vw,96px)] font-bold leading-[0.95] tracking-[-0.04em] text-white">
               Music
               <br />
               Culture

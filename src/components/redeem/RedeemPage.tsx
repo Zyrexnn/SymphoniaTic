@@ -114,8 +114,8 @@ const RedeemPageContent: React.FC = () => {
 
       <Header isScrolled user={user} onLogout={logout} />
 
-      <main className="mx-auto w-full max-w-[1200px] px-4 sm:px-6 md:px-8 pt-20 sm:pt-24 pb-16 flex-1">
-        <div className="flex flex-col gap-12 max-w-4xl mx-auto">
+      <main className="mx-auto w-full max-w-[1200px] px-4 sm:px-6 md:px-8 pt-24 sm:pt-28 pb-16 flex-1">
+        <div className="flex flex-col gap-10 sm:gap-12 max-w-4xl mx-auto">
           <div className="flex flex-col items-start">
             <div className="mb-6 flex w-full flex-wrap items-center justify-between gap-4">
               <a
@@ -141,7 +141,7 @@ const RedeemPageContent: React.FC = () => {
             </p>
           </div>
 
-          <div className="relative rounded-2xl border border-[#272A38] bg-[#14161F] p-6 sm:p-8">
+          <div className="relative rounded-2xl border border-[#272A38] bg-[#14161F] p-5 sm:p-8">
             <form onSubmit={handleSearchSubmit} className="flex flex-col gap-3 sm:flex-row">
               <div className="relative flex-1">
                 <Search

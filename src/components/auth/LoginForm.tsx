@@ -132,7 +132,7 @@ function LoginFormInner() {
   );
 
   return (
-    <div className="h-screen w-screen flex overflow-hidden bg-[#0C0D12] text-white selection:bg-white selection:text-black">
+    <div className="min-h-[100dvh] w-full flex overflow-x-hidden bg-[#0C0D12] text-white selection:bg-white selection:text-black">
       <div className="hidden lg:flex lg:w-[45%] relative flex-col justify-between p-12 overflow-hidden border-r border-[#272A38]">
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat rounded-tr-[4rem]"
@@ -171,7 +171,7 @@ function LoginFormInner() {
         </div>
       </div>
 
-      <div className="w-full lg:w-[55%] flex flex-col justify-center rounded-bl-[4rem] px-8 sm:px-16 lg:px-40 py-12 overflow-y-auto bg-[#0C0D12]">
+      <div className="w-full lg:w-[55%] flex flex-col justify-center rounded-bl-[4rem] px-5 sm:px-12 lg:px-24 xl:px-32 py-10 sm:py-12 overflow-y-auto bg-[#0C0D12]">
         <div className="lg:hidden mb-8">
           <a
             href="/"

@@ -1,8 +1,9 @@
-﻿import React, { useRef } from 'react';
+﻿import React, { useRef, useMemo } from 'react';
 import { ArrowUpRight, MapPin, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ARTISTS_LINEUP, formatIDR } from './data';
 import type { EventItem } from './data';
 import { SectionHeading } from './SectionHeading';
+import { parseDateFlexible } from '@/lib/timeUtils';
 
 export interface SectionProps {
   events?: EventItem[];
@@ -15,29 +16,16 @@ export const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGU', '
 
 export const parseDate = (date?: string) => {
   if (!date) return { day: '', month: '', year: '', weekday: '' };
-  let day = '';
-  let month = '';
-  let year = '';
-  let weekday = '';
-
-  const weekdayMatch = date.match(/^([A-Za-z]+),/);
-  if (weekdayMatch) weekday = weekdayMatch[1];
-
-  const long = date.match(/(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})/);
-  if (long) {
-    day = long[1];
-    month = long[2].slice(0, 3).toUpperCase();
-    year = long[3];
-    return { day, month, year, weekday };
+  const parsed = parseDateFlexible(date);
+  if (parsed) {
+    return {
+      day: parsed.day,
+      month: parsed.shortMonthID,
+      year: parsed.year,
+      weekday: parsed.weekdayID,
+    };
   }
-
-  const iso = date.match(/^(\d{4})-(\d{2})-(\d{2})/);
-  if (iso) {
-    year = iso[1];
-    month = MONTHS[parseInt(iso[2], 10) - 1] || '';
-    day = iso[3];
-  }
-  return { day, month, year, weekday };
+  return { day: '', month: '', year: '', weekday: '' };
 };
 
 const getLowestPrice = (event: EventItem): number => {
@@ -82,7 +70,7 @@ const getQuotaBadge = (event: EventItem, remaining: number) => {
   };
 };
 
-const ArtistCard: React.FC<{ image: string; name: string; genre: string; shows: string }> = ({
+const ArtistCard: React.FC<{ image: string; name: string; genre: string; shows?: string }> = ({
   image,
   name,
   genre,
@@ -90,7 +78,7 @@ const ArtistCard: React.FC<{ image: string; name: string; genre: string; shows: 
 }) => {
   return (
     <a
-      href="/events"
+      href={`/events?q=${encodeURIComponent(name)}`}
       className="group relative block w-[74vw] sm:w-[280px] lg:w-[320px] shrink-0 snap-start overflow-hidden rounded-xl border border-[#272A38] bg-[#14161F] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0C0D12]"
     >
       <img
@@ -100,9 +88,11 @@ const ArtistCard: React.FC<{ image: string; name: string; genre: string; shows: 
       />
       <div className="absolute inset-0 bg-gradient-to-t from-[#0C0D12]/90 via-[#0C0D12]/20 to-transparent" />
 
-      <span className="absolute top-4 right-4 rounded-md bg-[#0C0D12]/80 border border-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-sm">
-        {shows}
-      </span>
+      {shows && (
+        <span className="absolute top-4 right-4 rounded-md bg-[#0C0D12]/80 border border-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-sm">
+          {shows}
+        </span>
+      )}
 
       <div className="absolute bottom-5 left-5 right-5">
         <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#94A3B8]">
@@ -111,7 +101,7 @@ const ArtistCard: React.FC<{ image: string; name: string; genre: string; shows: 
         <h3 className="mt-1.5 text-xl font-bold leading-snug tracking-tight text-[#F4F4F6]">
           {name}
         </h3>
-        <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-white opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-300">
+        <span className="mt-3 inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-white opacity-90 sm:opacity-0 translate-y-0 sm:translate-y-1 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
           Lihat Konser
           <ArrowUpRight size={15} />
         </span>
@@ -120,11 +110,46 @@ const ArtistCard: React.FC<{ image: string; name: string; genre: string; shows: 
   );
 };
 
-const ArtistRail: React.FC = () => {
+const ArtistRail: React.FC<{ events: EventItem[] }> = ({ events }) => {
   const railRef = useRef<HTMLDivElement>(null);
   const scroll = (dir: number) => {
     railRef.current?.scrollBy({ left: dir * 300, behavior: 'smooth' });
   };
+
+  const artistItems = useMemo(() => {
+    if (events.length === 0) {
+      return ARTISTS_LINEUP.slice(0, 4).map((a) => ({
+        name: a.name,
+        genre: a.genre,
+        image: a.image,
+        shows: undefined as string | undefined,
+      }));
+    }
+
+    const grouped = new Map<string, { name: string; genre: string; image: string; count: number }>();
+    for (const evt of events) {
+      const artistName = (evt.artist || '').trim();
+      if (!artistName) continue;
+      const existing = grouped.get(artistName);
+      if (existing) {
+        existing.count += 1;
+      } else {
+        grouped.set(artistName, {
+          name: artistName,
+          genre: evt.category || 'Simfoni',
+          image: evt.image,
+          count: 1,
+        });
+      }
+    }
+
+    return Array.from(grouped.values()).map((item) => ({
+      name: item.name,
+      genre: item.genre,
+      image: item.image,
+      shows: `${item.count} Jadwal Konser`,
+    }));
+  }, [events]);
 
   return (
     <div className="relative">
@@ -147,9 +172,9 @@ const ArtistRail: React.FC = () => {
 
       <div
         ref={railRef}
-        className="flex gap-4 md:gap-5 overflow-x-auto snap-x snap-mandatory no-scrollbar -mx-6 sm:-mx-8 md:-mx-12 px-6 sm:px-8 md:px-12 pb-2"
+        className="flex gap-4 md:gap-5 overflow-x-auto snap-x snap-mandatory no-scrollbar -mx-4 sm:-mx-8 md:-mx-12 px-4 sm:px-8 md:px-12 pb-2"
       >
-        {ARTISTS_LINEUP.slice(0, 4).map((artist) => (
+        {artistItems.map((artist) => (
           <ArtistCard
             key={artist.name}
             image={artist.image}
@@ -280,17 +305,40 @@ const TrendingConcertCard: React.FC<{
   );
 };
 
+const getPopularityMetrics = (event: EventItem) => {
+  const categories = event.categories || [];
+  const totalQuota = categories.reduce((sum, cat) => sum + (Number(cat.quota) || 0), 0);
+  const totalRemaining = getTotalRemaining(event);
+  const ticketsSold = Math.max(0, totalQuota - totalRemaining);
+  const remainingRatio = totalQuota > 0 ? totalRemaining / totalQuota : 1;
+  return {
+    isClosed: event.isClosed ? 1 : 0,
+    remainingRatio,
+    ticketsSold,
+  };
+};
+
 export const BentoSection: React.FC<SectionProps> = ({
   events = [],
   onBuyTicket,
   isLoading = false,
   error = null,
 }) => {
-  const trending = events.slice(0, 6);
+  const trending = useMemo(() => {
+    return [...events]
+      .sort((a, b) => {
+        const pa = getPopularityMetrics(a);
+        const pb = getPopularityMetrics(b);
+        if (pa.isClosed !== pb.isClosed) return pa.isClosed - pb.isClosed;
+        if (pa.remainingRatio !== pb.remainingRatio) return pa.remainingRatio - pb.remainingRatio;
+        return pb.ticketsSold - pa.ticketsSold;
+      })
+      .slice(0, 6);
+  }, [events]);
 
   return (
     <div className="bg-[#0C0D12] text-[#F4F4F6]">
-      <section className="mx-auto max-w-[1400px] px-6 sm:px-8 md:px-12 pt-16 sm:pt-20">
+      <section className="mx-auto max-w-[1400px] px-4 sm:px-8 md:px-12 pt-14 sm:pt-20">
         <SectionHeading
           eyebrow="Jelajahi Artis"
           title="Orkestra & Ansambel Musim Ini"
@@ -298,10 +346,10 @@ export const BentoSection: React.FC<SectionProps> = ({
           actionLabel="Semua Artis"
           actionHref="/events"
         />
-        <ArtistRail />
+        <ArtistRail events={events} />
       </section>
 
-      <section className="mx-auto max-w-[1400px] px-6 sm:px-8 md:px-12 py-16 sm:py-20">
+      <section className="mx-auto max-w-[1400px] px-4 sm:px-8 md:px-12 py-14 sm:py-20">
         <SectionHeading
           eyebrow="Sedang Ramai"
           title="Jadwal Paling Diminati"
