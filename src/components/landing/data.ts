@@ -1,3 +1,5 @@
+import { calculateDefaultOpenGate, generateDynamicRundown } from '@/lib/timeUtils';
+
 export interface APIResponse<T = any> {
   success: boolean;
   message: string;
@@ -61,6 +63,9 @@ export interface OrderRecord {
   paymentMethod: string;
   createdAt: string;
   userId?: string;
+  openGate?: string;
+  eventTime?: string;
+  venueAddress?: string;
 }
 
 export type AdminRole = 'ADMIN' | 'PETUGAS';
@@ -310,45 +315,67 @@ export const getApiBaseUrl = () => {
   return 'http://localhost:8082/api/v1';
 };
 
+const deriveCategoryBenefits = (name: string, price: number): string[] => {
+  const lower = name.toLowerCase();
+  if (lower.includes('vip') || lower.includes('royal') || lower.includes('pit') || price >= 700000) {
+    return ['Posisi Pandang Utama', 'Akses Lounge & Welcome Drink', 'Buku Program Eksklusif', 'Pass Digital QR'];
+  }
+  if (lower.includes('cat 1') || lower.includes('executive') || lower.includes('balcony') || lower.includes('grand') || price >= 450000) {
+    return ['Akustik Jernih Area Utama', 'Tempat Duduk Bernomor', 'Panduan Acara Digital', 'Pass Digital QR'];
+  }
+  return ['Area Pertunjukan Utama', 'Tempat Duduk Teratur', 'Pass Digital QR'];
+};
+
 export const fetchEventsAPI = async (): Promise<EventItem[]> => {
   try {
     const res = await fetch(`${getApiBaseUrl()}/events`);
     const data = await res.json();
     if (data.success && Array.isArray(data.data)) {
-      return data.data.map((evt: any) => ({
-        id: evt.id,
-        title: evt.title,
-        subtitle: evt.subtitle || evt.artist || 'Pertunjukan Mahakarya Simfoni',
-        artist: evt.artist,
-        conductor: evt.conductor || '-',
-        venue: evt.venue,
-        address: evt.address || evt.venue,
-        googleMapsUrl: evt.googleMapsUrl || '',
-        date: evt.date,
-        time: evt.time,
-        openGate: evt.openGate || '18:00 WIB',
-        category: evt.category || 'SIMFONI UTAMA',
-        categoryBadgeColor: evt.categoryBadgeColor || 'bg-white/10 text-white border-white/20',
-        image: evt.image || 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?q=80&w=1000&auto=format&fit=crop',
-        audioUrl: evt.audioUrl || '',
-        organizer: evt.organizer || 'SymphoniaTic Production',
-        description: evt.description,
-        rundown: Array.isArray(evt.rundown) && evt.rundown.length > 0
-          ? evt.rundown
-          : [
-              { time: '18:00 WIB', activity: 'Open Gate & Registrasi Tiket' },
-              { time: '19:30 WIB', activity: 'Pertunjukan Utama' },
-              { time: '21:30 WIB', activity: 'Selesai & Curtain Call' },
-            ],
-        categories: (evt.categories || []).map((cat: any) => ({
-          id: cat.id,
-          name: cat.name,
-          price: typeof cat.price === 'string' ? parseFloat(cat.price) : cat.price,
-          quota: typeof cat.quota === 'string' ? parseInt(cat.quota, 10) : (cat.quota || 0),
-          remainingQuota: typeof cat.remainingQuota === 'string' ? parseInt(cat.remainingQuota, 10) : (cat.remainingQuota ?? cat.quota ?? 0),
-          benefits: ['Akustik Jernih', 'Tempat Duduk Bernomor', 'Pass Digital']
-        }))
-      }));
+      return data.data.map((evt: any) => {
+        const resolvedOpenGate =
+          evt.openGate && String(evt.openGate).trim() !== ''
+            ? String(evt.openGate).trim()
+            : calculateDefaultOpenGate(evt.time);
+        const resolvedRundown =
+          Array.isArray(evt.rundown) && evt.rundown.length > 0
+            ? evt.rundown
+            : generateDynamicRundown(evt.time, resolvedOpenGate);
+
+        return {
+          id: evt.id,
+          title: evt.title,
+          subtitle: evt.subtitle || evt.artist || 'Pertunjukan Mahakarya Simfoni',
+          artist: evt.artist,
+          conductor: evt.conductor || '-',
+          venue: evt.venue,
+          address: evt.address || evt.venue,
+          googleMapsUrl: evt.googleMapsUrl || '',
+          date: evt.date,
+          time: evt.time,
+          openGate: resolvedOpenGate,
+          category: evt.category || 'SIMFONI UTAMA',
+          categoryBadgeColor: evt.categoryBadgeColor || 'bg-white/10 text-white border-white/20',
+          image: evt.image || 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?q=80&w=1000&auto=format&fit=crop',
+          audioUrl: evt.audioUrl || '',
+          organizer: evt.organizer || 'SymphoniaTic Production',
+          description: evt.description,
+          isClosed: Boolean(evt.isClosed),
+          rundown: resolvedRundown,
+          categories: (evt.categories || []).map((cat: any) => {
+            const parsedPrice = typeof cat.price === 'string' ? parseFloat(cat.price) : (cat.price || 0);
+            return {
+              id: cat.id,
+              name: cat.name,
+              price: parsedPrice,
+              quota: typeof cat.quota === 'string' ? parseInt(cat.quota, 10) : (cat.quota || 0),
+              remainingQuota: typeof cat.remainingQuota === 'string' ? parseInt(cat.remainingQuota, 10) : (cat.remainingQuota ?? cat.quota ?? 0),
+              benefits: Array.isArray(cat.benefits) && cat.benefits.length > 0
+                ? cat.benefits
+                : deriveCategoryBenefits(String(cat.name || ''), parsedPrice),
+            };
+          }),
+        };
+      });
     }
     return [];
   } catch (err) {
@@ -581,6 +608,9 @@ export const fetchAdminOrdersAPI = async (search = '', status = '') => {
         status: String(o.status || 'VERIFIED'),
         paymentMethod: String(o.paymentMethod || 'SANDBOX_PAYMENT'),
         createdAt: String(o.createdAt || ''),
+        openGate: o.openGate ? String(o.openGate) : '',
+        eventTime: o.eventTime ? String(o.eventTime) : '',
+        venueAddress: o.venueAddress ? String(o.venueAddress) : '',
       }));
     }
     return [];

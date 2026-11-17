@@ -28,12 +28,28 @@ interface BookingProps {
 
 export const BookingModal: React.FC<BookingProps> = ({ event, initialCategory, initialQuantity = 1, onClose, onSubmit }) => {
   const { user } = useAuth();
-  const [selectedCat, setSelectedCat] = useState<TicketCategory>(initialCategory);
+  const [selectedCat, setSelectedCat] = useState<TicketCategory>(() => {
+    const initRem = typeof initialCategory.remainingQuota === 'number' ? initialCategory.remainingQuota : initialCategory.quota;
+    if (initRem > 0) return initialCategory;
+    const firstAvailable = event.categories.find((c) => {
+      const rem = typeof c.remainingQuota === 'number' ? c.remainingQuota : c.quota;
+      return rem > 0;
+    });
+    return firstAvailable || initialCategory;
+  });
   const [quantity, setQuantity] = useState(initialQuantity);
   const [userName, setUserName] = useState(user?.name || '');
   const [userEmail, setUserEmail] = useState(user?.email || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
 
   useEffect(() => {
     if (user) {
@@ -85,7 +101,11 @@ export const BookingModal: React.FC<BookingProps> = ({ event, initialCategory, i
         userEmail: userEmail.trim(),
       });
       if (res.success && res.data) {
-        onSubmit(res.data);
+        onSubmit({
+          ...res.data,
+          openGate: res.data.openGate || event.openGate,
+          eventTime: res.data.eventTime || event.time,
+        });
       } else {
         setErrorMessage(res.message || 'Gagal memproses pesanan tiket.');
       }
@@ -112,12 +132,12 @@ export const BookingModal: React.FC<BookingProps> = ({ event, initialCategory, i
           <X className="w-5 h-5" strokeWidth={1.5} />
         </button>
 
-        <div className="p-6 border-b border-[#272A38]">
-          <div className="flex items-center gap-2 mb-1.5">
+        <div className="p-5 sm:p-6 border-b border-[#272A38]">
+          <div className="flex flex-wrap items-center gap-2 mb-1.5">
             <span className="text-[11px] font-semibold text-white tracking-wider uppercase bg-white/10 px-2.5 py-0.5 rounded-md border border-white/20">
               Pemesanan Tiket
             </span>
-            <span className="text-xs text-[#A1A1AA]">{event.date}</span>
+            <span className="text-xs text-[#A1A1AA]">{event.date} &bull; {event.time} (Open Gate {event.openGate})</span>
           </div>
           <h3 className="text-xl sm:text-2xl font-bold text-[#F4F4F6] leading-tight">
             {event.title}
@@ -126,7 +146,7 @@ export const BookingModal: React.FC<BookingProps> = ({ event, initialCategory, i
         </div>
 
         {event.isClosed ? (
-          <div className="p-6">
+          <div className="p-5 sm:p-6">
             <div className="p-4 border border-amber-500/30 bg-amber-500/10 text-amber-200 text-xs rounded-xl leading-relaxed flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
               <div>
@@ -136,14 +156,14 @@ export const BookingModal: React.FC<BookingProps> = ({ event, initialCategory, i
             </div>
             <button
               onClick={onClose}
-              className="mt-6 w-full py-3 text-sm font-semibold text-[#F4F4F6] bg-[#1C1F2E] hover:bg-[#272A38] border border-[#272A38] rounded-lg transition-colors"
+              className="mt-6 w-full py-3 text-sm font-semibold text-[#F4F4F6] bg-[#1C1F2E] hover:bg-[#272A38] border border-[#272A38] rounded-lg transition-colors cursor-pointer"
             >
               Tutup
             </button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col">
-            <div className="p-6 space-y-6">
+            <div className="p-5 sm:p-6 space-y-6">
               {errorMessage && (
                 <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-300 text-xs rounded-xl flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
@@ -295,8 +315,8 @@ export const BookingModal: React.FC<BookingProps> = ({ event, initialCategory, i
               </div>
             </div>
 
-            <div className="p-6 bg-[#10121A] border-t border-[#272A38] rounded-b-2xl">
-              <div className="flex items-center justify-between gap-4">
+            <div className="p-5 sm:p-6 bg-[#10121A] border-t border-[#272A38] rounded-b-2xl">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                 <div>
                   <span className="text-xs text-[#A1A1AA] block">Total Pembayaran</span>
                   <span className="text-xl sm:text-2xl font-bold text-white tabular-nums">
@@ -306,7 +326,7 @@ export const BookingModal: React.FC<BookingProps> = ({ event, initialCategory, i
                 <button
                   type="submit"
                   disabled={isSubmitting || isSelectedSoldOut || maxAllowedTickets <= 0 || !userName.trim() || !userEmail.trim()}
-                  className="rounded-lg bg-white text-[#0C0D12] font-semibold hover:bg-neutral-200 disabled:opacity-40 disabled:cursor-not-allowed transition-all py-3 px-6 text-sm flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                  className="w-full sm:w-auto rounded-lg bg-white text-[#0C0D12] font-semibold hover:bg-neutral-200 disabled:opacity-40 disabled:cursor-not-allowed transition-all py-3 px-6 text-sm flex items-center justify-center gap-2 cursor-pointer shadow-md"
                 >
                   {isSubmitting ? (
                     <>
@@ -467,7 +487,7 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
                   <span className="text-[11px] text-[#A1A1AA] uppercase tracking-wider block mb-0.5">
                     Open Gate
                   </span>
-                  <span className="text-xs font-semibold text-[#F4F4F6]">18:00 WIB</span>
+                  <span className="text-xs font-semibold text-[#F4F4F6]">{order.openGate || 'Sesuai Jadwal Venue'}</span>
                 </div>
                 <div>
                   <span className="text-[11px] text-[#A1A1AA] uppercase tracking-wider block mb-0.5">
@@ -542,11 +562,11 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 mt-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-5">
             <button
               onClick={handleDownloadPNG}
               disabled={!!isDownloading}
-              className="cursor-pointer bg-[#1C1F2E] hover:bg-[#272A38] text-[#F4F4F6] border border-[#272A38] rounded-lg py-3 px-4 text-xs font-semibold flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+              className="w-full cursor-pointer bg-[#1C1F2E] hover:bg-[#272A38] text-[#F4F4F6] border border-[#272A38] rounded-lg py-3 px-4 text-xs font-semibold flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
             >
               <Download className="w-4 h-4" />
               <span>{isDownloading === 'PNG' ? 'Membuat...' : 'Unduh Gambar (PNG)'}</span>
@@ -554,7 +574,7 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
             <button
               onClick={handleDownloadPDF}
               disabled={!!isDownloading}
-              className="cursor-pointer bg-white hover:bg-neutral-200 text-[#0C0D12] rounded-lg py-3 px-4 text-xs font-semibold flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+              className="w-full cursor-pointer bg-white hover:bg-neutral-200 text-[#0C0D12] rounded-lg py-3 px-4 text-xs font-semibold flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
             >
               <Download className="w-4 h-4" />
               <span>{isDownloading === 'PDF' ? 'Membuat...' : 'Cetak Tiket (PDF)'}</span>

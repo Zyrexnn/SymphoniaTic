@@ -47,18 +47,20 @@ export function drawTicketCanvas(order: OrderRecord): HTMLCanvasElement {
   ctx.font = '300 15px sans-serif';
   ctx.fillText(order.artist, 50, 192);
 
-  const drawInfo = (y: number, label: string, value: string) => {
+  const drawInfo = (x: number, y: number, label: string, value: string) => {
     ctx.fillStyle = '#71717A';
     ctx.font = '300 11px sans-serif';
-    ctx.fillText(label.toUpperCase(), 50, y);
+    ctx.fillText(label.toUpperCase(), x, y);
     ctx.fillStyle = '#ffffff';
     ctx.font = '300 15px sans-serif';
-    ctx.fillText(value, 50, y + 20);
+    ctx.fillText(value, x, y + 20);
   };
 
-  drawInfo(235, 'Tanggal & Waktu', order.date);
-  drawInfo(290, 'Pemegang Tiket', order.userName);
-  drawInfo(345, 'Kategori Tiket', `${order.categoryName} (${order.quantity}x Tiket)`);
+  drawInfo(50, 235, 'Tanggal & Waktu', order.date);
+  drawInfo(450, 235, 'Open Gate', order.openGate || 'Sesuai Jadwal');
+  drawInfo(50, 295, 'Pemegang Tiket', order.userName);
+  drawInfo(450, 295, 'Kategori Tiket', `${order.categoryName} (${order.quantity}x Tiket)`);
+  drawInfo(50, 350, 'Kode Order', order.orderCode);
 
   // Perforated separator line
   ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
@@ -90,7 +92,11 @@ export function drawTicketCanvas(order: OrderRecord): HTMLCanvasElement {
 
   ctx.fillStyle = '#71717A';
   ctx.font = '300 11px sans-serif';
-  ctx.fillText('Tunjukkan dokumen E-Ticket ini saat memasuki gerbang pemeriksaan (Open Gate).', 75, 570);
+  ctx.fillText(
+    `Tunjukkan dokumen E-Ticket ini saat memasuki gerbang pemeriksaan (${order.openGate ? `Open Gate ${order.openGate}` : 'Open Gate'}).`,
+    75,
+    570
+  );
 
   // Real Scannable QR Code Matrix
   const qrSize = 190;

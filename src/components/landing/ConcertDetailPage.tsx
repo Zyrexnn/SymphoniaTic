@@ -1,10 +1,11 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import { MapPin, Clock, ArrowLeft, Minus, Plus, Ticket, AlertCircle } from 'lucide-react';
 import { CONCERT_EVENTS, fetchEventsAPI, formatIDR } from './data';
 import type { EventItem, TicketCategory, OrderRecord } from './data';
 import { BookingModal, ETicketConfirmation } from './Modals';
 import { Footer } from './Footer';
-import { AuthProvider } from '@/context/AuthContext';
+import { Header } from './Navbar';
+import { AuthProvider, useAuth } from '@/context/AuthContext';
 
 type DetailTab = 'INFO' | 'RUNDOWN' | 'BENEFITS' | 'TERMS';
 const TABS: { id: DetailTab; label: string }[] = [
@@ -216,19 +217,19 @@ const BuyCard: React.FC<BuyCardProps> = ({ event, selectedCatId, onSelectCategor
       </div>
 
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#14161F]/95 backdrop-blur-md border-t border-[#272A38] pb-[env(safe-area-inset-bottom)]">
-        <div className="flex items-center justify-between gap-4 px-5 py-3.5">
-          <div className="min-w-0">
-            <span className="text-xs text-[#A1A1AA] font-medium block leading-tight truncate">
+        <div className="flex items-center justify-between gap-3 px-4 sm:px-5 py-3">
+          <div className="min-w-0 flex-1">
+            <span className="text-[11px] sm:text-xs text-[#A1A1AA] font-medium block leading-tight truncate">
               {qty} tiket &middot; {selectedCat ? selectedCat.name : ''}
             </span>
-            <span className="text-lg font-bold text-white tabular-nums tracking-tight">
+            <span className="text-base sm:text-lg font-bold text-white tabular-nums tracking-tight block truncate">
               {formatIDR(totalPrice)}
             </span>
           </div>
           <button
             onClick={() => selectedCat && onBuy(selectedCat, qty)}
             disabled={isClosed || isSoldOut || !selectedCat}
-            className={`shrink-0 inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold min-h-[44px] transition-all ${
+            className={`shrink-0 inline-flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-bold min-h-[44px] transition-all ${
               isClosed || isSoldOut || !selectedCat
                 ? 'bg-[#10121A] border border-[#272A38] text-[#64748B] opacity-60 cursor-not-allowed'
                 : 'bg-white text-[#0C0D12] hover:bg-neutral-200 shadow-sm cursor-pointer active:scale-[0.98]'
@@ -241,7 +242,7 @@ const BuyCard: React.FC<BuyCardProps> = ({ event, selectedCatId, onSelectCategor
             ) : (
               <>
                 <Ticket size={15} strokeWidth={2} />
-                <span>Pesan Tiket Sekarang</span>
+                <span>Pesan Tiket<span className="hidden sm:inline"> Sekarang</span></span>
               </>
             )}
           </button>
@@ -256,7 +257,22 @@ const isUrl = (str: string): boolean => {
   return str.startsWith('http://') || str.startsWith('https://');
 };
 
+const getCatRemaining = (cat: TicketCategory): number => {
+  if (typeof cat?.remainingQuota === 'number') return cat.remainingQuota;
+  if (typeof cat?.quota === 'number') return cat.quota;
+  return 0;
+};
+
+const pickInitialCategoryId = (categories: TicketCategory[], currentId: string): string => {
+  if (!categories || categories.length === 0) return '';
+  const currentAvailable = categories.find((c) => c.id === currentId && getCatRemaining(c) > 0);
+  if (currentAvailable) return currentAvailable.id;
+  const firstAvailable = categories.find((c) => getCatRemaining(c) > 0);
+  return (firstAvailable || categories[0]).id;
+};
+
 const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
+  const { user, logout } = useAuth();
   const [event, setEvent] = useState<EventItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<DetailTab>('INFO');
@@ -266,40 +282,41 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
   const [bookingQuantity, setBookingQuantity] = useState<number>(1);
   const [activeSuccessOrder, setActiveSuccessOrder] = useState<OrderRecord | null>(null);
 
-  useEffect(() => {
-    const loadEvent = async () => {
-      setLoading(true);
-      try {
-        const events = await fetchEventsAPI();
-        const found = events.find((e) => String(e.id) === eventId);
-        if (found) {
-          setEvent(found);
-          if (found.categories && found.categories.length > 0) {
-            setSelectedCatId(found.categories[0].id);
-          }
-        } else {
-          const staticEvent = CONCERT_EVENTS.find((e) => String(e.id) === eventId);
-          if (staticEvent) {
-            setEvent(staticEvent);
-            if (staticEvent.categories && staticEvent.categories.length > 0) {
-              setSelectedCatId(staticEvent.categories[0].id);
-            }
-          }
-        }
-      } catch (err) {
-        console.error('Failed to load event:', err);
-        const staticEvent = CONCERT_EVENTS.find((e) => String(e.id) === eventId);
-        if (staticEvent) {
-          setEvent(staticEvent);
-          if (staticEvent.categories && staticEvent.categories.length > 0) {
-            setSelectedCatId(staticEvent.categories[0].id);
-          }
+  const loadEvent = useCallback(async (showSpinner = true) => {
+    if (showSpinner) setLoading(true);
+    try {
+      const events = await fetchEventsAPI();
+      const found = events.find((e) => String(e.id) === eventId);
+      const resolved = found || CONCERT_EVENTS.find((e) => String(e.id) === eventId) || null;
+      if (resolved) {
+        setEvent(resolved);
+        if (resolved.categories && resolved.categories.length > 0) {
+          setSelectedCatId((prev) => pickInitialCategoryId(resolved.categories, prev));
         }
       }
-      setLoading(false);
-    };
-    loadEvent();
+    } catch (err) {
+      console.error('Failed to load event:', err);
+      const staticEvent = CONCERT_EVENTS.find((e) => String(e.id) === eventId) || null;
+      if (staticEvent) {
+        setEvent(staticEvent);
+        if (staticEvent.categories && staticEvent.categories.length > 0) {
+          setSelectedCatId((prev) => pickInitialCategoryId(staticEvent.categories, prev));
+        }
+      }
+    } finally {
+      if (showSpinner) setLoading(false);
+    }
   }, [eventId]);
+
+  useEffect(() => {
+    loadEvent(true);
+  }, [loadEvent]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.hash === '#syarat-ketentuan') {
+      setTab('TERMS');
+    }
+  }, []);
 
   const openBookingWithCategory = (evt: EventItem, cat: TicketCategory, qty: number = 1) => {
     setBookingEvent(evt);
@@ -311,14 +328,18 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
     setActiveSuccessOrder(order);
     setBookingEvent(null);
     setBookingCategory(null);
+    loadEvent(false);
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0C0D12] text-white">
-        <div className="text-center space-y-3">
-          <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-sm font-medium text-[#A1A1AA]">Memuat Informasi Konser...</p>
+      <div className="min-h-screen bg-[#0C0D12] text-white">
+        <Header isScrolled user={user} onLogout={logout} />
+        <div className="min-h-screen flex items-center justify-center pt-16">
+          <div className="text-center space-y-3">
+            <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto" />
+            <p className="text-sm font-medium text-[#A1A1AA]">Memuat Informasi Konser...</p>
+          </div>
         </div>
       </div>
     );
@@ -326,17 +347,20 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
 
   if (!event) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#0C0D12] text-white px-4">
-        <p className="text-2xl font-bold text-white mb-3">Konser Tidak Ditemukan</p>
-        <p className="text-sm text-[#A1A1AA] mb-6 text-center max-w-md">
-          Pertunjukan yang Anda cari mungkin telah berakhir atau tautan tidak valid.
-        </p>
-        <a
-          href="/"
-          className="rounded-lg bg-white text-black font-semibold px-6 py-2.5 text-sm hover:bg-neutral-200 transition-colors"
-        >
-          Kembali ke Beranda
-        </a>
+      <div className="min-h-screen bg-[#0C0D12] text-white">
+        <Header isScrolled user={user} onLogout={logout} />
+        <div className="min-h-screen flex flex-col items-center justify-center px-4 pt-16">
+          <p className="text-2xl font-bold text-white mb-3">Konser Tidak Ditemukan</p>
+          <p className="text-sm text-[#A1A1AA] mb-6 text-center max-w-md">
+            Pertunjukan yang Anda cari mungkin telah berakhir atau tautan tidak valid.
+          </p>
+          <a
+            href="/"
+            className="rounded-lg bg-white text-black font-semibold px-6 py-2.5 text-sm hover:bg-neutral-200 transition-colors"
+          >
+            Kembali ke Beranda
+          </a>
+        </div>
       </div>
     );
   }
@@ -349,26 +373,28 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
 
   return (
     <div className="min-h-screen bg-[#0C0D12] text-[#F4F4F6]">
-      {/* Hero Banner */}
-      <div className="relative w-full h-[55vh] min-h-[380px] md:h-[60vh] overflow-hidden">
+      <Header isScrolled user={user} onLogout={logout} />
+
+      <div className="relative w-full h-[60vh] min-h-[440px] md:h-[64vh] overflow-hidden pt-16 sm:pt-[68px]">
         <img
           src={event.image}
           alt={event.title}
+          fetchPriority="high"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0C0D12] via-[#0C0D12]/70 to-black/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0C0D12] via-[#0C0D12]/70 to-black/40" />
 
-        <div className="absolute top-0 left-0 right-0 px-6 sm:px-10 py-5 z-10">
+        <div className="relative z-10 mx-auto max-w-[1400px] px-6 sm:px-10 pt-5 sm:pt-6">
           <a
-            href="/"
-            className="inline-flex items-center gap-2 rounded-lg bg-[#14161F]/80 backdrop-blur-md border border-[#272A38] px-4 py-2 text-sm font-medium text-white hover:bg-white hover:text-black transition-all"
+            href="/events"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#14161F]/85 backdrop-blur-md border border-[#272A38] px-4 py-2 min-h-[44px] text-sm font-medium text-white hover:bg-white hover:text-black transition-all"
           >
             <ArrowLeft size={16} strokeWidth={2} />
             <span>Kembali</span>
           </a>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 max-w-[1400px] px-6 sm:px-10 pb-10 md:pb-12">
+        <div className="absolute bottom-0 left-0 right-0 mx-auto max-w-[1400px] px-6 sm:px-10 pb-8 md:pb-12">
           <p className="text-xs font-semibold tracking-wider uppercase text-white mb-2 bg-white/10 inline-block px-3 py-1 rounded-md border border-white/20">
             {event.category}
           </p>
@@ -381,20 +407,20 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
         </div>
       </div>
 
-      <div className="mx-auto max-w-[1400px] px-6 sm:px-10 pb-20 lg:pb-24">
+      <div className="mx-auto max-w-[1400px] px-4 sm:px-8 md:px-10 pb-28 lg:pb-24">
         {/* Quick Info Bar */}
-        <div className="flex flex-wrap items-center gap-8 pt-8 pb-8 border-b border-[#272A38]">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 pt-6 pb-6 border-b border-[#272A38]">
           {[
             { label: 'Tanggal', value: event.date },
             { label: 'Waktu Konser', value: event.time },
             { label: 'Open Gate', value: event.openGate },
             { label: 'Gedung Venue', value: event.venue },
           ].map((item) => (
-            <div key={item.label}>
+            <div key={item.label} className="min-w-0">
               <span className="text-[11px] font-bold text-[#A1A1AA] tracking-wider uppercase block mb-1">
                 {item.label}
               </span>
-              <span className="text-sm sm:text-base font-semibold text-[#F4F4F6]">
+              <span className="text-sm sm:text-base font-semibold text-[#F4F4F6] block truncate">
                 {item.value}
               </span>
             </div>
@@ -576,7 +602,7 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
             )}
 
             {tab === 'TERMS' && (
-              <div className="max-w-[720px]">
+              <div id="syarat-ketentuan" className="max-w-[720px] scroll-mt-24">
                 <h2 className="text-xl sm:text-2xl font-bold text-[#F4F4F6] mb-5">
                   Syarat & Ketentuan Konser
                 </h2>
@@ -586,7 +612,7 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
                     'Pengunjung diwajibkan mengenakan pakaian rapi dan sopan (Smart Casual atau Formal).',
                     'Anak-anak berusia di bawah 7 tahun tidak diperkenankan memasuki arena pertunjukan orkestra demi menjaga kenyamanan akustik.',
                     'E-Ticket resmi ber-Kode QR wajib ditunjukkan melalui smartphone pada saat registrasi di meja Open Gate.',
-                    'Tiket yang telah berhasil dibeli bersifat final dan tidak dapat ditukarkan uang tunai.',
+                    'Pengajuan pembatalan atau pengembalian dana dapat dilakukan melalui portal resmi Pengajuan Refund (/refund) sebelum pertunjukan dimulai sesuai ketentuan yang berlaku.',
                   ].map((item, idx) => (
                     <li key={idx} className="flex items-start gap-3 p-3.5 rounded-xl bg-[#14161F] border border-[#272A38]">
                       <span className="mt-1.5 h-2 w-2 rounded-full bg-white shrink-0" />
