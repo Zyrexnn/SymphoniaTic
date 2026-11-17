@@ -134,9 +134,19 @@ export const GateScannerPanel: React.FC = () => {
         setScanHistory((prev) => [result, ...prev.slice(0, 19)]);
       } else {
         playBeep('error');
+        let errTitle = 'TIKET TIDAK VALID / VOID';
+        const lowerMsg = (res.message || '').toLowerCase();
+        if (lowerMsg.includes('belum dibuka')) {
+          errTitle = 'GERBANG BELUM DIBUKA';
+        } else if (lowerMsg.includes('telah selesai') || lowerMsg.includes('kedaluwarsa')) {
+          errTitle = 'KONSER TELAH BERAKHIR';
+        } else if (lowerMsg.includes('telah ditutup')) {
+          errTitle = 'KONSER DITUTUP PANITIA';
+        }
+
         const result: ScanResultState = {
           type: 'ERROR',
-          title: 'TIKET TIDAK VALID / VOID',
+          title: errTitle,
           message: res.message || 'Kode tiket tidak ditemukan di sistem database.',
           order: res.data,
           timestamp: now,

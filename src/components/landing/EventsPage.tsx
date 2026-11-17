@@ -13,6 +13,14 @@ const lowestPrice = (event: EventItem): number => {
   return Math.min(...event.categories.map((c) => Number(c.price) || 0));
 };
 
+const getTotalRemaining = (e: EventItem): number => {
+  if (!e.categories || e.categories.length === 0) return 0;
+  return e.categories.reduce((total, cat) => {
+    const rem = cat.remainingQuota !== undefined ? cat.remainingQuota : cat.quota;
+    return total + (typeof rem === 'number' && !isNaN(rem) ? rem : 0);
+  }, 0);
+};
+
 const sortKey = (event: EventItem): number => {
   const { day, month, year } = parseDate(event.date);
   const mi = MONTHS.indexOf(month);
@@ -81,6 +89,7 @@ const EventCard: React.FC<{ event: EventItem; saved: boolean; onToggleSave: () =
   onToggleSave,
 }) => {
   const isClosed = !!event.isClosed;
+  const isSoldOut = getTotalRemaining(event) <= 0;
   return (
     <a
       href={`/concert/${event.id}`}
@@ -92,19 +101,25 @@ const EventCard: React.FC<{ event: EventItem; saved: boolean; onToggleSave: () =
           alt={event.title}
           loading="lazy"
           className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 group-hover:scale-[1.05] ${
-            isClosed ? 'grayscale brightness-50' : 'brightness-[0.92] group-hover:brightness-100'
+            isClosed || isSoldOut ? 'grayscale brightness-50' : 'brightness-[0.92] group-hover:brightness-100'
           }`}
         />
         <DateBlock date={event.date} size="sm" />
         <FavoriteButton active={saved} onToggle={onToggleSave} />
 
-        {isClosed && (
+        {isClosed ? (
           <div className="absolute inset-0 flex items-center justify-center bg-black/60 p-4">
             <span className="rounded-md border border-white/30 bg-black/50 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-white backdrop-blur-sm">
               Penjualan Ditutup
             </span>
           </div>
-        )}
+        ) : isSoldOut ? (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/60 p-4">
+            <span className="rounded-md border border-rose-500/40 bg-black/50 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-rose-400 backdrop-blur-sm">
+              Tiket Habis
+            </span>
+          </div>
+        ) : null}
       </div>
 
       <div className="flex flex-1 flex-col pt-4">
@@ -123,6 +138,8 @@ const EventCard: React.FC<{ event: EventItem; saved: boolean; onToggleSave: () =
         <div className="mt-auto flex items-center justify-between border-t border-[#272A38] pt-3.5 mt-4">
           {isClosed ? (
             <span className="text-xs font-semibold text-[#71717A]">Penjualan Selesai</span>
+          ) : isSoldOut ? (
+            <span className="text-xs font-bold text-rose-400">Tiket Habis</span>
           ) : (
             <span className="text-sm font-bold text-white tabular-nums">
               Mulai {formatIDR(lowestPrice(event))}
@@ -465,12 +482,22 @@ const EventsPageContent: React.FC = () => {
                   <img
                     src={featured.image}
                     alt={featured.title}
-                    className="absolute inset-0 h-full w-full object-cover brightness-[0.9] transition-all duration-700 group-hover:scale-[1.03] group-hover:brightness-100"
+                    className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 group-hover:scale-[1.03] ${
+                      featured.isClosed || getTotalRemaining(featured) <= 0
+                        ? 'grayscale brightness-50'
+                        : 'brightness-[0.9] group-hover:brightness-100'
+                    }`}
                   />
                   {featured.isClosed ? (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/60">
                       <span className="rounded-md border border-white/30 bg-black/50 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-white backdrop-blur-sm">
                         Penjualan Ditutup
+                      </span>
+                    </div>
+                  ) : getTotalRemaining(featured) <= 0 ? (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/60">
+                      <span className="rounded-md border border-rose-500/40 bg-black/60 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-rose-400 backdrop-blur-sm">
+                        Tiket Habis
                       </span>
                     </div>
                   ) : (
@@ -506,19 +533,44 @@ const EventsPageContent: React.FC = () => {
 
               <div className="mt-6 flex flex-col sm:flex-row sm:items-center gap-5">
                 <div>
-                  <span className="block text-xs font-medium text-[#71717A]">Mulai dari</span>
-                  <span className="text-2xl font-bold tracking-tight text-white tabular-nums">
-                    {formatIDR(lowestPrice(featured))}
+                  <span className="block text-xs font-medium text-[#71717A]">
+                    {featured.isClosed
+                      ? 'Status Penjualan'
+                      : getTotalRemaining(featured) <= 0
+                      ? 'Status Kuota'
+                      : 'Mulai dari'}
                   </span>
+                  {featured.isClosed ? (
+                    <span className="text-xl font-bold tracking-tight text-[#71717A]">
+                      Penjualan Selesai
+                    </span>
+                  ) : getTotalRemaining(featured) <= 0 ? (
+                    <span className="text-xl font-bold tracking-tight text-rose-400">
+                      Tiket Habis
+                    </span>
+                  ) : (
+                    <span className="text-2xl font-bold tracking-tight text-white tabular-nums">
+                      {formatIDR(lowestPrice(featured))}
+                    </span>
+                  )}
                 </div>
-                <a
-                  href={`/concert/${featured.id}`}
-                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-black transition-colors hover:bg-neutral-200 sm:ml-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-                >
-                  <Ticket size={16} strokeWidth={2} />
-                  <span>Lihat Jadwal & Tiket</span>
-                  <ChevronRight size={16} strokeWidth={2} />
-                </a>
+                {featured.isClosed || getTotalRemaining(featured) <= 0 ? (
+                  <div className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#1D202D] border border-[#272A38] px-6 py-3 text-sm font-semibold text-[#71717A] sm:ml-auto cursor-not-allowed select-none">
+                    <Ticket size={16} strokeWidth={2} />
+                    <span>
+                      {featured.isClosed ? 'Penjualan Ditutup' : 'Tiket Habis'}
+                    </span>
+                  </div>
+                ) : (
+                  <a
+                    href={`/concert/${featured.id}`}
+                    className="inline-flex items-center justify-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-black transition-colors hover:bg-neutral-200 sm:ml-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                  >
+                    <Ticket size={16} strokeWidth={2} />
+                    <span>Lihat Jadwal & Tiket</span>
+                    <ChevronRight size={16} strokeWidth={2} />
+                  </a>
+                )}
               </div>
             </div>
           </div>

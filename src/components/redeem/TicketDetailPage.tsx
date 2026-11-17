@@ -27,13 +27,37 @@ import {
 import { QRCodeCanvas } from 'qrcode.react';
 import { jsPDF } from 'jspdf';
 import { drawTicketCanvas } from '@/lib/ticketCanvas';
-import { formatIDR } from '../landing/data';
+import { parseDateFlexible, parseTimeString } from '@/lib/timeUtils';
 import type { OrderRecord } from '../landing/data';
 
 interface TicketDetailPageProps {
   orderCode?: string;
   code?: string;
 }
+
+const isConcertExpired = (order?: OrderRecord | null): boolean => {
+  if (!order || !order.date) return false;
+  const parsedDate = parseDateFlexible(order.date);
+  if (!parsedDate) {
+    const d = new Date(order.date);
+    return !isNaN(d.getTime()) && d.getTime() < Date.now();
+  }
+
+  const year = parseInt(parsedDate.year, 10);
+  const month = parsedDate.monthIndex;
+  const day = parseInt(parsedDate.day, 10);
+
+  if (order.eventTime) {
+    const parsedTime = parseTimeString(order.eventTime);
+    if (parsedTime) {
+      const concertEnd = new Date(year, month, day, parsedTime.hours + 3, parsedTime.minutes, 0);
+      return concertEnd.getTime() < Date.now();
+    }
+  }
+
+  const endOfDay = new Date(year, month, day, 23, 59, 59);
+  return endOfDay.getTime() < Date.now();
+};
 
 const parseDateRundown = (dateStr?: string) => {
   if (!dateStr) return { day: '18', month: 'APR', year: '2026', full: 'Sabtu, 18 April 2026' };
@@ -163,6 +187,8 @@ export const TicketDetailPage: React.FC<TicketDetailPageProps> = ({ orderCode, c
   const isCheckedIn = foundOrder.status === 'CHECKED_IN';
   const isRefundRequested = foundOrder.status === 'REFUND_REQUESTED';
   const isRefunded = foundOrder.status === 'REFUNDED' || foundOrder.status === 'CANCELLED';
+  const isExpired = isConcertExpired(foundOrder);
+  const isTicketExpired = isExpired && !isCheckedIn;
 
   return (
     <div className="min-h-screen bg-[#0C0D12] text-white selection:bg-white selection:text-[#0C0D12] pb-24 md:pb-16 relative font-sans">
@@ -205,6 +231,8 @@ export const TicketDetailPage: React.FC<TicketDetailPageProps> = ({ orderCode, c
             <div className="flex items-center gap-3">
               {isCheckedIn ? (
                 <CheckCircle2 className="w-5 h-5 text-white shrink-0" strokeWidth={1.5} />
+              ) : isTicketExpired ? (
+                <AlertCircle className="w-5 h-5 text-amber-400 shrink-0" strokeWidth={1.5} />
               ) : isRefunded ? (
                 <AlertCircle className="w-5 h-5 text-red-400 shrink-0" strokeWidth={1.5} />
               ) : isRefundRequested ? (
@@ -216,6 +244,8 @@ export const TicketDetailPage: React.FC<TicketDetailPageProps> = ({ orderCode, c
                 <p className="text-xs font-mono uppercase tracking-wider text-white">
                   {isCheckedIn
                     ? 'TIKET SUDAH CHECKED-IN'
+                    : isTicketExpired
+                    ? 'TIKET KEDALUWARSA / KONSER TELAH BERAKHIR'
                     : isRefunded
                     ? 'TIKET DIBATALKAN / REFUND'
                     : isRefundRequested
@@ -225,6 +255,8 @@ export const TicketDetailPage: React.FC<TicketDetailPageProps> = ({ orderCode, c
                 <p className="text-xs text-[#A1A1AA] mt-0.5">
                   {isCheckedIn
                     ? 'Tiket telah dipindai di pintu masuk gate'
+                    : isTicketExpired
+                    ? 'Pertunjukan konser telah selesai diselenggarakan. E-Ticket ini sudah melewati masa berlaku.'
                     : isRefunded
                     ? 'Tiket ini tidak berlaku untuk masuk hall konser'
                     : isRefundRequested
@@ -319,23 +351,43 @@ export const TicketDetailPage: React.FC<TicketDetailPageProps> = ({ orderCode, c
               </div>
 
               {/* Right / QR Code Stub */}
-              <div className="lg:col-span-4 p-6 sm:p-8 flex flex-col items-center justify-center text-center gap-4 bg-[#0C0D12]">
-                <div className="p-3 bg-white rounded-xl shadow-lg inline-block">
+              <div
+                className={`lg:col-span-4 p-6 sm:p-8 flex flex-col items-center justify-center text-center gap-4 bg-[#0C0D12] transition-opacity ${
+                  isTicketExpired ? 'opacity-60' : ''
+                }`}
+              >
+                <div className="p-3 bg-white rounded-xl shadow-lg inline-block relative">
                   <QRCodeCanvas
                     value={foundOrder.qrCode || foundOrder.orderCode}
                     size={160}
                     level="H"
                   />
+                  {isTicketExpired && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/65 rounded-xl backdrop-blur-[1px]">
+                      <span className="rounded-md border border-rose-500/50 bg-black/85 px-3 py-1.5 text-xs font-mono font-bold tracking-widest text-rose-400 uppercase shadow-lg">
+                        EXPIRED
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div className="text-center">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#71717A] block">
-                    KODE SCANNER GATE
-                  </span>
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-[#71717A] block">
+                      KODE SCANNER GATE
+                    </span>
+                    {isTicketExpired && (
+                      <span className="rounded bg-rose-500/20 border border-rose-500/40 px-1.5 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider text-rose-400">
+                        EXPIRED
+                      </span>
+                    )}
+                  </div>
                   <span className="text-sm font-mono font-semibold text-white tracking-wider block mt-1">
                     {foundOrder.orderCode}
                   </span>
                   <p className="text-[11px] text-[#A1A1AA] mt-2 max-w-[200px] leading-relaxed">
-                    Tunjukkan QR Code ini di gerbang masuk venue saat Open Gate.
+                    {isTicketExpired
+                      ? 'Acara konser telah berakhir. Tiket ini tidak lagi dapat digunakan.'
+                      : 'Tunjukkan QR Code ini di gerbang masuk venue saat Open Gate.'}
                   </p>
                 </div>
               </div>

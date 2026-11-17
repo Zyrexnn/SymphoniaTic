@@ -40,6 +40,7 @@ const BuyCard: React.FC<BuyCardProps> = ({ event, selectedCatId, onSelectCategor
 
   const remaining = selectedCat ? getRemainingQuota(selectedCat) : 0;
   const isSoldOut = remaining <= 0;
+  const isAllSoldOut = categories.length > 0 && categories.every((cat) => getRemainingQuota(cat) <= 0);
   const maxAllowed = Math.min(4, Math.max(0, remaining));
   const totalPrice = selectedCat ? selectedCat.price * qty : 0;
   const isClosed = event.isClosed;
@@ -62,6 +63,15 @@ const BuyCard: React.FC<BuyCardProps> = ({ event, selectedCatId, onSelectCategor
           <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
           <span>
             <strong>Penjualan Ditutup</strong>: Pertunjukan ini sudah dimulai atau penjualan tiket telah dihentikan oleh panitia.
+          </span>
+        </div>
+      )}
+
+      {!isClosed && isAllSoldOut && (
+        <div className="mb-5 p-3.5 border border-rose-500/30 bg-rose-500/10 text-rose-200 text-xs font-medium rounded-xl flex items-start gap-2.5">
+          <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+          <span>
+            <strong>Seluruh Tiket Habis Terjual</strong>: Semua kategori kursi untuk konser ini telah habis. Silakan periksa konser lainnya.
           </span>
         </div>
       )}
@@ -183,16 +193,16 @@ const BuyCard: React.FC<BuyCardProps> = ({ event, selectedCatId, onSelectCategor
 
       <button
         onClick={() => selectedCat && onBuy(selectedCat, qty)}
-        disabled={isClosed || isSoldOut || !selectedCat}
+        disabled={isClosed || isSoldOut || isAllSoldOut || !selectedCat}
         className={`w-full py-3.5 text-sm font-bold rounded-xl min-h-[48px] flex items-center justify-center gap-2 transition-all ${
-          isClosed || isSoldOut || !selectedCat
+          isClosed || isSoldOut || isAllSoldOut || !selectedCat
             ? 'bg-[#10121A] border border-[#272A38] text-[#64748B] opacity-60 cursor-not-allowed'
             : 'bg-white text-[#0C0D12] hover:bg-neutral-200 shadow-sm cursor-pointer active:scale-[0.98]'
         }`}
       >
         {isClosed ? (
           <span>ORDER DITUTUP</span>
-        ) : isSoldOut ? (
+        ) : isAllSoldOut || isSoldOut ? (
           <span>KUOTA HABIS</span>
         ) : (
           <>
@@ -228,17 +238,17 @@ const BuyCard: React.FC<BuyCardProps> = ({ event, selectedCatId, onSelectCategor
           </div>
           <button
             onClick={() => selectedCat && onBuy(selectedCat, qty)}
-            disabled={isClosed || isSoldOut || !selectedCat}
+            disabled={isClosed || isSoldOut || isAllSoldOut || !selectedCat}
             className={`shrink-0 inline-flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-bold min-h-[44px] transition-all ${
-              isClosed || isSoldOut || !selectedCat
+              isClosed || isSoldOut || isAllSoldOut || !selectedCat
                 ? 'bg-[#10121A] border border-[#272A38] text-[#64748B] opacity-60 cursor-not-allowed'
                 : 'bg-white text-[#0C0D12] hover:bg-neutral-200 shadow-sm cursor-pointer active:scale-[0.98]'
             }`}
           >
             {isClosed ? (
               <span>Ditutup</span>
-            ) : isSoldOut ? (
-              <span>Habis</span>
+            ) : isAllSoldOut || isSoldOut ? (
+              <span>KUOTA HABIS</span>
             ) : (
               <>
                 <Ticket size={15} strokeWidth={2} />
@@ -395,9 +405,20 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
         </div>
 
         <div className="absolute bottom-0 left-0 right-0 mx-auto max-w-[1400px] px-6 sm:px-10 pb-8 md:pb-12">
-          <p className="text-xs font-semibold tracking-wider uppercase text-white mb-2 bg-white/10 inline-block px-3 py-1 rounded-md border border-white/20">
-            {event.category}
-          </p>
+          <div className="flex flex-wrap items-center gap-2 mb-2">
+            <p className="text-xs font-semibold tracking-wider uppercase text-white bg-white/10 inline-block px-3 py-1 rounded-md border border-white/20">
+              {event.category}
+            </p>
+            {event.isClosed ? (
+              <span className="text-xs font-bold tracking-wider uppercase text-white bg-black/60 border border-white/30 px-3 py-1 rounded-md backdrop-blur-sm">
+                Penjualan Ditutup
+              </span>
+            ) : (event.categories && event.categories.length > 0 && event.categories.every((c) => getRemainingQuota(c) <= 0)) ? (
+              <span className="text-xs font-bold tracking-wider uppercase text-rose-400 bg-black/60 border border-rose-500/40 px-3 py-1 rounded-md backdrop-blur-sm">
+                Tiket Habis
+              </span>
+            ) : null}
+          </div>
           <h1 className="text-[clamp(28px,5vw,52px)] leading-tight tracking-tight font-bold text-white">
             {event.title}
           </h1>

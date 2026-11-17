@@ -3,7 +3,7 @@ import { RefreshCw, X, AlertCircle, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { EventItem, TicketCategory, OrderRecord, AdminMetricsData, AdminRole } from '../landing/data';
 import {
-  CONCERT_EVENTS, adminLoginAPI, fetchAdminMetricsAPI, fetchEventsAPI, createEventAPI, updateEventAPI,
+  adminLoginAPI, fetchAdminMetricsAPI, fetchEventsAPI, createEventAPI, updateEventAPI,
   deleteEventAPI, createTicketCategoryAPI, updateTicketCategoryAPI,
   deleteTicketCategoryAPI, fetchAdminOrdersAPI, updateOrderStatusAPI,
   fetchAdminRefundsAPI, updateRefundStatusAPI,
@@ -19,84 +19,6 @@ import { GateScannerPanel } from './GateScannerPanel';
 import { EventFormModal, type EventFormData } from './EventFormModal';
 import { CategoryFormModal } from './CategoryFormModal';
 import { calculateDefaultOpenGate, generateDynamicRundown, isTimeBefore } from '@/lib/timeUtils';
-
-const MOCK_ADMIN_METRICS: AdminMetricsData = {
-  totalRevenue: 34500000,
-  ticketsSold: 42,
-  remainingQuota: 158,
-  totalEvents: 4,
-  totalOrders: 18,
-  eventStats: [
-    { eventId: '1', title: 'Orkestra Simfoni Mahakarya Chopin', revenue: 18500000, ticketsSold: 22 },
-    { eventId: '2', title: 'Resital Biola Solo & String Quartet', revenue: 9000000, ticketsSold: 12 },
-    { eventId: '3', title: 'Grand Philharmonic Beethoven Night', revenue: 7000000, ticketsSold: 8 },
-  ],
-  recentOrders: [
-    { id: 'ord-1', orderCode: 'SYM-893472', eventTitle: 'Orkestra Simfoni Mahakarya Chopin', quantity: 2, totalPrice: 2000000, userName: 'Budi Santoso', status: 'VERIFIED', createdAt: new Date().toISOString() },
-    { id: 'ord-2', orderCode: 'SYM-774120', eventTitle: 'Resital Biola Solo & String Quartet', quantity: 1, totalPrice: 750000, userName: 'Siti Rahma', status: 'VERIFIED', createdAt: new Date().toISOString() },
-  ]
-};
-
-const MOCK_ADMIN_ORDERS: OrderRecord[] = [
-  {
-    id: 'ord-1',
-    orderCode: 'SYM-893472',
-    eventId: '1',
-    eventTitle: 'Orkestra Simfoni Mahakarya Chopin',
-    artist: 'Royal Philharmonic Orchestra',
-    venue: 'Aula Simfonia Jakarta',
-    date: 'Sabtu, 18 April 2026',
-    categoryName: 'VIP Grand Tier',
-    quantity: 2,
-    totalPrice: 2000000,
-    userName: 'Budi Santoso',
-    userEmail: 'budi.santoso@example.com',
-    qrCode: 'QR-SYM-893472',
-    status: 'VERIFIED',
-    paymentMethod: 'SANDBOX_PAYMENT',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'ord-2',
-    orderCode: 'SYM-774120',
-    eventId: '2',
-    eventTitle: 'Resital Biola Solo & String Quartet',
-    artist: 'Vienna Choir Soloists',
-    venue: 'Usmar Ismail Hall',
-    date: 'Minggu, 26 April 2026',
-    categoryName: 'CAT 1 Executive',
-    quantity: 1,
-    totalPrice: 750000,
-    userName: 'Siti Rahma',
-    userEmail: 'siti.rahma@example.com',
-    qrCode: 'QR-SYM-774120',
-    status: 'VERIFIED',
-    paymentMethod: 'SANDBOX_PAYMENT',
-    createdAt: new Date().toISOString(),
-  },
-];
-
-const MOCK_ADMIN_REFUNDS: RefundRecord[] = [
-  {
-    id: 'rfd-1',
-    orderId: 'ord-10',
-    orderCode: 'SYM-551290',
-    userEmail: 'pembeli.tiket@example.com',
-    bankName: 'Bank BCA',
-    accountNumber: '8830192831',
-    accountHolder: 'Ahmad Subagyo',
-    reason: 'Jadwal bertabrakan dengan acara keluarga',
-    refundAmount: 1000000,
-    status: 'PENDING',
-    adminNote: '',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    eventTitle: 'Orkestra Simfoni Mahakarya Chopin',
-    categoryName: 'VIP Grand Tier',
-    quantity: 1,
-    userName: 'Ahmad Subagyo',
-  },
-];
 
 const EMPTY_EVENT_FORM: EventFormData = {
   title: '', artist: '', venue: '', date: '', time: '',
