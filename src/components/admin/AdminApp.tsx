@@ -16,8 +16,9 @@ import { EventsPanel } from './EventsPanel';
 import { OrdersPanel } from './OrdersPanel';
 import { RefundsPanel, type RefundRecord } from './RefundsPanel';
 import { GateScannerPanel } from './GateScannerPanel';
-import { EventFormModal } from './EventFormModal';
+import { EventFormModal, type EventFormData } from './EventFormModal';
 import { CategoryFormModal } from './CategoryFormModal';
+import { calculateDefaultOpenGate, generateDynamicRundown, isTimeBefore } from '@/lib/timeUtils';
 
 const MOCK_ADMIN_METRICS: AdminMetricsData = {
   totalRevenue: 34500000,
@@ -97,17 +98,14 @@ const MOCK_ADMIN_REFUNDS: RefundRecord[] = [
   },
 ];
 
-const EMPTY_EVENT_FORM = {
+const EMPTY_EVENT_FORM: EventFormData = {
   title: '', artist: '', venue: '', date: '', time: '',
   category: 'SIMFONI UTAMA',
-  categoryBadgeColor: 'bg-blue-900/80 text-blue-200 border-blue-500/40',
-  image: '', description: '', conductor: '', subtitle: '', openGate: '', address: '', googleMapsUrl: '',
+  categoryBadgeColor: 'bg-white/10 text-white border-white/20',
+  image: '', audioUrl: '', description: '', conductor: '', subtitle: '', openGate: '', address: '', googleMapsUrl: '',
   organizer: 'SymphoniaTic Production',
   initialCatName: 'VIP Pit', initialCatPrice: 1000000, initialCatQuota: 50,
-  rundown: [
-    { time: '18:00 WIB', activity: 'Registrasi & Open Gate' },
-    { time: '19:30 WIB', activity: 'Pertunjukan Utama' }
-  ],
+  rundown: [],
 };
 
 const EMPTY_CAT_FORM = { name: '', price: 500000, quota: 50 };
@@ -132,8 +130,8 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
       return 'ADMIN';
     }
   });
-  const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('123');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState('');
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
@@ -238,8 +236,12 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
 
   const handleCreateEvent = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!eventForm.title || !eventForm.artist || !eventForm.venue || !eventForm.date || !eventForm.time) {
-      showToast('Judul, Musisi, Venue, Tanggal, dan Waktu wajib diisi!', 'error');
+    if (!eventForm.title || !eventForm.artist || !eventForm.venue || !eventForm.date || !eventForm.time || !eventForm.openGate) {
+      showToast('Judul, Musisi, Venue, Tanggal, Waktu Konser, dan Open Gate wajib diisi!', 'error');
+      return;
+    }
+    if (!isTimeBefore(eventForm.openGate, eventForm.time)) {
+      showToast('Waktu Open Gate harus lebih awal dari waktu konser!', 'error');
       return;
     }
     setIsLoading(true);
@@ -253,6 +255,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
         date: eventForm.date, time: eventForm.time, category: eventForm.category,
         categoryBadgeColor: eventForm.categoryBadgeColor,
         image: eventForm.image || 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?q=80&w=1000&auto=format&fit=crop',
+        audioUrl: eventForm.audioUrl || '',
         conductor: eventForm.conductor, subtitle: eventForm.subtitle,
         openGate: eventForm.openGate, address: eventForm.address,
         organizer: eventForm.organizer, description: eventForm.description,
@@ -282,12 +285,17 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
   const handleUpdateEvent = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingEvent) return;
+    if (!eventForm.openGate || !eventForm.time || !isTimeBefore(eventForm.openGate, eventForm.time)) {
+      showToast('Waktu Open Gate harus lebih awal dari waktu konser!', 'error');
+      return;
+    }
     setIsLoading(true);
     try {
       const res = await updateEventAPI(String(editingEvent.id), {
         title: eventForm.title, artist: eventForm.artist, venue: eventForm.venue,
         date: eventForm.date, time: eventForm.time, category: eventForm.category,
         categoryBadgeColor: eventForm.categoryBadgeColor, image: eventForm.image,
+        audioUrl: eventForm.audioUrl || '',
         conductor: eventForm.conductor, subtitle: eventForm.subtitle,
         openGate: eventForm.openGate, address: eventForm.address,
         organizer: eventForm.organizer, description: eventForm.description,
@@ -574,7 +582,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
           </div>
         </header>
 
-        <div className="flex-1 p-6 sm:p-8 overflow-y-auto max-w-[1200px] mx-auto w-full">
+        <div className="flex-1 p-4 sm:p-6 md:p-8 pb-24 md:pb-8 overflow-y-auto max-w-[1200px] mx-auto w-full">
           {activeTab === 'SCANNER' && (
             <GateScannerPanel />
           )}
@@ -586,20 +594,21 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
               events={eventsList}
               onAddEvent={() => { setShowAddEventModal(true); setEventForm(EMPTY_EVENT_FORM); }}
               onEditEvent={(evt) => {
+                const resolvedOpenGate = evt.openGate || calculateDefaultOpenGate(evt.time);
                 setEditingEvent(evt);
                 setEventForm({
                   title: evt.title, artist: evt.artist, venue: evt.venue,
                   date: evt.date, time: evt.time, category: evt.category,
                   categoryBadgeColor: evt.categoryBadgeColor, image: evt.image,
+                  audioUrl: evt.audioUrl || '',
                   conductor: evt.conductor || '', subtitle: evt.subtitle || '',
-                  openGate: evt.openGate || '', address: evt.address || '',
+                  openGate: resolvedOpenGate, address: evt.address || '',
                   googleMapsUrl: evt.googleMapsUrl || '',
                   organizer: evt.organizer || '', description: evt.description || '',
                   initialCatName: '', initialCatPrice: 0, initialCatQuota: 0,
-                  rundown: evt.rundown && evt.rundown.length > 0 ? [...evt.rundown] : [
-                    { time: '18:00 WIB', activity: 'Registrasi & Open Gate' },
-                    { time: '19:30 WIB', activity: 'Pertunjukan Utama' }
-                  ],
+                  rundown: evt.rundown && evt.rundown.length > 0
+                    ? evt.rundown.map((item) => ({ ...item }))
+                    : generateDynamicRundown(evt.time, resolvedOpenGate),
                 });
               }}
               onDeleteEvent={handleDeleteEvent}

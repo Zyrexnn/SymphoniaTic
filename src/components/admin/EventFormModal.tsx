@@ -1,11 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useId } from 'react';
 import { motion } from 'framer-motion';
-import { X, Plus, Trash2 } from 'lucide-react';
+import { X, Plus, Trash2, RefreshCw, AlertTriangle } from 'lucide-react';
 import type { EventItem, RundownItem } from '../landing/data';
+import {
+  calculateDefaultOpenGate,
+  formatTimeString,
+  generateDynamicRundown,
+  isTimeBefore,
+  normalizeTimeString,
+  parseDateFlexible,
+  parseTimeString,
+  shiftTimeMinutes,
+} from '@/lib/timeUtils';
 
 export interface EventFormData {
   title: string; artist: string; venue: string; date: string; time: string;
-  category: string; categoryBadgeColor: string; image: string; description: string;
+  category: string; categoryBadgeColor: string; image: string; audioUrl?: string; description: string;
   conductor: string; subtitle: string; openGate: string; address: string; googleMapsUrl: string;
   organizer: string; initialCatName: string; initialCatPrice: number; initialCatQuota: number;
   rundown: RundownItem[];
@@ -21,33 +31,150 @@ interface EventFormModalProps {
   onSubmit: (e: React.FormEvent) => void;
 }
 
+const GENRE_OPTIONS = [
+  'SIMFONI UTAMA',
+  'SIMFONI',
+  'KAMAR MUSIK',
+  'SOLO RESITAL',
+  'BALET & OPERA',
+  'PADUAN SUARA',
+  'NUSANTARA SYMPHONY',
+];
+
+const TIMEZONE_OPTIONS = ['WIB', 'WITA', 'WIT'] as const;
+
 export const EventFormModal: React.FC<EventFormModalProps> = ({
   isOpen, editingEvent, form, isLoading, onFormChange, onClose, onSubmit,
 }) => {
   const [uploadError, setUploadError] = useState('');
+  const [openGateCustomized, setOpenGateCustomized] = useState(false);
+  const [rundownCustomized, setRundownCustomized] = useState(false);
+
+  const isEdit = !!editingEvent;
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setUploadError('');
+    if (editingEvent) {
+      const autoGate = calculateDefaultOpenGate(editingEvent.time);
+      const normGate = normalizeTimeString(editingEvent.openGate);
+      setOpenGateCustomized(Boolean(normGate && autoGate && normGate !== autoGate));
+      setRundownCustomized(Boolean(editingEvent.rundown && editingEvent.rundown.length > 0));
+    } else {
+      setOpenGateCustomized(false);
+      setRundownCustomized(false);
+    }
+  }, [isOpen, editingEvent?.id]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const update = (partial: Partial<EventFormData>) => onFormChange({ ...form, ...partial });
+
+  const handleConcertTimeChange = (newTime: string) => {
+    if (!newTime) {
+      update({ time: '' });
+      return;
+    }
+
+    const prevAutoGate = calculateDefaultOpenGate(form.time);
+    const shouldAutoGate =
+      !openGateCustomized &&
+      (!isEdit || !form.openGate || normalizeTimeString(form.openGate) === prevAutoGate);
+
+    const nextOpenGate = shouldAutoGate ? calculateDefaultOpenGate(newTime) : form.openGate;
+    const shouldAutoRundown = !rundownCustomized && (!isEdit || !form.rundown || form.rundown.length === 0);
+    const nextRundown = shouldAutoRundown
+      ? generateDynamicRundown(newTime, nextOpenGate)
+      : form.rundown;
+
+    update({
+      time: newTime,
+      openGate: nextOpenGate,
+      rundown: nextRundown,
+    });
+  };
+
+  const handleOpenGateChange = (newGate: string) => {
+    if (!newGate) {
+      setOpenGateCustomized(false);
+      update({ openGate: '' });
+      return;
+    }
+
+    setOpenGateCustomized(true);
+    if (!rundownCustomized && form.time && isTimeBefore(newGate, form.time)) {
+      update({
+        openGate: newGate,
+        rundown: generateDynamicRundown(form.time, newGate),
+      });
+    } else {
+      update({ openGate: newGate });
+    }
+  };
+
+  const handleSyncRundown = () => {
+    if (!parseTimeString(form.time)) return;
+    const validGate =
+      form.openGate && isTimeBefore(form.openGate, form.time)
+        ? form.openGate
+        : calculateDefaultOpenGate(form.time);
+    const synced = generateDynamicRundown(form.time, validGate);
+    setRundownCustomized(false);
+    if (!form.openGate || !isTimeBefore(form.openGate, form.time)) {
+      setOpenGateCustomized(false);
+    }
+    update({ openGate: validGate, rundown: synced });
+  };
+
+  const handleAddRundownItem = () => {
+    const current = form.rundown || [];
+    const lastTime = current.length > 0 ? current[current.length - 1].time : '';
+    const nextTime =
+      (lastTime && shiftTimeMinutes(lastTime, 30, { clampSameDay: false })) ||
+      (form.time && normalizeTimeString(form.time)) ||
+      (form.openGate && normalizeTimeString(form.openGate)) ||
+      '';
+    setRundownCustomized(true);
+    update({ rundown: [...current, { time: nextTime, activity: 'Aktivitas Baru' }] });
+  };
+
+  const hasGateOrderError = Boolean(form.openGate && form.time && !isTimeBefore(form.openGate, form.time));
+  const canSyncRundown = Boolean(parseTimeString(form.time));
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(e);
   };
 
-  const isEdit = !!editingEvent;
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm overflow-y-auto">
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="event-form-modal-title"
         className="w-full max-w-2xl bg-[#14161F] border border-[#272A38] rounded-2xl my-auto max-h-[90vh] flex flex-col shadow-2xl"
       >
         <div className="flex justify-between items-center border-b border-[#272A38] px-6 py-4 shrink-0 bg-[#0C0D12]/70 rounded-t-2xl">
-          <h3 className="text-base font-semibold text-white tracking-tight m-0">
+          <h3 id="event-form-modal-title" className="text-base font-semibold text-white tracking-tight m-0">
             {isEdit ? 'Edit Detail Event Konser' : 'Tambah Event Konser Baru'}
           </h3>
-          <button onClick={onClose} className="p-1.5 bg-[#0C0D12] border border-[#272A38] rounded-lg text-[#A1A1AA] hover:text-white cursor-pointer transition-colors">
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Tutup modal"
+            className="p-1.5 bg-[#0C0D12] border border-[#272A38] rounded-lg text-[#A1A1AA] hover:text-white cursor-pointer transition-colors"
+          >
             <X size={16} strokeWidth={1.5} />
           </button>
         </div>
@@ -67,34 +194,41 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
             />
             <TimePickerField
               label="Waktu Konser (Jam:Menit)"
+              required
               value={form.time}
-              onChange={(formattedTime) => update({ time: formattedTime })}
+              onChange={handleConcertTimeChange}
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs font-medium text-[#A1A1AA] tracking-wider uppercase block mb-1.5">Kategori Genre Konser</label>
+              <label htmlFor="event-category-select" className="text-xs font-medium text-[#A1A1AA] tracking-wider uppercase block mb-1.5">
+                Kategori Genre Konser
+              </label>
               <select
+                id="event-category-select"
                 value={form.category}
                 onChange={(e) => {
                   const val = e.target.value;
                   const badge = 'bg-white/10 text-white border-white/20';
                   update({ category: val, categoryBadgeColor: badge });
                 }}
-                className="w-full bg-[#0C0D12] border border-[#272A38] rounded-lg px-3 py-2 text-xs font-normal text-white outline-none focus:border-white"
+                className="w-full bg-[#0C0D12] border border-[#272A38] rounded-lg px-3 py-2 text-xs font-normal text-white outline-none focus:border-white cursor-pointer"
               >
-                <option value="SIMFONI UTAMA">SIMFONI UTAMA</option>
-                <option value="SIMFONI">SIMFONI</option>
-                <option value="KAMAR MUSIK">KAMAR MUSIK</option>
-                <option value="PADUAN SUARA">PADUAN SUARA</option>
-                <option value="SOLO RESITAL">SOLO RESITAL</option>
+                {GENRE_OPTIONS.map((genre) => (
+                  <option key={genre} value={genre} className="bg-[#14161F]">
+                    {genre}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
-              <label className="text-xs font-medium text-[#A1A1AA] tracking-wider uppercase block mb-1.5">Gambar Cover Konser</label>
+              <label htmlFor="event-cover-image-url" className="text-xs font-medium text-[#A1A1AA] tracking-wider uppercase block mb-1.5">
+                Gambar Cover Konser
+              </label>
               <div className="flex flex-col gap-2">
                 <input
+                  id="event-cover-image-url"
                   type="text"
                   placeholder="Masukkan URL gambar atau gunakan tombol upload..."
                   value={form.image}
@@ -138,7 +272,7 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
                   )}
                   {form.image && (
                     <span className="text-[10px] text-emerald-400 font-mono truncate max-w-[200px]" title={form.image}>
-                      ✓ File siap
+                      File siap
                     </span>
                   )}
                 </div>
@@ -153,68 +287,112 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
               <InputField label="Subtitle / Tagline" value={form.subtitle} onChange={(v) => update({ subtitle: v })} placeholder="Pertunjukan Mahakarya Simfoni" />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <InputField label="Open Gate" value={form.openGate} onChange={(v) => update({ openGate: v })} placeholder="18:00 WIB" />
+              <TimePickerField
+                label="Waktu Open Gate"
+                required
+                value={form.openGate}
+                onChange={handleOpenGateChange}
+              />
               <div className="sm:col-span-2">
-                <InputField 
-                  label="Alamat Lengkap Venue / Link Share Google Maps" 
-                  value={form.address} 
-                  onChange={(v) => update({ address: v })} 
-                  placeholder="Jl. Industri Blok B14 No.1, Kemayoran atau https://maps.google.com/..." 
+                <InputField
+                  label="Alamat Lengkap Venue / Link Share Google Maps"
+                  value={form.address}
+                  onChange={(v) => update({ address: v })}
+                  placeholder="Jl. Industri Blok B14 No.1, Kemayoran atau https://maps.google.com/..."
                 />
                 <span className="text-[10px] text-[#71717A] block mt-1 leading-normal">
                   Info: Kolom ini digunakan untuk rute peta pada e-ticket. Anda bisa memasukkan alamat tekstual biasa atau Link Share Google Maps.
                 </span>
               </div>
             </div>
+
+            {hasGateOrderError && (
+              <div
+                role="alert"
+                className="p-3 rounded-lg border border-amber-500/40 bg-amber-500/10 text-amber-200 text-xs flex items-center gap-2"
+              >
+                <AlertTriangle size={15} className="text-amber-400 shrink-0" />
+                <span>Waktu Open Gate harus lebih awal dari Waktu Konser.</span>
+              </div>
+            )}
+
+            <InputField
+              label="URL Audio Cuplikan (Opsional)"
+              value={form.audioUrl || ''}
+              onChange={(v) => update({ audioUrl: v })}
+              placeholder="/audio/sample-symphony.mp3"
+            />
           </div>
 
           <div className="border border-[#272A38] bg-[#0C0D12] rounded-xl p-4 flex flex-col gap-3">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-wrap justify-between items-center gap-2">
               <span className="text-xs font-semibold text-white uppercase tracking-wider">Rangkaian Acara (Rundown)</span>
-              <button
-                type="button"
-                onClick={() => {
-                  const current = form.rundown || [];
-                  update({ rundown: [...current, { time: '18:00 WIB', activity: 'Aktivitas Baru' }] });
-                }}
-                className="text-xs font-medium text-white bg-[#14161F] border border-[#272A38] hover:border-white/40 rounded-lg px-2.5 py-1 cursor-pointer flex items-center gap-1 transition-colors"
-              >
-                <Plus size={12} strokeWidth={1.5} />
-                <span>Item Rundown</span>
-              </button>
+              <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  type="button"
+                  disabled={!canSyncRundown}
+                  onClick={handleSyncRundown}
+                  className={`text-xs font-medium bg-[#14161F] border border-[#272A38] rounded-lg px-2.5 py-1.5 flex items-center gap-1.5 transition-colors ${
+                    canSyncRundown
+                      ? 'text-[#A1A1AA] hover:text-white hover:border-white/40 cursor-pointer'
+                      : 'text-[#71717A] opacity-50 cursor-not-allowed'
+                  }`}
+                >
+                  <RefreshCw size={12} strokeWidth={1.5} />
+                  <span>Sinkronkan Otomatis dari Waktu Konser</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleAddRundownItem}
+                  className="text-xs font-medium text-white bg-[#14161F] border border-[#272A38] hover:border-white/40 rounded-lg px-2.5 py-1.5 cursor-pointer flex items-center gap-1 transition-colors"
+                >
+                  <Plus size={12} strokeWidth={1.5} />
+                  <span>Item Rundown</span>
+                </button>
+              </div>
             </div>
 
             {(!form.rundown || form.rundown.length === 0) ? (
-              <p className="text-xs font-normal text-[#71717A] m-0 italic">Belum ada item rundown disetel.</p>
+              <p className="text-xs font-normal text-[#71717A] m-0 italic">
+                Belum ada item rundown disetel. Pilih waktu konser untuk menyusun otomatis atau tambahkan item manual.
+              </p>
             ) : (
               <div className="flex flex-col gap-2">
                 {form.rundown.map((item, idx) => (
                   <div key={idx} className="flex gap-2 items-center">
                     <input
                       type="text"
-                      placeholder="Waktu (19:30 WIB)"
+                      aria-label={`Waktu item rundown ${idx + 1}`}
+                      placeholder="Waktu (mis. 18:00 WIB)"
                       value={item.time}
                       onChange={(e) => {
-                        const updated = [...form.rundown];
-                        updated[idx].time = e.target.value;
+                        setRundownCustomized(true);
+                        const updated = form.rundown.map((it, i) =>
+                          i === idx ? { ...it, time: e.target.value } : it
+                        );
                         update({ rundown: updated });
                       }}
                       className="w-1/3 bg-[#14161F] border border-[#272A38] rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-white"
                     />
                     <input
                       type="text"
+                      aria-label={`Kegiatan item rundown ${idx + 1}`}
                       placeholder="Kegiatan / Movement"
                       value={item.activity}
                       onChange={(e) => {
-                        const updated = [...form.rundown];
-                        updated[idx].activity = e.target.value;
+                        setRundownCustomized(true);
+                        const updated = form.rundown.map((it, i) =>
+                          i === idx ? { ...it, activity: e.target.value } : it
+                        );
                         update({ rundown: updated });
                       }}
                       className="flex-1 bg-[#14161F] border border-[#272A38] rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-white"
                     />
                     <button
                       type="button"
+                      aria-label={`Hapus item rundown ${idx + 1}`}
                       onClick={() => {
+                        setRundownCustomized(true);
                         const updated = form.rundown.filter((_, i) => i !== idx);
                         update({ rundown: updated });
                       }}
@@ -229,8 +407,11 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
           </div>
 
           <div>
-            <label className="text-xs font-medium text-[#A1A1AA] tracking-wider uppercase block mb-1.5">Deskripsi Konser</label>
+            <label htmlFor="event-description-textarea" className="text-xs font-medium text-[#A1A1AA] tracking-wider uppercase block mb-1.5">
+              Deskripsi Konser
+            </label>
             <textarea
+              id="event-description-textarea"
               rows={3}
               value={form.description}
               onChange={(e) => update({ description: e.target.value })}
@@ -282,16 +463,22 @@ interface InputFieldProps {
   type?: string;
 }
 
-const InputField: React.FC<InputFieldProps> = ({ label, value, onChange, placeholder, required, type = 'text' }) => (
-  <div>
-    <label className="text-xs font-medium text-[#A1A1AA] tracking-wider uppercase block mb-1.5">{label}</label>
-    <input
-      type={type} required={required} placeholder={placeholder}
-      value={value} onChange={(e) => onChange(e.target.value)}
-      className="w-full bg-[#0C0D12] border border-[#272A38] rounded-lg px-3 py-2 text-xs font-normal text-white placeholder-[#71717A] outline-none focus:border-white transition-colors"
-    />
-  </div>
-);
+const InputField: React.FC<InputFieldProps> = ({ label, value, onChange, placeholder, required, type = 'text' }) => {
+  const inputId = useId();
+  return (
+    <div>
+      <label htmlFor={inputId} className="text-xs font-medium text-[#A1A1AA] tracking-wider uppercase block mb-1.5">
+        {label}
+      </label>
+      <input
+        id={inputId}
+        type={type} required={required} placeholder={placeholder}
+        value={value} onChange={(e) => onChange(e.target.value)}
+        className="w-full bg-[#0C0D12] border border-[#272A38] rounded-lg px-3 py-2 text-xs font-normal text-white placeholder-[#71717A] outline-none focus:border-white transition-colors"
+      />
+    </div>
+  );
+};
 
 interface DatePickerFieldProps {
   label: string;
@@ -300,25 +487,9 @@ interface DatePickerFieldProps {
 }
 
 const DatePickerField: React.FC<DatePickerFieldProps> = ({ label, value, onChange }) => {
-  const getIsoDate = (strVal: string): string => {
-    if (!strVal) return '';
-    if (/^\d{4}-\d{2}-\d{2}$/.test(strVal)) return strVal;
-    try {
-      const parts = strVal.replace(/^[A-Za-z]+,\s*/, '').split(' ');
-      if (parts.length >= 3) {
-        const day = parts[0].padStart(2, '0');
-        const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-        const monthIdx = monthNames.findIndex((m) => m.toLowerCase() === parts[1].toLowerCase());
-        const year = parts[2];
-        if (monthIdx !== -1 && year) {
-          return `${year}-${String(monthIdx + 1).padStart(2, '0')}-${day}`;
-        }
-      }
-    } catch {}
-    return '';
-  };
-
-  const isoValue = getIsoDate(value);
+  const inputId = useId();
+  const parsed = parseDateFlexible(value);
+  const isoValue = parsed ? parsed.iso : '';
 
   const handleDateSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawVal = e.target.value;
@@ -326,19 +497,18 @@ const DatePickerField: React.FC<DatePickerFieldProps> = ({ label, value, onChang
       onChange('');
       return;
     }
-    const [yearStr, monthStr, dayStr] = rawVal.split('-');
-    const dateObj = new Date(Number(yearStr), Number(monthStr) - 1, Number(dayStr));
-    const dayName = dateObj.toLocaleDateString('id-ID', { weekday: 'long' });
-    const monthName = dateObj.toLocaleDateString('id-ID', { month: 'long' });
-    const formatted = `${dayName}, ${dateObj.getDate()} ${monthName} ${dateObj.getFullYear()}`;
-    onChange(formatted);
+    const parsedNew = parseDateFlexible(rawVal);
+    onChange(parsedNew ? parsedNew.formattedID : rawVal);
   };
 
   return (
     <div>
-      <label className="text-xs font-medium text-[#A1A1AA] tracking-wider uppercase block mb-1.5">{label}</label>
+      <label htmlFor={inputId} className="text-xs font-medium text-[#A1A1AA] tracking-wider uppercase block mb-1.5">
+        {label}
+      </label>
       <div className="relative">
         <input
+          id={inputId}
           type="date"
           required
           value={isoValue}
@@ -347,7 +517,7 @@ const DatePickerField: React.FC<DatePickerFieldProps> = ({ label, value, onChang
         />
         {value && (
           <span className="text-[10px] font-mono text-[#A1A1AA] block mt-1">
-            ✓ Terformat DB: {value}
+            Terformat DB: {value}
           </span>
         )}
       </div>
@@ -359,16 +529,19 @@ interface TimePickerFieldProps {
   label: string;
   value: string;
   onChange: (formattedTime: string) => void;
+  required?: boolean;
 }
 
-const TimePickerField: React.FC<TimePickerFieldProps> = ({ label, value, onChange }) => {
-  const getRawTime = (strVal: string): string => {
-    if (!strVal) return '';
-    const match = strVal.match(/(\d{2}:\d{2})/);
-    return match ? match[1] : '';
-  };
+const TimePickerField: React.FC<TimePickerFieldProps> = ({ label, value, onChange, required = true }) => {
+  const inputId = useId();
+  const parsed = parseTimeString(value);
+  const timeValue = parsed ? parsed.raw24 : '';
+  const [fallbackTz, setFallbackTz] = useState<string>('WIB');
 
-  const timeValue = getRawTime(value);
+  const activeTz =
+    parsed?.timezone && (TIMEZONE_OPTIONS as readonly string[]).includes(parsed.timezone)
+      ? parsed.timezone
+      : fallbackTz;
 
   const handleTimeSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawVal = e.target.value;
@@ -376,23 +549,53 @@ const TimePickerField: React.FC<TimePickerFieldProps> = ({ label, value, onChang
       onChange('');
       return;
     }
-    onChange(`${rawVal} WIB`);
+    const parsedInput = parseTimeString(rawVal);
+    if (parsedInput) {
+      onChange(formatTimeString(parsedInput.hours, parsedInput.minutes, activeTz));
+    } else {
+      onChange(`${rawVal} ${activeTz}`);
+    }
+  };
+
+  const handleTzChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const nextTz = e.target.value;
+    setFallbackTz(nextTz);
+    if (parsed) {
+      onChange(formatTimeString(parsed.hours, parsed.minutes, nextTz));
+    }
   };
 
   return (
     <div>
-      <label className="text-xs font-medium text-[#A1A1AA] tracking-wider uppercase block mb-1.5">{label}</label>
+      <label htmlFor={inputId} className="text-xs font-medium text-[#A1A1AA] tracking-wider uppercase block mb-1.5">
+        {label}
+      </label>
       <div className="relative">
-        <input
-          type="time"
-          required
-          value={timeValue}
-          onChange={handleTimeSelect}
-          className="w-full bg-[#0C0D12] border border-[#272A38] rounded-lg px-3 py-2 text-xs font-normal text-white outline-none [color-scheme:dark] cursor-pointer focus:border-white"
-        />
+        <div className="flex items-center gap-1.5">
+          <input
+            id={inputId}
+            type="time"
+            required={required}
+            value={timeValue}
+            onChange={handleTimeSelect}
+            className="flex-1 min-w-0 bg-[#0C0D12] border border-[#272A38] rounded-lg px-2.5 py-2 text-xs font-normal text-white outline-none [color-scheme:dark] cursor-pointer focus:border-white"
+          />
+          <select
+            aria-label={`${label} zona waktu`}
+            value={activeTz}
+            onChange={handleTzChange}
+            className="w-[70px] shrink-0 bg-[#0C0D12] border border-[#272A38] rounded-lg px-2 py-2 text-xs font-normal text-white outline-none cursor-pointer focus:border-white"
+          >
+            {TIMEZONE_OPTIONS.map((tz) => (
+              <option key={tz} value={tz} className="bg-[#14161F]">
+                {tz}
+              </option>
+            ))}
+          </select>
+        </div>
         {value && (
           <span className="text-[10px] font-mono text-[#A1A1AA] block mt-1">
-            ✓ Terformat DB: {value}
+            Terformat DB: {value}
           </span>
         )}
       </div>

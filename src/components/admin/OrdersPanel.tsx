@@ -32,6 +32,7 @@ export const OrdersPanel: React.FC<OrdersPanelProps> = ({
           />
         </div>
         <select
+          aria-label="Filter status pesanan"
           value={statusFilter}
           onChange={(e) => onStatusFilterChange(e.target.value)}
           className="bg-[#0C0D12] border border-[#272A38] rounded-lg px-3 py-2 text-xs font-normal text-white outline-none cursor-pointer focus:border-white"
@@ -39,6 +40,7 @@ export const OrdersPanel: React.FC<OrdersPanelProps> = ({
           <option value="" className="bg-[#14161F]">Semua Status</option>
           <option value="ISSUED" className="bg-[#14161F]">ISSUED</option>
           <option value="CHECKED_IN" className="bg-[#14161F]">CHECKED_IN</option>
+          <option value="REFUND_REQUESTED" className="bg-[#14161F]">REFUND_REQUESTED</option>
           <option value="REFUNDED" className="bg-[#14161F]">REFUNDED</option>
           <option value="CANCELLED" className="bg-[#14161F]">CANCELLED</option>
         </select>
@@ -85,12 +87,14 @@ export const OrdersPanel: React.FC<OrdersPanelProps> = ({
                 </td>
                 <td className="px-5 py-4 text-right">
                   <select
+                    aria-label={`Ubah status pesanan ${ord.orderCode}`}
                     value={ord.status}
                     onChange={(e) => onUpdateStatus(ord.id, e.target.value)}
                     className="bg-[#0C0D12] border border-[#272A38] rounded px-2.5 py-1 text-xs text-white outline-none cursor-pointer focus:border-white"
                   >
                     <option value="ISSUED" className="bg-[#14161F]">ISSUED</option>
                     <option value="CHECKED_IN" className="bg-[#14161F]">CHECKED_IN</option>
+                    <option value="REFUND_REQUESTED" className="bg-[#14161F]">REFUND_REQUESTED</option>
                     <option value="REFUNDED" className="bg-[#14161F]">REFUNDED</option>
                     <option value="CANCELLED" className="bg-[#14161F]">CANCELLED</option>
                   </select>
@@ -133,12 +137,14 @@ export const OrdersPanel: React.FC<OrdersPanelProps> = ({
             <div className="pt-2 border-t border-[#272A38] flex justify-between items-center">
               <span className="text-[10px] uppercase text-[#94A3B8] font-medium">Ubah Status:</span>
               <select
+                aria-label={`Ubah status pesanan ${ord.orderCode}`}
                 value={ord.status}
                 onChange={(e) => onUpdateStatus(ord.id, e.target.value)}
                 className="bg-[#0C0D12] border border-[#272A38] rounded px-2 py-1 text-xs text-[#F4F4F6] outline-none cursor-pointer"
               >
                 <option value="ISSUED" className="bg-[#14161F]">ISSUED</option>
                 <option value="CHECKED_IN" className="bg-[#14161F]">CHECKED_IN</option>
+                <option value="REFUND_REQUESTED" className="bg-[#14161F]">REFUND_REQUESTED</option>
                 <option value="REFUNDED" className="bg-[#14161F]">REFUNDED</option>
                 <option value="CANCELLED" className="bg-[#14161F]">CANCELLED</option>
               </select>

@@ -66,14 +66,14 @@ interface EventCardProps {
 const EventCard: React.FC<EventCardProps> = ({
   event: evt, onEdit, onDelete, onToggleClose, onAddCategory, onEditCategory, onDeleteCategory,
 }) => (
-  <div className="border border-[#272A38] bg-[#14161F] rounded-xl p-5 sm:p-6 flex flex-col justify-between gap-5 hover:border-white/30 transition-all shadow-xl">
+  <div className="border border-[#272A38] bg-[#14161F] rounded-xl p-4 sm:p-6 flex flex-col justify-between gap-5 hover:border-white/30 transition-all shadow-xl">
     <div>
-      <div className="flex gap-4">
-        <div className="relative w-20 h-20 sm:w-24 sm:h-24 shrink-0 overflow-hidden rounded-lg border border-[#272A38] bg-[#0C0D12]">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+        <div className="relative w-full sm:w-24 h-40 sm:h-24 shrink-0 overflow-hidden rounded-lg border border-[#272A38] bg-[#0C0D12]">
           <img src={evt.image} alt={evt.title} className="w-full h-full object-cover" />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2 mb-1">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-mono tracking-widest text-white uppercase border border-white/20 bg-white/10 px-2 py-0.5 rounded">
                 {evt.category || 'SIMFONI'}
