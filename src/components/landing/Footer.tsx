@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { ExternalLink, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { ExternalLink } from 'lucide-react';
 import { NAV_PAGES } from './data';
+import { FullscreenWorkspace } from '@/components/ui/fullscreen-sheet';
 
 const CONCERT_TERMS = [
   'Setiap akun atau identitas pemesan diperbolehkan memesan maksimal 4 tiket dalam 1 transaksi resmi.',
@@ -13,44 +14,35 @@ const CONCERT_TERMS = [
 export const Footer: React.FC = () => {
   const [showTermsModal, setShowTermsModal] = useState(false);
 
-  useEffect(() => {
-    if (!showTermsModal) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setShowTermsModal(false);
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showTermsModal]);
-
   return (
-    <footer className="border-t border-line bg-canvas-alt">
-      <div className="mx-auto max-w-[1400px] px-6 sm:px-8 md:px-10 pt-16 sm:pt-20 pb-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12 pb-12 border-b border-line">
+    <footer className="border-t border-[#272A38] bg-[#14161F]">
+      <div className="mx-auto max-w-[1400px] px-6 sm:px-8 md:px-10 pt-14 sm:pt-16 pb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12 pb-12 border-b border-[#272A38]">
           <div className="sm:col-span-2 lg:col-span-1">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 bg-brand rounded-lg flex items-center justify-center">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shrink-0">
                 <span className="text-sm font-bold text-[#0C0D12] tracking-[0.05em]">S</span>
               </div>
               <div>
-                <span className="text-sm font-semibold text-ink tracking-tight block leading-tight">SymphoniaTic</span>
-                <span className="text-[10px] font-medium text-muted tracking-[0.1em] uppercase block">Harmoni Nusantara</span>
+                <span className="text-sm font-semibold text-white tracking-tight block leading-tight">SymphoniaTic</span>
+                <span className="text-xs font-medium text-[#A1A1AA] tracking-wider uppercase block">Harmoni Nusantara</span>
               </div>
             </div>
-            <p className="text-sm text-muted leading-relaxed max-w-[280px]">
+            <p className="text-sm text-[#A1A1AA] leading-relaxed max-w-[280px] m-0">
               Platform tiket resmi untuk pertunjukan orkestra, simfoni, balet, dan musik klasik terbaik di Indonesia.
             </p>
           </div>
 
           <div>
-            <p className="text-xs font-semibold text-ink tracking-wide uppercase mb-5">Navigasi</p>
-            <div className="flex flex-col gap-3 items-start">
+            <p className="text-xs font-semibold text-white tracking-wide uppercase mb-4">Navigasi</p>
+            <div className="flex flex-col gap-2.5 items-start">
               {NAV_PAGES.map((p) =>
                 p.href === '#syarat-ketentuan' ? (
                   <button
                     key={p.label}
                     type="button"
                     onClick={() => setShowTermsModal(true)}
-                    className="text-sm text-ink-soft hover:text-brand transition-colors duration-200 bg-transparent border-none p-0 cursor-pointer text-left"
+                    className="min-h-[36px] text-sm text-[#A1A1AA] hover:text-white transition-colors bg-transparent border-none p-0 text-left"
                   >
                     {p.label}
                   </button>
@@ -58,7 +50,7 @@ export const Footer: React.FC = () => {
                   <a
                     key={p.label}
                     href={p.href}
-                    className="text-sm text-ink-soft hover:text-brand transition-colors duration-200 no-underline"
+                    className="min-h-[36px] inline-flex items-center text-sm text-[#A1A1AA] hover:text-white transition-colors no-underline"
                   >
                     {p.label}
                   </a>
@@ -68,24 +60,24 @@ export const Footer: React.FC = () => {
           </div>
 
           <div>
-            <p className="text-xs font-semibold text-ink tracking-wide uppercase mb-5">Layanan</p>
-            <div className="flex flex-col gap-3">
-              <a href="/redeem" className="text-sm text-ink-soft hover:text-brand transition-colors duration-200 no-underline">
+            <p className="text-xs font-semibold text-white tracking-wide uppercase mb-4">Layanan</p>
+            <div className="flex flex-col gap-2.5 items-start">
+              <a href="/redeem" className="min-h-[36px] inline-flex items-center text-sm text-[#A1A1AA] hover:text-white transition-colors no-underline">
                 Cek E-Ticket
               </a>
-              <a href="/refund" className="text-sm text-ink-soft hover:text-brand transition-colors duration-200 no-underline">
+              <a href="/refund" className="min-h-[36px] inline-flex items-center text-sm text-[#A1A1AA] hover:text-white transition-colors no-underline">
                 Pengajuan Refund
               </a>
-              <a href="/admin" className="text-sm text-ink-soft hover:text-brand transition-colors duration-200 no-underline">
+              <a href="/admin" className="min-h-[36px] inline-flex items-center text-sm text-[#A1A1AA] hover:text-white transition-colors no-underline">
                 Portal Admin
               </a>
-              <span className="text-sm text-muted mt-1">support@symphoniatic.id</span>
+              <span className="text-sm text-[#E4E4E7] mt-1">support@symphoniatic.id</span>
             </div>
           </div>
 
           <div>
-            <p className="text-xs font-semibold text-ink tracking-wide uppercase mb-5">Ikuti Kami</p>
-            <div className="flex flex-col gap-3">
+            <p className="text-xs font-semibold text-white tracking-wide uppercase mb-4">Ikuti Kami</p>
+            <div className="flex flex-col gap-2.5 items-start">
               {[
                 { name: 'Instagram', href: 'https://instagram.com' },
                 { name: 'Twitter / X', href: 'https://x.com' },
@@ -97,13 +89,14 @@ export const Footer: React.FC = () => {
                   href={s.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-ink-soft hover:text-brand transition-colors duration-200 no-underline inline-flex items-center gap-1.5 group"
+                  className="min-h-[36px] text-sm text-[#A1A1AA] hover:text-white transition-colors no-underline inline-flex items-center gap-1.5 group"
                 >
                   <span>{s.name}</span>
                   <ExternalLink
-                    size={10}
-                    strokeWidth={1.5}
-                    className="text-muted opacity-60 group-hover:opacity-100 transition-opacity duration-200"
+                    size={12}
+                    strokeWidth={1.6}
+                    className="text-[#A1A1AA] group-hover:text-white transition-colors"
+                    aria-hidden="true"
                   />
                 </a>
               ))}
@@ -112,19 +105,19 @@ export const Footer: React.FC = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-8">
-          <p className="text-sm text-muted m-0">
+          <p className="text-sm text-[#A1A1AA] m-0">
             &copy; {new Date().getFullYear()} SymphoniaTic Production. Seluruh hak cipta dilindungi.
           </p>
-          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+          <div className="flex flex-wrap items-center gap-5">
             <a
               href="/refund"
-              className="text-xs text-muted hover:text-brand transition-colors duration-200 no-underline"
+              className="text-xs text-[#A1A1AA] hover:text-white transition-colors no-underline py-1"
             >
-              Kebijakan Tiket & Refund
+              Kebijakan Tiket &amp; Refund
             </a>
             <a
               href="/events"
-              className="text-xs text-muted hover:text-brand transition-colors duration-200 no-underline"
+              className="text-xs text-[#A1A1AA] hover:text-white transition-colors no-underline py-1"
             >
               Panduan Masuk Hall
             </a>
@@ -132,57 +125,43 @@ export const Footer: React.FC = () => {
         </div>
       </div>
 
-      {showTermsModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
-          onClick={() => setShowTermsModal(false)}
-        >
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="footer-terms-title"
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-lg rounded-2xl border border-[#272A38] bg-[#14161F] p-6 shadow-2xl text-[#F4F4F6]"
-          >
-            <div className="flex items-center justify-between pb-4 border-b border-[#272A38]">
-              <h3 id="footer-terms-title" className="text-base font-bold text-white m-0">
-                Syarat & Ketentuan Resmi
-              </h3>
-              <button
-                type="button"
-                onClick={() => setShowTermsModal(false)}
-                aria-label="Tutup syarat dan ketentuan"
-                className="p-1.5 rounded-lg bg-[#0C0D12] border border-[#272A38] text-[#A1A1AA] hover:text-white cursor-pointer"
-              >
-                <X size={16} strokeWidth={1.8} />
-              </button>
-            </div>
-            <ul className="mt-4 space-y-3 text-sm text-[#D1D5DB] leading-relaxed">
-              {CONCERT_TERMS.map((item, idx) => (
-                <li key={idx} className="flex items-start gap-2.5">
-                  <span className="mt-2 h-1.5 w-1.5 rounded-full bg-white shrink-0" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-6 pt-4 border-t border-[#272A38] flex items-center justify-end gap-3">
-              <a
-                href="/refund"
-                className="px-4 py-2 rounded-lg border border-[#272A38] bg-[#0C0D12] text-xs font-semibold text-white hover:border-white/40 transition-colors"
-              >
-                Portal Refund
-              </a>
-              <button
-                type="button"
-                onClick={() => setShowTermsModal(false)}
-                className="px-4 py-2 rounded-lg bg-white text-[#0C0D12] text-xs font-semibold hover:bg-neutral-200 transition-colors cursor-pointer"
-              >
-                Tutup
-              </button>
-            </div>
+      <FullscreenWorkspace
+        isOpen={showTermsModal}
+        onClose={() => setShowTermsModal(false)}
+        eyebrow="SymphoniaTic"
+        title="Syarat & Ketentuan Resmi"
+        subtitle="Ketentuan pemesanan tiket dan tata tertib pertunjukan"
+        maxWidthClass="max-w-2xl"
+        backLabel="Tutup"
+        footer={
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+            <a
+              href="/refund"
+              className="min-h-[44px] px-5 py-2.5 rounded-lg border border-[#3E4357] bg-[#0C0D12] text-sm font-semibold text-white hover:border-white/60 transition-colors inline-flex items-center justify-center"
+            >
+              Buka Portal Refund
+            </a>
+            <button
+              type="button"
+              onClick={() => setShowTermsModal(false)}
+              className="min-h-[44px] px-6 py-2.5 rounded-lg bg-white text-[#0C0D12] text-sm font-semibold hover:bg-neutral-200 transition-colors"
+            >
+              Saya Mengerti
+            </button>
           </div>
-        </div>
-      )}
+        }
+      >
+        <ul className="space-y-3.5 text-sm text-[#E4E4E7] leading-relaxed list-none p-0 m-0">
+          {CONCERT_TERMS.map((item, idx) => (
+            <li key={idx} className="flex items-start gap-3 p-4 rounded-xl bg-[#14161F] border border-[#272A38]">
+              <span className="font-mono text-xs font-bold text-[#A1A1AA] mt-0.5 shrink-0">
+                0{idx + 1}
+              </span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </FullscreenWorkspace>
     </footer>
   );
 };

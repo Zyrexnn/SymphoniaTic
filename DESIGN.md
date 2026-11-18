@@ -33,7 +33,7 @@
 | `--color-border` | `#272A38` | Subtle Border | Structural dividers and card outlines |
 | `--color-text-primary` | `#FFFFFF` | Chalk White | Primary titles, headlines, active tabs, buttons |
 | `--color-text-secondary` | `#A1A1AA` | Silver Ash | Metadata, dates, venues, category descriptions |
-| `--color-text-tertiary` | `#71717A` | Slate Muted | Inactive labels, table headers, placeholders |
+| `--color-text-tertiary` | `#94A3B8` | Slate Muted | Helper hints, table headers, input placeholders (7.03:1+ contrast) |
 
 ### Interactive Actions
 - **Primary Action:** `bg-white text-black hover:bg-neutral-200` (`rounded-lg`)

@@ -1,27 +1,26 @@
 @import "tailwindcss";
 
 @theme {
-  /* Dark Monochrome Atelier (Strict Black & White System Design) */
   --color-canvas: #0C0D12;
   --color-canvas-alt: #14161F;
   --color-surface: #14161F;
   --color-surface-raised: #1D202D;
   --color-border: #272A38;
+  --color-border-strong: #3E4357;
   --color-border-subtle: #1F222E;
 
-  /* Monochrome Inks & Typography */
+  /* Monochrome inks calibrated to pass WCAG AA (4.5:1+) on #0C0D12 and #14161F */
   --color-text-primary: #FFFFFF;
   --color-text-secondary: #A1A1AA;
-  --color-text-tertiary: #71717A;
+  --color-text-tertiary: #94A3B8;
   --color-chalk: #FFFFFF;
   --color-ash: #A1A1AA;
   --color-ink: #FFFFFF;
   --color-ink-soft: #A1A1AA;
   --color-line: #272A38;
-  --color-muted: #71717A;
+  --color-muted: #94A3B8;
   --color-muted-foreground: #A1A1AA;
 
-  /* Primary Brand Action (High-Contrast Pure White) */
   --color-brand: #FFFFFF;
   --color-brand-dark: #E4E4E7;
   --color-brand-light: #1D202D;
@@ -35,7 +34,6 @@
   --color-accent-foreground: #0C0D12;
   --color-ring: #FFFFFF;
 
-  /* Seats & Status Matrix (Monochrome Discipline) */
   --color-seat-available: #272A38;
   --color-seat-selected: #FFFFFF;
   --color-seat-sold: #181920;
@@ -43,82 +41,20 @@
   --color-status-warning: #A1A1AA;
   --color-status-danger: #EF4444;
 
-  /* Radius tokens */
   --radius-btn: 8px;
   --radius-button: 8px;
   --radius-card: 12px;
   --radius-modal: 16px;
 
-  /* Semantic Containers */
   --color-background: #0C0D12;
   --color-foreground: #FFFFFF;
   --color-card: #14161F;
   --color-card-foreground: #FFFFFF;
   --color-input: #1D202D;
-
   --color-obsidian: #0C0D12;
 
   --font-display: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
-
-  --text-display: 48px;
-  --leading-display: 1.0;
-  --tracking-display: -0.56px;
-
-  --text-heading-lg: 32px;
-  --leading-heading-lg: 1.2;
-  --tracking-heading-lg: -0.26px;
-
-  --text-heading: 28px;
-  --leading-heading: 1.2;
-  --tracking-heading: -0.2px;
-
-  --text-heading-sm: 24px;
-  --leading-heading-sm: 1.4;
-  --tracking-heading-sm: -0.14px;
-
-  --text-subheading: 20px;
-  --leading-subheading: 1.4;
-  --tracking-subheading: -0.1px;
-
-  --text-body: 16px;
-  --leading-body: 1.5;
-  --tracking-body: -0.05px;
-
-  --font-weight-light: 300;
-  --font-weight-regular: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-
-  --spacing-unit: 4px;
-  --spacing-1: 4px;
-  --spacing-2: 8px;
-  --spacing-3: 12px;
-  --spacing-4: 16px;
-  --spacing-5: 20px;
-  --spacing-6: 24px;
-  --spacing-7: 28px;
-  --spacing-8: 32px;
-  --spacing-9: 36px;
-  --spacing-10: 40px;
-  --spacing-11: 44px;
-  --spacing-12: 48px;
-  --spacing-13: 52px;
-  --spacing-14: 56px;
-  --spacing-15: 60px;
-  --spacing-16: 64px;
-
-  --section-gap: 120px;
-  --card-padding: 0px;
-  --element-gap: 20px;
-
-  --radius-tags: 6px;
-  --radius-cards: 12px;
-  --radius-images: 8px;
-  --radius-buttons: 8px;
-  --radius-nav: 8px;
-
-  --surface-obsidian-canvas: #0C0D12;
 }
 
 @layer base {
@@ -126,6 +62,8 @@
     font-family: var(--font-display);
     font-feature-settings: "rlig" 1, "calt" 1;
     scroll-behavior: smooth;
+    scroll-padding-top: 88px;
+    scroll-padding-bottom: 96px;
     background: #0C0D12;
     color: #FFFFFF;
     overflow-x: hidden;
@@ -138,6 +76,7 @@
     overflow-x: hidden;
     background: #0C0D12;
     color: #FFFFFF;
+    font-weight: 400;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -148,6 +87,36 @@
     height: auto;
   }
 
+  /* Restore interactive pointer affordance cleared by CSS resets (R-39) */
+  a[href],
+  button:not(:disabled),
+  select:not(:disabled),
+  summary,
+  label[for],
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [role="tab"]:not([aria-disabled="true"]),
+  [role="switch"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  select:disabled,
+  input:disabled,
+  textarea:disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+
+  /* Ensure focused controls scroll clear of sticky headers and mobile keyboards */
+  input:focus,
+  textarea:focus,
+  select:focus {
+    scroll-margin-top: 96px;
+    scroll-margin-bottom: 112px;
+  }
+
   ::selection {
     background: #FFFFFF;
     color: #0C0D12;
@@ -156,26 +125,26 @@
   input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
-    height: 2px;
-    background: #272A38;
+    height: 4px;
+    background: #3E4357;
     outline: none;
-    border-radius: 0;
+    border-radius: 2px;
   }
   input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 10px;
-    height: 10px;
+    width: 14px;
+    height: 14px;
     background: #FFFFFF;
     cursor: pointer;
-    border-radius: 0;
+    border-radius: 2px;
   }
   input[type="range"]::-moz-range-thumb {
-    width: 10px;
-    height: 10px;
+    width: 14px;
+    height: 14px;
     background: #FFFFFF;
     cursor: pointer;
-    border-radius: 0;
+    border-radius: 2px;
     border: none;
   }
 
@@ -184,25 +153,21 @@
     text-decoration: none;
   }
 
-  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: #14161F; }
-  ::-webkit-scrollbar-thumb { background: #272A38; border-radius: 4px; }
-  ::-webkit-scrollbar-thumb:hover { background: #3E4357; }
+  ::-webkit-scrollbar-thumb { background: #3E4357; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #525870; }
 
   @keyframes fade-in {
     from { opacity: 0; }
     to { opacity: 1; }
   }
   .animate-fade-in {
-    animation: fade-in 0.6s ease backwards;
+    animation: fade-in 0.35s ease backwards;
   }
 
-  .delay-1 { animation-delay: 0.05s; }
-  .delay-2 { animation-delay: 0.12s; }
-  .delay-3 { animation-delay: 0.2s; }
-  .delay-4 { animation-delay: 0.3s; }
-
   @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
     .animate-fade-in { animation: none; }
   }
 
@@ -211,49 +176,22 @@
 }
 
 .btn {
-  @apply inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer;
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 min-h-[44px] text-sm font-medium transition-colors cursor-pointer;
 }
 .btn--primary {
   @apply bg-white text-[#0C0D12] font-semibold hover:bg-neutral-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0C0D12];
 }
 .btn--secondary {
-  @apply bg-transparent border border-white/20 text-[#FFFFFF] hover:bg-white/10 hover:border-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0C0D12];
+  @apply bg-transparent border border-white/25 text-[#FFFFFF] hover:bg-white/10 hover:border-white/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0C0D12];
 }
 .btn--ghost {
   @apply bg-transparent text-[#A1A1AA] hover:text-white hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0C0D12];
 }
 
 .card {
-  @apply rounded-xl bg-[#14161F] border border-[#272A38] text-[#FFFFFF] transition-all duration-300 hover:border-white/30;
+  @apply rounded-xl bg-[#14161F] border border-[#272A38] text-[#FFFFFF] transition-colors duration-200 hover:border-white/30;
 }
 
 .badge {
   @apply inline-flex items-center gap-1.5 rounded-md text-xs font-medium uppercase tracking-wider;
-}
-
-.nav-link {
-  @apply relative py-1 text-sm xl:text-base tracking-[-0.02em] transition-colors duration-200 text-[#A1A1AA] hover:text-white;
-}
-.nav-link::after {
-  @apply absolute bottom-0 left-0 h-[1px] bg-white transition-all duration-300;
-}
-.nav-link--active {
-  @apply text-white font-medium;
-}
-.nav-link--active::after {
-  @apply w-full;
-}
-
-.focus-visible\:outline-none:focus-visible {
-  @apply outline-none;
-}
-.focus-visible\:ring-2:focus-visible {
-  @apply ring-2 ring-offset-2;
-}
-.focus-visible\:ring-white:focus-visible {
-  @apply ring-white;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .animate-fade-in { animation: none; }
 }

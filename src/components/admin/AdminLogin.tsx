@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Lock, User, ArrowLeft, LogIn, KeyRound } from 'lucide-react';
+import React, { useState, useId } from 'react';
+import { Lock, User, ArrowLeft, LogIn, KeyRound, Eye, EyeOff } from 'lucide-react';
+import { fieldInputBase } from '@/components/ui/form-controls';
 
 interface AdminLoginProps {
   username: string;
@@ -15,121 +16,141 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
   username, password, error, isLoading,
   onUsernameChange, onPasswordChange, onSubmit,
 }) => {
-  const fillDemoCredentials = () => {
-    onUsernameChange('admin');
-    onPasswordChange('123');
-  };
+  const [showPassword, setShowPassword] = useState(false);
+  const usernameId = useId();
+  const passwordId = useId();
 
   return (
-    <div className="min-h-screen w-full bg-[#0C0D12] text-white flex items-center justify-center p-4 sm:p-6 relative overflow-hidden font-sans">
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-white/[0.02] rounded-full blur-3xl pointer-events-none" />
+    <div className="min-h-[100dvh] w-full bg-[#0C0D12] text-white flex flex-col justify-between p-5 sm:p-8 font-sans">
+      <div className="mx-auto w-full max-w-5xl">
+        <a
+          href="/"
+          className="inline-flex items-center gap-2 min-h-[44px] px-3 py-2 text-xs font-medium text-[#A1A1AA] hover:text-white rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+        >
+          <ArrowLeft size={15} aria-hidden="true" />
+          <span>Kembali ke Halaman Utama</span>
+        </a>
+      </div>
 
-      <div className="w-full max-w-[420px] relative z-10">
-        <div className="border border-[#272A38] bg-[#14161F] p-8 sm:p-10 space-y-6 shadow-2xl rounded-2xl">
-          <div className="text-center">
-            <div className="mb-4 inline-flex">
-              <div className="w-12 h-12 rounded-xl border border-[#272A38] flex items-center justify-center bg-[#0C0D12]">
-                <span className="text-lg font-bold text-white tracking-[0.1em]">S</span>
+      <main className="mx-auto w-full max-w-[440px] my-auto py-8">
+        <div className="border border-[#272A38] bg-[#14161F] p-6 sm:p-9 space-y-6 rounded-2xl">
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-11 h-11 rounded-xl border border-[#3E4357] flex items-center justify-center bg-[#0C0D12]">
+                <span className="text-base font-bold text-white tracking-[0.1em]">S</span>
+              </div>
+              <div>
+                <span className="text-sm font-semibold text-white block">SymphoniaTic</span>
+                <span className="text-[11px] font-medium text-[#A1A1AA] tracking-wider uppercase block">
+                  Portal Administrator &amp; Gate
+                </span>
               </div>
             </div>
-            <h1 className="text-xl font-semibold text-white tracking-tight m-0">SymphoniaTic</h1>
-            <p className="text-[10px] font-semibold text-[#A1A1AA] tracking-[0.2em] uppercase m-0 mt-2">
-              PORTAL ADMINISTRATOR
-            </p>
-            <div className="w-8 h-px bg-[#272A38] mx-auto mt-4" />
-            <p className="text-xs font-normal text-[#A1A1AA] m-0 mt-3 leading-relaxed">
-              Masuk untuk mengelola postingan konser, transaksi tiket, dan permohonan refund
+            <h1 className="text-2xl font-semibold text-white tracking-tight m-0">
+              Masuk Panel Operasional
+            </h1>
+            <p className="text-sm text-[#A1A1AA] m-0 mt-2 leading-relaxed">
+              Kelola jadwal konser, transaksi tiket, pengajuan refund, dan pemindaian QR di gerbang masuk.
             </p>
           </div>
 
-          <form onSubmit={onSubmit} className="space-y-4">
+          <form onSubmit={onSubmit} className="space-y-5">
             {error && (
-              <div className="p-3 rounded-lg border border-rose-500/30 bg-rose-500/10 text-rose-300 text-xs font-normal leading-relaxed">
+              <div role="alert" className="p-3.5 rounded-lg border border-rose-500/40 bg-rose-500/10 text-rose-200 text-sm leading-relaxed">
                 {error}
               </div>
             )}
 
-            <div>
-              <label className="text-[11px] font-medium text-[#A1A1AA] tracking-wider uppercase block mb-2">
-                Username Admin
+            <div className="space-y-1.5">
+              <label htmlFor={usernameId} className="text-xs font-medium text-[#E4E4E7] block">
+                Username
               </label>
               <div className="relative">
-                <User size={14} className="text-[#71717A] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <User size={16} className="text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" aria-hidden="true" />
                 <input
+                  id={usernameId}
                   type="text"
                   required
+                  autoComplete="username"
                   placeholder="admin"
                   value={username}
                   onChange={(e) => onUsernameChange(e.target.value)}
-                  className="w-full bg-[#0C0D12] border border-[#272A38] rounded-lg pl-10 pr-3.5 py-2.5 text-xs text-white placeholder-[#71717A] outline-none focus:border-white transition-colors"
+                  className={`${fieldInputBase} pl-10`}
                 />
               </div>
             </div>
 
-            <div>
-              <label className="text-[11px] font-medium text-[#A1A1AA] tracking-wider uppercase block mb-2">
-                Password
+            <div className="space-y-1.5">
+              <label htmlFor={passwordId} className="text-xs font-medium text-[#E4E4E7] block">
+                Kata Sandi
               </label>
               <div className="relative">
-                <Lock size={14} className="text-[#71717A] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <Lock size={16} className="text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" aria-hidden="true" />
                 <input
-                  type="password"
+                  id={passwordId}
+                  type={showPassword ? 'text' : 'password'}
                   required
-                  placeholder="••••••••"
+                  autoComplete="current-password"
+                  placeholder="Masukkan kata sandi"
                   value={password}
                   onChange={(e) => onPasswordChange(e.target.value)}
-                  className="w-full bg-[#0C0D12] border border-[#272A38] rounded-lg pl-10 pr-3.5 py-2.5 text-xs text-white placeholder-[#71717A] outline-none focus:border-white transition-colors"
+                  className={`${fieldInputBase} pl-10 pr-12`}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+                  className="absolute right-1 top-1/2 -translate-y-1/2 h-10 w-10 inline-flex items-center justify-center text-[#94A3B8] hover:text-white rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                >
+                  {showPassword ? <EyeOff size={16} aria-hidden="true" /> : <Eye size={16} aria-hidden="true" />}
+                </button>
               </div>
             </div>
 
-            <div className="space-y-1.5 pt-1">
-              <p className="text-[10px] text-[#71717A] font-medium uppercase tracking-wider mb-1">Pilihan Login Cepat Demo:</p>
-              <button
-                type="button"
-                onClick={() => { onUsernameChange('admin'); onPasswordChange('123'); }}
-                className="w-full py-2 px-3 border border-[#272A38] bg-[#0C0D12] hover:border-white/40 rounded-lg text-[#A1A1AA] hover:text-white text-[11px] font-normal transition-colors cursor-pointer flex items-center justify-between"
-              >
-                <span className="flex items-center gap-1.5"><KeyRound size={12} className="text-white" /> Administrator Penuh</span>
-                <span className="font-mono text-white">admin / 123</span>
-              </button>
+            <div className="space-y-2 pt-1">
+              <p className="text-xs text-[#94A3B8] font-medium m-0">Isi cepat akun demo lokal:</p>
+              <div className="grid grid-cols-1 gap-2">
+                <button
+                  type="button"
+                  onClick={() => { onUsernameChange('admin'); onPasswordChange('123'); }}
+                  className="w-full min-h-[44px] py-2.5 px-3.5 border border-[#3E4357] bg-[#0C0D12] hover:border-white/60 rounded-lg text-[#E4E4E7] hover:text-white text-xs transition-colors flex items-center justify-between"
+                >
+                  <span className="flex items-center gap-2"><KeyRound size={14} aria-hidden="true" /> Administrator Penuh</span>
+                  <span className="font-mono text-white">admin / 123</span>
+                </button>
 
-              <button
-                type="button"
-                onClick={() => { onUsernameChange('petugas'); onPasswordChange('123'); }}
-                className="w-full py-2 px-3 border border-emerald-500/30 bg-emerald-500/5 hover:bg-emerald-500/10 rounded-lg text-emerald-400 text-[11px] font-normal transition-colors cursor-pointer flex items-center justify-between"
-              >
-                <span className="flex items-center gap-1.5"><KeyRound size={12} /> Petugas Gate Scanner</span>
-                <span className="font-mono text-emerald-300">petugas / 123</span>
-              </button>
+                <button
+                  type="button"
+                  onClick={() => { onUsernameChange('petugas'); onPasswordChange('123'); }}
+                  className="w-full min-h-[44px] py-2.5 px-3.5 border border-emerald-500/35 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg text-emerald-300 text-xs transition-colors flex items-center justify-between"
+                >
+                  <span className="flex items-center gap-2"><KeyRound size={14} aria-hidden="true" /> Petugas Gate Scanner</span>
+                  <span className="font-mono text-emerald-200">petugas / 123</span>
+                </button>
+              </div>
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
-              className={`w-full py-3 px-4 bg-white text-[#0C0D12] hover:bg-neutral-200 font-semibold text-xs uppercase tracking-wider rounded-lg transition-all cursor-pointer flex items-center justify-center gap-2 shadow-md ${
-                isLoading ? 'opacity-40 cursor-not-allowed' : 'active:scale-95'
-              }`}
+              className="w-full min-h-[48px] py-3 px-4 bg-white text-[#0C0D12] hover:bg-neutral-200 font-semibold text-sm rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-40"
             >
               {isLoading ? (
                 <span>Memverifikasi...</span>
               ) : (
                 <>
-                  <LogIn size={14} />
+                  <LogIn size={16} aria-hidden="true" />
                   <span>Masuk ke Dashboard</span>
                 </>
               )}
             </button>
           </form>
-
-          <div className="text-center pt-2 border-t border-[#272A38]">
-            <a href="/" className="text-[11px] font-medium text-[#A1A1AA] hover:text-white no-underline inline-flex items-center gap-1.5 transition-colors">
-              <ArrowLeft size={12} />
-              <span>Kembali ke Halaman Utama</span>
-            </a>
-          </div>
         </div>
-      </div>
+      </main>
+
+      <footer className="mx-auto w-full max-w-5xl text-center text-xs text-[#94A3B8]">
+        &copy; {new Date().getFullYear()} SymphoniaTic Production
+      </footer>
     </div>
   );
 };

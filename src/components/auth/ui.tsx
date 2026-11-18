@@ -1,32 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useId } from 'react';
 import type { ReactNode } from 'react';
 import { ArrowLeft, Loader2, Eye, EyeOff } from 'lucide-react';
 
 export const inputClass = [
-  'w-full bg-[#14161F]',
-  'border border-[#272A38] focus:border-white focus:ring-1 focus:ring-white',
-  'rounded-lg px-4 py-3 text-sm text-white',
-  'placeholder:text-[#71717A]',
-  'outline-none transition-all duration-200',
+  'w-full min-h-[46px] bg-[#14161F]',
+  'border border-[#3E4357] focus:border-white focus:ring-2 focus:ring-white/25',
+  'rounded-lg px-4 py-2.5 text-base sm:text-sm text-white',
+  'placeholder:text-[#94A3B8]',
+  'outline-none transition-colors',
 ].join(' ');
 
 export const btnPrimary = [
-  'w-full inline-flex items-center justify-center gap-2',
-  'px-6 py-3.5',
-  'bg-white text-black',
-  'text-xs font-semibold tracking-wider uppercase rounded-lg',
+  'w-full min-h-[48px] inline-flex items-center justify-center gap-2',
+  'px-6 py-3',
+  'bg-white text-[#0C0D12]',
+  'text-sm font-semibold rounded-lg',
   'hover:bg-neutral-200',
-  'transition-all duration-200 shadow-sm cursor-pointer',
+  'transition-colors cursor-pointer',
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0C0D12]',
   'disabled:opacity-40 disabled:cursor-not-allowed',
 ].join(' ');
 
 export const btnGhost = [
-  'inline-flex items-center justify-center gap-2',
+  'min-h-[44px] inline-flex items-center justify-center gap-2',
   'px-4 py-2.5',
-  'border border-[#272A38] bg-[#14161F] text-[#A1A1AA]',
+  'border border-[#3E4357] bg-[#14161F] text-[#E4E4E7]',
   'text-xs font-medium tracking-wider uppercase rounded-lg',
-  'hover:border-white/40 hover:text-white',
-  'transition-all duration-200 cursor-pointer',
+  'hover:border-white/60 hover:text-white',
+  'transition-colors cursor-pointer',
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white',
   'disabled:opacity-40 disabled:cursor-not-allowed',
 ].join(' ');
 
@@ -39,23 +41,27 @@ export const Field: React.FC<{
   required?: boolean;
   autoComplete?: string;
   maxLength?: number;
-}> = ({ label, type = 'text', value, onChange, placeholder, required, autoComplete, maxLength }) => (
-  <label className="block">
-    <span className="block text-[10px] font-mono uppercase tracking-[0.2em] text-[#A1A1AA] mb-2">
-      {label}
-    </span>
-    <input
-      type={type}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder}
-      required={required}
-      autoComplete={autoComplete}
-      maxLength={maxLength}
-      className={inputClass}
-    />
-  </label>
-);
+}> = ({ label, type = 'text', value, onChange, placeholder, required, autoComplete, maxLength }) => {
+  const inputId = useId();
+  return (
+    <div className="block space-y-1.5">
+      <label htmlFor={inputId} className="block text-xs font-medium text-[#E4E4E7]">
+        {label}
+      </label>
+      <input
+        id={inputId}
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        required={required}
+        autoComplete={autoComplete}
+        maxLength={maxLength}
+        className={inputClass}
+      />
+    </div>
+  );
+};
 
 export const PasswordField: React.FC<{
   label: string;
@@ -66,51 +72,53 @@ export const PasswordField: React.FC<{
   autoComplete?: string;
 }> = ({ label, value, onChange, placeholder, required, autoComplete }) => {
   const [visible, setVisible] = useState(false);
+  const inputId = useId();
 
   return (
-    <label className="block">
-      <span className="block text-[10px] font-mono uppercase tracking-[0.2em] text-[#A1A1AA] mb-2">
+    <div className="block space-y-1.5">
+      <label htmlFor={inputId} className="block text-xs font-medium text-[#E4E4E7]">
         {label}
-      </span>
+      </label>
       <div className="relative">
         <input
+          id={inputId}
           type={visible ? 'text' : 'password'}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           required={required}
           autoComplete={autoComplete}
-          className={inputClass + ' pr-11'}
+          className={inputClass + ' pr-12'}
         />
         <button
           type="button"
           onClick={() => setVisible((v) => !v)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-[#71717A] hover:text-white transition-colors"
-          tabIndex={-1}
+          aria-label={visible ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+          className="absolute right-1 top-1/2 -translate-y-1/2 h-10 w-10 inline-flex items-center justify-center text-[#94A3B8] hover:text-white rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
         >
-          {visible ? <EyeOff size={16} strokeWidth={1.5} /> : <Eye size={16} strokeWidth={1.5} />}
+          {visible ? <EyeOff size={17} strokeWidth={1.7} aria-hidden="true" /> : <Eye size={17} strokeWidth={1.7} aria-hidden="true" />}
         </button>
       </div>
-    </label>
+    </div>
   );
 };
 
 export const ErrorText: React.FC<{ children?: ReactNode }> = ({ children }) =>
   children ? (
-    <div className="px-3 py-2.5 rounded-lg bg-rose-500/10 border border-rose-500/20">
-      <span className="text-xs text-rose-300 font-normal leading-relaxed">{children}</span>
+    <div role="alert" className="px-4 py-3 rounded-lg bg-rose-500/10 border border-rose-500/40">
+      <span className="text-xs sm:text-sm text-rose-200 font-normal leading-relaxed">{children}</span>
     </div>
   ) : null;
 
 export const InfoText: React.FC<{ children?: ReactNode }> = ({ children }) =>
   children ? (
-    <div className="px-3 py-2.5 rounded-lg bg-[#14161F] border border-[#272A38]">
-      <span className="text-xs text-[#A1A1AA] font-normal leading-relaxed">{children}</span>
+    <div role="status" className="px-4 py-3 rounded-lg bg-[#14161F] border border-[#3E4357]">
+      <span className="text-xs sm:text-sm text-[#E4E4E7] font-normal leading-relaxed">{children}</span>
     </div>
   ) : null;
 
 export const Spinner: React.FC<{ className?: string }> = ({ className }) => (
-  <Loader2 className={`animate-spin ${className || ''}`} strokeWidth={1.5} />
+  <Loader2 className={`animate-spin ${className || ''}`} strokeWidth={1.7} aria-hidden="true" />
 );
 
 export const AuthShell: React.FC<{
@@ -119,29 +127,31 @@ export const AuthShell: React.FC<{
   children: ReactNode;
   backHref?: string;
 }> = ({ title, subtitle, children, backHref }) => (
-  <div className="min-h-screen bg-[#0C0D12] text-white flex items-center justify-center px-4 py-12 sm:py-16 selection:bg-white selection:text-black">
-    <div className="relative w-full max-w-[400px]">
+  <div className="min-h-[100dvh] bg-[#0C0D12] text-white flex flex-col justify-between px-4 sm:px-8 py-8 sm:py-12 selection:bg-white selection:text-black">
+    <div className="mx-auto w-full max-w-[440px] my-auto">
       {backHref && (
         <a
           href={backHref}
-          className="inline-flex items-center gap-1.5 text-xs font-mono text-[#71717A] hover:text-white transition-colors mb-8 group"
+          className="inline-flex items-center gap-2 min-h-[44px] px-2 -ml-2 text-xs font-medium text-[#A1A1AA] hover:text-white transition-colors mb-6 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
         >
-          <ArrowLeft size={13} strokeWidth={1.5} className="group-hover:-translate-x-0.5 transition-transform" />
-          Kembali
+          <ArrowLeft size={15} strokeWidth={1.7} aria-hidden="true" />
+          <span>Kembali</span>
         </a>
       )}
-      <div className="mb-8">
-        <span className="text-[10px] font-mono uppercase tracking-[0.35em] text-[#71717A]">
-          SymphoniaTic
-        </span>
-        <h1 className="text-[28px] sm:text-[32px] leading-[1.15] tracking-tight font-medium text-white mt-3">
-          {title}
-        </h1>
-        <p className="text-sm text-[#A1A1AA] mt-2.5 font-normal leading-relaxed">
-          {subtitle}
-        </p>
+      <div className="rounded-2xl border border-[#272A38] bg-[#14161F] p-6 sm:p-8">
+        <div className="mb-7">
+          <span className="text-xs font-semibold uppercase tracking-widest text-[#A1A1AA]">
+            SymphoniaTic
+          </span>
+          <h1 className="text-2xl sm:text-3xl leading-tight tracking-tight font-semibold text-white mt-2">
+            {title}
+          </h1>
+          <p className="text-sm text-[#A1A1AA] mt-2 font-normal leading-relaxed">
+            {subtitle}
+          </p>
+        </div>
+        {children}
       </div>
-      {children}
     </div>
   </div>
 );

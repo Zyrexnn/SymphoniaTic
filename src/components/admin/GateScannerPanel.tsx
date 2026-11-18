@@ -4,7 +4,6 @@ import {
   Camera,
   CheckCircle2,
   AlertCircle,
-  RefreshCw,
   Search,
   Volume2,
   VolumeX,
@@ -12,6 +11,7 @@ import {
   Clock
 } from 'lucide-react';
 import { checkInTicketAPI, type OrderRecord } from '../landing/data';
+import { fieldInputBase } from '@/components/ui/form-controls';
 
 interface ScanResultState {
   type: 'SUCCESS' | 'ERROR' | 'ALREADY_USED';
@@ -115,7 +115,7 @@ export const GateScannerPanel: React.FC = () => {
         const result: ScanResultState = {
           type: 'SUCCESS',
           title: 'CHECK-IN BERHASIL (VALID)',
-          message: `Tiket sah untuk ${res.data.userName} - ${res.data.categoryName} (${res.data.quantity}x)`,
+          message: `Tiket sah untuk ${res.data.userName} (${res.data.categoryName}, ${res.data.quantity}x)`,
           order: res.data,
           timestamp: now,
         };
@@ -215,7 +215,7 @@ export const GateScannerPanel: React.FC = () => {
       } catch (fallbackErr) {
         console.error('Fallback camera failed:', fallbackErr);
       }
-      setCameraError('Gagal mengakses kamera. Pastikan Anda telah mengizinkan (Allow) akses kamera pada browser dan menutup aplikasi kamera lain.');
+      setCameraError('Gagal mengakses kamera. Pastikan Anda telah mengizinkan akses kamera pada browser.');
       setIsScanning(false);
     }
   };
@@ -240,37 +240,45 @@ export const GateScannerPanel: React.FC = () => {
 
   return (
     <div className="space-y-6 font-sans">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 bg-[#14161F] border border-[#272A38] rounded-xl shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 bg-[#14161F] border border-[#272A38] rounded-xl">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            <h2 className="text-base font-semibold text-[#F4F4F6] tracking-wide uppercase m-0">
-              Pemindai Gate Masuk (Live QR Scanner)
+          <div className="flex flex-wrap items-center gap-2.5 mb-1">
+            <h2 className="text-base font-semibold text-[#F4F4F6] tracking-tight m-0">
+              Pemindai Gate Masuk (QR Scanner)
             </h2>
+            <span
+              className={`text-[11px] font-mono px-2 py-0.5 rounded border ${
+                isScanning
+                  ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-300'
+                  : 'border-[#3E4357] bg-[#0C0D12] text-[#A1A1AA]'
+              }`}
+            >
+              {isScanning ? 'Kamera Aktif' : 'Siap Memindai'}
+            </span>
           </div>
-          <p className="text-xs text-[#94A3B8] font-normal m-0">
+          <p className="text-xs text-[#A1A1AA] font-normal m-0">
             Arahkan kamera ke QR Code E-Ticket penonton atau masukkan kode manual untuk validasi pintu masuk.
           </p>
         </div>
 
-        <div className="flex items-center gap-3 self-end sm:self-auto">
+        <div className="flex items-center gap-2.5 self-start sm:self-auto">
           <button
             type="button"
             onClick={() => setSoundEnabled(!soundEnabled)}
-            className={`p-2 border rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer ${
-              soundEnabled ? 'border-white/30 text-white bg-white/10' : 'border-[#272A38] text-[#71717A] bg-[#0C0D12]'
+            aria-pressed={soundEnabled}
+            className={`min-h-[44px] px-3.5 py-2 border rounded-lg text-xs font-medium flex items-center gap-2 transition-colors ${
+              soundEnabled ? 'border-white/40 text-white bg-white/10' : 'border-[#3E4357] text-[#A1A1AA] bg-[#0C0D12]'
             }`}
-            title={soundEnabled ? 'Suara Beep Aktif' : 'Suara Beep Nonaktif'}
           >
-            {soundEnabled ? <Volume2 size={15} /> : <VolumeX size={15} />}
-            <span className="text-[11px]">{soundEnabled ? 'Audio On' : 'Muted'}</span>
+            {soundEnabled ? <Volume2 size={16} aria-hidden="true" /> : <VolumeX size={16} aria-hidden="true" />}
+            <span>{soundEnabled ? 'Audio On' : 'Muted'}</span>
           </button>
 
           {isScanning ? (
             <button
               type="button"
               onClick={stopScanner}
-              className="px-4 py-2 border border-rose-500/40 bg-rose-500/10 text-rose-300 hover:bg-rose-500/20 text-xs font-semibold uppercase tracking-wider rounded-lg transition-colors cursor-pointer"
+              className="min-h-[44px] px-4 py-2 border border-rose-500/40 bg-rose-500/15 text-rose-300 hover:bg-rose-500/25 text-xs font-semibold uppercase tracking-wider rounded-lg transition-colors"
             >
               Matikan Kamera
             </button>
@@ -278,9 +286,9 @@ export const GateScannerPanel: React.FC = () => {
             <button
               type="button"
               onClick={() => startScanner()}
-              className="px-4 py-2 bg-white text-[#0C0D12] hover:bg-neutral-200 text-xs font-semibold uppercase tracking-wider rounded-lg transition-colors cursor-pointer flex items-center gap-2 shadow-sm"
+              className="min-h-[44px] px-4 py-2 bg-white text-[#0C0D12] hover:bg-neutral-200 text-xs font-semibold uppercase tracking-wider rounded-lg transition-colors flex items-center gap-2"
             >
-              <Camera size={14} />
+              <Camera size={15} aria-hidden="true" />
               <span>Aktifkan Kamera</span>
             </button>
           )}
@@ -289,10 +297,10 @@ export const GateScannerPanel: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-7 flex flex-col gap-5">
-          <div className="border border-[#272A38] bg-[#14161F] p-4 rounded-xl flex flex-col items-center justify-center relative min-h-[340px] shadow-xl">
+          <div className="border border-[#272A38] bg-[#14161F] p-5 rounded-xl flex flex-col items-center justify-center relative min-h-[340px]">
             {cameraError && (
-              <div className="p-3 mb-4 w-full rounded-lg border border-rose-500/30 bg-rose-500/10 text-rose-300 text-xs font-normal flex items-center gap-2">
-                <AlertCircle size={15} className="shrink-0" />
+              <div role="alert" className="p-3.5 mb-4 w-full rounded-lg border border-rose-500/40 bg-rose-500/10 text-rose-200 text-xs flex items-center gap-2.5">
+                <AlertCircle size={16} className="shrink-0 text-rose-400" aria-hidden="true" />
                 <span>{cameraError}</span>
               </div>
             )}
@@ -306,28 +314,29 @@ export const GateScannerPanel: React.FC = () => {
 
             {!isScanning && (
               <div className="text-center p-8 space-y-3">
-                <div className="w-14 h-14 mx-auto rounded-xl border border-[#272A38] flex items-center justify-center bg-[#0C0D12]">
-                  <Camera size={24} className="text-white" />
+                <div className="w-14 h-14 mx-auto rounded-xl border border-[#3E4357] flex items-center justify-center bg-[#0C0D12]">
+                  <Camera size={24} className="text-white" aria-hidden="true" />
                 </div>
                 <h3 className="text-sm font-semibold text-[#F4F4F6] m-0">Kamera Scanner Sedang Nonaktif</h3>
-                <p className="text-xs text-[#A1A1AA] font-normal max-w-xs mx-auto">
+                <p className="text-xs text-[#A1A1AA] font-normal max-w-xs mx-auto leading-relaxed">
                   Klik tombol Aktifkan Kamera di atas untuk mulai memindai QR Code tiket di gate.
                 </p>
               </div>
             )}
 
             {cameras.length > 1 && (
-              <div className="w-full mt-4 pt-3 border-t border-[#272A38] flex items-center justify-between gap-3 text-xs">
-                <span className="text-[#A1A1AA] font-medium flex items-center gap-1.5">
-                  <FlipHorizontal size={13} /> Pilih Kamera:
-                </span>
+              <div className="w-full mt-4 pt-4 border-t border-[#272A38] flex flex-wrap items-center justify-between gap-3 text-xs">
+                <label htmlFor="gate-camera-select" className="text-[#A1A1AA] font-medium flex items-center gap-1.5">
+                  <FlipHorizontal size={14} aria-hidden="true" /> Pilih Kamera:
+                </label>
                 <select
+                  id="gate-camera-select"
                   value={selectedCameraId}
                   onChange={(e) => {
                     setSelectedCameraId(e.target.value);
                     if (isScanning) startScanner(e.target.value);
                   }}
-                  className="bg-[#0C0D12] border border-[#272A38] text-white rounded text-xs px-2.5 py-1 outline-none focus:border-white"
+                  className="min-h-[40px] bg-[#0C0D12] border border-[#3E4357] text-white rounded-lg text-xs px-3 py-1.5 outline-none focus:border-white"
                 >
                   {cameras.map((c) => (
                     <option key={c.id} value={c.id}>
@@ -339,21 +348,22 @@ export const GateScannerPanel: React.FC = () => {
             )}
           </div>
 
-          <form onSubmit={handleManualSubmit} className="p-4 border border-[#272A38] bg-[#14161F] rounded-xl flex gap-2 shadow-xl">
+          <form onSubmit={handleManualSubmit} className="p-4 border border-[#272A38] bg-[#14161F] rounded-xl flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
-              <Search size={14} className="text-[#A1A1AA] absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search size={16} className="text-[#A1A1AA] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" aria-hidden="true" />
               <input
                 type="text"
+                aria-label="Input kode tiket manual"
                 placeholder="Input kode tiket manual (cth: SYM-893472)..."
                 value={manualCode}
                 onChange={(e) => setManualCode(e.target.value)}
-                className="w-full bg-[#0C0D12] border border-[#272A38] rounded-lg pl-9 pr-3 py-2 text-xs text-white placeholder-[#71717A] outline-none focus:border-white"
+                className={`${fieldInputBase} pl-10`}
               />
             </div>
             <button
               type="submit"
               disabled={!manualCode || isProcessing}
-              className="px-5 py-2 bg-white text-[#0C0D12] hover:bg-neutral-200 text-xs uppercase font-semibold rounded-lg cursor-pointer disabled:opacity-40 transition-colors shadow-sm"
+              className="min-h-[46px] px-5 py-2.5 bg-white text-[#0C0D12] hover:bg-neutral-200 text-xs uppercase font-semibold rounded-lg disabled:opacity-40 transition-colors shrink-0"
             >
               {isProcessing ? 'Verifikasi...' : 'Cek Manual'}
             </button>
@@ -361,31 +371,32 @@ export const GateScannerPanel: React.FC = () => {
         </div>
 
         <div className="lg:col-span-5 flex flex-col gap-5">
-          <div className="border border-[#272A38] bg-[#14161F] rounded-xl p-5 flex flex-col justify-between shadow-xl">
+          <div className="border border-[#272A38] bg-[#14161F] rounded-xl p-5 flex flex-col justify-between">
             <div className="border-b border-[#272A38] pb-3 mb-4 flex items-center justify-between">
               <span className="text-xs font-mono text-[#A1A1AA] uppercase tracking-wider font-medium">
-                STATUS HASIL SCAN TERAKHIR
+                Status Hasil Scan Terakhir
               </span>
-              {scanResult && <span className="text-[11px] font-mono text-white">{scanResult.timestamp}</span>}
+              {scanResult && <span className="text-xs font-mono text-white">{scanResult.timestamp}</span>}
             </div>
 
             {scanResult ? (
               <div
-                className={`p-5 rounded-xl border space-y-4 transition-all ${
+                role="status"
+                className={`p-5 rounded-xl border space-y-4 ${
                   scanResult.type === 'SUCCESS'
-                    ? 'border-emerald-500/40 bg-emerald-950/20'
+                    ? 'border-emerald-500/40 bg-emerald-950/30'
                     : scanResult.type === 'ALREADY_USED'
-                    ? 'border-amber-500/40 bg-amber-950/20'
-                    : 'border-rose-500/40 bg-rose-950/20'
+                    ? 'border-amber-500/40 bg-amber-950/30'
+                    : 'border-rose-500/40 bg-rose-950/30'
                 }`}
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-start gap-3">
                   {scanResult.type === 'SUCCESS' ? (
-                    <CheckCircle2 size={24} className="text-emerald-400 shrink-0" />
+                    <CheckCircle2 size={24} className="text-emerald-400 shrink-0" aria-hidden="true" />
                   ) : scanResult.type === 'ALREADY_USED' ? (
-                    <Clock size={24} className="text-amber-400 shrink-0" />
+                    <Clock size={24} className="text-amber-400 shrink-0" aria-hidden="true" />
                   ) : (
-                    <AlertCircle size={24} className="text-rose-400 shrink-0" />
+                    <AlertCircle size={24} className="text-rose-400 shrink-0" aria-hidden="true" />
                   )}
                   <div>
                     <h3
@@ -399,48 +410,48 @@ export const GateScannerPanel: React.FC = () => {
                     >
                       {scanResult.title}
                     </h3>
-                    <p className="text-xs text-white/80 font-normal mt-0.5 m-0">{scanResult.message}</p>
+                    <p className="text-xs text-white/90 font-normal mt-1 m-0 leading-relaxed">{scanResult.message}</p>
                   </div>
                 </div>
 
                 {scanResult.order && (
-                  <div className="pt-3 border-t border-white/10 grid grid-cols-2 gap-3 text-xs">
+                  <div className="pt-3 border-t border-white/15 grid grid-cols-2 gap-3 text-xs">
                     <div>
-                      <span className="text-[10px] text-[#A1A1AA] uppercase block">Kode Tiket</span>
+                      <span className="text-[11px] text-[#A1A1AA] uppercase block">Kode Tiket</span>
                       <span className="font-mono text-white font-semibold text-sm">{scanResult.order.orderCode}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] text-[#A1A1AA] uppercase block">Pemegang</span>
+                      <span className="text-[11px] text-[#A1A1AA] uppercase block">Pemegang</span>
                       <span className="text-white truncate block font-medium">{scanResult.order.userName}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] text-[#A1A1AA] uppercase block">Kategori</span>
+                      <span className="text-[11px] text-[#A1A1AA] uppercase block">Kategori</span>
                       <span className="text-white">{scanResult.order.categoryName} ({scanResult.order.quantity}x)</span>
                     </div>
                     <div>
-                      <span className="text-[10px] text-[#A1A1AA] uppercase block">Event Konser</span>
+                      <span className="text-[11px] text-[#A1A1AA] uppercase block">Event Konser</span>
                       <span className="text-white truncate block">{scanResult.order.eventTitle}</span>
                     </div>
                   </div>
                 )}
               </div>
             ) : (
-              <div className="p-8 text-center border border-dashed border-[#272A38] rounded-xl text-xs font-normal text-[#A1A1AA]">
+              <div className="p-8 text-center border border-dashed border-[#3E4357] rounded-xl text-xs font-normal text-[#A1A1AA]">
                 Belum ada tiket yang dipindai pada sesi ini.
               </div>
             )}
           </div>
 
-          <div className="border border-[#272A38] bg-[#14161F] rounded-xl p-5 flex-1 flex flex-col shadow-xl">
+          <div className="border border-[#272A38] bg-[#14161F] rounded-xl p-5 flex-1 flex flex-col">
             <div className="border-b border-[#272A38] pb-3 mb-3 flex items-center justify-between">
               <span className="text-xs font-mono text-[#A1A1AA] uppercase tracking-wider font-medium">
-                RIWAYAT VERIFIKASI GATE ({scanHistory.length})
+                Riwayat Verifikasi Gate ({scanHistory.length})
               </span>
               {scanHistory.length > 0 && (
                 <button
                   type="button"
                   onClick={() => setScanHistory([])}
-                  className="text-[11px] text-[#A1A1AA] hover:text-white bg-transparent border-none cursor-pointer"
+                  className="text-xs text-[#A1A1AA] hover:text-white bg-transparent border-none px-2 py-1 rounded"
                 >
                   Bersihkan
                 </button>
@@ -449,15 +460,16 @@ export const GateScannerPanel: React.FC = () => {
 
             <div className="space-y-2 overflow-y-auto max-h-[220px] pr-1">
               {scanHistory.length === 0 ? (
-                <p className="text-xs text-[#71717A] font-normal text-center py-4">Riwayat scan kosong.</p>
+                <p className="text-xs text-[#94A3B8] font-normal text-center py-4">Riwayat scan kosong.</p>
               ) : (
                 scanHistory.map((item, idx) => (
                   <div
                     key={idx}
-                    className="p-2.5 border border-[#272A38] bg-[#0C0D12] rounded-lg flex items-center justify-between text-xs"
+                    className="p-2.5 border border-[#272A38] bg-[#0C0D12] rounded-lg flex items-center justify-between gap-2 text-xs"
                   >
                     <div className="flex items-center gap-2 truncate">
                       <span
+                        aria-hidden="true"
                         className={`w-2 h-2 rounded-full shrink-0 ${
                           item.type === 'SUCCESS'
                             ? 'bg-emerald-400'
@@ -469,7 +481,7 @@ export const GateScannerPanel: React.FC = () => {
                       <span className="font-mono text-white font-semibold shrink-0">{item.order?.orderCode || 'UNKNOWN'}</span>
                       <span className="text-[#A1A1AA] truncate">{item.order?.userName || item.title}</span>
                     </div>
-                    <span className="text-[10px] font-mono text-[#71717A] shrink-0">{item.timestamp}</span>
+                    <span className="text-[11px] font-mono text-[#94A3B8] shrink-0">{item.timestamp}</span>
                   </div>
                 ))
               )}

@@ -45,8 +45,8 @@ export const ForgotPasswordForm: React.FC = () => {
     setInfo(null);
   };
 
-  const requestOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const requestOtp = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     setLoading(true);
     resetMessages();
     try {
@@ -125,9 +125,9 @@ export const ForgotPasswordForm: React.FC = () => {
   }
 
   const subtitles: Record<number, string> = {
-    1: 'Masukkan email akun Anda untuk menerima kode OTP.',
-    2: 'Masukkan kode OTP yang dikirim ke email Anda.',
-    3: 'Setel kata sandi baru untuk akun Anda.',
+    1: 'Langkah 1 dari 3: Masukkan email akun Anda untuk menerima kode OTP.',
+    2: 'Langkah 2 dari 3: Masukkan kode OTP yang dikirim ke email Anda.',
+    3: 'Langkah 3 dari 3: Setel kata sandi baru untuk akun Anda.',
   };
 
   return (
@@ -139,7 +139,7 @@ export const ForgotPasswordForm: React.FC = () => {
       {step === 1 && (
         <form onSubmit={requestOtp} className="flex flex-col gap-5">
           <Field
-            label="Email"
+            label="Alamat Email"
             type="email"
             value={email}
             onChange={setEmail}
@@ -153,7 +153,7 @@ export const ForgotPasswordForm: React.FC = () => {
             disabled={loading || !email}
             className={btnPrimary}
           >
-            {loading ? <Spinner className="w-4 h-4" /> : 'Kirim Kode OTP'}
+            {loading ? <Spinner className="w-5 h-5" /> : 'Kirim Kode OTP'}
           </button>
         </form>
       )}
@@ -175,13 +175,13 @@ export const ForgotPasswordForm: React.FC = () => {
             disabled={loading || otpCode.length !== 6}
             className={btnPrimary}
           >
-            {loading ? <Spinner className="w-4 h-4" /> : 'Verifikasi OTP'}
+            {loading ? <Spinner className="w-5 h-5" /> : 'Verifikasi OTP'}
           </button>
           <button
             type="button"
             disabled={cdLeft > 0}
-            onClick={requestOtp}
-            className={btnGhost + ' justify-center'}
+            onClick={() => requestOtp()}
+            className={btnGhost + ' w-full justify-center'}
           >
             {cdLeft > 0 ? `Kirim ulang (${cdLeft}s)` : 'Kirim Ulang OTP'}
           </button>
@@ -194,7 +194,7 @@ export const ForgotPasswordForm: React.FC = () => {
             label="Kata Sandi Baru (min. 6 karakter)"
             value={newPassword}
             onChange={setNewPassword}
-            placeholder="••••••••"
+            placeholder="Minimal 6 karakter"
             required
             autoComplete="new-password"
           />
@@ -202,14 +202,14 @@ export const ForgotPasswordForm: React.FC = () => {
             label="Konfirmasi Kata Sandi"
             value={confirmPassword}
             onChange={setConfirmPassword}
-            placeholder="••••••••"
+            placeholder="Ulangi kata sandi baru"
             required
             autoComplete="new-password"
           />
           {error && <ErrorText>{error}</ErrorText>}
           {info && <InfoText>{info}</InfoText>}
           <button type="submit" disabled={loading} className={btnPrimary}>
-            {loading ? <Spinner className="w-4 h-4" /> : 'Setel Kata Sandi Baru'}
+            {loading ? <Spinner className="w-5 h-5" /> : 'Setel Kata Sandi Baru'}
           </button>
         </form>
       )}

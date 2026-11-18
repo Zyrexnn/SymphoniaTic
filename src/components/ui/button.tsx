@@ -8,20 +8,20 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-white text-black hover:bg-neutral-200 font-semibold shadow-sm",
+        default: "bg-white text-[#0C0D12] hover:bg-neutral-200 font-semibold",
         destructive: "bg-rose-600 text-white hover:bg-rose-700 font-medium",
         outline:
-          "border border-[#272A38] bg-[#14161F] text-white hover:border-white/40 hover:bg-white/10",
+          "border border-[#3E4357] bg-[#14161F] text-white hover:border-white/50 hover:bg-white/10",
         secondary:
-          "bg-[#1D202D] text-white hover:bg-[#272A38] border border-[#272A38]",
+          "bg-[#1D202D] text-white hover:bg-[#272A38] border border-[#3E4357]",
         ghost: "text-[#A1A1AA] hover:text-white hover:bg-white/5",
         link: "text-white underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
-        icon: "h-10 w-10",
+        default: "min-h-[44px] px-4 py-2",
+        sm: "min-h-[40px] rounded-md px-3",
+        lg: "min-h-[48px] rounded-lg px-6",
+        icon: "h-11 w-11",
       },
     },
     defaultVariants: {

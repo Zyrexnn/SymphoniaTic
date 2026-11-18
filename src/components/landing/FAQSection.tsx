@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { FAQS } from './data';
 
@@ -7,56 +6,47 @@ export default function FAQSection() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   return (
-    <section className="bg-canvas">
-      <div className="mx-auto max-w-[1400px] px-6 sm:px-8 md:px-10 py-20 sm:py-24">
-        <div id="faq" className="border-t border-line pt-12 sm:pt-16">
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.03em] text-ink mb-12">
+    <section className="bg-[#0C0D12]">
+      <div className="mx-auto max-w-[1400px] px-6 sm:px-8 md:px-10 py-16 sm:py-24">
+        <div id="faq" className="border-t border-[#272A38] pt-12 sm:pt-16">
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-[-0.03em] text-white mb-10">
             Pertanyaan Umum
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-0">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-14 gap-y-0">
             {FAQS.map((faq, i) => {
               const isOpen = openFaq === i;
               return (
                 <div
                   key={i}
-                  className={`border-b border-line transition-colors duration-200 ${
-                    isOpen ? 'bg-brand-light/50 -mx-4 px-4 rounded-lg' : ''
+                  className={`border-b border-[#272A38] transition-colors duration-200 ${
+                    isOpen ? 'bg-[#14161F] px-4 rounded-lg' : ''
                   }`}
                 >
                   <button
+                    type="button"
+                    aria-expanded={isOpen}
                     onClick={() => setOpenFaq(isOpen ? null : i)}
-                    className="w-full flex items-center justify-between gap-4 py-5 text-left cursor-pointer bg-transparent border-none group"
+                    className="w-full min-h-[56px] flex items-center justify-between gap-4 py-4 text-left bg-transparent border-none group"
                   >
-                    <span
-                      className={`text-[15px] sm:text-base font-medium tracking-[-0.01em] transition-colors duration-200 ${
-                        isOpen ? 'text-brand' : 'text-ink group-hover:text-brand'
-                      }`}
-                    >
+                    <span className="text-[15px] sm:text-base font-medium tracking-[-0.01em] text-white">
                       {faq.q}
                     </span>
                     <ChevronDown
                       size={18}
                       strokeWidth={2}
-                      className={`shrink-0 transition-all duration-300 ${
-                        isOpen ? 'text-brand rotate-180' : 'text-muted group-hover:text-brand'
+                      aria-hidden="true"
+                      className={`shrink-0 transition-transform duration-200 ${
+                        isOpen ? 'text-white rotate-180' : 'text-[#A1A1AA] group-hover:text-white'
                       }`}
                     />
                   </button>
-                  <AnimatePresence initial={false}>
-                    {isOpen && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-                        className="overflow-hidden"
-                      >
-                        <p className="text-sm sm:text-[15px] font-normal text-ink-soft leading-[1.7] pb-5">
-                          {faq.a}
-                        </p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  {isOpen && (
+                    <div className="pb-5">
+                      <p className="text-sm sm:text-[15px] font-normal text-[#A1A1AA] leading-[1.7] m-0">
+                        {faq.a}
+                      </p>
+                    </div>
+                  )}
                 </div>
               );
             })}

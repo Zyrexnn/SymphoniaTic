@@ -45,27 +45,27 @@ const getQuotaBadge = (event: EventItem, remaining: number) => {
   if (event.isClosed) {
     return {
       label: 'Penjualan Tutup',
-      className: 'bg-[#272A38]/90 text-[#94A3B8] border border-[#3A3F55]',
+      className: 'bg-[#0C0D12]/90 text-[#E4E4E7] border border-[#3E4357]',
       isSoldOut: true,
     };
   }
   if (remaining <= 0) {
     return {
       label: 'Tiket Habis',
-      className: 'bg-[#272A38]/90 text-[#94A3B8] border border-[#3A3F55]',
+      className: 'bg-[#0C0D12]/90 text-[#E4E4E7] border border-[#3E4357]',
       isSoldOut: true,
     };
   }
   if (remaining <= 15) {
     return {
       label: `Tersisa ${remaining} Kursi`,
-      className: 'bg-[#F59E0B]/20 text-[#F59E0B] border border-[#F59E0B]/50',
+      className: 'bg-[#0C0D12]/90 text-amber-300 border border-amber-500/50',
       isSoldOut: false,
     };
   }
   return {
     label: `Tersisa ${remaining} Kursi`,
-    className: 'bg-[#10B981]/15 text-[#10B981] border border-[#10B981]/30',
+    className: 'bg-[#0C0D12]/90 text-emerald-300 border border-emerald-500/40',
     isSoldOut: false,
   };
 };
@@ -79,31 +79,32 @@ const ArtistCard: React.FC<{ image: string; name: string; genre: string; shows?:
   return (
     <a
       href={`/events?q=${encodeURIComponent(name)}`}
-      className="group relative block w-[74vw] sm:w-[280px] lg:w-[320px] shrink-0 snap-start overflow-hidden rounded-xl border border-[#272A38] bg-[#14161F] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0C0D12]"
+      className="group relative block w-[74vw] sm:w-[280px] lg:w-[320px] shrink-0 snap-start overflow-hidden rounded-xl border border-[#272A38] bg-[#14161F] hover:border-white/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0C0D12]"
     >
       <img
         src={image}
         alt={name}
-        className="w-full aspect-[3/4] h-full object-cover brightness-[0.85] group-hover:scale-[1.05] group-hover:brightness-100 transition-all duration-700"
+        loading="lazy"
+        className="w-full aspect-[3/4] h-full object-cover brightness-[0.82] group-hover:scale-[1.03] group-hover:brightness-95 transition-all duration-500"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0C0D12]/90 via-[#0C0D12]/20 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0C0D12] via-[#0C0D12]/35 to-transparent" />
 
       {shows && (
-        <span className="absolute top-4 right-4 rounded-md bg-[#0C0D12]/80 border border-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-sm">
+        <span className="absolute top-4 right-4 rounded-md bg-[#0C0D12]/90 border border-white/20 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-white">
           {shows}
         </span>
       )}
 
       <div className="absolute bottom-5 left-5 right-5">
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#94A3B8]">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#D4D4D8] m-0">
           {genre}
         </p>
-        <h3 className="mt-1.5 text-xl font-bold leading-snug tracking-tight text-[#F4F4F6]">
+        <h3 className="mt-1.5 text-xl font-bold leading-snug tracking-tight text-white mb-0">
           {name}
         </h3>
-        <span className="mt-3 inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-white opacity-90 sm:opacity-0 translate-y-0 sm:translate-y-1 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-          Lihat Konser
-          <ArrowUpRight size={15} />
+        <span className="mt-3 inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-white">
+          <span>Lihat Konser</span>
+          <ArrowUpRight size={15} aria-hidden="true" />
         </span>
       </div>
     </a>
@@ -113,7 +114,7 @@ const ArtistCard: React.FC<{ image: string; name: string; genre: string; shows?:
 const ArtistRail: React.FC<{ events: EventItem[] }> = ({ events }) => {
   const railRef = useRef<HTMLDivElement>(null);
   const scroll = (dir: number) => {
-    railRef.current?.scrollBy({ left: dir * 300, behavior: 'smooth' });
+    railRef.current?.scrollBy({ left: dir * 320, behavior: 'smooth' });
   };
 
   const artistItems = useMemo(() => {
@@ -153,20 +154,22 @@ const ArtistRail: React.FC<{ events: EventItem[] }> = ({ events }) => {
 
   return (
     <div className="relative">
-      <div className="mb-6 flex items-center justify-end gap-2">
+      <div className="mb-6 flex items-center justify-end gap-2.5">
         <button
+          type="button"
           onClick={() => scroll(-1)}
           aria-label="Geser artis ke kiri"
-          className="h-10 w-10 rounded-lg border border-[#272A38] bg-[#14161F] text-[#F4F4F6] flex items-center justify-center hover:bg-white hover:text-black hover:border-white transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+          className="h-11 w-11 rounded-lg border border-[#3E4357] bg-[#14161F] text-white flex items-center justify-center hover:bg-white hover:text-[#0C0D12] hover:border-white transition-colors"
         >
-          <ChevronLeft size={18} />
+          <ChevronLeft size={18} aria-hidden="true" />
         </button>
         <button
+          type="button"
           onClick={() => scroll(1)}
           aria-label="Geser artis ke kanan"
-          className="h-10 w-10 rounded-lg border border-[#272A38] bg-[#14161F] text-[#F4F4F6] flex items-center justify-center hover:bg-white hover:text-black hover:border-white transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+          className="h-11 w-11 rounded-lg border border-[#3E4357] bg-[#14161F] text-white flex items-center justify-center hover:bg-white hover:text-[#0C0D12] hover:border-white transition-colors"
         >
-          <ChevronRight size={18} />
+          <ChevronRight size={18} aria-hidden="true" />
         </button>
       </div>
 
@@ -202,7 +205,7 @@ const SkeletonCard: React.FC = () => (
       </div>
       <div className="pt-4 border-t border-[#272A38] flex items-center justify-between">
         <div className="h-6 w-24 bg-[#272A38] rounded" />
-        <div className="h-9 w-28 bg-[#272A38] rounded-lg" />
+        <div className="h-10 w-28 bg-[#272A38] rounded-lg" />
       </div>
     </div>
   </div>
@@ -217,36 +220,32 @@ const TrendingConcertCard: React.FC<{
   const badge = getQuotaBadge(event, totalRemaining);
 
   return (
-    <article
-      className="group flex flex-col h-full rounded-xl border border-[#272A38] bg-[#14161F] overflow-hidden transition-all duration-300 hover:border-white/40 hover:-translate-y-1 hover:shadow-[0_20px_40px_-20px_rgba(0,0,0,0.7)]"
-    >
+    <article className="group flex flex-col h-full rounded-xl border border-[#272A38] bg-[#14161F] overflow-hidden transition-colors duration-200 hover:border-white/40">
       <div className="relative aspect-[16/9] overflow-hidden bg-[#1D202D]">
         <img
           src={event.image}
           alt={event.title}
           loading="lazy"
-          className={`h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 ${
+          className={`h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 ${
             badge.isSoldOut ? 'grayscale brightness-75' : ''
           }`}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#14161F] via-[#14161F]/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#14161F] via-[#14161F]/25 to-transparent" />
 
-        <span className="absolute top-3 left-3 rounded-md bg-[#0C0D12]/80 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-white border border-white/20 backdrop-blur-sm">
+        <span className="absolute top-3 left-3 rounded-md bg-[#0C0D12]/90 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-white border border-white/25">
           {event.category || 'Simfoni'}
         </span>
 
-        <span
-          className={`absolute top-3 right-3 rounded-md px-2.5 py-1 text-[11px] font-semibold tracking-wide backdrop-blur-sm ${badge.className}`}
-        >
+        <span className={`absolute top-3 right-3 rounded-md px-2.5 py-1 text-[11px] font-semibold tracking-wide ${badge.className}`}>
           {badge.label}
         </span>
 
-        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs text-[#94A3B8]">
-          <span className="flex items-center gap-1.5 rounded-md bg-[#0C0D12]/75 px-2 py-1 backdrop-blur-sm">
-            <Calendar size={13} className="text-[#A1A1AA] shrink-0" />
-            <span className="font-medium text-[#F4F4F6]">{event.date}</span>
+        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs text-[#E4E4E7]">
+          <span className="flex items-center gap-1.5 rounded-md bg-[#0C0D12]/90 px-2.5 py-1 border border-white/10">
+            <Calendar size={13} className="text-[#E4E4E7] shrink-0" aria-hidden="true" />
+            <span className="font-medium text-white">{event.date}</span>
           </span>
-          <span className="rounded-md bg-[#0C0D12]/75 px-2 py-1 text-[11px] text-[#94A3B8] backdrop-blur-sm">
+          <span className="rounded-md bg-[#0C0D12]/90 px-2.5 py-1 text-[11px] text-[#E4E4E7] border border-white/10">
             {event.time}
           </span>
         </div>
@@ -258,35 +257,36 @@ const TrendingConcertCard: React.FC<{
             href={`/concert/${event.id}`}
             className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
           >
-            <h3 className="text-lg font-bold leading-snug text-[#F4F4F6] line-clamp-1 group-hover:text-white transition-colors">
+            <h3 className="text-lg font-bold leading-snug text-white line-clamp-1 group-hover:underline underline-offset-4">
               {event.title}
             </h3>
           </a>
 
-          <p className="mt-1 text-xs text-[#94A3B8] line-clamp-1">
-            {event.conductor && event.conductor !== '-' ? `${event.artist} • ${event.conductor}` : event.artist}
+          <p className="mt-1 text-xs text-[#A1A1AA] line-clamp-1">
+            {event.conductor && event.conductor !== '-' ? `${event.artist} · ${event.conductor}` : event.artist}
           </p>
 
-          <div className="mt-3 flex items-center gap-1.5 text-xs text-[#64748B]">
-            <MapPin size={13} className="text-[#94A3B8] shrink-0" />
+          <div className="mt-3 flex items-center gap-1.5 text-xs text-[#A1A1AA]">
+            <MapPin size={14} className="text-[#A1A1AA] shrink-0" aria-hidden="true" />
             <span className="truncate">{event.venue}</span>
           </div>
         </div>
 
         <div className="mt-5 pt-4 border-t border-[#272A38] flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-[#64748B]">
+            <p className="text-[11px] font-medium uppercase tracking-wider text-[#A1A1AA] m-0">
               Mulai dari
             </p>
-            <p className="text-base sm:text-lg font-bold text-[#F4F4F6] truncate tabular-nums">
+            <p className="text-base sm:text-lg font-bold text-white truncate tabular-nums m-0 mt-0.5">
               {formatIDR(minPrice)}
             </p>
           </div>
 
           {badge.isSoldOut ? (
             <button
+              type="button"
               disabled
-              className="px-4 py-2 rounded-lg bg-[#272A38] text-[#64748B] text-xs sm:text-sm font-semibold cursor-not-allowed border border-[#3A3F55]"
+              className="min-h-[44px] px-4 py-2 rounded-lg bg-[#1D202D] text-[#A1A1AA] text-xs sm:text-sm font-semibold border border-[#3E4357]"
             >
               {event.isClosed ? 'Penjualan Tutup' : 'Tiket Habis'}
             </button>
@@ -294,7 +294,7 @@ const TrendingConcertCard: React.FC<{
             <button
               type="button"
               onClick={() => onBuyTicket(event)}
-              className="px-4 py-2 rounded-lg bg-white text-[#0C0D12] text-xs sm:text-sm font-semibold hover:bg-neutral-200 transition-colors cursor-pointer shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+              className="min-h-[44px] px-4 py-2 rounded-lg bg-white text-[#0C0D12] text-xs sm:text-sm font-semibold hover:bg-neutral-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
             >
               Pesan Tiket
             </button>
@@ -342,7 +342,7 @@ export const BentoSection: React.FC<SectionProps> = ({
         <SectionHeading
           eyebrow="Jelajahi Artis"
           title="Orkestra & Ansambel Musim Ini"
-          support="Dari orkestra simfoni kelas dunia hingga kelompok ansambel kamar, kenali penampil yang siap menghidupkan panggung SymphoniaTic."
+          support="Dari orkestra simfoni hingga kelompok ansambel kamar, kenali penampil yang siap menghidupkan panggung SymphoniaTic."
           actionLabel="Semua Artis"
           actionHref="/events"
         />
@@ -365,17 +365,17 @@ export const BentoSection: React.FC<SectionProps> = ({
             <SkeletonCard />
           </div>
         ) : error && events.length === 0 ? (
-          <div className="rounded-xl border border-[#EF4444]/30 bg-[#14161F] p-8 text-center">
-            <p className="text-sm font-medium text-[#EF4444]">
+          <div role="alert" className="rounded-xl border border-rose-500/40 bg-[#14161F] p-8 text-center">
+            <p className="text-sm font-medium text-rose-300 m-0">
               {error}
             </p>
-            <p className="mt-1 text-xs text-[#94A3B8]">
-              Pastikan layanan backend API sedang berjalan di port 8082.
+            <p className="mt-1.5 text-xs text-[#A1A1AA] m-0">
+              Pastikan layanan backend API sedang berjalan.
             </p>
           </div>
         ) : trending.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-[#272A38] bg-[#14161F] px-6 py-16 text-center">
-            <p className="text-sm text-[#94A3B8]">
+          <div className="rounded-xl border border-dashed border-[#3E4357] bg-[#14161F] px-6 py-16 text-center">
+            <p className="text-sm text-[#A1A1AA] m-0">
               Belum ada jadwal pertunjukan pada kategori ini.
             </p>
           </div>

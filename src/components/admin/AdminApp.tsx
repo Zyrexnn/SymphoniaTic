@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { RefreshCw, X, AlertCircle, Check } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import type { EventItem, TicketCategory, OrderRecord, AdminMetricsData, AdminRole } from '../landing/data';
 import {
   adminLoginAPI, fetchAdminMetricsAPI, fetchEventsAPI, createEventAPI, updateEventAPI,
@@ -18,6 +17,7 @@ import { RefundsPanel, type RefundRecord } from './RefundsPanel';
 import { GateScannerPanel } from './GateScannerPanel';
 import { EventFormModal, type EventFormData } from './EventFormModal';
 import { CategoryFormModal } from './CategoryFormModal';
+import { ConfirmDialog } from '@/components/ui/fullscreen-sheet';
 import { calculateDefaultOpenGate, generateDynamicRundown, isTimeBefore } from '@/lib/timeUtils';
 
 const EMPTY_EVENT_FORM: EventFormData = {
@@ -72,6 +72,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
   const [ordersList, setOrdersList] = useState<OrderRecord[]>([]);
   const [refundsList, setRefundsList] = useState<RefundRecord[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const [orderSearch, setOrderSearch] = useState('');
   const [orderStatusFilter, setOrderStatusFilter] = useState('');
@@ -97,6 +98,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
 
   const refreshData = async () => {
     setIsLoading(true);
+    setLoadError(null);
     try {
       const [met, ords, evts, rfds] = await Promise.all([
         fetchAdminMetricsAPI(),
@@ -111,6 +113,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
       if (onEventsUpdated) onEventsUpdated();
     } catch (err) {
       console.error('Error refreshing admin data:', err);
+      setLoadError('Gagal memuat data terbaru dari server. Periksa koneksi backend Anda.');
     } finally {
       setIsLoading(false);
     }
@@ -372,7 +375,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
       `"${o.categoryName}"`,
       o.quantity,
       o.totalPrice,
-     `"${o.status}"`,
+      `"${o.status}"`,
       `"${new Date(o.createdAt).toLocaleString('id-ID')}"`,
     ].join(','));
     const csv = 'data:text/csv;charset=utf-8,' + encodeURIComponent([headers.join(','), ...rows].join('\n'));
@@ -414,11 +417,11 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
   }
 
   const tabLabels: Record<TabId, { title: string; subtitle: string }> = {
-    SCANNER: { title: 'Pemindai Kamera Gate & Validasi Check-In', subtitle: 'SymphoniaTic Gate Entry Control System' },
-    METRICS: { title: 'Dashboard Metrik & Pendapatan Finansial', subtitle: 'SymphoniaTic Executive Management Portal' },
-    EVENTS: { title: 'Manajemen Postingan Tiket Konser', subtitle: 'SymphoniaTic Executive Management Portal' },
-    ORDERS: { title: 'Pengelolaan Pesanan & Laporan Transaksi', subtitle: 'SymphoniaTic Executive Management Portal' },
-    REFUNDS: { title: 'Persetujuan Permohonan Refund Tiket', subtitle: 'SymphoniaTic Executive Management Portal' },
+    SCANNER: { title: 'Pemindai Kamera Gate & Validasi Check-In', subtitle: 'Sistem kontrol pintu masuk pertunjukan' },
+    METRICS: { title: 'Dashboard Metrik & Pendapatan Finansial', subtitle: 'Ringkasan transaksi dan kapasitas kursi konser' },
+    EVENTS: { title: 'Manajemen Postingan Tiket Konser', subtitle: 'Kelola konser, jadwal open gate, dan kategori kursi' },
+    ORDERS: { title: 'Pengelolaan Pesanan & Laporan Transaksi', subtitle: 'Cari, perbarui status, dan ekspor laporan pesanan' },
+    REFUNDS: { title: 'Persetujuan Permohonan Refund Tiket', subtitle: 'Tinjau pengajuan pengembalian dana penonton' },
   };
 
   const filteredRefunds = (refundsList || []).filter((rf) => {
@@ -477,43 +480,60 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
         isLoading={isLoading}
       />
 
-      <main className="flex flex-col flex-1 min-w-0 bg-[#0C0D12] overflow-y-auto">
-        <header className="sticky top-0 flex items-center justify-between px-6 py-3.5 border-b border-[#272A38] bg-[#0C0D12]/95 backdrop-blur-md z-20">
-          <div>
-            <h1 className="text-base font-semibold text-[#F4F4F6] tracking-tight m-0">{tabLabels[activeTab].title}</h1>
-            <p className="text-[11px] font-normal text-[#94A3B8] mt-0.5 m-0">{tabLabels[activeTab].subtitle}</p>
+      <main className="flex flex-col flex-1 min-w-0 bg-[#0C0D12]">
+        <header className="hidden md:flex sticky top-0 items-center justify-between px-6 py-4 border-b border-[#272A38] bg-[#0C0D12] z-20">
+          <div className="min-w-0">
+            <h1 className="text-lg font-semibold text-[#F4F4F6] tracking-tight m-0 truncate">{tabLabels[activeTab].title}</h1>
+            <p className="text-xs font-normal text-[#A1A1AA] mt-0.5 m-0 truncate">{tabLabels[activeTab].subtitle}</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5 shrink-0">
             <button
+              type="button"
               onClick={refreshData}
               disabled={isLoading}
-              className={`px-3.5 py-1.5 text-xs font-medium text-[#A1A1AA] border border-[#272A38] bg-[#14161F] rounded-lg flex items-center gap-1.5 transition-colors ${isLoading ? 'opacity-40 cursor-default' : 'cursor-pointer hover:text-white hover:border-white/40'}`}
+              className="min-h-[44px] px-4 py-2 text-xs font-medium text-[#E4E4E7] border border-[#3E4357] bg-[#14161F] rounded-lg flex items-center gap-2 transition-colors hover:text-white hover:border-white/60 disabled:opacity-40"
             >
-              <RefreshCw size={13} strokeWidth={1.5} className={isLoading ? 'animate-spin' : ''} />
-              <span className="hidden sm:inline">Refresh Data</span>
+              <RefreshCw size={14} strokeWidth={1.7} className={isLoading ? 'animate-spin' : ''} aria-hidden="true" />
+              <span>Refresh Data</span>
             </button>
             {onClose && (
               <button
+                type="button"
                 onClick={onClose}
-                className="p-1.5 text-[#94A3B8] hover:text-[#F4F4F6] border border-[#272A38] bg-[#14161F] rounded-lg cursor-pointer transition-colors"
-                title="Tutup Admin"
+                aria-label="Tutup Admin"
+                className="h-11 w-11 inline-flex items-center justify-center text-[#A1A1AA] hover:text-white border border-[#3E4357] bg-[#14161F] rounded-lg transition-colors"
               >
-                <X size={14} strokeWidth={1.5} />
+                <X size={16} strokeWidth={1.7} aria-hidden="true" />
               </button>
             )}
           </div>
         </header>
 
-        <div className="flex-1 p-4 sm:p-6 md:p-8 pb-24 md:pb-8 overflow-y-auto max-w-[1200px] mx-auto w-full">
-          {activeTab === 'SCANNER' && (
-            <GateScannerPanel />
+        <div className="flex-1 p-4 sm:p-6 md:p-8 pb-28 md:pb-10 max-w-[1200px] mx-auto w-full space-y-6">
+          {loadError && (
+            <div role="alert" className="p-4 rounded-xl border border-rose-500/40 bg-rose-500/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5 text-sm text-rose-200">
+                <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" aria-hidden="true" />
+                <span>{loadError}</span>
+              </div>
+              <button
+                type="button"
+                onClick={refreshData}
+                className="min-h-[40px] px-4 py-2 rounded-lg bg-white text-[#0C0D12] text-xs font-semibold hover:bg-neutral-200 transition-colors shrink-0"
+              >
+                Coba Lagi
+              </button>
+            </div>
           )}
+
+          {activeTab === 'SCANNER' && <GateScannerPanel />}
           {activeTab === 'METRICS' && (
             <MetricsPanel metrics={metrics} eventsCount={eventsList.length} onGoToOrders={() => setActiveTab('ORDERS')} />
           )}
           {activeTab === 'EVENTS' && (
             <EventsPanel
               events={eventsList}
+              isLoading={isLoading}
               onAddEvent={() => { setShowAddEventModal(true); setEventForm(EMPTY_EVENT_FORM); }}
               onEditEvent={(evt) => {
                 const resolvedOpenGate = evt.openGate || calculateDefaultOpenGate(evt.time);
@@ -546,6 +566,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
           {activeTab === 'ORDERS' && (
             <OrdersPanel
               orders={ordersList}
+              isLoading={isLoading}
               search={orderSearch}
               statusFilter={orderStatusFilter}
               onSearchChange={setOrderSearch}
@@ -557,6 +578,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
           {activeTab === 'REFUNDS' && (
             <RefundsPanel
               refunds={filteredRefunds}
+              isLoading={isLoading}
               search={refundSearch}
               statusFilter={refundStatusFilter}
               onSearchChange={setRefundSearch}
@@ -591,70 +613,43 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
         onEditSubmit={handleUpdateCategory}
       />
 
-      <AnimatePresence>
-        {toast && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl border shadow-2xl text-xs font-medium ${
-              toast.type === 'error'
-                ? 'bg-rose-950/90 border-rose-500/40 text-rose-200'
-                : 'bg-[#181B26] border-[#272A38] text-white'
-            }`}
+      {toast && (
+        <div
+          role="status"
+          aria-live="polite"
+          className={`fixed top-5 right-5 z-50 flex items-center gap-3 px-4 py-3 rounded-xl border shadow-xl text-sm font-medium max-w-sm ${
+            toast.type === 'error'
+              ? 'bg-rose-950 border-rose-500/40 text-rose-200'
+              : 'bg-[#181B26] border-[#3E4357] text-white'
+          }`}
+        >
+          {toast.type === 'error' ? (
+            <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" aria-hidden="true" />
+          ) : (
+            <Check className="w-4 h-4 text-emerald-400 shrink-0" aria-hidden="true" />
+          )}
+          <span>{toast.message}</span>
+          <button
+            type="button"
+            aria-label="Tutup notifikasi"
+            onClick={() => setToast(null)}
+            className="ml-1 min-h-[32px] min-w-[32px] inline-flex items-center justify-center text-[#A1A1AA] hover:text-white rounded"
           >
-            {toast.type === 'error' ? (
-              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
-            ) : (
-              <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-            )}
-            <span>{toast.message}</span>
-            <button
-              onClick={() => setToast(null)}
-              className="ml-2 text-white/40 hover:text-white cursor-pointer"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <X className="w-4 h-4" aria-hidden="true" />
+          </button>
+        </div>
+      )}
 
-      <AnimatePresence>
-        {confirmModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-md bg-[#14161F] border border-[#272A38] rounded-2xl p-6 shadow-2xl text-white"
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <AlertCircle className="w-5 h-5 text-amber-400 shrink-0" />
-                <h3 className="text-base font-semibold text-white">{confirmModal.title}</h3>
-              </div>
-              <p className="text-xs text-[#A1A1AA] leading-relaxed mb-6">
-                {confirmModal.message}
-              </p>
-              <div className="flex items-center justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setConfirmModal(null)}
-                  className="px-4 py-2 text-xs font-medium text-[#A1A1AA] hover:text-white bg-[#1C1F2E] border border-[#272A38] rounded-lg transition-colors cursor-pointer"
-                >
-                  Batal
-                </button>
-                <button
-                  type="button"
-                  onClick={confirmModal.onConfirm}
-                  className="px-4 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-500 rounded-lg transition-colors cursor-pointer"
-                >
-                  Hapus
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      <ConfirmDialog
+        isOpen={!!confirmModal}
+        title={confirmModal?.title || ''}
+        message={confirmModal?.message || ''}
+        confirmLabel="Hapus"
+        cancelLabel="Batal"
+        variant="danger"
+        onConfirm={() => confirmModal?.onConfirm()}
+        onCancel={() => setConfirmModal(null)}
+      />
     </div>
   );
 };

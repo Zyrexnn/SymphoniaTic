@@ -1,31 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { DollarSign, Ticket, Layers, BarChart3 } from 'lucide-react';
 import {
-  DollarSign, Ticket, Layers, BarChart3, TrendingUp, Calendar, ArrowUpRight,
-  TrendingDown, Users, ShieldCheck, RefreshCw, ArrowDownRight
-} from 'lucide-react';
-import {
-  ResponsiveContainer, AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip,
+  ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip,
   CartesianGrid, PieChart, Pie, Cell
 } from 'recharts';
 import { formatIDR } from '@/components/landing/data';
 import type { AdminMetricsData } from '@/components/landing/data';
 
-const REVENUE_TIMELINE = [
-  { month: 'Jan', revenue: 14500000, tickets: 18, refunds: 0 },
-  { month: 'Feb', revenue: 19800000, tickets: 24, refunds: 1 },
-  { month: 'Mar', revenue: 27500000, tickets: 35, refunds: 0 },
-  { month: 'Apr', revenue: 34500000, tickets: 42, refunds: 1 },
-  { month: 'Mei (Est)', revenue: 42000000, tickets: 50, refunds: 0 },
-  { month: 'Jun (Est)', revenue: 48000000, tickets: 58, refunds: 0 },
-];
-
-const CATEGORY_DISTRIBUTION = [
-  { name: 'VIP Orchestral Pit', value: 16500000, color: '#FFFFFF' },
-  { name: 'CAT 1 Grand Tier', value: 11200000, color: '#A1A1AA' },
-  { name: 'Festival Stalls', value: 6800000, color: '#71717A' },
-];
-
-const MONOCHROME_PALETTE = ['#FFFFFF', '#E4E4E7', '#A1A1AA', '#71717A', '#52525B'];
+const MONOCHROME_PALETTE = ['#FFFFFF', '#E4E4E7', '#A1A1AA', '#94A3B8', '#64748B'];
 
 interface DashboardProps {
   metrics?: AdminMetricsData | null;
@@ -33,20 +15,22 @@ interface DashboardProps {
   onGoToOrders?: () => void;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ metrics, eventsCount = 4, onGoToOrders }) => {
-  const [chartTimeframe, setChartTimeframe] = useState<'MONTHLY' | 'WEEKLY'>('MONTHLY');
+export const Dashboard: React.FC<DashboardProps> = ({ metrics, eventsCount = 4 }) => {
   const totalRevenue = metrics ? (metrics.totalRevenue ?? 0) : 0;
   const ticketsSold = metrics ? (metrics.ticketsSold ?? 0) : 0;
   const remainingQuota = metrics ? (metrics.remainingQuota ?? 0) : 0;
   const totalEvents = metrics ? (metrics.totalEvents ?? eventsCount) : eventsCount;
 
+  const totalQuota = ticketsSold + remainingQuota;
+  const occupancyPct = totalQuota > 0 ? Math.round((ticketsSold / totalQuota) * 100) : 0;
+
   const timelineData = metrics?.revenueTimeline && metrics.revenueTimeline.length > 0
     ? metrics.revenueTimeline
-    : REVENUE_TIMELINE;
+    : [];
 
   const rawCategoryData = metrics?.categoryDistribution && metrics.categoryDistribution.length > 0
     ? metrics.categoryDistribution
-    : CATEGORY_DISTRIBUTION;
+    : [];
 
   const categoryData = rawCategoryData.map((cat, idx) => ({
     ...cat,
@@ -54,136 +38,132 @@ export const Dashboard: React.FC<DashboardProps> = ({ metrics, eventsCount = 4, 
   }));
 
   return (
-    <div className="flex flex-col gap-6 sm:gap-8 pb-12 w-full text-[#F4F4F6]">
+    <div className="flex flex-col gap-6 sm:gap-8 w-full text-[#F4F4F6]">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPIWidget
           label="Total Pendapatan Tiket"
           value={formatIDR(totalRevenue)}
-          subtext="Total transaksi berhasil"
+          subtext={ticketsSold > 0 ? `Dari ${ticketsSold} tiket terbit` : 'Belum ada transaksi tercatat'}
           icon={DollarSign}
-          badgeText="+18.5% YTD"
-          badgeColor="text-emerald-400 border-emerald-500/30 bg-emerald-500/10"
         />
         <KPIWidget
-          label="Tiket Terverifikasi"
+          label="Tiket Terjual"
           value={`${ticketsSold} Tiket`}
-          subtext="Terkonfirmasi sistem gate"
+          subtext="Pesanan aktif & terkonfirmasi"
           icon={Ticket}
-          badgeText="Verified"
-          badgeColor="text-white border-white/20 bg-white/10"
         />
         <KPIWidget
           label="Sisa Kuota Kursi"
           value={`${remainingQuota} Kursi`}
-          subtext="Okupansi 72.8%"
+          subtext={totalQuota > 0 ? `Okupansi ${occupancyPct}% dari ${totalQuota} kursi` : 'Belum ada kuota aktif'}
           icon={Layers}
-          badgeText="Real-time"
-          badgeColor="text-[#94A3B8] border-[#272A38] bg-[#0C0D12]"
         />
         <KPIWidget
-          label="Konser Active Season"
+          label="Konser Aktif"
           value={`${totalEvents} Pertunjukan`}
-          subtext="Musim 2026"
+          subtext="Terdaftar di katalog"
           icon={BarChart3}
-          badgeText="Live"
-          badgeColor="text-emerald-400 border-emerald-500/30 bg-emerald-500/10"
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 border border-[#272A38] bg-[#14161F] p-5 sm:p-6 rounded-xl flex flex-col justify-between shadow-xl">
-          <div>
-            <div className="border-b border-[#272A38] pb-4 flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h3 className="text-base font-semibold text-[#F4F4F6] tracking-tight m-0">Tren Pertumbuhan Pendapatan Simfoni</h3>
-                <p className="text-xs font-normal text-[#94A3B8] mt-0.5 m-0">Visualisasi penjualan tiket dan estimasi pendapatan bulanan</p>
-              </div>
-              <div className="flex items-center gap-1 border border-[#272A38] p-0.5 rounded-lg bg-[#0C0D12]">
-                <button
-                  onClick={() => setChartTimeframe('MONTHLY')}
-                  className={`px-3 py-1 text-xs font-medium cursor-pointer rounded border-none transition-colors ${
-                    chartTimeframe === 'MONTHLY' ? 'bg-white text-[#0C0D12] font-semibold' : 'text-[#A1A1AA] hover:text-white bg-transparent'
-                  }`}
-                >
-                  Bulanan
-                </button>
-                <button
-                  onClick={() => setChartTimeframe('WEEKLY')}
-                  className={`px-3 py-1 text-xs font-medium cursor-pointer rounded border-none transition-colors ${
-                    chartTimeframe === 'WEEKLY' ? 'bg-white text-[#0C0D12] font-semibold' : 'text-[#A1A1AA] hover:text-white bg-transparent'
-                  }`}
-                >
-                  Mingguan
-                </button>
-              </div>
-            </div>
+        <div className="lg:col-span-2 border border-[#272A38] bg-[#14161F] p-5 sm:p-6 rounded-xl flex flex-col justify-between">
+          <div className="border-b border-[#272A38] pb-4">
+            <h3 className="text-base font-semibold text-[#F4F4F6] tracking-tight m-0">
+              Pendapatan Penjualan Tiket per Bulan
+            </h3>
+            <p className="text-xs font-normal text-[#A1A1AA] mt-1 m-0">
+              Total nilai transaksi tiket terkonfirmasi berdasarkan data server.
+            </p>
+          </div>
 
+          {timelineData.length > 0 ? (
             <div className="h-64 sm:h-72 w-full mt-6">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={timelineData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <AreaChart data={timelineData} margin={{ top: 10, right: 10, left: -12, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#FFFFFF" stopOpacity={0.25} />
                       <stop offset="95%" stopColor="#FFFFFF" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                  <XAxis dataKey="month" stroke="#A1A1AA" fontSize={11} tickLine={false} />
-                  <YAxis stroke="#A1A1AA" fontSize={11} tickLine={false} tickFormatter={(v) => `${v / 1000000}JT`} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+                  <XAxis dataKey="month" stroke="#A1A1AA" fontSize={12} tickLine={false} />
+                  <YAxis stroke="#A1A1AA" fontSize={12} tickLine={false} tickFormatter={(v) => `${Math.round(v / 1000000)}JT`} />
                   <Tooltip
-                    contentStyle={{ backgroundColor: '#14161F', borderColor: '#272A38', color: '#FFFFFF', fontSize: '12px', borderRadius: '8px' }}
+                    contentStyle={{ backgroundColor: '#14161F', borderColor: '#3E4357', color: '#FFFFFF', fontSize: '12px', borderRadius: '8px' }}
                     formatter={(val: any) => [formatIDR(Number(val)), 'Pendapatan']}
                   />
                   <Area type="monotone" dataKey="revenue" stroke="#FFFFFF" strokeWidth={2} fillOpacity={1} fill="url(#colorRev)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
-          </div>
+          ) : (
+            <div className="h-64 flex flex-col items-center justify-center text-center border border-dashed border-[#3E4357] rounded-xl mt-6 p-6 bg-[#0C0D12]">
+              <p className="text-sm font-medium text-white m-0">Belum Ada Riwayat Pendapatan Bulanan</p>
+              <p className="text-xs text-[#94A3B8] mt-1.5 m-0 max-w-sm">
+                Grafik akan terisi otomatis setelah terdapat transaksi pesanan tiket yang tercatat di sistem.
+              </p>
+            </div>
+          )}
         </div>
 
-        <div className="border border-[#272A38] bg-[#14161F] p-5 sm:p-6 rounded-xl flex flex-col justify-between shadow-xl">
-          <div>
-            <div className="border-b border-[#272A38] pb-4">
-              <h3 className="text-base font-semibold text-[#F4F4F6] tracking-tight m-0">Distribusi Kategori Tiket</h3>
-              <p className="text-xs font-normal text-[#94A3B8] mt-0.5 m-0">Komposisi omset berdasarkan kelas kursi</p>
-            </div>
-
-            <div className="h-52 w-full mt-4 flex items-center justify-center">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={categoryData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={50}
-                    outerRadius={75}
-                    paddingAngle={4}
-                    dataKey="value"
-                  >
-                    {categoryData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} stroke="#14161F" />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{ backgroundColor: '#14161F', borderColor: '#272A38', color: '#F4F4F6', fontSize: '12px', borderRadius: '8px' }}
-                    formatter={(val: any) => [formatIDR(Number(val)), 'Omset']}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className="space-y-2 mt-2 pt-2 border-t border-[#272A38]">
-              {categoryData.map((cat) => (
-                <div key={cat.name} className="flex justify-between items-center text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: cat.color }} />
-                    <span className="text-[#A1A1AA]">{cat.name}</span>
-                  </div>
-                  <span className="text-white font-mono font-medium">{formatIDR(cat.value)}</span>
-                </div>
-              ))}
-            </div>
+        <div className="border border-[#272A38] bg-[#14161F] p-5 sm:p-6 rounded-xl flex flex-col justify-between">
+          <div className="border-b border-[#272A38] pb-4">
+            <h3 className="text-base font-semibold text-[#F4F4F6] tracking-tight m-0">
+              Distribusi Pendapatan per Kategori Kursi
+            </h3>
+            <p className="text-xs font-normal text-[#A1A1AA] mt-1 m-0">
+              Komposisi nilai penjualan berdasarkan kelas tempat duduk.
+            </p>
           </div>
+
+          {categoryData.length > 0 ? (
+            <>
+              <div className="h-52 w-full mt-4 flex items-center justify-center">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={categoryData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={50}
+                      outerRadius={75}
+                      paddingAngle={4}
+                      dataKey="value"
+                    >
+                      {categoryData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} stroke="#14161F" />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{ backgroundColor: '#14161F', borderColor: '#3E4357', color: '#F4F4F6', fontSize: '12px', borderRadius: '8px' }}
+                      formatter={(val: any) => [formatIDR(Number(val)), 'Omset']}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+
+              <div className="space-y-2.5 mt-2 pt-3 border-t border-[#272A38]">
+                {categoryData.map((cat) => (
+                  <div key={cat.name} className="flex justify-between items-center text-xs gap-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: cat.color }} aria-hidden="true" />
+                      <span className="text-[#E4E4E7] truncate">{cat.name}</span>
+                    </div>
+                    <span className="text-white font-mono font-medium shrink-0 tabular-nums">{formatIDR(cat.value)}</span>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="h-64 flex flex-col items-center justify-center text-center border border-dashed border-[#3E4357] rounded-xl mt-6 p-6 bg-[#0C0D12]">
+              <p className="text-sm font-medium text-white m-0">Belum Ada Data Kategori Terjual</p>
+              <p className="text-xs text-[#94A3B8] mt-1.5 m-0">
+                Proporsi kelas kursi akan tampil setelah ada pesanan masuk.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -195,24 +175,15 @@ const KPIWidget: React.FC<{
   value: string;
   subtext: string;
   icon: any;
-  badgeText?: string;
-  badgeColor?: string;
-}> = ({ label, value, subtext, icon: Icon, badgeText, badgeColor = 'text-[#A1A1AA] border-[#272A38] bg-[#0C0D12]' }) => (
-  <div className="p-5 sm:p-6 border border-[#272A38] bg-[#14161F] rounded-xl relative group hover:border-white/30 transition-all shadow-lg overflow-hidden">
+}> = ({ label, value, subtext, icon: Icon }) => (
+  <div className="p-5 sm:p-6 border border-[#272A38] bg-[#14161F] rounded-xl transition-colors hover:border-white/30">
     <div className="flex items-center justify-between mb-3">
-      <span className="text-[11px] font-medium text-[#A1A1AA] tracking-wider uppercase">{label}</span>
-      <div className="w-8 h-8 rounded-lg border border-[#272A38] bg-[#0C0D12] flex items-center justify-center text-white">
-        <Icon size={15} strokeWidth={1.5} />
+      <span className="text-xs font-medium text-[#A1A1AA] tracking-wider uppercase">{label}</span>
+      <div className="w-9 h-9 rounded-lg border border-[#272A38] bg-[#0C0D12] flex items-center justify-center text-white">
+        <Icon size={16} strokeWidth={1.6} aria-hidden="true" />
       </div>
     </div>
-    <div className="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-2 font-sans tabular-nums">{value}</div>
-    <div className="flex items-center justify-between text-xs font-normal text-[#A1A1AA]">
-      <span className="truncate mr-2">{subtext}</span>
-      {badgeText && (
-        <span className={`text-[10px] font-mono px-2 py-0.5 rounded border ${badgeColor}`}>
-          {badgeText}
-        </span>
-      )}
-    </div>
+    <div className="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-1.5 font-sans tabular-nums">{value}</div>
+    <p className="text-xs font-normal text-[#A1A1AA] m-0 truncate">{subtext}</p>
   </div>
 );
