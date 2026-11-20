@@ -1,71 +1,65 @@
 @import "tailwindcss";
 
 @theme {
-  --color-canvas: #0C0D12;
-  --color-canvas-alt: #14161F;
-  --color-surface: #14161F;
-  --color-surface-raised: #1D202D;
-  --color-border: #272A38;
-  --color-border-strong: #3E4357;
-  --color-border-subtle: #1F222E;
+  --color-stage: #11100E;
+  --color-canvas: #F6F4EE;
+  --color-canvas-alt: #ECE8DF;
+  --color-surface: #FFFFFF;
+  --color-surface-raised: #FFFFFF;
+  --color-surface-muted: #ECE8DF;
+  --color-border: #E4DFD3;
+  --color-border-strong: #CFC9BC;
+  --color-border-subtle: #EAE5DA;
 
-  /* Monochrome inks calibrated to pass WCAG AA (4.5:1+) on #0C0D12 and #14161F */
-  --color-text-primary: #FFFFFF;
-  --color-text-secondary: #A1A1AA;
-  --color-text-tertiary: #94A3B8;
-  --color-chalk: #FFFFFF;
-  --color-ash: #A1A1AA;
-  --color-ink: #FFFFFF;
-  --color-ink-soft: #A1A1AA;
-  --color-line: #272A38;
-  --color-muted: #94A3B8;
-  --color-muted-foreground: #A1A1AA;
+  --color-text-primary: #171614;
+  --color-text-secondary: #5C5850;
+  --color-text-tertiary: #6B665D;
+  --color-ink: #171614;
+  --color-ink-soft: #5C5850;
+  --color-line: #E4DFD3;
+  --color-muted: #6B665D;
+  --color-muted-foreground: #5C5850;
 
-  --color-brand: #FFFFFF;
-  --color-brand-dark: #E4E4E7;
-  --color-brand-light: #1D202D;
-  --color-brand-accent: #FFFFFF;
-  --color-brand-accent-hover: #E4E4E7;
-  --color-primary: #FFFFFF;
-  --color-primary-foreground: #0C0D12;
-  --color-secondary: #1D202D;
-  --color-secondary-foreground: #FFFFFF;
-  --color-accent: #FFFFFF;
-  --color-accent-foreground: #0C0D12;
-  --color-ring: #FFFFFF;
+  --color-accent: #C93018;
+  --color-accent-hover: #A82511;
+  --color-accent-foreground: #FFFFFF;
+  --color-primary: #C93018;
+  --color-primary-foreground: #FFFFFF;
+  --color-secondary: #ECE8DF;
+  --color-secondary-foreground: #171614;
+  --color-ring: #C93018;
 
-  --color-seat-available: #272A38;
-  --color-seat-selected: #FFFFFF;
-  --color-seat-sold: #181920;
-  --color-status-success: #FFFFFF;
-  --color-status-warning: #A1A1AA;
-  --color-status-danger: #EF4444;
+  --color-seat-available: #FFFFFF;
+  --color-seat-selected: #171614;
+  --color-seat-sold: #ECE8DF;
+  --color-status-success: #1F6E43;
+  --color-status-warning: #855A0E;
+  --color-status-danger: #B91C1C;
 
   --radius-btn: 8px;
   --radius-button: 8px;
   --radius-card: 12px;
   --radius-modal: 16px;
 
-  --color-background: #0C0D12;
-  --color-foreground: #FFFFFF;
-  --color-card: #14161F;
-  --color-card-foreground: #FFFFFF;
-  --color-input: #1D202D;
-  --color-obsidian: #0C0D12;
+  --color-background: #F6F4EE;
+  --color-foreground: #171614;
+  --color-card: #FFFFFF;
+  --color-card-foreground: #171614;
+  --color-input: #FFFFFF;
 
-  --font-display: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 
 @layer base {
   html {
-    font-family: var(--font-display);
+    font-family: var(--font-sans);
     font-feature-settings: "rlig" 1, "calt" 1;
     scroll-behavior: smooth;
     scroll-padding-top: 88px;
     scroll-padding-bottom: 96px;
-    background: #0C0D12;
-    color: #FFFFFF;
+    background: #F6F4EE;
+    color: #171614;
     overflow-x: hidden;
     width: 100%;
   }
@@ -74,8 +68,9 @@
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    background: #0C0D12;
-    color: #FFFFFF;
+    background: #F6F4EE;
+    color: #171614;
+    font-family: var(--font-sans);
     font-weight: 400;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -87,7 +82,7 @@
     height: auto;
   }
 
-  /* Restore interactive pointer affordance cleared by CSS resets (R-39) */
+  /* Restore interactive pointer affordance cleared by CSS resets */
   a[href],
   button:not(:disabled),
   select:not(:disabled),
@@ -118,15 +113,15 @@
   }
 
   ::selection {
-    background: #FFFFFF;
-    color: #0C0D12;
+    background: #C93018;
+    color: #FFFFFF;
   }
 
   input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
     height: 4px;
-    background: #3E4357;
+    background: #CFC9BC;
     outline: none;
     border-radius: 2px;
   }
@@ -135,14 +130,14 @@
     appearance: none;
     width: 14px;
     height: 14px;
-    background: #FFFFFF;
+    background: #C93018;
     cursor: pointer;
     border-radius: 2px;
   }
   input[type="range"]::-moz-range-thumb {
     width: 14px;
     height: 14px;
-    background: #FFFFFF;
+    background: #C93018;
     cursor: pointer;
     border-radius: 2px;
     border: none;
@@ -154,9 +149,9 @@
   }
 
   ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: #14161F; }
-  ::-webkit-scrollbar-thumb { background: #3E4357; border-radius: 4px; }
-  ::-webkit-scrollbar-thumb:hover { background: #525870; }
+  ::-webkit-scrollbar-track { background: #ECE8DF; }
+  ::-webkit-scrollbar-thumb { background: #CFC9BC; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #9C9588; }
 
   @keyframes fade-in {
     from { opacity: 0; }
@@ -175,21 +170,25 @@
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 }
 
+.font-display {
+  font-family: var(--font-display);
+}
+
 .btn {
   @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 min-h-[44px] text-sm font-medium transition-colors cursor-pointer;
 }
 .btn--primary {
-  @apply bg-white text-[#0C0D12] font-semibold hover:bg-neutral-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0C0D12];
+  @apply bg-[#C93018] text-white font-semibold hover:bg-[#A82511] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C93018] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F6F4EE];
 }
 .btn--secondary {
-  @apply bg-transparent border border-white/25 text-[#FFFFFF] hover:bg-white/10 hover:border-white/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0C0D12];
+  @apply bg-transparent border border-[#CFC9BC] text-[#171614] hover:bg-[#ECE8DF]/70 hover:border-[#171614] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C93018] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F6F4EE];
 }
 .btn--ghost {
-  @apply bg-transparent text-[#A1A1AA] hover:text-white hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0C0D12];
+  @apply bg-transparent text-[#5C5850] hover:text-[#171614] hover:bg-[#ECE8DF]/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C93018] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F6F4EE];
 }
 
 .card {
-  @apply rounded-xl bg-[#14161F] border border-[#272A38] text-[#FFFFFF] transition-colors duration-200 hover:border-white/30;
+  @apply rounded-xl bg-white border border-[#E4DFD3] text-[#171614] transition-colors duration-200 hover:border-[#CFC9BC];
 }
 
 .badge {

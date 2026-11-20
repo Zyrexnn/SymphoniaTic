@@ -12,6 +12,7 @@ interface FullscreenWorkspaceProps {
   footer?: React.ReactNode;
   maxWidthClass?: string;
   backLabel?: string;
+  theme?: 'dark' | 'light';
   children: React.ReactNode;
 }
 
@@ -29,10 +30,12 @@ export const FullscreenWorkspace: React.FC<FullscreenWorkspaceProps> = ({
   footer,
   maxWidthClass = 'max-w-4xl',
   backLabel = 'Tutup',
+  theme = 'dark',
   children,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const titleId = React.useId();
+  const isLight = theme === 'light';
 
   useEffect(() => {
     if (!isOpen) return;
@@ -69,9 +72,17 @@ export const FullscreenWorkspace: React.FC<FullscreenWorkspaceProps> = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
-      className="fixed inset-0 z-50 bg-[#0C0D12] text-white flex flex-col outline-none"
+      className={cn(
+        'fixed inset-0 z-50 flex flex-col outline-none',
+        isLight ? 'bg-[#F6F4EE] text-[#171614]' : 'bg-[#0C0D12] text-white'
+      )}
     >
-      <header className="shrink-0 border-b border-[#272A38] bg-[#14161F]">
+      <header
+        className={cn(
+          'shrink-0 border-b',
+          isLight ? 'border-[#E4DFD3] bg-white' : 'border-[#272A38] bg-[#14161F]'
+        )}
+      >
         <div
           className={cn(
             'mx-auto w-full px-4 sm:px-8 py-3.5 sm:py-4 flex items-center justify-between gap-4',
@@ -83,7 +94,12 @@ export const FullscreenWorkspace: React.FC<FullscreenWorkspaceProps> = ({
               type="button"
               onClick={onClose}
               aria-label={backLabel}
-              className="inline-flex items-center justify-center gap-2 min-h-[44px] min-w-[44px] px-3 rounded-lg bg-[#0C0D12] border border-[#3E4357] text-[#E4E4E7] hover:text-white hover:border-white/60 transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+              className={cn(
+                'inline-flex items-center justify-center gap-2 min-h-[44px] min-w-[44px] px-3 rounded-lg border transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2',
+                isLight
+                  ? 'bg-[#F6F4EE] border-[#CFC9BC] text-[#171614] hover:border-[#171614] focus-visible:ring-[#C93018]'
+                  : 'bg-[#0C0D12] border-[#3E4357] text-[#E4E4E7] hover:text-white hover:border-white/60 focus-visible:ring-white'
+              )}
             >
               <ArrowLeft className="w-4 h-4 shrink-0" strokeWidth={1.8} />
               <span className="hidden sm:inline text-xs font-medium">{backLabel}</span>
@@ -91,18 +107,33 @@ export const FullscreenWorkspace: React.FC<FullscreenWorkspaceProps> = ({
 
             <div className="min-w-0">
               {eyebrow && (
-                <span className="block text-[11px] font-medium uppercase tracking-wider text-[#A1A1AA] truncate">
+                <span
+                  className={cn(
+                    'block text-[11px] font-semibold uppercase tracking-wider truncate',
+                    isLight ? 'text-[#C93018]' : 'text-[#A1A1AA]'
+                  )}
+                >
                   {eyebrow}
                 </span>
               )}
               <h2
                 id={titleId}
-                className="text-base sm:text-lg font-semibold text-white tracking-tight truncate m-0"
+                className={cn(
+                  'text-base sm:text-lg font-semibold tracking-tight truncate m-0',
+                  isLight ? 'font-display text-xl sm:text-2xl text-[#171614]' : 'text-white'
+                )}
               >
                 {title}
               </h2>
               {subtitle && (
-                <p className="text-xs text-[#A1A1AA] truncate mt-0.5 m-0">{subtitle}</p>
+                <p
+                  className={cn(
+                    'text-xs truncate mt-0.5 m-0',
+                    isLight ? 'text-[#5C5850]' : 'text-[#A1A1AA]'
+                  )}
+                >
+                  {subtitle}
+                </p>
               )}
             </div>
           </div>
@@ -113,7 +144,12 @@ export const FullscreenWorkspace: React.FC<FullscreenWorkspaceProps> = ({
               type="button"
               onClick={onClose}
               aria-label="Tutup jendela"
-              className="inline-flex items-center justify-center h-11 w-11 rounded-lg bg-[#0C0D12] border border-[#3E4357] text-[#A1A1AA] hover:text-white hover:border-white/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+              className={cn(
+                'inline-flex items-center justify-center h-11 w-11 rounded-lg border transition-colors focus-visible:outline-none focus-visible:ring-2',
+                isLight
+                  ? 'bg-[#F6F4EE] border-[#CFC9BC] text-[#5C5850] hover:text-[#171614] hover:border-[#171614] focus-visible:ring-[#C93018]'
+                  : 'bg-[#0C0D12] border-[#3E4357] text-[#A1A1AA] hover:text-white hover:border-white/60 focus-visible:ring-white'
+              )}
             >
               <X className="w-5 h-5" strokeWidth={1.8} />
             </button>
@@ -128,7 +164,12 @@ export const FullscreenWorkspace: React.FC<FullscreenWorkspaceProps> = ({
       </div>
 
       {footer && (
-        <footer className="shrink-0 border-t border-[#272A38] bg-[#14161F] pb-[env(safe-area-inset-bottom)]">
+        <footer
+          className={cn(
+            'shrink-0 border-t pb-[env(safe-area-inset-bottom)]',
+            isLight ? 'border-[#E4DFD3] bg-white' : 'border-[#272A38] bg-[#14161F]'
+          )}
+        >
           <div className={cn('mx-auto w-full px-4 sm:px-8 py-4', maxWidthClass)}>
             {footer}
           </div>
@@ -145,6 +186,7 @@ interface ConfirmDialogProps {
   confirmLabel?: string;
   cancelLabel?: string;
   variant?: 'danger' | 'default';
+  theme?: 'dark' | 'light';
   onConfirm: () => void;
   onCancel: () => void;
 }
@@ -156,11 +198,13 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   confirmLabel = 'Konfirmasi',
   cancelLabel = 'Batal',
   variant = 'danger',
+  theme = 'dark',
   onConfirm,
   onCancel,
 }) => {
   const titleId = React.useId();
   const descId = React.useId();
+  const isLight = theme === 'light';
 
   useEffect(() => {
     if (!isOpen) return;
@@ -175,7 +219,10 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80"
+      className={cn(
+        'fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4',
+        isLight ? 'bg-[#11100E]/65' : 'bg-black/80'
+      )}
       onClick={onCancel}
     >
       <div
@@ -184,21 +231,44 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
         aria-labelledby={titleId}
         aria-describedby={descId}
         onClick={(e) => e.stopPropagation()}
-        className="w-full sm:max-w-md bg-[#14161F] border-t sm:border border-[#3E4357] rounded-t-2xl sm:rounded-2xl p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] text-white"
+        className={cn(
+          'w-full sm:max-w-md border-t sm:border rounded-t-2xl sm:rounded-2xl p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]',
+          isLight
+            ? 'bg-white border-[#E4DFD3] text-[#171614]'
+            : 'bg-[#14161F] border-[#3E4357] text-white'
+        )}
       >
         <div className="flex items-start gap-3 mb-3">
           <AlertCircle
             className={cn(
               'w-5 h-5 shrink-0 mt-0.5',
-              variant === 'danger' ? 'text-rose-400' : 'text-amber-400'
+              variant === 'danger'
+                ? isLight
+                  ? 'text-[#B91C1C]'
+                  : 'text-rose-400'
+                : isLight
+                ? 'text-[#855A0E]'
+                : 'text-amber-400'
             )}
             aria-hidden="true"
           />
           <div>
-            <h3 id={titleId} className="text-base font-semibold text-white m-0">
+            <h3
+              id={titleId}
+              className={cn(
+                'text-base font-semibold m-0',
+                isLight ? 'text-[#171614]' : 'text-white'
+              )}
+            >
               {title}
             </h3>
-            <p id={descId} className="text-sm text-[#A1A1AA] leading-relaxed mt-2 mb-0">
+            <p
+              id={descId}
+              className={cn(
+                'text-sm leading-relaxed mt-2 mb-0',
+                isLight ? 'text-[#5C5850]' : 'text-[#A1A1AA]'
+              )}
+            >
               {message}
             </p>
           </div>
@@ -208,7 +278,12 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           <button
             type="button"
             onClick={onCancel}
-            className="w-full sm:w-auto min-h-[44px] px-5 py-2.5 text-sm font-medium text-[#E4E4E7] hover:text-white bg-[#0C0D12] border border-[#3E4357] hover:border-white/50 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+            className={cn(
+              'w-full sm:w-auto min-h-[44px] px-5 py-2.5 text-sm font-medium border rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2',
+              isLight
+                ? 'text-[#171614] bg-[#F6F4EE] border-[#CFC9BC] hover:border-[#171614] focus-visible:ring-[#C93018]'
+                : 'text-[#E4E4E7] hover:text-white bg-[#0C0D12] border-[#3E4357] hover:border-white/50 focus-visible:ring-white'
+            )}
           >
             {cancelLabel}
           </button>
@@ -216,10 +291,12 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             type="button"
             onClick={onConfirm}
             className={cn(
-              'w-full sm:w-auto min-h-[44px] px-5 py-2.5 text-sm font-semibold rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white',
+              'w-full sm:w-auto min-h-[44px] px-5 py-2.5 text-sm font-semibold rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2',
               variant === 'danger'
-                ? 'text-white bg-rose-600 hover:bg-rose-500'
-                : 'text-[#0C0D12] bg-white hover:bg-neutral-200'
+                ? 'text-white bg-[#B91C1C] hover:bg-[#991B1B] focus-visible:ring-[#B91C1C]'
+                : isLight
+                ? 'text-white bg-[#C93018] hover:bg-[#A82511] focus-visible:ring-[#C93018]'
+                : 'text-[#0C0D12] bg-white hover:bg-neutral-200 focus-visible:ring-white'
             )}
           >
             {confirmLabel}

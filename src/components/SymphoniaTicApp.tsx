@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import { BoomerangVideoBg } from './BoomerangVideoBg';
 import { CONCERT_EVENTS, fetchEventsAPI, getUserOrdersAPI, getApiBaseUrl } from './landing/data';
 import type { EventItem, TicketCategory, OrderRecord } from './landing/data';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
@@ -31,11 +30,13 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (user) {
-      getUserOrdersAPI().then((res) => {
-        if (res.success && Array.isArray(res.data)) {
-          setOrders(res.data);
-        }
-      }).catch(console.error);
+      getUserOrdersAPI()
+        .then((res) => {
+          if (res.success && Array.isArray(res.data)) {
+            setOrders(res.data);
+          }
+        })
+        .catch(console.error);
     }
   }, [user]);
 
@@ -112,18 +113,21 @@ const App: React.FC = () => {
   }, [liveEvents, eventsError]);
 
   useEffect(() => {
-    const onScroll = () => setIsScrolled(window.scrollY > 40);
+    const onScroll = () => setIsScrolled(window.scrollY > 24);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const handleBookingSubmit = useCallback((order: OrderRecord) => {
-    setOrders((prev) => [order, ...prev]);
-    setActiveSuccessOrder(order);
-    setBookingEvent(null);
-    setBookingCategory(null);
-    loadLiveEvents();
-  }, [loadLiveEvents]);
+  const handleBookingSubmit = useCallback(
+    (order: OrderRecord) => {
+      setOrders((prev) => [order, ...prev]);
+      setActiveSuccessOrder(order);
+      setBookingEvent(null);
+      setBookingCategory(null);
+      loadLiveEvents();
+    },
+    [loadLiveEvents]
+  );
 
   const openBooking = useCallback((event: EventItem) => {
     setBookingEvent(event);
@@ -139,7 +143,7 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative min-h-screen w-full bg-[#0C0D12] text-[#F4F4F6]">
+    <div className="relative min-h-screen w-full bg-[#F6F4EE] text-[#171614]">
       <Header
         isScrolled={isScrolled}
         isMenuOpen={isMenuOpen}
@@ -150,31 +154,27 @@ const App: React.FC = () => {
         onLogout={logout}
       />
 
-      <div className="relative overflow-hidden bg-[#0C0D12]">
-        <BoomerangVideoBg />
-        <div className="absolute inset-0 z-[1] bg-gradient-to-b from-[#0C0D12]/60 via-[#0C0D12]/30 to-[#0C0D12]" />
-        <Hero />
-      </div>
-
-      <RecommendedSection
-        events={displayEvents}
-        onBuyTicket={openBooking}
-        isLoading={isLoadingEvents}
-        error={eventsError}
-      />
+      <Hero featuredEvent={displayEvents[0]} onBuyTicket={openBooking} />
 
       <BentoSection
         events={displayEvents}
         onBuyTicket={openBooking}
         isLoading={isLoadingEvents}
         error={eventsError}
+        onRetry={loadLiveEvents}
+      />
+
+      <RecommendedSection
+        events={displayEvents}
+        onBuyTicket={openBooking}
+        isLoading={isLoadingEvents}
+        error={eventsError}
+        onRetry={loadLiveEvents}
       />
 
       <FAQSection />
 
       <Footer />
-
-      <div className="h-16" />
 
       <AnimatePresence>
         {bookingEvent && bookingCategory && (

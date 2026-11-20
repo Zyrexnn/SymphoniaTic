@@ -79,7 +79,7 @@ fe/
   - `client:only="react"` for components requiring browser-only APIs (Canvas, jsPDF, Web Audio).
 
 ### C. UI / Visual Aesthetics
-- **Theme**: Premium classical concert hall aesthetic. Deep dark background (`#0c0d12`), soft gold / bronze / indigo accents, and subtle glassmorphism (`backdrop-blur-md bg-white/[0.03] border border-white/10`).
+- **Theme**: Concert Hall & Warm Playbill aesthetic (`fe/DESIGN.md`). Atmospheric dark stage (`#11100E`) for hero photography, paired with Warm Ivory (`#F6F4EE`) reading surfaces, Crisp Paper (`#FFFFFF`) cards with `1px` `#E4DFD3` borders, Charcoal Ink (`#171614`) typography, and Stage Vermilion (`#C93018`) reserved for primary CTAs, featured date ribbons, and active indicators.
 - Adhere to `DESIGN.md` guidelines. Avoid generic or flat templates.
 
 ### D. E-Ticket & Pass Generation
@@ -95,7 +95,7 @@ Follow these strict rules to eliminate generic AI frontend slop:
 
 ### A. Visual & UI Craftsmanship (`antislop-ui`)
 - **Glassmorphism Dose Cap (R-10)**: Maximum 1 to 2 elements using `backdrop-blur` (for example, floating navbar or modal overlay). FORBIDDEN: coating every card, sidebar, and hero section in frosted blur that flattens contrast.
-- **Colors & Gradients (R-01)**: FORBIDDEN: generic AI gradients (blue-to-purple, cyan-to-pink). Use the SymphoniaTic palette from `DESIGN.md` (dark charcoal `#0c0d12`, amber gold, brass, and royal indigo).
+- **Colors & Gradients (R-01)**: FORBIDDEN: generic AI gradients (blue-to-purple, cyan-to-pink). Use the SymphoniaTic palette from `DESIGN.md` (Warm Ivory `#F6F4EE`, Crisp Paper `#FFFFFF`, Concert Hall Stage `#11100E`, Charcoal Ink `#171614`, and Stage Vermilion `#C93018`).
 - **Border Radii (R-11)**: FORBIDDEN: making every button, card, and input pill-shaped. Use a consistent scale (`rounded-xl` for cards, `rounded-lg` for buttons).
 - **Glow & Shadow (R-12, R-13)**: Glow is strictly an attention accent for at most 1 to 2 key elements (such as primary checkout button or playing audio state). Avoid overly soft shadows that make the page float without a ground plane.
 - **Functional Completeness (R-26, C-2)**: FORBIDDEN: dead controls or ghost links that do nothing. Every button must trigger navigation, open a dialog, or provide clear validation feedback.

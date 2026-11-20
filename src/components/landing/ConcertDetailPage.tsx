@@ -5,6 +5,7 @@ import type { EventItem, TicketCategory, OrderRecord } from './data';
 import { BookingModal, ETicketConfirmation } from './Modals';
 import { Footer } from './Footer';
 import { Header } from './Navbar';
+import { parseDate } from './Sections';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 
 type DetailTab = 'INFO' | 'RUNDOWN' | 'BENEFITS' | 'TERMS';
@@ -52,15 +53,22 @@ const BuyCard: React.FC<BuyCardProps> = ({ event, selectedCatId, onSelectCategor
   }, [maxAllowed, qty]);
 
   const purchaseContent = (
-    <div className="bg-[#14161F] border border-[#272A38] rounded-2xl p-6">
+    <div className="bg-white border border-[#E4DFD3] rounded-2xl p-6">
       <div className="mb-6">
-        <h3 className="text-lg font-bold text-white tracking-tight m-0">Pilih Tiket</h3>
-        <p className="text-xs text-[#A1A1AA] mt-1 mb-0">Pilih kategori kursi dan jumlah tiket yang ingin dipesan.</p>
+        <h3 className="font-display text-2xl font-semibold text-[#171614] tracking-tight m-0">
+          Pilih Tiket
+        </h3>
+        <p className="text-xs text-[#5C5850] mt-1 mb-0">
+          Pilih kategori kursi dan jumlah tiket yang ingin dipesan.
+        </p>
       </div>
 
       {isClosed && (
-        <div role="alert" className="mb-5 p-3.5 border border-amber-500/40 bg-amber-500/10 text-amber-200 text-xs font-medium rounded-xl flex items-start gap-2.5">
-          <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" aria-hidden="true" />
+        <div
+          role="alert"
+          className="mb-5 p-3.5 border border-[#855A0E]/30 bg-[#855A0E]/10 text-[#171614] text-xs font-medium rounded-xl flex items-start gap-2.5"
+        >
+          <AlertCircle className="w-4 h-4 text-[#855A0E] shrink-0 mt-0.5" aria-hidden="true" />
           <span>
             <strong>Penjualan Ditutup</strong>: Pertunjukan ini sudah dimulai atau penjualan tiket telah dihentikan oleh panitia.
           </span>
@@ -68,8 +76,11 @@ const BuyCard: React.FC<BuyCardProps> = ({ event, selectedCatId, onSelectCategor
       )}
 
       {!isClosed && isAllSoldOut && (
-        <div role="alert" className="mb-5 p-3.5 border border-rose-500/40 bg-rose-500/10 text-rose-200 text-xs font-medium rounded-xl flex items-start gap-2.5">
-          <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" aria-hidden="true" />
+        <div
+          role="alert"
+          className="mb-5 p-3.5 border border-[#B91C1C]/30 bg-[#B91C1C]/10 text-[#B91C1C] text-xs font-medium rounded-xl flex items-start gap-2.5"
+        >
+          <AlertCircle className="w-4 h-4 text-[#B91C1C] shrink-0 mt-0.5" aria-hidden="true" />
           <span>
             <strong>Seluruh Tiket Habis Terjual</strong>: Semua kategori kursi untuk konser ini telah habis.
           </span>
@@ -78,10 +89,10 @@ const BuyCard: React.FC<BuyCardProps> = ({ event, selectedCatId, onSelectCategor
 
       <div className="mb-6">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-xs font-bold text-[#A1A1AA] tracking-wider uppercase">
+          <span className="text-xs font-semibold text-[#5C5850] tracking-wider uppercase">
             Kategori Kursi
           </span>
-          <span className="text-xs text-[#A1A1AA]">
+          <span className="text-xs text-[#6B665D]">
             {categories.length} Pilihan
           </span>
         </div>
@@ -101,29 +112,29 @@ const BuyCard: React.FC<BuyCardProps> = ({ event, selectedCatId, onSelectCategor
                 onClick={() => onSelectCategory(cat.id)}
                 className={`w-full min-h-[60px] flex items-center justify-between p-3.5 rounded-xl text-left transition-colors border ${
                   catSoldOut
-                    ? 'opacity-45 bg-[#0C0D12] border-[#272A38]'
+                    ? 'opacity-55 bg-[#ECE8DF] border-[#E4DFD3]'
                     : isSelected
-                    ? 'border-2 border-white bg-[#1D202D]'
-                    : 'border border-[#3E4357] bg-[#0C0D12] hover:border-white/60'
+                    ? 'border-2 border-[#171614] bg-[#171614] text-white'
+                    : 'border border-[#CFC9BC] bg-[#F6F4EE] text-[#171614] hover:border-[#171614]'
                 }`}
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <span
                     aria-hidden="true"
                     className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 ${
-                      isSelected ? 'border-white bg-white' : 'border-[#94A3B8] bg-transparent'
+                      isSelected ? 'border-[#C93018] bg-[#C93018]' : 'border-[#6B665D] bg-transparent'
                     }`}
                   >
-                    {isSelected && <span className="h-1.5 w-1.5 rounded-full bg-[#0C0D12]" />}
+                    {isSelected && <span className="h-1.5 w-1.5 rounded-full bg-white" />}
                   </span>
 
                   <div className="min-w-0">
-                    <span className={`text-sm block truncate ${isSelected ? 'font-bold text-white' : 'font-semibold text-white'}`}>
+                    <span className={`text-sm block truncate font-semibold ${isSelected ? 'text-white' : 'text-[#171614]'}`}>
                       {cat.name}
                     </span>
-                    <span className="text-xs text-[#A1A1AA] mt-0.5 block">
+                    <span className={`text-xs mt-0.5 block tabular-nums ${isSelected ? 'text-[#D8D3C8]' : 'text-[#5C5850]'}`}>
                       {catSoldOut ? (
-                        <span className="text-rose-300 font-semibold">(HABIS)</span>
+                        <span className="text-[#B91C1C] font-semibold">(HABIS)</span>
                       ) : (
                         `Sisa ${catRem} kursi`
                       )}
@@ -131,7 +142,7 @@ const BuyCard: React.FC<BuyCardProps> = ({ event, selectedCatId, onSelectCategor
                   </div>
                 </div>
 
-                <span className="text-sm font-bold tabular-nums text-white shrink-0 ml-2">
+                <span className={`text-sm font-bold tabular-nums shrink-0 ml-2 ${isSelected ? 'text-white' : 'text-[#171614]'}`}>
                   {formatIDR(cat.price)}
                 </span>
               </button>
@@ -143,10 +154,10 @@ const BuyCard: React.FC<BuyCardProps> = ({ event, selectedCatId, onSelectCategor
       {!isClosed && !isSoldOut && (
         <div className="mb-6">
           <div className="flex items-center justify-between mb-2.5">
-            <span className="text-xs font-bold text-[#A1A1AA] tracking-wider uppercase">
+            <span className="text-xs font-semibold text-[#5C5850] tracking-wider uppercase">
               Jumlah Tiket
             </span>
-            <span className="text-xs text-[#A1A1AA]">
+            <span className="text-xs text-[#6B665D]">
               Maksimal {maxAllowed} tiket
             </span>
           </div>
@@ -156,11 +167,11 @@ const BuyCard: React.FC<BuyCardProps> = ({ event, selectedCatId, onSelectCategor
               onClick={() => setQty(Math.max(1, qty - 1))}
               disabled={qty <= 1}
               aria-label="Kurangi jumlah tiket"
-              className="h-11 w-11 flex items-center justify-center rounded-lg border border-[#3E4357] bg-[#0C0D12] text-white hover:border-white transition-colors disabled:opacity-35"
+              className="h-11 w-11 flex items-center justify-center rounded-lg border border-[#CFC9BC] bg-[#F6F4EE] text-[#171614] hover:border-[#171614] transition-colors disabled:opacity-35"
             >
               <Minus size={16} strokeWidth={2} aria-hidden="true" />
             </button>
-            <span className="min-w-[32px] text-center text-base font-bold text-white tabular-nums select-none">
+            <span className="min-w-[32px] text-center text-base font-bold text-[#171614] tabular-nums select-none">
               {qty}
             </span>
             <button
@@ -168,20 +179,20 @@ const BuyCard: React.FC<BuyCardProps> = ({ event, selectedCatId, onSelectCategor
               onClick={() => setQty(Math.min(maxAllowed, qty + 1))}
               disabled={qty >= maxAllowed}
               aria-label="Tambah jumlah tiket"
-              className="h-11 w-11 flex items-center justify-center rounded-lg border border-[#3E4357] bg-[#0C0D12] text-white hover:border-white transition-colors disabled:opacity-35"
+              className="h-11 w-11 flex items-center justify-center rounded-lg border border-[#CFC9BC] bg-[#F6F4EE] text-[#171614] hover:border-[#171614] transition-colors disabled:opacity-35"
             >
               <Plus size={16} strokeWidth={2} aria-hidden="true" />
             </button>
-            <span className="text-xs text-[#A1A1AA] ml-1">tiket</span>
+            <span className="text-xs text-[#5C5850] ml-1">tiket</span>
           </div>
         </div>
       )}
 
-      <div className="border-t border-[#272A38] mb-5" />
+      <div className="border-t border-[#E4DFD3] mb-5" />
 
       <div className="flex items-center justify-between mb-4">
-        <span className="text-sm font-medium text-[#A1A1AA]">Total Pembayaran</span>
-        <span className="text-xl font-bold text-white tabular-nums tracking-tight">
+        <span className="text-sm font-medium text-[#5C5850]">Total Pembayaran</span>
+        <span className="text-xl font-bold text-[#171614] tabular-nums tracking-tight">
           {formatIDR(totalPrice)}
         </span>
       </div>
@@ -190,10 +201,10 @@ const BuyCard: React.FC<BuyCardProps> = ({ event, selectedCatId, onSelectCategor
         type="button"
         onClick={() => selectedCat && onBuy(selectedCat, qty)}
         disabled={isClosed || isSoldOut || isAllSoldOut || !selectedCat}
-        className={`w-full py-3.5 text-sm font-bold rounded-xl min-h-[48px] flex items-center justify-center gap-2 transition-colors ${
+        className={`w-full py-3.5 text-sm font-semibold rounded-lg min-h-[48px] flex items-center justify-center gap-2 transition-colors ${
           isClosed || isSoldOut || isAllSoldOut || !selectedCat
-            ? 'bg-[#0C0D12] border border-[#272A38] text-[#A1A1AA] opacity-60'
-            : 'bg-white text-[#0C0D12] hover:bg-neutral-200'
+            ? 'bg-[#ECE8DF] border border-[#E4DFD3] text-[#6B665D]'
+            : 'bg-[#C93018] text-white hover:bg-[#A82511]'
         }`}
       >
         {isClosed ? (
@@ -222,13 +233,13 @@ const BuyCard: React.FC<BuyCardProps> = ({ event, selectedCatId, onSelectCategor
         {purchaseContent}
       </div>
 
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#14161F]/95 backdrop-blur-md border-t border-[#272A38] pb-[env(safe-area-inset-bottom)]">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-[#E4DFD3] pb-[env(safe-area-inset-bottom)]">
         <div className="flex items-center justify-between gap-3 px-4 sm:px-5 py-3">
           <div className="min-w-0 flex-1">
-            <span className="text-xs text-[#A1A1AA] font-medium block leading-tight truncate">
+            <span className="text-xs text-[#5C5850] font-medium block leading-tight truncate">
               {qty} tiket &middot; {selectedCat ? selectedCat.name : ''}
             </span>
-            <span className="text-base sm:text-lg font-bold text-white tabular-nums tracking-tight block truncate">
+            <span className="text-base sm:text-lg font-bold text-[#171614] tabular-nums tracking-tight block truncate">
               {formatIDR(totalPrice)}
             </span>
           </div>
@@ -236,10 +247,10 @@ const BuyCard: React.FC<BuyCardProps> = ({ event, selectedCatId, onSelectCategor
             type="button"
             onClick={() => selectedCat && onBuy(selectedCat, qty)}
             disabled={isClosed || isSoldOut || isAllSoldOut || !selectedCat}
-            className={`shrink-0 inline-flex items-center justify-center gap-2 rounded-xl px-4 sm:px-5 py-2.5 text-xs sm:text-sm font-bold min-h-[46px] transition-colors ${
+            className={`shrink-0 inline-flex items-center justify-center gap-2 rounded-lg px-4 sm:px-5 py-2.5 text-xs sm:text-sm font-semibold min-h-[46px] transition-colors ${
               isClosed || isSoldOut || isAllSoldOut || !selectedCat
-                ? 'bg-[#0C0D12] border border-[#272A38] text-[#A1A1AA] opacity-60'
-                : 'bg-white text-[#0C0D12] hover:bg-neutral-200'
+                ? 'bg-[#ECE8DF] border border-[#E4DFD3] text-[#6B665D]'
+                : 'bg-[#C93018] text-white hover:bg-[#A82511]'
             }`}
           >
             {isClosed ? (
@@ -340,12 +351,12 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0C0D12] text-white">
+      <div className="min-h-screen bg-[#F6F4EE] text-[#171614]">
         <Header isScrolled user={user} onLogout={logout} />
         <div className="min-h-screen flex items-center justify-center pt-16">
           <div className="text-center space-y-3">
-            <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto" />
-            <p className="text-sm font-medium text-[#A1A1AA]">Memuat Informasi Konser...</p>
+            <div className="w-8 h-8 border-2 border-[#C93018] border-t-transparent rounded-full animate-spin mx-auto" />
+            <p className="text-sm font-medium text-[#5C5850]">Memuat Informasi Konser...</p>
           </div>
         </div>
       </div>
@@ -354,16 +365,18 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
 
   if (!event) {
     return (
-      <div className="min-h-screen bg-[#0C0D12] text-white">
+      <div className="min-h-screen bg-[#F6F4EE] text-[#171614]">
         <Header isScrolled user={user} onLogout={logout} />
         <div className="min-h-screen flex flex-col items-center justify-center px-4 pt-16">
-          <h1 className="text-2xl font-bold text-white mb-3">Konser Tidak Ditemukan</h1>
-          <p className="text-sm text-[#A1A1AA] mb-6 text-center max-w-md">
+          <h1 className="font-display text-3xl font-semibold text-[#171614] mb-3">
+            Konser Tidak Ditemukan
+          </h1>
+          <p className="text-sm text-[#5C5850] mb-6 text-center max-w-md">
             Pertunjukan yang Anda cari mungkin telah berakhir atau tautan tidak valid.
           </p>
           <a
             href="/"
-            className="min-h-[44px] inline-flex items-center rounded-lg bg-white text-[#0C0D12] font-semibold px-6 py-2.5 text-sm hover:bg-neutral-200 transition-colors"
+            className="min-h-[44px] inline-flex items-center rounded-lg bg-[#C93018] text-white font-semibold px-6 py-2.5 text-sm hover:bg-[#A82511] transition-colors"
           >
             Kembali ke Beranda
           </a>
@@ -378,55 +391,74 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
     return 0;
   };
 
+  const parsed = parseDate(event.date);
+
   return (
-    <div className="min-h-screen bg-[#0C0D12] text-[#F4F4F6]">
+    <div className="min-h-screen bg-[#F6F4EE] text-[#171614]">
       <Header isScrolled user={user} onLogout={logout} />
 
-      <div className="relative w-full h-[56vh] min-h-[420px] md:h-[60vh] overflow-hidden pt-16 sm:pt-[68px]">
+      <div className="relative w-full h-[56vh] min-h-[420px] md:h-[60vh] overflow-hidden pt-16 sm:pt-[68px] bg-[#11100E]">
         <img
           src={event.image}
           alt={event.title}
           fetchPriority="high"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0C0D12] via-[#0C0D12]/75 to-black/45" />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'linear-gradient(180deg, rgba(17,16,14,0.45) 0%, rgba(17,16,14,0.3) 40%, rgba(17,16,14,0.88) 100%)',
+          }}
+        />
 
-        <div className="relative z-10 mx-auto max-w-[1400px] px-5 sm:px-10 pt-5 sm:pt-6">
+        <div className="relative z-10 mx-auto max-w-[1360px] px-4 sm:px-8 lg:px-10 pt-5 sm:pt-6 flex items-start justify-between gap-4">
           <a
             href="/events"
-            className="inline-flex items-center gap-2 rounded-lg bg-[#0C0D12]/90 border border-[#3E4357] px-4 py-2 min-h-[44px] text-sm font-medium text-white hover:bg-white hover:text-[#0C0D12] transition-colors"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#11100E]/85 border border-white/25 px-4 py-2 min-h-[44px] text-sm font-medium text-white hover:bg-white hover:text-[#171614] transition-colors"
           >
             <ArrowLeft size={16} strokeWidth={2} aria-hidden="true" />
             <span>Kembali</span>
           </a>
+
+          {parsed.day && (
+            <div className="rounded-lg bg-[#C93018] px-4 py-2.5 text-center text-white">
+              <span className="block font-display text-2xl sm:text-3xl font-semibold leading-none tabular-nums">
+                {parsed.day}
+              </span>
+              <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[0.18em]">
+                {parsed.month} {parsed.year}
+              </span>
+            </div>
+          )}
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 mx-auto max-w-[1400px] px-5 sm:px-10 pb-8 md:pb-12">
+        <div className="absolute bottom-0 left-0 right-0 mx-auto max-w-[1360px] px-4 sm:px-8 lg:px-10 pb-8 md:pb-12">
           <div className="flex flex-wrap items-center gap-2 mb-2.5">
-            <span className="text-xs font-semibold tracking-wider uppercase text-white bg-[#0C0D12]/90 inline-block px-3 py-1 rounded-md border border-white/25">
+            <span className="text-xs font-semibold tracking-wider uppercase text-white bg-[#11100E]/85 inline-block px-3 py-1 rounded-md border border-white/25">
               {event.category}
             </span>
             {event.isClosed ? (
-              <span className="text-xs font-bold tracking-wider uppercase text-white bg-[#0C0D12]/90 border border-white/30 px-3 py-1 rounded-md">
+              <span className="text-xs font-bold tracking-wider uppercase text-white bg-[#11100E]/90 border border-white/30 px-3 py-1 rounded-md">
                 Penjualan Ditutup
               </span>
             ) : (event.categories && event.categories.length > 0 && event.categories.every((c) => getRemainingQuota(c) <= 0)) ? (
-              <span className="text-xs font-bold tracking-wider uppercase text-rose-300 bg-[#0C0D12]/90 border border-rose-500/40 px-3 py-1 rounded-md">
+              <span className="text-xs font-bold tracking-wider uppercase text-white bg-[#C93018] px-3 py-1 rounded-md">
                 Tiket Habis
               </span>
             ) : null}
           </div>
-          <h1 className="text-[clamp(28px,5vw,52px)] leading-tight tracking-tight font-bold text-white m-0">
+          <h1 className="font-display text-[clamp(32px,5vw,56px)] leading-[1.08] tracking-[-0.02em] font-semibold text-white m-0">
             {event.title}
           </h1>
-          <p className="text-lg md:text-xl font-medium text-[#E4E4E7] mt-2 mb-0">
+          <p className="text-base md:text-xl font-medium text-[#E7E2D8] mt-2 mb-0">
             {event.artist}
           </p>
         </div>
       </div>
 
-      <div className="mx-auto max-w-[1400px] px-4 sm:px-8 md:px-10 pb-28 lg:pb-24">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 pt-6 pb-6 border-b border-[#272A38]">
+      <div className="mx-auto max-w-[1360px] px-4 sm:px-8 lg:px-10 pb-28 lg:pb-24">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 pt-6 pb-6 border-b border-[#E4DFD3]">
           {[
             { label: 'Tanggal', value: event.date },
             { label: 'Waktu Konser', value: event.time },
@@ -434,10 +466,10 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
             { label: 'Gedung Venue', value: event.venue },
           ].map((item) => (
             <div key={item.label} className="min-w-0">
-              <span className="text-xs font-semibold text-[#A1A1AA] tracking-wider uppercase block mb-1">
+              <span className="text-xs font-semibold text-[#C93018] tracking-wider uppercase block mb-1">
                 {item.label}
               </span>
-              <span className="text-sm sm:text-base font-semibold text-white block truncate">
+              <span className="text-sm sm:text-base font-semibold text-[#171614] block truncate tabular-nums">
                 {item.value}
               </span>
             </div>
@@ -447,7 +479,7 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
         <div
           role="tablist"
           aria-label="Informasi detail konser"
-          className="flex overflow-x-auto no-scrollbar border-b border-[#272A38] mt-8 -mb-px"
+          className="flex overflow-x-auto no-scrollbar border-b border-[#E4DFD3] mt-8 -mb-px"
         >
           {TABS.map((t) => (
             <button
@@ -458,8 +490,8 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
               onClick={() => setTab(t.id)}
               className={`min-h-[48px] whitespace-nowrap bg-transparent text-sm font-semibold px-5 sm:px-6 pt-4 pb-3.5 border-b-[3px] transition-colors ${
                 tab === t.id
-                  ? 'text-white border-b-white'
-                  : 'text-[#A1A1AA] border-b-transparent hover:text-white'
+                  ? 'text-[#171614] border-b-[#C93018]'
+                  : 'text-[#6B665D] border-b-transparent hover:text-[#171614]'
               }`}
             >
               {t.label}
@@ -472,10 +504,10 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
             {tab === 'INFO' && (
               <div className="space-y-8">
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-white mb-3">
+                  <h2 className="font-display text-2xl sm:text-3xl font-semibold text-[#171614] mb-3">
                     Deskripsi Pertunjukan
                   </h2>
-                  <p className="text-base text-[#E4E4E7] leading-relaxed max-w-[720px]">
+                  <p className="text-base text-[#5C5850] leading-relaxed max-w-[720px]">
                     {event.description}
                   </p>
                 </div>
@@ -487,11 +519,11 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
                     ['Jadwal Tanggal', event.date],
                     ['Waktu Pertunjukan', `${event.time} (Open Gate ${event.openGate})`],
                   ].map(([label, value]) => (
-                    <div key={label} className="p-4 rounded-xl bg-[#14161F] border border-[#272A38]">
-                      <span className="text-xs font-semibold text-[#A1A1AA] tracking-wider uppercase block mb-1">
+                    <div key={label} className="p-4 rounded-xl bg-white border border-[#E4DFD3]">
+                      <span className="text-xs font-semibold text-[#C93018] tracking-wider uppercase block mb-1">
                         {label}
                       </span>
-                      <span className="text-sm font-semibold text-white">
+                      <span className="text-sm font-semibold text-[#171614]">
                         {value}
                       </span>
                     </div>
@@ -499,29 +531,29 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
                 </div>
 
                 <div className="max-w-[720px]">
-                  <h3 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-                    <MapPin size={18} strokeWidth={2} className="text-white" aria-hidden="true" />
+                  <h3 className="font-display text-2xl font-semibold text-[#171614] mb-3 flex items-center gap-2">
+                    <MapPin size={18} strokeWidth={2} className="text-[#C93018]" aria-hidden="true" />
                     <span>Detail Lokasi Venue</span>
                   </h3>
-                  <p className="text-base font-semibold text-white mb-1">{event.venue}</p>
+                  <p className="text-base font-semibold text-[#171614] mb-1">{event.venue}</p>
                   {event.address && (
                     isUrl(event.address) ? (
-                      <p className="text-sm text-[#A1A1AA] mb-4">
+                      <p className="text-sm text-[#5C5850] mb-4">
                         <a
                           href={event.address}
                           target="_blank"
                           rel="noreferrer"
-                          className="text-white font-medium hover:underline"
+                          className="text-[#C93018] font-medium hover:underline"
                         >
                           Buka Link Peta Lokasi
                         </a>
                       </p>
                     ) : (
-                      <p className="text-sm text-[#A1A1AA] mb-4">{event.address}</p>
+                      <p className="text-sm text-[#5C5850] mb-4">{event.address}</p>
                     )
                   )}
 
-                  <div className="w-full h-[280px] border border-[#272A38] overflow-hidden rounded-xl relative mb-4 bg-[#14161F]">
+                  <div className="w-full h-[280px] border border-[#E4DFD3] overflow-hidden rounded-xl relative mb-4 bg-white">
                     <iframe
                       title="Peta Lokasi Venue Konser"
                       width="100%"
@@ -529,17 +561,27 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
                       style={{ border: 0 }}
                       loading="lazy"
                       allowFullScreen
-                      src={event.googleMapsUrl || (isUrl(event.address) ? `https://maps.google.com/maps?q=${encodeURIComponent(event.venue)}&t=&z=15&ie=UTF8&iwloc=&output=embed` : `https://maps.google.com/maps?q=${encodeURIComponent(event.venue + ' ' + event.address)}&t=&z=15&ie=UTF8&iwloc=&output=embed`)}
+                      src={
+                        event.googleMapsUrl ||
+                        (isUrl(event.address)
+                          ? `https://maps.google.com/maps?q=${encodeURIComponent(event.venue)}&t=&z=15&ie=UTF8&iwloc=&output=embed`
+                          : `https://maps.google.com/maps?q=${encodeURIComponent(event.venue + ' ' + event.address)}&t=&z=15&ie=UTF8&iwloc=&output=embed`)
+                      }
                     />
                   </div>
 
                   <a
-                    href={event.googleMapsUrl || (isUrl(event.address) ? event.address : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venue + ' ' + event.address)}`)}
+                    href={
+                      event.googleMapsUrl ||
+                      (isUrl(event.address)
+                        ? event.address
+                        : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venue + ' ' + event.address)}`)
+                    }
                     target="_blank"
                     rel="noreferrer"
-                    className="min-h-[44px] inline-flex items-center gap-2 text-xs font-semibold tracking-wider uppercase text-white bg-[#14161F] border border-[#3E4357] px-4 py-2.5 rounded-lg hover:border-white/60 transition-colors"
+                    className="min-h-[44px] inline-flex items-center gap-2 text-xs font-semibold tracking-wider uppercase text-[#171614] bg-white border border-[#CFC9BC] px-4 py-2.5 rounded-lg hover:border-[#171614] transition-colors"
                   >
-                    <MapPin size={14} strokeWidth={2} aria-hidden="true" />
+                    <MapPin size={14} strokeWidth={2} className="text-[#C93018]" aria-hidden="true" />
                     <span>Buka Petunjuk Arah di Google Maps</span>
                   </a>
                 </div>
@@ -548,9 +590,9 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
 
             {tab === 'RUNDOWN' && (
               <div className="space-y-4 max-w-[720px]">
-                <h2 className="text-xl sm:text-2xl font-bold text-white mb-5 flex items-center gap-2.5">
-                  <span className="h-8 w-8 rounded-lg bg-white/10 flex items-center justify-center">
-                    <Clock size={16} strokeWidth={2} className="text-white" aria-hidden="true" />
+                <h2 className="font-display text-2xl sm:text-3xl font-semibold text-[#171614] mb-5 flex items-center gap-2.5">
+                  <span className="h-9 w-9 rounded-lg bg-[#ECE8DF] flex items-center justify-center">
+                    <Clock size={17} strokeWidth={2} className="text-[#C93018]" aria-hidden="true" />
                   </span>
                   <span>Rangkaian Acara Konser</span>
                 </h2>
@@ -559,12 +601,12 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
                   {(event.rundown || []).map((item, idx) => (
                     <div
                       key={idx}
-                      className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 p-4 rounded-xl bg-[#14161F] border border-[#272A38]"
+                      className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 p-4 rounded-xl bg-white border border-[#E4DFD3]"
                     >
-                      <span className="text-xs font-bold text-white w-fit min-w-[96px] bg-white/10 border border-white/25 rounded-md px-3 py-1 text-center shrink-0">
+                      <span className="text-xs font-bold text-white w-fit min-w-[96px] bg-[#171614] rounded-md px-3 py-1.5 text-center shrink-0 tabular-nums">
                         {item.time}
                       </span>
-                      <span className="text-sm font-medium text-white">
+                      <span className="text-sm font-medium text-[#171614]">
                         {item.activity}
                       </span>
                     </div>
@@ -575,7 +617,7 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
 
             {tab === 'BENEFITS' && (
               <div className="space-y-4 max-w-[720px]">
-                <h2 className="text-xl sm:text-2xl font-bold text-white mb-5">
+                <h2 className="font-display text-2xl sm:text-3xl font-semibold text-[#171614] mb-5">
                   Kategori Tiket &amp; Fasilitas
                 </h2>
 
@@ -587,29 +629,29 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
                     return (
                       <div
                         key={cat.id}
-                        className="p-5 rounded-xl bg-[#14161F] border border-[#272A38]"
+                        className="p-5 rounded-xl bg-white border border-[#E4DFD3]"
                       >
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-lg font-bold text-white">{cat.name}</span>
-                          <span className="text-lg font-bold text-white tabular-nums">{formatIDR(cat.price)}</span>
+                          <span className="font-display text-xl font-semibold text-[#171614]">{cat.name}</span>
+                          <span className="text-lg font-bold text-[#171614] tabular-nums">{formatIDR(cat.price)}</span>
                         </div>
-                        <p className="text-xs text-[#A1A1AA] mb-3">
+                        <p className="text-xs text-[#5C5850] mb-3">
                           Sisa Kuota:{' '}
                           {isSoldOut ? (
-                            <span className="font-bold text-rose-300">HABIS</span>
+                            <span className="font-bold text-[#B91C1C]">HABIS</span>
                           ) : (
-                            <span className="font-bold text-white">{rem} Tempat Duduk</span>
+                            <span className="font-bold text-[#1F6E43]">{rem} Tempat Duduk</span>
                           )}
                         </p>
                         <div>
-                          <span className="text-xs font-semibold text-[#A1A1AA] uppercase tracking-wider block mb-2">
+                          <span className="text-xs font-semibold text-[#6B665D] uppercase tracking-wider block mb-2">
                             Fasilitas Termasuk:
                           </span>
                           <div className="flex flex-wrap gap-2">
                             {(cat.benefits || []).map((b, i) => (
                               <span
                                 key={i}
-                                className="text-xs font-medium text-[#E4E4E7] bg-[#0C0D12] border border-[#272A38] rounded-md px-3 py-1"
+                                className="text-xs font-medium text-[#171614] bg-[#F6F4EE] border border-[#E4DFD3] rounded-md px-3 py-1"
                               >
                                 {b}
                               </span>
@@ -625,10 +667,10 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
 
             {tab === 'TERMS' && (
               <div id="syarat-ketentuan" className="max-w-[720px] scroll-mt-24">
-                <h2 className="text-xl sm:text-2xl font-bold text-white mb-5">
+                <h2 className="font-display text-2xl sm:text-3xl font-semibold text-[#171614] mb-5">
                   Syarat &amp; Ketentuan Konser
                 </h2>
-                <ul className="space-y-3.5 text-sm text-[#E4E4E7] leading-relaxed list-none p-0 m-0">
+                <ul className="space-y-3.5 text-sm text-[#171614] leading-relaxed list-none p-0 m-0">
                   {[
                     'Setiap akun atau identitas pemesan diperbolehkan memesan maksimal 4 tiket dalam 1 transaksi resmi.',
                     'Pengunjung diwajibkan mengenakan pakaian rapi dan sopan (Smart Casual atau Formal).',
@@ -636,8 +678,8 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
                     'E-Ticket resmi ber-Kode QR wajib ditunjukkan melalui smartphone pada saat registrasi di meja Open Gate.',
                     'Pengajuan pembatalan atau pengembalian dana dapat dilakukan melalui portal resmi Pengajuan Refund (/refund) sebelum pertunjukan dimulai sesuai ketentuan yang berlaku.',
                   ].map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-3 p-4 rounded-xl bg-[#14161F] border border-[#272A38]">
-                      <span className="mt-2 h-2 w-2 rounded-full bg-white shrink-0" aria-hidden="true" />
+                    <li key={idx} className="flex items-start gap-3 p-4 rounded-xl bg-white border border-[#E4DFD3]">
+                      <span className="mt-2 h-2 w-2 rounded-full bg-[#C93018] shrink-0" aria-hidden="true" />
                       <span>{item}</span>
                     </li>
                   ))}

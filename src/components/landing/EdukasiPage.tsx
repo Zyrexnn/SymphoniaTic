@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { Header } from './Navbar';
 import { EducationHero } from './EducationHero';
 import { EducationNav } from './EducationNav';
@@ -11,7 +12,8 @@ import { EducationCTA } from './EducationCTA';
 import { Footer } from './Footer';
 import { EDUKASI_NAV, type EdukasiSectionId } from './edukasiData';
 
-const EdukasiPage: React.FC = () => {
+const EdukasiPageContent: React.FC = () => {
+  const { user, logout } = useAuth();
   const [active, setActive] = useState<EdukasiSectionId>('etika');
 
   const scrollTo = useCallback((id: EdukasiSectionId) => {
@@ -40,8 +42,8 @@ const EdukasiPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0C0D12] text-white selection:bg-white selection:text-black">
-      <Header isScrolled />
+    <div className="min-h-screen bg-[#F6F4EE] text-[#171614]">
+      <Header isScrolled user={user} onLogout={logout} />
       <EducationHero />
       <EducationNav active={active} onSelect={scrollTo} />
       <main>
@@ -52,8 +54,15 @@ const EdukasiPage: React.FC = () => {
         <ConcertGuide />
       </main>
       <EducationCTA />
+      <Footer />
     </div>
   );
 };
+
+const EdukasiPage: React.FC = () => (
+  <AuthProvider>
+    <EdukasiPageContent />
+  </AuthProvider>
+);
 
 export default EdukasiPage;

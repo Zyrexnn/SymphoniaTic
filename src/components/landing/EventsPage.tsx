@@ -1,25 +1,13 @@
 ﻿import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { Search, X, Heart, MapPin, Calendar, ChevronRight, Ticket } from 'lucide-react';
+import { Search, X, MapPin, Calendar, ChevronRight, Ticket } from 'lucide-react';
 import { CONCERT_EVENTS, fetchEventsAPI, formatIDR } from './data';
 import { parseDate, MONTHS } from './Sections';
 import type { EventItem } from './data';
 import { Footer } from './Footer';
 import { Header } from './Navbar';
 import { EventCategoriesSection } from './EventCategoriesSection';
+import { ConcertCard, getFallbackPoster, getLowestPrice, getTotalRemaining } from './ConcertCard';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
-
-const lowestPrice = (event: EventItem): number => {
-  if (!event.categories?.length) return 0;
-  return Math.min(...event.categories.map((c) => Number(c.price) || 0));
-};
-
-const getTotalRemaining = (e: EventItem): number => {
-  if (!e.categories || e.categories.length === 0) return 0;
-  return e.categories.reduce((total, cat) => {
-    const rem = cat.remainingQuota !== undefined ? cat.remainingQuota : cat.quota;
-    return total + (typeof rem === 'number' && !isNaN(rem) ? rem : 0);
-  }, 0);
-};
 
 const sortKey = (event: EventItem): number => {
   const { day, month, year } = parseDate(event.date);
@@ -38,124 +26,34 @@ const isWeekend = (event: EventItem): boolean => {
 const titleCase = (s: string): string =>
   (s.charAt(0) + s.slice(1).toLowerCase()).trim();
 
-const DateBlock: React.FC<{ date?: string; size?: 'sm' | 'lg' }> = ({ date, size = 'sm' }) => {
+const DateBlock: React.FC<{ date?: string }> = ({ date }) => {
   const { day, month, year } = parseDate(date);
   return (
-    <div
-      className={`absolute top-4 left-4 rounded-lg bg-[#0C0D12]/90 border border-white/25 text-center ${
-        size === 'lg' ? 'px-3.5 py-2.5 sm:left-5' : 'px-2.5 py-2'
-      }`}
-    >
-      <span
-        className={`block leading-none font-bold text-white tabular-nums ${
-          size === 'lg' ? 'text-2xl' : 'text-lg'
-        }`}
-      >
+    <div className="absolute top-4 left-4 sm:left-5 rounded-lg bg-[#C93018] px-3.5 py-2.5 text-center text-white">
+      <span className="block font-display text-2xl leading-none font-semibold tabular-nums">
         {day}
       </span>
-      <span
-        className={`block mt-1 leading-none font-semibold tracking-[0.16em] text-[#E4E4E7] uppercase ${
-          size === 'lg' ? 'text-[11px]' : 'text-[10px]'
-        }`}
-      >
-        {month} {size === 'lg' ? year : ''}
+      <span className="block mt-1 leading-none text-[11px] font-semibold tracking-[0.16em] uppercase">
+        {month} {year}
       </span>
     </div>
   );
 };
 
-const FavoriteButton: React.FC<{ active: boolean; onToggle: () => void }> = ({ active, onToggle }) => (
-  <button
-    type="button"
-    onClick={(e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      onToggle();
-    }}
-    aria-label={active ? 'Hapus dari favorit' : 'Simpan ke favorit'}
-    aria-pressed={active}
-    className="absolute top-3.5 right-3.5 z-10 flex h-11 w-11 items-center justify-center rounded-lg bg-[#0C0D12]/90 border border-white/25 transition-colors hover:bg-white hover:text-[#0C0D12] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-  >
-    <Heart
-      size={17}
-      strokeWidth={2}
-      className={active ? 'fill-current text-white' : 'text-[#E4E4E7]'}
-      aria-hidden="true"
-    />
-  </button>
-);
-
-const EventCard: React.FC<{ event: EventItem; saved: boolean; onToggleSave: () => void }> = ({
-  event,
-  saved,
-  onToggleSave,
-}) => {
-  const isClosed = !!event.isClosed;
-  const isSoldOut = getTotalRemaining(event) <= 0;
+const FeaturedImage: React.FC<{ event: EventItem; unavailable: boolean }> = ({ event, unavailable }) => {
+  const fallback = getFallbackPoster(event.id);
+  const [src, setSrc] = useState(event.image || fallback);
   return (
-    <a
-      href={`/concert/${event.id}`}
-      className="group flex flex-col rounded-xl border border-[#272A38] bg-[#14161F] p-4 transition-colors duration-200 hover:border-white/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0C0D12]"
-    >
-      <div className="relative overflow-hidden rounded-lg bg-[#1D202D] aspect-[7/6]">
-        <img
-          src={event.image}
-          alt={event.title}
-          loading="lazy"
-          className={`absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04] ${
-            isClosed || isSoldOut ? 'grayscale brightness-50' : 'brightness-[0.92] group-hover:brightness-100'
-          }`}
-        />
-        <DateBlock date={event.date} size="sm" />
-        <FavoriteButton active={saved} onToggle={onToggleSave} />
-
-        {isClosed ? (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/65 p-4">
-            <span className="rounded-md border border-white/30 bg-[#0C0D12]/90 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-white">
-              Penjualan Ditutup
-            </span>
-          </div>
-        ) : isSoldOut ? (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/65 p-4">
-            <span className="rounded-md border border-rose-500/40 bg-[#0C0D12]/90 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-rose-300">
-              Tiket Habis
-            </span>
-          </div>
-        ) : null}
-      </div>
-
-      <div className="flex flex-1 flex-col pt-4">
-        <span className="text-xs font-semibold uppercase tracking-wider text-[#A1A1AA]">
-          {titleCase(event.category || 'Konser')}
-        </span>
-        <h3 className="mt-1.5 line-clamp-2 text-base font-bold leading-snug tracking-[-0.01em] text-white">
-          {event.title}
-        </h3>
-        <p className="mt-1 truncate text-xs text-[#A1A1AA]">{event.artist}</p>
-        <p className="mt-1 flex items-center gap-1.5 truncate text-xs text-[#A1A1AA]">
-          <MapPin size={13} strokeWidth={2} className="shrink-0 text-[#A1A1AA]" aria-hidden="true" />
-          <span className="truncate">{event.venue}</span>
-        </p>
-
-        <div className="mt-auto flex items-center justify-between border-t border-[#272A38] pt-3.5 mt-4">
-          {isClosed ? (
-            <span className="text-xs font-semibold text-[#A1A1AA]">Penjualan Selesai</span>
-          ) : isSoldOut ? (
-            <span className="text-xs font-bold text-rose-300">Tiket Habis</span>
-          ) : (
-            <span className="text-sm font-bold text-white tabular-nums">
-              Mulai {formatIDR(lowestPrice(event))}
-            </span>
-          )}
-          <ChevronRight
-            size={16}
-            strokeWidth={2}
-            className="text-[#A1A1AA] transition-transform group-hover:translate-x-1 group-hover:text-white"
-            aria-hidden="true"
-          />
-        </div>
-      </div>
-    </a>
+    <img
+      src={src}
+      alt={event.title}
+      onError={() => {
+        if (src !== fallback) setSrc(fallback);
+      }}
+      className={`absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03] ${
+        unavailable ? 'grayscale brightness-75' : ''
+      }`}
+    />
   );
 };
 
@@ -279,7 +177,7 @@ const EventsPageContent: React.FC = () => {
 
   const hasCriteria = query.trim() !== '' || activeFilter !== 'SEMUA';
   const venueCount = new Set(sourceEvents.map((e) => e.venue)).size;
-  const seasonMin = sourceEvents.length ? Math.min(...sourceEvents.map(lowestPrice)) : 0;
+  const seasonMin = sourceEvents.length ? Math.min(...sourceEvents.map(getLowestPrice)) : 0;
 
   const featuredMeta: { label: string; value: string }[] = [];
   if (featured) {
@@ -289,18 +187,21 @@ const EventsPageContent: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0C0D12] text-white selection:bg-white selection:text-black">
+    <div className="min-h-screen bg-[#F6F4EE] text-[#171614]">
       <Header isScrolled user={user} onLogout={logout} />
 
-      <section className="relative overflow-hidden border-b border-[#272A38]">
-        <div className="mx-auto max-w-[1360px] px-5 sm:px-10 pt-24 pb-12 md:pt-28 md:pb-16">
+      <section className="relative overflow-hidden border-b border-[#E4DFD3]">
+        <div className="mx-auto max-w-[1360px] px-4 sm:px-8 lg:px-10 pt-24 pb-12 md:pt-28 md:pb-16">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">
             <div className="lg:col-span-7 max-w-[720px]">
-              <h1 className="text-[clamp(30px,5vw,52px)] leading-[1.1] font-semibold tracking-tight text-white m-0">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#C93018] m-0">
+                Katalog Musim 2026–2027
+              </p>
+              <h1 className="mt-2.5 font-display text-[clamp(34px,5vw,56px)] leading-[1.06] font-semibold tracking-[-0.02em] text-[#171614] m-0">
                 Temukan Konser &amp; Pertunjukan Musik Pilihan
               </h1>
-              <p className="mt-4 max-w-[540px] text-base md:text-lg leading-relaxed text-[#A1A1AA]">
-                Jelajahi pertunjukan orkestra, simfoni, balet, dan ansambel musim 2026. Pesan tiket resmi dan terima E-Ticket instan.
+              <p className="mt-4 max-w-[540px] text-base md:text-lg leading-relaxed text-[#5C5850]">
+                Jelajahi pertunjukan orkestra, simfoni, balet, dan ansambel kamar. Pesan tiket resmi dan terima E-Ticket instan.
               </p>
 
               <form
@@ -311,7 +212,7 @@ const EventsPageContent: React.FC = () => {
                 <Search
                   size={20}
                   strokeWidth={2}
-                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#94A3B8] transition-colors group-focus-within:text-white"
+                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#6B665D] transition-colors group-focus-within:text-[#C93018]"
                   aria-hidden="true"
                 />
                 <input
@@ -320,14 +221,14 @@ const EventsPageContent: React.FC = () => {
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Cari konser, artis, atau venue..."
                   aria-label="Cari konser, artis, atau venue"
-                  className="min-h-[54px] w-full rounded-xl border border-[#3E4357] bg-[#14161F] pl-12 pr-14 text-base text-white placeholder-[#94A3B8] outline-none transition-colors focus:border-white focus:ring-2 focus:ring-white/25"
+                  className="min-h-[54px] w-full rounded-xl border border-[#CFC9BC] bg-white pl-12 pr-14 text-base text-[#171614] placeholder-[#6B665D] outline-none transition-colors focus:border-[#C93018] focus:ring-2 focus:ring-[#C93018]/20"
                 />
                 {query && (
                   <button
                     type="button"
                     onClick={() => setQuery('')}
                     aria-label="Bersihkan pencarian"
-                    className="absolute right-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-lg bg-[#1D202D] text-[#E4E4E7] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                    className="absolute right-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-lg bg-[#ECE8DF] text-[#171614] transition-colors hover:bg-[#E4DFD3] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C93018]"
                   >
                     <X size={17} strokeWidth={2} aria-hidden="true" />
                   </button>
@@ -335,44 +236,44 @@ const EventsPageContent: React.FC = () => {
               </form>
 
               <div className="mt-6 flex flex-wrap items-center gap-3">
-                <span className="inline-flex items-center gap-2 rounded-lg bg-[#14161F] border border-[#272A38] px-4 py-2 text-sm font-medium text-[#E4E4E7]">
-                  <MapPin size={14} strokeWidth={2} className="text-white" aria-hidden="true" />
+                <span className="inline-flex items-center gap-2 rounded-lg bg-white border border-[#E4DFD3] px-4 py-2 text-sm font-medium text-[#171614]">
+                  <MapPin size={14} strokeWidth={2} className="text-[#C93018]" aria-hidden="true" />
                   Jakarta, ID
                 </span>
-                <span className="inline-flex items-center gap-2 rounded-lg bg-[#14161F] border border-[#272A38] px-4 py-2 text-sm font-medium text-[#E4E4E7]">
-                  <Calendar size={14} strokeWidth={2} className="text-white" aria-hidden="true" />
-                  Musim 2026
+                <span className="inline-flex items-center gap-2 rounded-lg bg-white border border-[#E4DFD3] px-4 py-2 text-sm font-medium text-[#171614]">
+                  <Calendar size={14} strokeWidth={2} className="text-[#C93018]" aria-hidden="true" />
+                  Jadwal Resmi
                 </span>
               </div>
             </div>
 
             <div className="hidden lg:block lg:col-span-5">
-              <div className="rounded-xl border border-[#272A38] bg-[#14161F] p-7">
-                <p className="text-xs font-mono uppercase tracking-widest text-[#A1A1AA] m-0">
+              <div className="rounded-xl border border-[#E4DFD3] bg-white p-7">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#C93018] m-0">
                   Informasi Musim Ini
                 </p>
-                <div className="mt-4 flex items-baseline gap-2">
-                  <span className="text-5xl font-bold leading-none tracking-tight text-white tabular-nums">
+                <div className="mt-4 flex items-baseline gap-2.5">
+                  <span className="font-display text-5xl font-semibold leading-none tracking-tight text-[#171614] tabular-nums">
                     {sourceEvents.length}
                   </span>
-                  <span className="text-sm font-medium text-[#A1A1AA]">pertunjukan aktif</span>
+                  <span className="text-sm font-medium text-[#5C5850]">pertunjukan aktif</span>
                 </div>
-                <div className="mt-6 space-y-3.5 border-t border-[#272A38] pt-5">
+                <div className="mt-6 space-y-3.5 border-t border-[#E4DFD3] pt-5">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-[#A1A1AA]">Venue Pilihan</span>
-                    <span className="font-semibold text-white">{venueCount} lokasi</span>
+                    <span className="text-[#5C5850]">Venue Pilihan</span>
+                    <span className="font-semibold text-[#171614]">{venueCount} lokasi</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-[#A1A1AA]">Kategori Musik</span>
-                    <span className="font-semibold text-white">{categories.length} jenis</span>
+                    <span className="text-[#5C5850]">Kategori Musik</span>
+                    <span className="font-semibold text-[#171614]">{categories.length} jenis</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-[#A1A1AA]">Tiket Mulai</span>
-                    <span className="font-bold text-white tabular-nums">{formatIDR(seasonMin)}</span>
+                    <span className="text-[#5C5850]">Tiket Mulai</span>
+                    <span className="font-bold text-[#171614] tabular-nums">{formatIDR(seasonMin)}</span>
                   </div>
                 </div>
-                <div className="mt-6 rounded-lg bg-[#0C0D12] border border-[#272A38] px-4 py-3.5 text-xs leading-relaxed text-[#A1A1AA]">
-                  E-Ticket ber-Kode QR resmi dikirim langsung ke akun dan email Anda setelah pemesanan.
+                <div className="mt-6 rounded-lg bg-[#F6F4EE] border border-[#E4DFD3] px-4 py-3.5 text-xs leading-relaxed text-[#5C5850]">
+                  E-Ticket dengan Kode QR resmi dikirim langsung ke akun dan email Anda setelah pemesanan.
                 </div>
               </div>
             </div>
@@ -386,9 +287,9 @@ const EventsPageContent: React.FC = () => {
         />
       </section>
 
-      <div className="sticky top-[64px] sm:top-[68px] z-30 border-y border-[#272A38] bg-[#0C0D12]">
-        <div className="mx-auto max-w-[1360px] px-5 sm:px-10">
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-3 -mx-5 px-5 sm:mx-0 sm:px-0">
+      <div className="sticky top-[68px] z-30 border-b border-[#E4DFD3] bg-[#F6F4EE]/95 backdrop-blur-md">
+        <div className="mx-auto max-w-[1360px] px-4 sm:px-8 lg:px-10">
+          <div className="flex flex-wrap items-center gap-2 py-3">
             {filterChips.map((chip) => {
               const active = activeFilter === chip.id;
               return (
@@ -397,16 +298,16 @@ const EventsPageContent: React.FC = () => {
                   type="button"
                   onClick={() => selectFilter(chip.id)}
                   aria-pressed={active}
-                  className={`min-h-[44px] flex shrink-0 items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
+                  className={`min-h-[44px] flex shrink-0 items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C93018] ${
                     active
-                      ? 'bg-white text-[#0C0D12] font-semibold'
-                      : 'bg-[#14161F] text-[#E4E4E7] border border-[#3E4357] hover:border-white/60 hover:text-white'
+                      ? 'bg-[#C93018] text-white font-semibold'
+                      : 'bg-white text-[#171614] border border-[#CFC9BC] hover:border-[#171614]'
                   }`}
                 >
                   <span>{chip.label}</span>
                   <span
                     className={`rounded px-1.5 py-0.5 text-[11px] font-bold tabular-nums ${
-                      active ? 'bg-black/15 text-[#0C0D12]' : 'bg-[#0C0D12] text-[#A1A1AA]'
+                      active ? 'bg-black/20 text-white' : 'bg-[#ECE8DF] text-[#5C5850]'
                     }`}
                   >
                     {chip.count}
@@ -418,14 +319,17 @@ const EventsPageContent: React.FC = () => {
         </div>
       </div>
 
-      <div ref={resultsRef} className="mx-auto max-w-[1360px] px-5 sm:px-10 pt-12 pb-6 scroll-mt-32">
+      <div ref={resultsRef} className="mx-auto max-w-[1360px] px-4 sm:px-8 lg:px-10 pt-12 pb-6 scroll-mt-32">
         {fetchError && (
-          <div role="alert" className="mb-8 p-4 rounded-xl border border-amber-500/40 bg-amber-500/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <span className="text-sm text-amber-200">{fetchError}</span>
+          <div
+            role="alert"
+            className="mb-8 p-4 rounded-xl border border-[#855A0E]/30 bg-[#855A0E]/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+          >
+            <span className="text-sm text-[#171614]">{fetchError}</span>
             <button
               type="button"
               onClick={loadEvents}
-              className="min-h-[40px] px-4 py-2 rounded-lg bg-white text-[#0C0D12] text-xs font-semibold hover:bg-neutral-200 shrink-0"
+              className="min-h-[40px] px-4 py-2 rounded-lg bg-[#C93018] text-white text-xs font-semibold hover:bg-[#A82511] shrink-0"
             >
               Muat Ulang
             </button>
@@ -435,17 +339,17 @@ const EventsPageContent: React.FC = () => {
         {hasCriteria ? (
           <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
             <div>
-              <p className="text-xs font-mono uppercase tracking-widest text-[#A1A1AA] m-0">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#C93018] m-0">
                 Hasil Pencarian
               </p>
-              <h2 className="mt-2 text-2xl sm:text-3xl font-bold tracking-tight text-white mb-0">
+              <h2 className="mt-2 font-display text-2xl sm:text-3xl font-semibold tracking-tight text-[#171614] mb-0">
                 {filtered.length} konser ditemukan
               </h2>
               {query.trim() && (
-                <p className="mt-1.5 text-sm text-[#A1A1AA] mb-0">
-                  untuk &ldquo;<span className="font-semibold text-white">{query.trim()}</span>&rdquo;
+                <p className="mt-1.5 text-sm text-[#5C5850] mb-0">
+                  untuk &ldquo;<span className="font-semibold text-[#171614]">{query.trim()}</span>&rdquo;
                   {activeFilter !== 'SEMUA' && (
-                    <> · filter <span className="font-semibold text-white">{titleCase(activeFilter)}</span></>
+                    <> · filter <span className="font-semibold text-[#171614]">{titleCase(activeFilter)}</span></>
                   )}
                 </p>
               )}
@@ -456,18 +360,18 @@ const EventsPageContent: React.FC = () => {
                 setQuery('');
                 setActiveFilter('SEMUA');
               }}
-              className="min-h-[44px] inline-flex items-center gap-2 rounded-lg border border-[#3E4357] bg-[#14161F] px-4 py-2 text-sm font-medium text-[#E4E4E7] transition-colors hover:border-white/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+              className="min-h-[44px] inline-flex items-center gap-2 rounded-lg border border-[#CFC9BC] bg-white px-4 py-2 text-sm font-medium text-[#171614] transition-colors hover:border-[#171614] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C93018]"
             >
               <X size={15} strokeWidth={2} aria-hidden="true" />
               <span>Reset Filter</span>
             </button>
           </div>
         ) : (
-          <div className="mb-3">
-            <p className="text-xs font-mono uppercase tracking-widest text-[#A1A1AA] m-0">
+          <div className="mb-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#C93018] m-0">
               Agenda Pertunjukan
             </p>
-            <h2 className="mt-2 text-3xl sm:text-4xl font-bold tracking-tight text-white mb-0">
+            <h2 className="mt-2 font-display text-3xl sm:text-4xl font-semibold tracking-tight text-[#171614] mb-0">
               Semua Konser
             </h2>
           </div>
@@ -475,39 +379,34 @@ const EventsPageContent: React.FC = () => {
       </div>
 
       {featured && !hasCriteria && (
-        <section className="mx-auto max-w-[1360px] px-5 sm:px-10 pb-14">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center rounded-2xl border border-[#272A38] bg-[#14161F] p-5 sm:p-6 lg:p-10">
+        <section className="mx-auto max-w-[1360px] px-4 sm:px-8 lg:px-10 pb-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center rounded-2xl border border-[#E4DFD3] bg-white p-5 sm:p-6 lg:p-10">
             <div className="lg:col-span-7">
               <a
                 href={`/concert/${featured.id}`}
-                className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-xl"
+                className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C93018] rounded-xl"
               >
-                <div className="relative aspect-[16/10] overflow-hidden rounded-xl bg-[#1D202D]">
-                  <img
-                    src={featured.image}
-                    alt={featured.title}
-                    className={`absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03] ${
-                      featured.isClosed || getTotalRemaining(featured) <= 0
-                        ? 'grayscale brightness-50'
-                        : 'brightness-[0.9] group-hover:brightness-100'
-                    }`}
+                <div className="relative aspect-[16/10] overflow-hidden rounded-xl bg-[#11100E]">
+                  <FeaturedImage
+                    event={featured}
+                    unavailable={!!featured.isClosed || getTotalRemaining(featured) <= 0}
                   />
                   {featured.isClosed ? (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/65">
-                      <span className="rounded-md border border-white/30 bg-[#0C0D12]/90 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-white">
+                    <div className="absolute inset-0 flex items-center justify-center bg-[#11100E]/65">
+                      <span className="rounded-md border border-white/30 bg-[#11100E]/90 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-white">
                         Penjualan Ditutup
                       </span>
                     </div>
                   ) : getTotalRemaining(featured) <= 0 ? (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/65">
-                      <span className="rounded-md border border-rose-500/40 bg-[#0C0D12]/90 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-rose-300">
+                    <div className="absolute inset-0 flex items-center justify-center bg-[#11100E]/65">
+                      <span className="rounded-md bg-[#C93018] px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-white">
                         Tiket Habis
                       </span>
                     </div>
                   ) : (
-                    <DateBlock date={featured.date} size="lg" />
+                    <DateBlock date={featured.date} />
                   )}
-                  <span className="absolute bottom-4 left-4 rounded-md bg-[#0C0D12]/90 border border-white/25 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-white">
+                  <span className="absolute bottom-4 left-4 rounded-md bg-[#11100E]/85 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-white">
                     Pertunjukan Pilihan
                   </span>
                 </div>
@@ -515,29 +414,29 @@ const EventsPageContent: React.FC = () => {
             </div>
 
             <div className="lg:col-span-5">
-              <span className="inline-flex items-center px-3 py-1 rounded-md bg-[#0C0D12] border border-[#272A38] text-xs font-mono uppercase tracking-widest text-[#E4E4E7]">
+              <span className="inline-flex items-center px-3 py-1 rounded-md bg-[#ECE8DF] text-xs font-semibold uppercase tracking-widest text-[#C93018]">
                 Sorotan Utama
               </span>
-              <h2 className="mt-4 text-2xl sm:text-3xl lg:text-4xl font-bold leading-[1.12] tracking-tight text-white mb-0">
+              <h2 className="mt-4 font-display text-2xl sm:text-3xl lg:text-4xl font-semibold leading-[1.1] tracking-tight text-[#171614] mb-0">
                 {featured.title}
               </h2>
-              <p className="mt-2 text-base font-normal text-[#A1A1AA] mb-0">{featured.artist}</p>
+              <p className="mt-2 text-base font-normal text-[#5C5850] mb-0">{featured.artist}</p>
 
-              <div className="mt-6 space-y-3 border-t border-[#272A38] pt-5">
+              <div className="mt-6 space-y-3 border-t border-[#E4DFD3] pt-5">
                 {featuredMeta.map((m) => (
                   <div
                     key={m.label}
-                    className="flex items-center justify-between gap-6 border-b border-[#272A38] pb-3 text-sm"
+                    className="flex items-center justify-between gap-6 border-b border-[#E4DFD3] pb-3 text-sm"
                   >
-                    <span className="text-[#A1A1AA]">{m.label}</span>
-                    <span className="text-right font-medium text-white">{m.value}</span>
+                    <span className="text-[#6B665D]">{m.label}</span>
+                    <span className="text-right font-medium text-[#171614]">{m.value}</span>
                   </div>
                 ))}
               </div>
 
               <div className="mt-6 flex flex-col sm:flex-row sm:items-center gap-5">
                 <div>
-                  <span className="block text-xs font-medium text-[#A1A1AA]">
+                  <span className="block text-xs font-medium text-[#6B665D]">
                     {featured.isClosed
                       ? 'Status Penjualan'
                       : getTotalRemaining(featured) <= 0
@@ -545,28 +444,28 @@ const EventsPageContent: React.FC = () => {
                       : 'Mulai dari'}
                   </span>
                   {featured.isClosed ? (
-                    <span className="text-xl font-bold tracking-tight text-[#A1A1AA]">
+                    <span className="text-xl font-bold tracking-tight text-[#6B665D]">
                       Penjualan Selesai
                     </span>
                   ) : getTotalRemaining(featured) <= 0 ? (
-                    <span className="text-xl font-bold tracking-tight text-rose-300">
+                    <span className="text-xl font-bold tracking-tight text-[#B91C1C]">
                       Tiket Habis
                     </span>
                   ) : (
-                    <span className="text-2xl font-bold tracking-tight text-white tabular-nums">
-                      {formatIDR(lowestPrice(featured))}
+                    <span className="text-2xl font-bold tracking-tight text-[#171614] tabular-nums">
+                      {formatIDR(getLowestPrice(featured))}
                     </span>
                   )}
                 </div>
                 {featured.isClosed || getTotalRemaining(featured) <= 0 ? (
-                  <div className="min-h-[48px] inline-flex items-center justify-center gap-2 rounded-lg bg-[#1D202D] border border-[#3E4357] px-6 py-3 text-sm font-semibold text-[#A1A1AA] sm:ml-auto select-none">
+                  <div className="min-h-[48px] inline-flex items-center justify-center gap-2 rounded-lg bg-[#ECE8DF] border border-[#E4DFD3] px-6 py-3 text-sm font-semibold text-[#6B665D] sm:ml-auto select-none">
                     <Ticket size={16} strokeWidth={2} aria-hidden="true" />
                     <span>{featured.isClosed ? 'Penjualan Ditutup' : 'Tiket Habis'}</span>
                   </div>
                 ) : (
                   <a
                     href={`/concert/${featured.id}`}
-                    className="min-h-[48px] inline-flex items-center justify-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-[#0C0D12] transition-colors hover:bg-neutral-200 sm:ml-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                    className="min-h-[48px] inline-flex items-center justify-center gap-2 rounded-lg bg-[#C93018] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#A82511] sm:ml-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C93018]"
                   >
                     <Ticket size={16} strokeWidth={2} aria-hidden="true" />
                     <span>Lihat Jadwal &amp; Tiket</span>
@@ -579,21 +478,21 @@ const EventsPageContent: React.FC = () => {
         </section>
       )}
 
-      <section className="mx-auto max-w-[1360px] px-5 sm:px-10 pb-20">
+      <section className="mx-auto max-w-[1360px] px-4 sm:px-8 lg:px-10 pb-20">
         {isLoading && sourceEvents.length === 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="rounded-xl border border-[#272A38] bg-[#14161F] p-4 space-y-4 animate-pulse">
-                <div className="aspect-[7/6] bg-[#1D202D] rounded-lg" />
-                <div className="h-5 bg-[#272A38] rounded w-3/4" />
-                <div className="h-4 bg-[#272A38] rounded w-1/2" />
+              <div key={i} className="rounded-xl border border-[#E4DFD3] bg-white p-4 space-y-4 animate-pulse">
+                <div className="aspect-[16/10] bg-[#ECE8DF] rounded-lg" />
+                <div className="h-5 bg-[#ECE8DF] rounded w-3/4" />
+                <div className="h-4 bg-[#ECE8DF] rounded w-1/2" />
               </div>
             ))}
           </div>
         ) : mainEvents.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {mainEvents.map((event) => (
-              <EventCard
+              <ConcertCard
                 key={String(event.id)}
                 event={event}
                 saved={favorites.has(String(event.id))}
@@ -602,12 +501,14 @@ const EventsPageContent: React.FC = () => {
             ))}
           </div>
         ) : (
-          <div className="mx-auto max-w-md py-16 text-center rounded-2xl border border-[#272A38] bg-[#14161F] p-8">
-            <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#1D202D] text-[#E4E4E7]">
+          <div className="mx-auto max-w-md py-16 text-center rounded-2xl border border-[#E4DFD3] bg-white p-8">
+            <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#ECE8DF] text-[#171614]">
               <Search size={22} strokeWidth={1.6} aria-hidden="true" />
             </span>
-            <h3 className="mt-5 text-lg font-bold text-white">Tidak ada konser yang cocok</h3>
-            <p className="mt-2 text-sm leading-relaxed text-[#A1A1AA]">
+            <h3 className="mt-5 font-display text-2xl font-semibold text-[#171614]">
+              Tidak ada konser yang cocok
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed text-[#5C5850]">
               Gunakan kata kunci lain atau atur ulang filter pencarian untuk melihat seluruh jadwal.
             </p>
             <button
@@ -616,7 +517,7 @@ const EventsPageContent: React.FC = () => {
                 setQuery('');
                 setActiveFilter('SEMUA');
               }}
-              className="mt-6 min-h-[44px] inline-flex items-center gap-2 rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-[#0C0D12] transition-colors hover:bg-neutral-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+              className="mt-6 min-h-[44px] inline-flex items-center gap-2 rounded-lg bg-[#C93018] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#A82511] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C93018]"
             >
               Reset Semua Filter
             </button>

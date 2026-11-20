@@ -1,59 +1,30 @@
 import React, { useState, useMemo } from 'react';
-import { Calendar, MapPin } from 'lucide-react';
+import { Calendar, MapPin, ArrowUpRight, Clock } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import {
+  ConcertCard,
+  getFallbackPoster,
+  getLowestPrice,
+  getTotalRemaining,
+  getQuotaStatus,
+} from './ConcertCard';
 import type { EventItem } from './data';
 import { formatIDR } from './data';
+import { parseDate } from './Sections';
 
 export interface RecommendedProps {
   events?: EventItem[];
   onBuyTicket: (event: EventItem) => void;
   isLoading?: boolean;
   error?: string | null;
+  onRetry?: () => void;
 }
 
 const TABS = ['Semua', 'Simfoni', 'Kamar Musik', 'Resital Piano', 'Opera'] as const;
 type FilterTab = (typeof TABS)[number];
-
-const getMinPrice = (event: EventItem): number => {
-  if (!event.categories || event.categories.length === 0) return 0;
-  return Math.min(...event.categories.map((c) => Number(c.price) || 0));
-};
-
-const getTotalRemaining = (event: EventItem): number => {
-  if (!event.categories || event.categories.length === 0) return 0;
-  return event.categories.reduce((total, cat) => {
-    const rem = cat.remainingQuota !== undefined ? cat.remainingQuota : cat.quota;
-    return total + (typeof rem === 'number' && !isNaN(rem) ? rem : 0);
-  }, 0);
-};
-
-const getQuotaBadge = (event: EventItem, remaining: number) => {
-  if (event.isClosed) {
-    return {
-      label: 'Penjualan Tutup',
-      className: 'bg-[#0C0D12]/90 text-[#E4E4E7] border border-[#3E4357]',
-      isSoldOut: true,
-    };
-  }
-  if (remaining <= 0) {
-    return {
-      label: 'Tiket Habis',
-      className: 'bg-[#0C0D12]/90 text-[#E4E4E7] border border-[#3E4357]',
-      isSoldOut: true,
-    };
-  }
-  if (remaining <= 15) {
-    return {
-      label: `Tersisa ${remaining} Kursi`,
-      className: 'bg-[#0C0D12]/90 text-amber-300 border border-amber-500/50',
-      isSoldOut: false,
-    };
-  }
-  return {
-    label: `Tersisa ${remaining} Kursi`,
-    className: 'bg-[#0C0D12]/90 text-emerald-300 border border-emerald-500/40',
-    isSoldOut: false,
-  };
-};
 
 const matchesCategory = (category: string, tab: FilterTab): boolean => {
   if (tab === 'Semua') return true;
@@ -73,120 +44,145 @@ const matchesCategory = (category: string, tab: FilterTab): boolean => {
 };
 
 const SkeletonCard: React.FC = () => (
-  <div className="flex flex-col h-full rounded-xl border border-[#272A38] bg-[#14161F] overflow-hidden animate-pulse">
-    <div className="aspect-[16/9] w-full bg-[#1D202D]" />
+  <div className="flex flex-col h-full rounded-xl border border-[#E4DFD3] bg-white overflow-hidden animate-pulse">
+    <div className="aspect-[16/10] w-full bg-[#ECE8DF]" />
     <div className="p-5 flex-1 flex flex-col justify-between space-y-5">
       <div className="space-y-2.5">
-        <div className="flex justify-between items-center">
-          <div className="h-3 w-20 bg-[#272A38] rounded" />
-          <div className="h-3 w-16 bg-[#272A38] rounded" />
-        </div>
-        <div className="h-5 w-4/5 bg-[#272A38] rounded" />
-        <div className="h-3.5 w-1/2 bg-[#272A38] rounded" />
+        <div className="h-3 w-24 bg-[#ECE8DF] rounded" />
+        <div className="h-6 w-4/5 bg-[#ECE8DF] rounded" />
+        <div className="h-4 w-1/2 bg-[#ECE8DF] rounded" />
       </div>
-      <div className="pt-4 border-t border-[#272A38] flex items-center justify-between">
-        <div className="h-6 w-24 bg-[#272A38] rounded" />
-        <div className="h-10 w-28 bg-[#272A38] rounded-lg" />
+      <div className="pt-4 border-t border-[#E4DFD3] flex items-center justify-between">
+        <div className="h-6 w-24 bg-[#ECE8DF] rounded" />
+        <div className="h-11 w-28 bg-[#ECE8DF] rounded-lg" />
       </div>
     </div>
   </div>
 );
 
-const EventCard: React.FC<{
+const ScheduleSpotlight: React.FC<{
   event: EventItem;
   onBuyTicket: (event: EventItem) => void;
 }> = ({ event, onBuyTicket }) => {
-  const minPrice = getMinPrice(event);
+  const fallback = getFallbackPoster(event.id);
+  const [imgSrc, setImgSrc] = useState(event.image || fallback);
+
+  const minPrice = getLowestPrice(event);
   const totalRemaining = getTotalRemaining(event);
-  const badge = getQuotaBadge(event, totalRemaining);
+  const status = getQuotaStatus(event, totalRemaining);
+  const parsed = parseDate(event.date);
 
   return (
-    <article className="group flex flex-col h-full rounded-xl border border-[#272A38] bg-[#14161F] overflow-hidden transition-colors duration-200 hover:border-white/40">
-      <div className="relative aspect-[16/9] w-full overflow-hidden bg-[#1D202D]">
+    <div className="mb-8 rounded-2xl border border-[#E4DFD3] bg-white overflow-hidden grid grid-cols-1 lg:grid-cols-12">
+      <div className="relative lg:col-span-7 aspect-[16/10] lg:aspect-auto lg:min-h-[340px] bg-[#11100E] overflow-hidden">
         <img
-          src={event.image}
+          src={imgSrc}
           alt={event.title}
           loading="lazy"
-          className={`h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 ${
-            badge.isSoldOut ? 'grayscale brightness-75' : ''
-          }`}
+          onError={() => {
+            if (imgSrc !== fallback) setImgSrc(fallback);
+          }}
+          className={`h-full w-full object-cover ${status.isSoldOut ? 'grayscale brightness-75' : ''}`}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#14161F] via-[#14161F]/25 to-transparent" />
-
-        <div className="absolute top-3 left-3">
-          <span className="inline-block rounded-md bg-[#0C0D12]/90 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-white border border-white/25">
-            {event.category || 'Simfoni'}
-          </span>
-        </div>
-
-        <div className="absolute top-3 right-3">
-          <span className={`inline-block rounded-md px-2.5 py-1 text-[11px] font-semibold tracking-wide ${badge.className}`}>
-            {badge.label}
-          </span>
-        </div>
-
-        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs text-[#E4E4E7]">
-          <span className="flex items-center gap-1.5 rounded-md bg-[#0C0D12]/90 px-2.5 py-1 border border-white/10">
-            <Calendar size={13} className="text-[#E4E4E7] shrink-0" aria-hidden="true" />
-            <span className="font-medium text-white">{event.date}</span>
-          </span>
-          <span className="rounded-md bg-[#0C0D12]/90 px-2.5 py-1 text-[11px] text-[#E4E4E7] border border-white/10">
-            {event.time}
-          </span>
-        </div>
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'linear-gradient(180deg, rgba(17,16,14,0.22) 0%, rgba(17,16,14,0.62) 100%)',
+          }}
+        />
+        {parsed.day && (
+          <div className="absolute top-4 right-4 rounded-lg bg-[#C93018] px-3.5 py-2 text-center text-white">
+            <span className="block font-display text-2xl font-semibold leading-none tabular-nums">
+              {parsed.day}
+            </span>
+            <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[0.18em]">
+              {parsed.month} {parsed.year}
+            </span>
+          </div>
+        )}
+        <span className="absolute top-4 left-4 rounded-md bg-[#11100E]/85 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-white">
+          {event.category || 'Simfoni'}
+        </span>
       </div>
 
-      <div className="p-5 flex-1 flex flex-col justify-between">
+      <div className="lg:col-span-5 p-6 sm:p-8 flex flex-col justify-between">
         <div>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[#C93018]">
+              Sorotan Jadwal
+            </span>
+            <Badge variant="outline" className={`text-[11px] font-semibold ${status.className}`}>
+              {status.label}
+            </Badge>
+          </div>
+
           <a
             href={`/concert/${event.id}`}
-            className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
+            className="mt-3 block rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C93018]"
           >
-            <h3 className="text-lg font-bold leading-snug text-white line-clamp-1 group-hover:underline underline-offset-4">
+            <h3 className="font-display text-2xl sm:text-3xl font-semibold leading-tight text-[#171614] hover:text-[#C93018] transition-colors m-0">
               {event.title}
             </h3>
           </a>
 
-          <p className="mt-1 text-xs text-[#A1A1AA] line-clamp-1">
+          <p className="mt-2 text-sm text-[#5C5850] m-0">
             {event.conductor && event.conductor !== '-' ? `${event.artist} · ${event.conductor}` : event.artist}
           </p>
 
-          <div className="mt-3 flex items-center gap-1.5 text-xs text-[#A1A1AA]">
-            <MapPin size={14} className="text-[#A1A1AA] shrink-0" aria-hidden="true" />
-            <span className="truncate">{event.venue}</span>
+          <p className="mt-3.5 text-sm text-[#5C5850] leading-relaxed line-clamp-3 m-0">
+            {event.description}
+          </p>
+
+          <div className="mt-4 space-y-2 text-xs text-[#5C5850] tabular-nums">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+              <span className="inline-flex items-center gap-1.5">
+                <Calendar size={14} className="text-[#C93018] shrink-0" aria-hidden="true" />
+                <span>{event.date}</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <Clock size={14} className="text-[#6B665D] shrink-0" aria-hidden="true" />
+                <span>{event.time}</span>
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <MapPin size={14} className="text-[#6B665D] shrink-0" aria-hidden="true" />
+              <span>{event.venue}</span>
+            </div>
           </div>
         </div>
 
-        <div className="mt-5 pt-4 border-t border-[#272A38] flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-[11px] font-medium uppercase tracking-wider text-[#A1A1AA] m-0">
-              Mulai dari
-            </p>
-            <p className="text-base sm:text-lg font-bold text-white truncate tabular-nums m-0 mt-0.5">
-              {formatIDR(minPrice)}
-            </p>
-          </div>
+        <div className="mt-6">
+          <Separator className="bg-[#E4DFD3] mb-4" />
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-[#6B665D] m-0">
+                Mulai dari
+              </p>
+              <p className="text-xl font-bold text-[#171614] tabular-nums m-0 mt-0.5">
+                {formatIDR(minPrice)}
+              </p>
+            </div>
 
-          {badge.isSoldOut ? (
-            <button
-              type="button"
-              disabled
-              className="min-h-[44px] px-4 py-2 rounded-lg bg-[#1D202D] text-[#A1A1AA] text-xs sm:text-sm font-semibold border border-[#3E4357]"
-            >
-              {event.isClosed ? 'Penjualan Tutup' : 'Tiket Habis'}
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={() => onBuyTicket(event)}
-              className="min-h-[44px] px-4 py-2 rounded-lg bg-white text-[#0C0D12] text-xs sm:text-sm font-semibold hover:bg-neutral-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-            >
-              Pesan Tiket
-            </button>
-          )}
+            <div className="flex items-center gap-2.5">
+              <Button asChild variant="outline">
+                <a href={`/concert/${event.id}`}>Detail</a>
+              </Button>
+              {status.isSoldOut ? (
+                <Button type="button" variant="secondary" disabled>
+                  {event.isClosed ? 'Tutup' : 'Habis'}
+                </Button>
+              ) : (
+                <Button type="button" onClick={() => onBuyTicket(event)}>
+                  <span>Pesan Tiket</span>
+                  <ArrowUpRight size={15} aria-hidden="true" />
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
-    </article>
+    </div>
   );
 };
 
@@ -195,6 +191,7 @@ export const RecommendedSection: React.FC<RecommendedProps> = ({
   onBuyTicket,
   isLoading = false,
   error = null,
+  onRetry,
 }) => {
   const [activeTab, setActiveTab] = useState<FilterTab>('Semua');
 
@@ -202,38 +199,41 @@ export const RecommendedSection: React.FC<RecommendedProps> = ({
     return events.filter((e) => matchesCategory(e.category, activeTab));
   }, [events, activeTab]);
 
-  return (
-    <section className="bg-[#0C0D12] py-14 sm:py-20 border-t border-[#272A38]">
-      <div className="mx-auto max-w-[1400px] px-4 sm:px-8 md:px-12">
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#A1A1AA] mb-2 flex items-center gap-2">
-              <span className="h-px w-8 bg-white/40" aria-hidden="true" />
-              Jadwal Pertunjukan
-            </p>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white m-0">
-              Rekomendasi Musim Ini
-            </h2>
-          </div>
+  const spotlightEvent = filteredEvents[0];
+  const restEvents = filteredEvents.slice(1);
 
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 pb-1">
+  return (
+    <section id="jadwal" className="bg-[#F6F4EE] py-12 sm:py-16 border-b border-[#E4DFD3]">
+      <div className="mx-auto max-w-[1360px] px-4 sm:px-8 lg:px-10">
+        <div className="mx-auto max-w-2xl text-center mb-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#C93018] m-0">
+            Agenda Pertunjukan
+          </p>
+          <h2 className="mt-2 font-display text-3xl sm:text-4xl lg:text-[46px] font-semibold tracking-[-0.02em] leading-[1.08] text-[#171614] m-0">
+            Jadwal Musim Ini
+          </h2>
+          <p className="mt-2.5 text-sm sm:text-base text-[#5C5850] leading-relaxed m-0">
+            Telusuri agenda konser berdasarkan kategori pertunjukan dan pesan kursi pilihan Anda secara langsung.
+          </p>
+        </div>
+
+        <Tabs
+          value={activeTab}
+          onValueChange={(v) => setActiveTab(v as FilterTab)}
+          className="mb-8"
+        >
+          <TabsList className="h-auto w-full flex flex-wrap items-center justify-center gap-2 bg-transparent p-0">
             {TABS.map((tab) => (
-              <button
+              <TabsTrigger
                 key={tab}
-                type="button"
-                aria-pressed={activeTab === tab}
-                onClick={() => setActiveTab(tab)}
-                className={`min-h-[44px] shrink-0 px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg border transition-colors ${
-                  activeTab === tab
-                    ? 'bg-white text-[#0C0D12] border-white'
-                    : 'bg-[#14161F] text-[#E4E4E7] border-[#3E4357] hover:border-white/60 hover:text-white'
-                }`}
+                value={tab}
+                className="flex-none min-h-[44px] rounded-lg border border-[#CFC9BC] bg-white px-4 py-2 text-xs sm:text-sm font-semibold text-[#5C5850] transition-colors hover:border-[#171614] hover:text-[#171614] data-[state=active]:border-[#C93018] data-[state=active]:bg-[#C93018] data-[state=active]:text-white data-[state=active]:shadow-none"
               >
                 {tab}
-              </button>
+              </TabsTrigger>
             ))}
-          </div>
-        </div>
+          </TabsList>
+        </Tabs>
 
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -242,26 +242,56 @@ export const RecommendedSection: React.FC<RecommendedProps> = ({
             <SkeletonCard />
           </div>
         ) : error && events.length === 0 ? (
-          <div role="alert" className="rounded-xl border border-rose-500/40 bg-[#14161F] p-8 text-center">
-            <p className="text-sm font-medium text-rose-300 m-0">
-              {error}
-            </p>
-            <p className="mt-1.5 text-xs text-[#A1A1AA] m-0">
+          <div role="alert" className="rounded-xl border border-[#B91C1C]/30 bg-white p-8 text-center">
+            <p className="text-sm font-semibold text-[#B91C1C] m-0">{error}</p>
+            <p className="mt-1.5 text-xs text-[#5C5850] m-0">
               Silakan periksa koneksi backend atau muat ulang halaman.
             </p>
+            {onRetry && (
+              <Button type="button" onClick={onRetry} className="mt-4">
+                Coba Lagi
+              </Button>
+            )}
           </div>
         ) : filteredEvents.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-[#3E4357] bg-[#14161F] px-6 py-16 text-center">
-            <p className="text-sm text-[#A1A1AA] m-0">
-              Belum ada jadwal pertunjukan pada kategori ini.
+          <div className="rounded-xl border border-dashed border-[#CFC9BC] bg-white px-6 py-14 text-center">
+            <p className="text-sm text-[#5C5850] m-0">
+              Belum ada jadwal pertunjukan pada kategori {activeTab}.
             </p>
+            {activeTab !== 'Semua' && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setActiveTab('Semua')}
+                className="mt-4"
+              >
+                Tampilkan Semua Kategori
+              </Button>
+            )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredEvents.map((ev) => (
-              <EventCard key={ev.id} event={ev} onBuyTicket={onBuyTicket} />
-            ))}
-          </div>
+          <>
+            {spotlightEvent && (
+              <ScheduleSpotlight event={spotlightEvent} onBuyTicket={onBuyTicket} />
+            )}
+
+            {restEvents.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {restEvents.map((ev) => (
+                  <ConcertCard key={ev.id} event={ev} onBuyTicket={onBuyTicket} />
+                ))}
+              </div>
+            )}
+
+            <div className="mt-10 flex justify-center">
+              <Button asChild variant="outline">
+                <a href="/events">
+                  <span>Buka Katalog Lengkap</span>
+                  <ArrowUpRight size={15} aria-hidden="true" />
+                </a>
+              </Button>
+            </div>
+          </>
         )}
       </div>
     </section>

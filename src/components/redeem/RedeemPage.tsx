@@ -13,7 +13,7 @@ import {
 import { Header } from '../landing/Navbar';
 import { Footer } from '../landing/Footer';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
-import { fieldInputBase } from '@/components/ui/form-controls';
+import { fieldInputLight } from '@/components/ui/form-controls';
 
 const RedeemPageContent: React.FC = () => {
   const { user, logout } = useAuth();
@@ -92,14 +92,14 @@ const RedeemPageContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0C0D12] font-sans text-white selection:bg-white selection:text-[#0C0D12] relative flex flex-col justify-between">
+    <div className="min-h-screen bg-[#F6F4EE] font-sans text-[#171614] relative flex flex-col justify-between">
       {toastMessage && (
         <div
           role="status"
           aria-live="polite"
-          className="fixed right-5 top-24 z-50 flex items-center gap-2 rounded-xl border border-[#3E4357] bg-[#14161F] px-4 py-3 text-xs text-white shadow-xl"
+          className="fixed right-5 top-24 z-50 flex items-center gap-2 rounded-xl border border-[#E4DFD3] bg-white px-4 py-3 text-xs text-[#171614] shadow-md"
         >
-          <Check className="h-4 w-4 shrink-0 text-emerald-400" strokeWidth={2} aria-hidden="true" />
+          <Check className="h-4 w-4 shrink-0 text-[#1F6E43]" strokeWidth={2} aria-hidden="true" />
           <span>{toastMessage}</span>
         </div>
       )}
@@ -112,36 +112,36 @@ const RedeemPageContent: React.FC = () => {
             <div className="mb-5 flex w-full flex-wrap items-center justify-between gap-4">
               <a
                 href="/"
-                className="inline-flex items-center gap-2 min-h-[44px] px-2 -ml-2 text-xs font-medium text-[#A1A1AA] hover:text-white transition-colors rounded-lg"
+                className="inline-flex items-center gap-2 min-h-[44px] px-2 -ml-2 text-xs font-medium text-[#5C5850] hover:text-[#171614] transition-colors rounded-lg"
               >
-                <ArrowLeft className="h-4 w-4 text-white" strokeWidth={1.7} aria-hidden="true" />
+                <ArrowLeft className="h-4 w-4 text-[#171614]" strokeWidth={1.7} aria-hidden="true" />
                 <span>Kembali ke Beranda</span>
               </a>
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-[#14161F] border border-[#272A38]">
-                <QrCode className="h-3.5 w-3.5 text-white" strokeWidth={1.7} aria-hidden="true" />
-                <span className="text-xs font-mono uppercase tracking-wider text-[#E4E4E7]">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-white border border-[#E4DFD3]">
+                <QrCode className="h-3.5 w-3.5 text-[#C93018]" strokeWidth={1.7} aria-hidden="true" />
+                <span className="text-xs font-mono uppercase tracking-wider text-[#171614]">
                   Portal Cek Tiket
                 </span>
               </div>
             </div>
 
-            <h1 className="text-[clamp(28px,5vw,48px)] font-semibold leading-[1.12] tracking-tight text-white m-0">
+            <h1 className="font-display text-[clamp(32px,5vw,52px)] font-semibold leading-[1.08] tracking-[-0.02em] text-[#171614] m-0">
               Cek E-Ticket Konser Anda
             </h1>
-            <p className="mt-3 max-w-xl text-sm sm:text-base leading-relaxed text-[#A1A1AA]">
+            <p className="mt-3 max-w-xl text-sm sm:text-base leading-relaxed text-[#5C5850]">
               Masukkan kode unik pesanan Anda untuk mengakses pass digital resmi, QR Code scanner gate, informasi lokasi venue, serta dokumen E-Ticket cetak PDF.
             </p>
           </div>
 
-          <div className="relative rounded-2xl border border-[#272A38] bg-[#14161F] p-5 sm:p-8 space-y-5">
+          <div className="relative rounded-2xl border border-[#E4DFD3] bg-white p-5 sm:p-8 space-y-5">
             <form onSubmit={handleSearchSubmit} className="space-y-3">
-              <label htmlFor={codeInputId} className="block text-xs font-medium text-[#E4E4E7]">
+              <label htmlFor={codeInputId} className="block text-xs font-semibold text-[#171614]">
                 Kode Pesanan Resmi
               </label>
               <div className="flex flex-col gap-3 sm:flex-row">
                 <div className="relative flex-1">
                   <Search
-                    className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94A3B8] pointer-events-none"
+                    className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B665D] pointer-events-none"
                     strokeWidth={1.7}
                     aria-hidden="true"
                   />
@@ -151,7 +151,7 @@ const RedeemPageContent: React.FC = () => {
                     value={searchCode}
                     onChange={(e) => setSearchCode(e.target.value.toUpperCase())}
                     placeholder="Masukkan kode pesanan (contoh: SYM-893472)"
-                    className={`${fieldInputBase} pl-10 pr-12 font-mono uppercase tracking-wider`}
+                    className={`${fieldInputLight} pl-10 pr-12 font-mono uppercase tracking-wider`}
                     autoFocus
                   />
                   {searchCode && (
@@ -159,7 +159,7 @@ const RedeemPageContent: React.FC = () => {
                       type="button"
                       onClick={() => setSearchCode('')}
                       aria-label="Hapus kode"
-                      className="absolute right-1 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-md text-[#94A3B8] hover:text-white"
+                      className="absolute right-1 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-md text-[#6B665D] hover:text-[#171614]"
                     >
                       <X className="h-4 w-4" aria-hidden="true" />
                     </button>
@@ -169,7 +169,7 @@ const RedeemPageContent: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isLoading || !searchCode.trim()}
-                  className="min-h-[46px] inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-white px-7 py-3 text-sm font-semibold text-[#0C0D12] transition-colors hover:bg-neutral-200 disabled:opacity-40"
+                  className="min-h-[46px] inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-[#C93018] px-7 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#A82511] disabled:opacity-40"
                 >
                   {isLoading ? (
                     <span>Memeriksa...</span>
@@ -183,12 +183,12 @@ const RedeemPageContent: React.FC = () => {
               </div>
             </form>
 
-            <div className="flex flex-col justify-between gap-3 border-t border-[#272A38] pt-4 text-xs text-[#A1A1AA] sm:flex-row sm:items-center">
-              <span className="font-mono text-xs text-[#94A3B8]">Format kode: SYM- diikuti 6 digit angka</span>
+            <div className="flex flex-col justify-between gap-3 border-t border-[#E4DFD3] pt-4 text-xs text-[#5C5850] sm:flex-row sm:items-center">
+              <span className="font-mono text-xs text-[#6B665D]">Format kode: SYM- diikuti 6 digit angka</span>
               <button
                 type="button"
                 onClick={handlePasteFromClipboard}
-                className="min-h-[40px] inline-flex w-fit items-center gap-2 border border-[#3E4357] bg-[#0C0D12] px-3.5 py-2 rounded-lg text-xs text-[#E4E4E7] hover:text-white hover:border-white/60 transition-colors"
+                className="min-h-[40px] inline-flex w-fit items-center gap-2 border border-[#CFC9BC] bg-[#F6F4EE] px-3.5 py-2 rounded-lg text-xs font-medium text-[#171614] hover:border-[#171614] transition-colors"
               >
                 <Copy className="h-3.5 w-3.5" strokeWidth={1.7} aria-hidden="true" />
                 <span>Tempel dari Clipboard</span>
@@ -199,20 +199,20 @@ const RedeemPageContent: React.FC = () => {
           {hasSearched && errorMessage && (
             <div
               role="alert"
-              className="flex items-start gap-3.5 rounded-xl border border-rose-500/40 bg-rose-500/10 p-5 text-sm"
+              className="flex items-start gap-3.5 rounded-xl border border-[#B91C1C]/30 bg-[#B91C1C]/10 p-5 text-sm"
             >
-              <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-rose-400" strokeWidth={1.7} aria-hidden="true" />
-              <div className="flex-1 leading-relaxed text-rose-200">
-                <p className="mb-1 font-semibold text-white m-0">Tiket Tidak Ditemukan</p>
-                <p className="text-xs text-rose-200 m-0">{errorMessage}</p>
+              <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-[#B91C1C]" strokeWidth={1.7} aria-hidden="true" />
+              <div className="flex-1 leading-relaxed text-[#B91C1C]">
+                <p className="mb-1 font-semibold text-[#171614] m-0">Tiket Tidak Ditemukan</p>
+                <p className="text-xs text-[#B91C1C] m-0">{errorMessage}</p>
               </div>
             </div>
           )}
 
           <section className="flex flex-col gap-5 pt-2">
-            <div className="border-b border-[#272A38] pb-4">
-              <h2 className="flex items-center gap-2.5 text-lg sm:text-xl font-semibold tracking-tight text-white m-0">
-                <ShieldCheck className="h-5 w-5 text-white" strokeWidth={1.7} aria-hidden="true" />
+            <div className="border-b border-[#E4DFD3] pb-4">
+              <h2 className="flex items-center gap-2.5 font-display text-2xl font-semibold tracking-tight text-[#171614] m-0">
+                <ShieldCheck className="h-5 w-5 text-[#C93018]" strokeWidth={1.7} aria-hidden="true" />
                 <span>Alur Verifikasi Tiket</span>
               </h2>
             </div>
@@ -222,25 +222,25 @@ const RedeemPageContent: React.FC = () => {
                 {
                   step: '01',
                   title: 'Masukkan Kode Unik',
-                  body: 'Ketikkan kode unik transaksi Anda (contoh: SYM-893472) yang dikirim melalui email atau tercantum di akun Anda.'
+                  body: 'Ketikkan kode unik transaksi Anda (contoh: SYM-893472) yang dikirim melalui email atau tercantum di akun Anda.',
                 },
                 {
                   step: '02',
                   title: 'Periksa Keabsahan Tiket',
-                  body: 'Sistem memverifikasi keaktifan tiket, rincian tempat duduk, waktu pertunjukan, serta status gate.'
+                  body: 'Sistem memverifikasi keaktifan tiket, rincian tempat duduk, waktu pertunjukan, serta status gate.',
                 },
                 {
                   step: '03',
                   title: 'Tunjukkan QR Code Gate',
-                  body: 'Tunjukkan QR Code digital di pintu masuk hall konser saat Open Gate atau simpan berkas cetak PDF/PNG.'
-                }
+                  body: 'Tunjukkan QR Code digital di pintu masuk hall konser saat Open Gate atau simpan berkas cetak PDF/PNG.',
+                },
               ].map((item) => (
-                <div key={item.step} className="flex flex-col gap-2 rounded-xl border border-[#272A38] bg-[#14161F] p-5">
-                  <span className="text-xl font-mono font-bold text-[#94A3B8]">
+                <div key={item.step} className="flex flex-col gap-2 rounded-xl border border-[#E4DFD3] bg-white p-5">
+                  <span className="text-xl font-mono font-bold text-[#C93018]">
                     {item.step}
                   </span>
-                  <h3 className="text-sm font-semibold text-white m-0">{item.title}</h3>
-                  <p className="text-xs leading-relaxed text-[#A1A1AA] m-0">{item.body}</p>
+                  <h3 className="text-sm font-semibold text-[#171614] m-0">{item.title}</h3>
+                  <p className="text-xs leading-relaxed text-[#5C5850] m-0">{item.body}</p>
                 </div>
               ))}
             </div>

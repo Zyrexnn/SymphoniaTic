@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { ExternalLink } from 'lucide-react';
-import { NAV_PAGES } from './data';
+import { ExternalLink, Search } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
 import { FullscreenWorkspace } from '@/components/ui/fullscreen-sheet';
 
 const CONCERT_TERMS = [
@@ -13,114 +15,152 @@ const CONCERT_TERMS = [
 
 export const Footer: React.FC = () => {
   const [showTermsModal, setShowTermsModal] = useState(false);
+  const [ticketCode, setTicketCode] = useState('');
+
+  const handleQuickLookup = (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleaned = ticketCode.trim();
+    window.location.href = cleaned
+      ? `/redeem?code=${encodeURIComponent(cleaned)}`
+      : '/redeem';
+  };
 
   return (
-    <footer className="border-t border-[#272A38] bg-[#14161F]">
-      <div className="mx-auto max-w-[1400px] px-6 sm:px-8 md:px-10 pt-14 sm:pt-16 pb-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12 pb-12 border-b border-[#272A38]">
-          <div className="sm:col-span-2 lg:col-span-1">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shrink-0">
-                <span className="text-sm font-bold text-[#0C0D12] tracking-[0.05em]">S</span>
+    <footer className="border-t border-[#E4DFD3] bg-white text-[#171614]">
+      <div className="mx-auto max-w-[1360px] px-4 sm:px-8 lg:px-10 pt-14 pb-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 pb-10">
+          <div className="lg:col-span-5 flex flex-col justify-between gap-6">
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-[#171614] rounded-lg flex items-center justify-center shrink-0">
+                  <span className="font-display text-lg font-semibold text-[#F6F4EE]">S</span>
+                </div>
+                <div>
+                  <span className="font-display text-xl font-semibold text-[#171614] tracking-tight block leading-tight">
+                    SymphoniaTic
+                  </span>
+                  <span className="text-[10px] font-semibold text-[#6B665D] tracking-[0.2em] uppercase block">
+                    Harmoni Nusantara
+                  </span>
+                </div>
               </div>
-              <div>
-                <span className="text-sm font-semibold text-white tracking-tight block leading-tight">SymphoniaTic</span>
-                <span className="text-xs font-medium text-[#A1A1AA] tracking-wider uppercase block">Harmoni Nusantara</span>
-              </div>
+              <p className="text-sm text-[#5C5850] leading-relaxed max-w-sm m-0">
+                Platform tiket resmi untuk pertunjukan orkestra, simfoni, balet, dan resital musik klasik di Indonesia.
+              </p>
             </div>
-            <p className="text-sm text-[#A1A1AA] leading-relaxed max-w-[280px] m-0">
-              Platform tiket resmi untuk pertunjukan orkestra, simfoni, balet, dan musik klasik terbaik di Indonesia.
-            </p>
-          </div>
 
-          <div>
-            <p className="text-xs font-semibold text-white tracking-wide uppercase mb-4">Navigasi</p>
-            <div className="flex flex-col gap-2.5 items-start">
-              {NAV_PAGES.map((p) =>
-                p.href === '#syarat-ketentuan' ? (
-                  <button
-                    key={p.label}
-                    type="button"
-                    onClick={() => setShowTermsModal(true)}
-                    className="min-h-[36px] text-sm text-[#A1A1AA] hover:text-white transition-colors bg-transparent border-none p-0 text-left"
-                  >
-                    {p.label}
-                  </button>
-                ) : (
-                  <a
-                    key={p.label}
-                    href={p.href}
-                    className="min-h-[36px] inline-flex items-center text-sm text-[#A1A1AA] hover:text-white transition-colors no-underline"
-                  >
-                    {p.label}
-                  </a>
-                )
-              )}
-            </div>
-          </div>
-
-          <div>
-            <p className="text-xs font-semibold text-white tracking-wide uppercase mb-4">Layanan</p>
-            <div className="flex flex-col gap-2.5 items-start">
-              <a href="/redeem" className="min-h-[36px] inline-flex items-center text-sm text-[#A1A1AA] hover:text-white transition-colors no-underline">
-                Cek E-Ticket
-              </a>
-              <a href="/refund" className="min-h-[36px] inline-flex items-center text-sm text-[#A1A1AA] hover:text-white transition-colors no-underline">
-                Pengajuan Refund
-              </a>
-              <a href="/admin" className="min-h-[36px] inline-flex items-center text-sm text-[#A1A1AA] hover:text-white transition-colors no-underline">
-                Portal Admin
-              </a>
-              <span className="text-sm text-[#E4E4E7] mt-1">support@symphoniatic.id</span>
-            </div>
-          </div>
-
-          <div>
-            <p className="text-xs font-semibold text-white tracking-wide uppercase mb-4">Ikuti Kami</p>
-            <div className="flex flex-col gap-2.5 items-start">
-              {[
-                { name: 'Instagram', href: 'https://instagram.com' },
-                { name: 'Twitter / X', href: 'https://x.com' },
-                { name: 'YouTube', href: 'https://youtube.com' },
-                { name: 'TikTok', href: 'https://tiktok.com' },
-              ].map((s) => (
-                <a
-                  key={s.name}
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="min-h-[36px] text-sm text-[#A1A1AA] hover:text-white transition-colors no-underline inline-flex items-center gap-1.5 group"
-                >
-                  <span>{s.name}</span>
-                  <ExternalLink
-                    size={12}
-                    strokeWidth={1.6}
-                    className="text-[#A1A1AA] group-hover:text-white transition-colors"
+            <form onSubmit={handleQuickLookup} className="max-w-sm">
+              <label
+                htmlFor="footer-ticket-lookup"
+                className="block text-xs font-semibold uppercase tracking-[0.14em] text-[#171614] mb-2"
+              >
+                Cek Cepat E-Ticket
+              </label>
+              <div className="flex items-center gap-2">
+                <div className="relative flex-1">
+                  <Search
+                    size={15}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B665D] pointer-events-none"
                     aria-hidden="true"
                   />
+                  <Input
+                    id="footer-ticket-lookup"
+                    type="text"
+                    value={ticketCode}
+                    onChange={(e) => setTicketCode(e.target.value)}
+                    placeholder="Kode SYM-XXXXXX"
+                    className="min-h-[44px] border-[#CFC9BC] bg-[#F6F4EE] pl-9 pr-3 text-sm text-[#171614] placeholder:text-[#6B665D] focus-visible:border-[#C93018] focus-visible:ring-[#C93018]/20"
+                  />
+                </div>
+                <Button type="submit" variant="dark" className="shrink-0">
+                  Cek
+                </Button>
+              </div>
+            </form>
+          </div>
+
+          <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-8">
+            <div>
+              <p className="text-xs font-semibold text-[#171614] tracking-[0.16em] uppercase mb-4">
+                Navigasi
+              </p>
+              <div className="flex flex-col gap-2 items-start">
+                <a href="/" className="min-h-[36px] inline-flex items-center text-sm text-[#5C5850] hover:text-[#C93018] transition-colors no-underline">
+                  Beranda
                 </a>
-              ))}
+                <a href="/events" className="min-h-[36px] inline-flex items-center text-sm text-[#5C5850] hover:text-[#C93018] transition-colors no-underline">
+                  Jadwal Konser
+                </a>
+                <a href="/edukasi" className="min-h-[36px] inline-flex items-center text-sm text-[#5C5850] hover:text-[#C93018] transition-colors no-underline">
+                  Edukasi &amp; Etiket
+                </a>
+              </div>
+            </div>
+
+            <div>
+              <p className="text-xs font-semibold text-[#171614] tracking-[0.16em] uppercase mb-4">
+                Layanan
+              </p>
+              <div className="flex flex-col gap-2 items-start">
+                <a href="/redeem" className="min-h-[36px] inline-flex items-center text-sm text-[#5C5850] hover:text-[#C93018] transition-colors no-underline">
+                  Cek E-Ticket
+                </a>
+                <a href="/refund" className="min-h-[36px] inline-flex items-center text-sm text-[#5C5850] hover:text-[#C93018] transition-colors no-underline">
+                  Pengajuan Refund
+                </a>
+                <a href="/admin" className="min-h-[36px] inline-flex items-center text-sm text-[#5C5850] hover:text-[#C93018] transition-colors no-underline">
+                  Portal Admin
+                </a>
+                <span className="text-xs text-[#6B665D] mt-1">support@symphoniatic.id</span>
+              </div>
+            </div>
+
+            <div>
+              <p className="text-xs font-semibold text-[#171614] tracking-[0.16em] uppercase mb-4">
+                Ikuti Kami
+              </p>
+              <div className="flex flex-col gap-2 items-start">
+                {[
+                  { name: 'Instagram', href: 'https://instagram.com' },
+                  { name: 'Twitter / X', href: 'https://x.com' },
+                  { name: 'YouTube', href: 'https://youtube.com' },
+                  { name: 'TikTok', href: 'https://tiktok.com' },
+                ].map((s) => (
+                  <a
+                    key={s.name}
+                    href={s.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="min-h-[36px] text-sm text-[#5C5850] hover:text-[#C93018] transition-colors no-underline inline-flex items-center gap-1.5 group"
+                  >
+                    <span>{s.name}</span>
+                    <ExternalLink
+                      size={12}
+                      strokeWidth={1.6}
+                      className="text-[#6B665D] group-hover:text-[#C93018] transition-colors"
+                      aria-hidden="true"
+                    />
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-8">
-          <p className="text-sm text-[#A1A1AA] m-0">
+        <Separator className="bg-[#E4DFD3]" />
+
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-6">
+          <p className="text-xs text-[#6B665D] m-0">
             &copy; {new Date().getFullYear()} SymphoniaTic Production. Seluruh hak cipta dilindungi.
           </p>
           <div className="flex flex-wrap items-center gap-5">
-            <a
-              href="/refund"
-              className="text-xs text-[#A1A1AA] hover:text-white transition-colors no-underline py-1"
+            <button
+              type="button"
+              onClick={() => setShowTermsModal(true)}
+              className="text-xs font-medium text-[#5C5850] hover:text-[#C93018] transition-colors bg-transparent border-none p-0 py-1"
             >
-              Kebijakan Tiket &amp; Refund
-            </a>
-            <a
-              href="/events"
-              className="text-xs text-[#A1A1AA] hover:text-white transition-colors no-underline py-1"
-            >
-              Panduan Masuk Hall
-            </a>
+              Syarat &amp; Ketentuan Pengunjung
+            </button>
           </div>
         </div>
       </div>
@@ -128,39 +168,30 @@ export const Footer: React.FC = () => {
       <FullscreenWorkspace
         isOpen={showTermsModal}
         onClose={() => setShowTermsModal(false)}
-        eyebrow="SymphoniaTic"
-        title="Syarat & Ketentuan Resmi"
-        subtitle="Ketentuan pemesanan tiket dan tata tertib pertunjukan"
+        theme="light"
+        eyebrow="Informasi Resmi"
+        title="Syarat & Ketentuan Pengunjung"
+        subtitle="Tata tertib gedung konser dan ketentuan pemesanan tiket SymphoniaTic"
         maxWidthClass="max-w-2xl"
-        backLabel="Tutup"
         footer={
-          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
-            <a
-              href="/refund"
-              className="min-h-[44px] px-5 py-2.5 rounded-lg border border-[#3E4357] bg-[#0C0D12] text-sm font-semibold text-white hover:border-white/60 transition-colors inline-flex items-center justify-center"
-            >
-              Buka Portal Refund
-            </a>
-            <button
+          <div className="flex justify-end">
+            <Button
               type="button"
               onClick={() => setShowTermsModal(false)}
-              className="min-h-[44px] px-6 py-2.5 rounded-lg bg-white text-[#0C0D12] text-sm font-semibold hover:bg-neutral-200 transition-colors"
+              className="w-full sm:w-auto"
             >
-              Saya Mengerti
-            </button>
+              Mengerti
+            </Button>
           </div>
         }
       >
-        <ul className="space-y-3.5 text-sm text-[#E4E4E7] leading-relaxed list-none p-0 m-0">
-          {CONCERT_TERMS.map((item, idx) => (
-            <li key={idx} className="flex items-start gap-3 p-4 rounded-xl bg-[#14161F] border border-[#272A38]">
-              <span className="font-mono text-xs font-bold text-[#A1A1AA] mt-0.5 shrink-0">
-                0{idx + 1}
-              </span>
-              <span>{item}</span>
+        <ol className="space-y-4 text-sm sm:text-base text-[#171614] leading-relaxed pl-5 m-0">
+          {CONCERT_TERMS.map((term, idx) => (
+            <li key={idx} className="pl-2 text-[#5C5850]">
+              <span className="text-[#171614]">{term}</span>
             </li>
           ))}
-        </ul>
+        </ol>
       </FullscreenWorkspace>
     </footer>
   );

@@ -10,101 +10,104 @@ export function drawTicketCanvas(order: OrderRecord): HTMLCanvasElement {
   const ctx = canvas.getContext('2d');
   if (!ctx) return canvas;
 
-  // Darkroom canvas
-  ctx.fillStyle = '#0C0D12';
+  ctx.fillStyle = '#F6F4EE';
   ctx.fillRect(0, 0, width, height);
 
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(28, 28, width - 56, height - 56);
+  ctx.strokeStyle = '#E4DFD3';
   ctx.lineWidth = 2;
-  ctx.strokeRect(20, 20, width - 40, height - 40);
+  ctx.strokeRect(28, 28, width - 56, height - 56);
 
-  // Brand header
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '600 34px Inter, system-ui, sans-serif';
-  ctx.fillText('SymphoniaTic Pass', 50, 80);
+  ctx.fillStyle = '#C93018';
+  ctx.fillRect(28, 28, width - 56, 8);
 
-  ctx.fillStyle = '#A1A1AA';
-  ctx.font = '300 16px Inter, system-ui, sans-serif';
+  ctx.fillStyle = '#171614';
+  ctx.font = '600 32px Georgia, serif';
+  ctx.fillText('SymphoniaTic Pass', 56, 92);
+
+  ctx.fillStyle = '#C93018';
+  ctx.font = '700 13px sans-serif';
   ctx.textAlign = 'right';
-  ctx.fillText('VERIFIED E-TICKET', 750, 80);
+  ctx.fillText('VERIFIED E-TICKET', 744, 88);
   ctx.textAlign = 'left';
 
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+  ctx.strokeStyle = '#E4DFD3';
+  ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.moveTo(50, 105);
-  ctx.lineTo(750, 105);
+  ctx.moveTo(56, 116);
+  ctx.lineTo(744, 116);
   ctx.stroke();
 
-  ctx.fillStyle = '#71717A';
-  ctx.font = '300 12px sans-serif';
-  ctx.fillText('PERTUNJUKAN RESMI', 50, 130);
+  ctx.fillStyle = '#6B665D';
+  ctx.font = '600 11px sans-serif';
+  ctx.fillText('PERTUNJUKAN RESMI', 56, 144);
 
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '400 26px sans-serif';
-  ctx.fillText(order.eventTitle, 50, 165);
+  ctx.fillStyle = '#171614';
+  ctx.font = '600 28px Georgia, serif';
+  ctx.fillText(order.eventTitle, 56, 180);
 
-  ctx.fillStyle = '#A1A1AA';
-  ctx.font = '300 15px sans-serif';
-  ctx.fillText(order.artist, 50, 192);
+  ctx.fillStyle = '#5C5850';
+  ctx.font = '400 15px sans-serif';
+  ctx.fillText(order.artist, 56, 208);
 
   const drawInfo = (x: number, y: number, label: string, value: string) => {
-    ctx.fillStyle = '#71717A';
-    ctx.font = '300 11px sans-serif';
+    ctx.fillStyle = '#6B665D';
+    ctx.font = '600 11px sans-serif';
     ctx.fillText(label.toUpperCase(), x, y);
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '300 15px sans-serif';
-    ctx.fillText(value, x, y + 20);
+    ctx.fillStyle = '#171614';
+    ctx.font = '600 15px sans-serif';
+    ctx.fillText(value, x, y + 22);
   };
 
-  drawInfo(50, 235, 'Tanggal & Waktu', order.date);
-  drawInfo(450, 235, 'Open Gate', order.openGate || 'Sesuai Jadwal');
-  drawInfo(50, 295, 'Pemegang Tiket', order.userName);
-  drawInfo(450, 295, 'Kategori Tiket', `${order.categoryName} (${order.quantity}x Tiket)`);
-  drawInfo(50, 350, 'Kode Order', order.orderCode);
+  drawInfo(56, 250, 'Tanggal & Waktu', order.date);
+  drawInfo(440, 250, 'Open Gate', order.openGate || 'Sesuai Jadwal');
+  drawInfo(56, 312, 'Pemegang Tiket', order.userName);
+  drawInfo(440, 312, 'Kategori Tiket', `${order.categoryName} (${order.quantity}x Tiket)`);
+  drawInfo(56, 374, 'Kode Order', order.orderCode);
 
-  // Perforated separator line
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+  ctx.strokeStyle = '#CFC9BC';
   ctx.setLineDash([6, 6]);
   ctx.beginPath();
-  ctx.moveTo(50, 395);
-  ctx.lineTo(width - 50, 395);
+  ctx.moveTo(56, 422);
+  ctx.lineTo(width - 56, 422);
   ctx.stroke();
   ctx.setLineDash([]);
 
-  // Venue metadata container
-  ctx.fillStyle = '#14161F';
-  ctx.fillRect(50, 425, 700, 180);
-  ctx.strokeStyle = '#272A38';
+  ctx.fillStyle = '#F6F4EE';
+  ctx.fillRect(56, 450, 688, 172);
+  ctx.strokeStyle = '#E4DFD3';
   ctx.lineWidth = 1;
-  ctx.strokeRect(50, 425, 700, 180);
+  ctx.strokeRect(56, 450, 688, 172);
 
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '600 15px sans-serif';
-  ctx.fillText('PETUNJUK LOKASI VENUE & MAPS', 75, 460);
+  ctx.fillStyle = '#C93018';
+  ctx.font = '700 12px sans-serif';
+  ctx.fillText('PETUNJUK LOKASI VENUE & MAPS', 80, 484);
 
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '400 16px sans-serif';
-  ctx.fillText(order.venue, 75, 492);
+  ctx.fillStyle = '#171614';
+  ctx.font = '600 17px sans-serif';
+  ctx.fillText(order.venue, 80, 514);
 
-  ctx.fillStyle = '#A1A1AA';
-  ctx.font = '300 13px sans-serif';
-  ctx.fillText(`Navigasi Peta: maps.google.com/?q=${encodeURIComponent(order.venue)}`, 75, 522);
+  ctx.fillStyle = '#5C5850';
+  ctx.font = '400 13px sans-serif';
+  ctx.fillText(`Navigasi Peta: maps.google.com/?q=${encodeURIComponent(order.venue)}`, 80, 544);
 
-  ctx.fillStyle = '#71717A';
-  ctx.font = '300 11px sans-serif';
+  ctx.fillStyle = '#6B665D';
+  ctx.font = '400 12px sans-serif';
   ctx.fillText(
     `Tunjukkan dokumen E-Ticket ini saat memasuki gerbang pemeriksaan (${order.openGate ? `Open Gate ${order.openGate}` : 'Open Gate'}).`,
-    75,
-    570
+    80,
+    588
   );
 
-  // Real Scannable QR Code Matrix
-  const qrSize = 190;
+  const qrSize = 196;
   const qrX = (width - qrSize) / 2;
-  const qrY = 640;
+  const qrY = 656;
 
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(qrX, qrY, qrSize, qrSize);
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(qrX - 12, qrY - 12, qrSize + 24, qrSize + 24);
+  ctx.strokeStyle = '#E4DFD3';
+  ctx.strokeRect(qrX - 12, qrY - 12, qrSize + 24, qrSize + 24);
 
   const qrPayload = order.qrCode || order.orderCode;
   try {
@@ -114,7 +117,7 @@ export function drawTicketCanvas(order: OrderRecord): HTMLCanvasElement {
     const totalCount = moduleCount + quietZone * 2;
     const cellSize = qrSize / totalCount;
 
-    ctx.fillStyle = '#0C0D12';
+    ctx.fillStyle = '#171614';
     for (let r = 0; r < moduleCount; r++) {
       for (let c = 0; c < moduleCount; c++) {
         if (qr.modules.get(r, c)) {
@@ -128,25 +131,24 @@ export function drawTicketCanvas(order: OrderRecord): HTMLCanvasElement {
     console.error('Error generating canvas QR code:', err);
   }
 
-  // Footer bar
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '600 22px monospace';
+  ctx.fillStyle = '#171614';
+  ctx.font = '700 22px monospace';
   ctx.textAlign = 'center';
-  ctx.fillText(order.orderCode, width / 2, 875);
+  ctx.fillText(order.orderCode, width / 2, 902);
 
-  ctx.fillStyle = '#71717A';
-  ctx.font = '300 12px sans-serif';
-  ctx.fillText('SIMPAN & TUNJUKKAN KODE QR RESMI INI KEPADA PETUGAS GATE', width / 2, 905);
+  ctx.fillStyle = '#6B665D';
+  ctx.font = '600 12px sans-serif';
+  ctx.fillText('SIMPAN & TUNJUKKAN KODE QR RESMI INI KEPADA PETUGAS GATE', width / 2, 932);
 
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+  ctx.strokeStyle = '#E4DFD3';
   ctx.beginPath();
-  ctx.moveTo(50, 930);
-  ctx.lineTo(750, 930);
+  ctx.moveTo(56, 962);
+  ctx.lineTo(744, 962);
   ctx.stroke();
 
-  ctx.fillStyle = '#A1A1AA';
-  ctx.font = '300 13px sans-serif';
-  ctx.fillText('SymphoniaTic Orchestra Hall Verification • All Rights Reserved', width / 2, 960);
+  ctx.fillStyle = '#5C5850';
+  ctx.font = '400 13px sans-serif';
+  ctx.fillText('SymphoniaTic Orchestra Hall Verification · All Rights Reserved', width / 2, 996);
 
   return canvas;
 }

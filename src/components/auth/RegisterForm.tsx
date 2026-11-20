@@ -99,13 +99,13 @@ function RegisterFormInner() {
   };
 
   return (
-    <div className="min-h-[100dvh] w-full flex flex-col lg:flex-row bg-[#0C0D12] text-white selection:bg-white selection:text-black">
+    <div className="min-h-[100dvh] w-full flex flex-col lg:flex-row bg-[#F6F4EE] text-[#171614]">
       <main className="w-full lg:w-[56%] flex-1 flex flex-col justify-center px-5 sm:px-10 md:px-16 lg:px-16 xl:px-24 py-8 sm:py-12 order-2 lg:order-1">
         <div className="w-full max-w-md mx-auto">
           <div className="lg:hidden mb-6">
             <a
               href="/"
-              className="inline-flex items-center gap-2 min-h-[44px] px-2 -ml-2 text-xs font-medium text-[#A1A1AA] hover:text-white transition-colors rounded-lg"
+              className="inline-flex items-center gap-2 min-h-[44px] px-2 -ml-2 text-xs font-medium text-[#5C5850] hover:text-[#171614] transition-colors rounded-lg"
             >
               <ArrowLeft size={15} strokeWidth={1.7} aria-hidden="true" />
               <span>Kembali ke Beranda</span>
@@ -114,17 +114,17 @@ function RegisterFormInner() {
 
           <div className="mb-8">
             <div className="flex items-center justify-between gap-2">
-              <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[#A1A1AA]">
+              <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[#C93018]">
                 SymphoniaTic
               </span>
-              <span className="text-xs font-mono text-[#E4E4E7] bg-[#14161F] border border-[#272A38] px-2.5 py-1 rounded-md">
+              <span className="text-xs font-mono text-[#171614] bg-white border border-[#E4DFD3] px-2.5 py-1 rounded-md">
                 Langkah {step} dari 2
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl leading-tight tracking-tight font-semibold text-white mt-2">
+            <h1 className="font-display text-3xl sm:text-4xl leading-tight tracking-[-0.02em] font-semibold text-[#171614] mt-2">
               Buat Akun Baru
             </h1>
-            <p className="text-sm text-[#A1A1AA] mt-2 font-normal leading-relaxed">
+            <p className="text-sm text-[#5C5850] mt-2 font-normal leading-relaxed">
               Daftar untuk memesan tiket dan mengelola riwayat pertunjukan Anda.
             </p>
           </div>
@@ -161,8 +161,8 @@ function RegisterFormInner() {
 
           {step === 2 && (
             <form onSubmit={verify} className="flex flex-col gap-5">
-              <div className="p-3.5 rounded-xl bg-[#14161F] border border-[#272A38] text-xs text-[#A1A1AA]">
-                Mendaftar sebagai <span className="text-white font-medium">{name}</span> ({email})
+              <div className="p-3.5 rounded-xl bg-white border border-[#E4DFD3] text-xs text-[#5C5850]">
+                Mendaftar sebagai <span className="text-[#171614] font-semibold">{name}</span> ({email})
               </div>
               <Field
                 label="Kode OTP (6 digit)"
@@ -221,11 +221,11 @@ function RegisterFormInner() {
             </form>
           )}
 
-          <div className="mt-10 pt-6 border-t border-[#272A38] text-sm text-[#A1A1AA]">
+          <div className="mt-10 pt-6 border-t border-[#E4DFD3] text-sm text-[#5C5850]">
             Sudah punya akun?{' '}
             <a
               href="/login"
-              className="text-white underline underline-offset-4 decoration-white/40 hover:decoration-white font-medium"
+              className="text-[#C93018] underline underline-offset-4 hover:text-[#A82511] font-semibold"
             >
               Masuk di sini
             </a>
@@ -233,40 +233,40 @@ function RegisterFormInner() {
         </div>
       </main>
 
-      <div className="hidden lg:flex lg:w-[44%] relative flex-col justify-between p-10 xl:p-14 overflow-hidden order-1 lg:order-2 border-l border-[#272A38]">
+      <div className="hidden lg:flex lg:w-[44%] relative flex-col justify-between p-10 xl:p-14 overflow-hidden order-1 lg:order-2 bg-[#11100E] text-white">
         <img
           src="/assets/register-image.jpg"
-          alt=""
+          alt="Pertunjukan orkestra klasik"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-[#0C0D12]/65" />
-        <div className="absolute bottom-0 left-0 right-0 h-44 bg-gradient-to-t from-[#0C0D12] via-[#0C0D12]/75 to-transparent" />
+        <div className="absolute inset-0 bg-[#11100E]/60" />
+        <div className="absolute bottom-0 left-0 right-0 h-44 bg-gradient-to-t from-[#11100E] via-[#11100E]/75 to-transparent" />
 
         <div className="relative z-10">
           <a
             href="/"
-            className="inline-flex items-center gap-2 min-h-[44px] px-3 -ml-3 text-xs font-medium text-[#E4E4E7] hover:text-white transition-colors rounded-lg"
+            className="inline-flex items-center gap-2 min-h-[44px] px-3 -ml-3 text-xs font-medium text-[#E7E2D8] hover:text-white transition-colors rounded-lg"
           >
             <ArrowLeft size={15} strokeWidth={1.7} aria-hidden="true" />
             <span>Kembali ke Beranda</span>
           </a>
 
           <div className="mt-10">
-            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[#E4E4E7]">
+            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[#E7E2D8]">
               SymphoniaTic
             </span>
-            <h2 className="text-3xl leading-tight tracking-tight font-semibold text-white mt-3">
+            <h2 className="font-display text-4xl leading-tight tracking-tight font-semibold text-white mt-3">
               Bergabung Bersama Kami
             </h2>
-            <p className="text-sm text-[#D4D4D8] mt-3 font-normal leading-relaxed max-w-sm">
+            <p className="text-sm text-[#D8D3C8] mt-3 font-normal leading-relaxed max-w-sm">
               Simpan seluruh e-ticket konser Anda dalam satu tempat dan pantau status pengembalian dana dengan mudah.
             </p>
           </div>
         </div>
 
         <div className="relative z-10">
-          <div className="w-12 h-px bg-white/25 mb-4" />
-          <p className="text-xs text-[#A1A1AA] m-0">
+          <div className="w-12 h-px bg-[#C93018] mb-4" />
+          <p className="text-xs text-[#D8D3C8] m-0">
             &copy; {new Date().getFullYear()} SymphoniaTic Official
           </p>
         </div>
