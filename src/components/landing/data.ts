@@ -107,6 +107,13 @@ export interface RefundRecord {
   updatedAt: string;
 }
 
+export interface GateAttendanceSummary {
+  totalTicketsIssued: number;
+  totalCheckedIn: number;
+  remainingCheckIn: number;
+  checkInPercentage: number;
+}
+
 const idrFormatter = new Intl.NumberFormat('id-ID', {
   style: 'currency',
   currency: 'IDR',
@@ -659,47 +666,33 @@ export const checkInTicketAPI = async (code: string) => {
       message: msg,
     };
   } catch {
-    try {
-      const lookupRes = await lookupTicketAPI(cleanCode);
-      if (!lookupRes.success || !lookupRes.data) {
-        return { success: false, message: lookupRes.message || 'Tiket tidak ditemukan' };
-      }
-      const order = lookupRes.data;
-      if (order.status === 'CHECKED_IN') {
-        return {
-          success: false,
-          isAlreadyUsed: true,
-          data: order,
-          message: `Tiket (${order.orderCode}) SUDAH DIGUNAKAN sebelumnya!`,
-        };
-      }
-      if (order.status === 'REFUNDED' || order.status === 'CANCELLED') {
-        return {
-          success: false,
-          isVoid: true,
-          data: order,
-          message: `Tiket (${order.orderCode}) TIDAK VALID / TELAH DI-REFUND!`,
-        };
-      }
+    return {
+      success: false,
+      message: 'Gagal terhubung ke server verifikasi gate.',
+    };
+  }
+};
 
-      const updateRes = await updateOrderStatusAPI(order.id, 'CHECKED_IN');
-      if (updateRes.success) {
-        return {
-          success: true,
-          data: { ...order, status: 'CHECKED_IN' },
-          message: 'Check-in Berhasil! Selamat menikmati konser.',
-        };
-      }
+export const fetchGateAttendanceAPI = async (eventId?: string): Promise<GateAttendanceSummary | null> => {
+  try {
+    const query = eventId ? `?event_id=${encodeURIComponent(eventId)}` : '';
+    const res = await fetch(`${getApiBaseUrl()}/admin/tickets/attendance-summary${query}`, {
+      headers: getAdminAuthHeaders(),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (data.success && data.data) {
       return {
-        success: false,
-        message: updateRes.message || 'Gagal mengubah status check-in tiket.',
-      };
-    } catch {
-      return {
-        success: false,
-        message: 'Gagal terhubung ke server backend.',
+        totalTicketsIssued: Number(data.data.totalTicketsIssued || 0),
+        totalCheckedIn: Number(data.data.totalCheckedIn || 0),
+        remainingCheckIn: Number(data.data.remainingCheckIn || 0),
+        checkInPercentage: Number(data.data.checkInPercentage || 0),
       };
     }
+    return null;
+  } catch (err) {
+    console.error('Fetch gate attendance summary error:', err);
+    return null;
   }
 };
 

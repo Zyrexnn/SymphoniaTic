@@ -8,9 +8,17 @@ import {
   Volume2,
   VolumeX,
   FlipHorizontal,
-  Clock
+  Clock,
+  Users,
+  RefreshCw
 } from 'lucide-react';
-import { checkInTicketAPI, type OrderRecord } from '../landing/data';
+import {
+  checkInTicketAPI,
+  fetchGateAttendanceAPI,
+  type EventItem,
+  type GateAttendanceSummary,
+  type OrderRecord
+} from '../landing/data';
 import { fieldInputBase } from '@/components/ui/form-controls';
 
 interface ScanResultState {
@@ -21,7 +29,12 @@ interface ScanResultState {
   timestamp: string;
 }
 
-export const GateScannerPanel: React.FC = () => {
+interface GateScannerPanelProps {
+  events?: EventItem[];
+  onScanSuccess?: () => void;
+}
+
+export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({ events = [], onScanSuccess }) => {
   const [isScanning, setIsScanning] = useState(false);
   const [cameras, setCameras] = useState<Array<{ id: string; label: string }>>([]);
   const [selectedCameraId, setSelectedCameraId] = useState<string>('');
@@ -31,9 +44,26 @@ export const GateScannerPanel: React.FC = () => {
   const [scanHistory, setScanHistory] = useState<ScanResultState[]>([]);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [cameraError, setCameraError] = useState('');
+  const [selectedEventId, setSelectedEventId] = useState('');
+  const [attendance, setAttendance] = useState<GateAttendanceSummary | null>(null);
+  const [isAttendanceLoading, setIsAttendanceLoading] = useState(false);
 
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
   const scannerContainerId = 'gate-qr-reader-container';
+
+  const loadAttendance = async (eventId = selectedEventId) => {
+    setIsAttendanceLoading(true);
+    try {
+      const summary = await fetchGateAttendanceAPI(eventId || undefined);
+      if (summary) setAttendance(summary);
+    } finally {
+      setIsAttendanceLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadAttendance(selectedEventId);
+  }, [selectedEventId]);
 
   const playBeep = (type: 'success' | 'error') => {
     if (!soundEnabled || typeof window === 'undefined') return;
@@ -121,6 +151,8 @@ export const GateScannerPanel: React.FC = () => {
         };
         setScanResult(result);
         setScanHistory((prev) => [result, ...prev.slice(0, 19)]);
+        void loadAttendance(selectedEventId);
+        if (onScanSuccess) onScanSuccess();
       } else if (res.isAlreadyUsed) {
         playBeep('error');
         const result: ScanResultState = {
@@ -291,6 +323,76 @@ export const GateScannerPanel: React.FC = () => {
               <Camera size={15} aria-hidden="true" />
               <span>Aktifkan Kamera</span>
             </button>
+          )}
+        </div>
+      </div>
+
+      <div className="p-5 bg-[#14161F] border border-[#272A38] rounded-xl space-y-3.5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-lg border border-emerald-500/30 bg-emerald-500/10 flex items-center justify-center shrink-0">
+              <Users size={16} className="text-emerald-400" aria-hidden="true" />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-[#F4F4F6] m-0">Progres Kehadiran Penonton</h3>
+              <p className="text-xs text-[#A1A1AA] m-0">
+                {attendance
+                  ? `Hadir: ${attendance.totalCheckedIn} dari ${attendance.totalTicketsIssued} tiket (${attendance.checkInPercentage}%)`
+                  : isAttendanceLoading
+                  ? 'Memuat data kehadiran...'
+                  : 'Data kehadiran belum tersedia'}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {events.length > 0 && (
+              <select
+                aria-label="Filter kehadiran per konser"
+                value={selectedEventId}
+                onChange={(e) => setSelectedEventId(e.target.value)}
+                className="min-h-[44px] bg-[#0C0D12] border border-[#3E4357] text-white rounded-lg text-xs px-3 py-2 outline-none focus:border-white max-w-[240px]"
+              >
+                <option value="">Semua Konser</option>
+                {events.map((evt) => (
+                  <option key={evt.id} value={String(evt.id)}>
+                    {evt.title}
+                  </option>
+                ))}
+              </select>
+            )}
+            <button
+              type="button"
+              onClick={() => loadAttendance(selectedEventId)}
+              disabled={isAttendanceLoading}
+              aria-label="Segarkan progres kehadiran"
+              className="min-h-[44px] px-3 py-2 border border-[#3E4357] bg-[#0C0D12] hover:border-white/60 text-xs text-[#E4E4E7] rounded-lg inline-flex items-center gap-1.5 transition-colors disabled:opacity-40"
+            >
+              <RefreshCw size={14} className={isAttendanceLoading ? 'animate-spin' : ''} aria-hidden="true" />
+              <span className="hidden sm:inline">Segarkan</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <div
+            role="progressbar"
+            aria-label="Persentase kehadiran penonton"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={attendance ? Math.min(100, Math.round(attendance.checkInPercentage)) : 0}
+            className="w-full h-2.5 bg-[#0C0D12] border border-[#272A38] rounded-full overflow-hidden"
+          >
+            <div
+              className="h-full bg-emerald-500 transition-all duration-300"
+              style={{ width: `${attendance ? Math.min(100, attendance.checkInPercentage) : 0}%` }}
+            />
+          </div>
+          {attendance && (
+            <div className="flex justify-between items-center text-[11px] font-mono text-[#A1A1AA]">
+              <span>Sudah Masuk: {attendance.totalCheckedIn}</span>
+              <span>Belum Masuk: {attendance.remainingCheckIn}</span>
+            </div>
           )}
         </div>
       </div>

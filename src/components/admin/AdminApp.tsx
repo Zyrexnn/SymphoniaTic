@@ -5,7 +5,7 @@ import {
   adminLoginAPI, fetchAdminMetricsAPI, fetchEventsAPI, createEventAPI, updateEventAPI,
   deleteEventAPI, createTicketCategoryAPI, updateTicketCategoryAPI,
   deleteTicketCategoryAPI, fetchAdminOrdersAPI, updateOrderStatusAPI,
-  fetchAdminRefundsAPI, updateRefundStatusAPI,
+  fetchAdminRefundsAPI, updateRefundStatusAPI, checkInTicketAPI,
 } from '../landing/data';
 
 import { AdminLogin } from './AdminLogin';
@@ -72,6 +72,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
   const [ordersList, setOrdersList] = useState<OrderRecord[]>([]);
   const [refundsList, setRefundsList] = useState<RefundRecord[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [checkingInCode, setCheckingInCode] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
 
   const [orderSearch, setOrderSearch] = useState('');
@@ -97,18 +98,19 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
   };
 
   const refreshData = async () => {
+    const activeRole = currentRole;
     setIsLoading(true);
     setLoadError(null);
     try {
-      const [met, ords, evts, rfds] = await Promise.all([
-        fetchAdminMetricsAPI(),
+      const [ords, evts, met, rfds] = await Promise.all([
         fetchAdminOrdersAPI(orderSearch, orderStatusFilter),
         fetchEventsAPI(),
-        fetchAdminRefundsAPI(),
+        activeRole === 'ADMIN' ? fetchAdminMetricsAPI() : Promise.resolve(null),
+        activeRole === 'ADMIN' ? fetchAdminRefundsAPI() : Promise.resolve([]),
       ]);
-      if (met) setMetrics(met);
       if (ords) setOrdersList(ords);
       if (evts) setEventsList(evts);
+      if (met) setMetrics(met);
       if (rfds) setRefundsList(rfds);
       if (onEventsUpdated) onEventsUpdated();
     } catch (err) {
@@ -120,8 +122,14 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
   };
 
   useEffect(() => {
-    if (isAuthenticated) refreshData();
-  }, [isAuthenticated, orderSearch, orderStatusFilter]);
+    if (isAuthenticated) void refreshData();
+  }, [isAuthenticated, orderSearch, orderStatusFilter, currentRole]);
+
+  useEffect(() => {
+    if (currentRole === 'PETUGAS' && activeTab !== 'SCANNER' && activeTab !== 'ORDERS') {
+      setActiveTab('SCANNER');
+    }
+  }, [currentRole, activeTab]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -358,6 +366,31 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
     }
   };
 
+  const handleManualCheckIn = (order: OrderRecord) => {
+    setConfirmModal({
+      title: 'Konfirmasi Check-In Manual',
+      message: `Tandai tiket "${order.orderCode}" atas nama ${order.userName} (${order.categoryName}, ${order.quantity}x) telah masuk gate sekarang?`,
+      onConfirm: async () => {
+        setConfirmModal(null);
+        setCheckingInCode(order.orderCode);
+        try {
+          const res = await checkInTicketAPI(order.orderCode);
+          if (res.success) {
+            showToast(res.message || `Tiket ${order.orderCode} berhasil check-in`, 'success');
+            await refreshData();
+          } else {
+            showToast(res.message || 'Gagal memproses check-in manual', 'error');
+          }
+        } catch (err) {
+          console.error('Error manual check-in:', err);
+          showToast('Terjadi kesalahan koneksi server', 'error');
+        } finally {
+          setCheckingInCode(null);
+        }
+      },
+    });
+  };
+
   const handleExportCSV = () => {
     if (ordersList.length === 0) {
       showToast('Tidak ada data pesanan untuk diekspor!', 'error');
@@ -420,7 +453,12 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
     SCANNER: { title: 'Pemindai Kamera Gate & Validasi Check-In', subtitle: 'Sistem kontrol pintu masuk pertunjukan' },
     METRICS: { title: 'Dashboard Metrik & Pendapatan Finansial', subtitle: 'Ringkasan transaksi dan kapasitas kursi konser' },
     EVENTS: { title: 'Manajemen Postingan Tiket Konser', subtitle: 'Kelola konser, jadwal open gate, dan kategori kursi' },
-    ORDERS: { title: 'Pengelolaan Pesanan & Laporan Transaksi', subtitle: 'Cari, perbarui status, dan ekspor laporan pesanan' },
+    ORDERS: {
+      title: 'Pengelolaan Pesanan & Laporan Transaksi',
+      subtitle: currentRole === 'PETUGAS'
+        ? 'Verifikasi data pesanan penonton dan check-in manual di gate'
+        : 'Cari, perbarui status, dan ekspor laporan pesanan',
+    },
     REFUNDS: { title: 'Persetujuan Permohonan Refund Tiket', subtitle: 'Tinjau pengajuan pengembalian dana penonton' },
   };
 
@@ -526,11 +564,13 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
             </div>
           )}
 
-          {activeTab === 'SCANNER' && <GateScannerPanel />}
-          {activeTab === 'METRICS' && (
+          {activeTab === 'SCANNER' && (
+            <GateScannerPanel events={eventsList} onScanSuccess={() => refreshData()} />
+          )}
+          {currentRole === 'ADMIN' && activeTab === 'METRICS' && (
             <MetricsPanel metrics={metrics} eventsCount={eventsList.length} onGoToOrders={() => setActiveTab('ORDERS')} />
           )}
-          {activeTab === 'EVENTS' && (
+          {currentRole === 'ADMIN' && activeTab === 'EVENTS' && (
             <EventsPanel
               events={eventsList}
               isLoading={isLoading}
@@ -566,16 +606,19 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
           {activeTab === 'ORDERS' && (
             <OrdersPanel
               orders={ordersList}
+              role={currentRole}
               isLoading={isLoading}
+              checkingInCode={checkingInCode}
               search={orderSearch}
               statusFilter={orderStatusFilter}
               onSearchChange={setOrderSearch}
               onStatusFilterChange={setOrderStatusFilter}
               onUpdateStatus={handleUpdateStatus}
+              onManualCheckIn={handleManualCheckIn}
               onExportCSV={handleExportCSV}
             />
           )}
-          {activeTab === 'REFUNDS' && (
+          {currentRole === 'ADMIN' && activeTab === 'REFUNDS' && (
             <RefundsPanel
               refunds={filteredRefunds}
               isLoading={isLoading}
