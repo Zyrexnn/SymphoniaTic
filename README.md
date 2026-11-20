@@ -1,43 +1,104 @@
-# Astro Starter Kit: Minimal
+# SymphoniaTic Frontend
 
-```sh
-npm create astro@latest -- --template minimal
+Aplikasi web resmi untuk platform pemesanan tiket konser musik klasik **SymphoniaTic**, dibangun menggunakan **Astro v7 (SSR)**, **React 19**, dan **Tailwind CSS v4** dengan sistem visual *Concert Hall & Warm Playbill*.
+
+---
+
+## Tech Stack
+
+- **Framework:** Astro v7 (`output: 'server'`, adapter `@astrojs/node` standalone)
+- **UI Library:** React 19 (`@astrojs/react`) + TypeScript
+- **Styling:** Tailwind CSS v4 (`@tailwindcss/vite`)
+- **Icons:** Lucide React (`lucide-react`)
+- **Animations:** Framer Motion & GSAP
+- **E-Ticket & Pass:** HTML5 Canvas, `jspdf`, `html2canvas`, `qrcode.react`
+- **Gate Scanner:** `html5-qrcode`
+
+---
+
+## Prasyarat & Setup Lokal
+
+### 1. Konfigurasi Environment (`.env`)
+Buat file `.env` di direktori `fe/` (referensi dari `.env.example`):
+
+```env
+PUBLIC_API_BASE_URL=http://localhost:8082/api/v1
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Pastikan backend Go (`SymphoniaTic-BE`) berjalan di port `8082` sebelum menjalankan frontend.
 
-## 🚀 Project Structure
+### 2. Instalasi & Menjalankan Server
 
-Inside of your Astro project, you'll see the following folders and files:
+```bash
+# Masuk ke direktori frontend
+cd fe
+
+# Instal dependensi
+npm install
+
+# Jalankan server development (http://localhost:4321)
+npm run dev
+```
+
+---
+
+## Perintah CLI
+
+| Perintah | Keterangan |
+| :--- | :--- |
+| `npm run dev` | Menjalankan server development Astro SSR di `http://localhost:4321` |
+| `npm run build` | Membangun bundle produksi SSR ke direktori `dist/` |
+| `npm run preview` | Menjalankan preview dari hasil build produksi lokal |
+| `npx tsc --noEmit --ignoreDeprecations 6.0` | Memeriksa validitas tipe TypeScript tanpa mengemit file |
+| `npm run astro -- --help` | Menampilkan daftar perintah Astro CLI |
+
+---
+
+## Struktur Direktori
 
 ```text
-/
-├── public/
+fe/
+├── public/                      # Aset statis, font, dan sampel audio konser
 ├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+│   ├── components/
+│   │   ├── admin/               # Portal Admin & Gate Officer (Metrik, Konser, Pesanan, Refund, Scanner)
+│   │   ├── auth/                # Komponen registrasi OTP, login, dan reset kata sandi
+│   │   ├── dashboard/           # Dashboard akun penonton (riwayat tiket, profil, refund)
+│   │   ├── landing/             # Katalog konser, detail konser, modal checkout, dan klien API (data.ts)
+│   │   ├── redeem/              # Lookup kode tiket publik & cetak e-ticket
+│   │   ├── refund/              # Pengajuan refund publik & verifikasi OTP
+│   │   └── ui/                  # Primitif UI bersama (dialog konfirmasi, kontrol form, badge)
+│   ├── layouts/                 # Layout HTML dasar, metadata, dan audio player konser
+│   ├── lib/                     # Utilitas waktu, jadwal open gate, dan format tampilan
+│   ├── pages/                   # Halaman rute Astro SSR (index, concerts/[id], admin, redeem, refund, auth/*)
+│   └── styles/                  # Definisi global CSS dan konfigurasi Tailwind v4
+├── DESIGN.md                    # Panduan sistem desain dan token visual
+└── PRD.md                       # Dokumen kebutuhan produk
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+---
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## Fitur Utama Berdasarkan Peran (Role)
 
-Any static assets, like images, can be placed in the `public/` directory.
+### 1. Penonton (`USER`)
+- **Eksplorasi Konser:** Melihat katalog pertunjukan orkestra, jadwal *open gate*, konduktor, solois, daftar kategori kursi, dan rundown acara.
+- **Pemesanan & E-Ticket:** Checkout tiket dengan kode unik `SYM-XXXXXX`, tampilan QR Code e-ticket, serta ekspor pas konser ke **PNG** resolusi tinggi atau **PDF A4**.
+- **Pengajuan Refund:** Formulir permohonan pengembalian dana terverifikasi OTP email serta pelacakan status pengajuan.
+- **Dashboard Akun:** Mengelola profil, mengganti kata sandi, dan memantau riwayat transaksi.
 
-## 🧞 Commands
+### 2. Super Administrator (`ADMIN`)
+- **Metrik & Finansial:** Ringkasan pendapatan, tiket terjual, sisa kuota, dan distribusi kategori kursi.
+- **Manajemen Konser & Kategori:** Membuat, memperbarui, menutup/membuka penjualan tiket, dan menghapus event maupun kategori kursi.
+- **Manajemen Pesanan & Refund:** Melihat seluruh pesanan, mengubah status transaksi, mengekspor data pesanan ke CSV, serta menyetujui atau menolak pengajuan refund.
+- **Gate Operations:** Akses penuh ke pemindai QR gate dan check-in manual.
 
-All commands are run from the root of the project, from a terminal:
+### 3. Petugas Gate (`PETUGAS`)
+- **Pemindai QR Gate:** Validasi tiket penonton di pintu masuk menggunakan kamera perangkat atau input kode manual dengan umpan balik audio.
+- **Progres Kehadiran Penonton:** Kartu ringkasan jumlah tiket yang sudah masuk vs total tiket aktif (dapat difilter per konser) yang diperbarui otomatis setiap scan berhasil.
+- **Pencarian Pesanan (*Read-Only*) & Check-in Manual:** Mencari data pesanan penonton berdasarkan nama/email saat QR terkendala di lapangan, disertai tombol **Check-in Manual** dengan konfirmasi. Akses ubah status pembayaran dan ekspor CSV dinonaktifkan sesuai prinsip *Least Privilege*.
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+---
 
-## 👀 Want to learn more?
+## Panduan Desain
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Seluruh antarmuka mengikuti standar visual *Concert Hall & Warm Playbill* yang terdokumentasi di [DESIGN.md](./DESIGN.md). Semua panggilan API wajib menggunakan `getApiBaseUrl()` dari `src/components/landing/data.ts`.
