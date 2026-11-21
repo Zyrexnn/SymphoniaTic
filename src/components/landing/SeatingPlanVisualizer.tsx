@@ -277,7 +277,7 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
 }) => {
   const [hoveredCatId, setHoveredCatId] = useState<string | null>(null);
   const [hoveredSeat, setHoveredSeat] = useState<PositionedSeat | null>(null);
-  const [seatNotice, setSeatNotice] = useState<string | null>(null);
+  const [seatNotice, setSeatNotice] = useState<{ type: 'info' | 'warning'; text: string } | null>(null);
   const [internalSeats, setInternalSeats] = useState<SeatItem[] | null>(null);
   const [internalLoading, setInternalLoading] = useState(false);
 
@@ -369,6 +369,22 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
 
   const selectedSeatSet = useMemo(() => new Set(selectedSeats), [selectedSeats]);
 
+  const selectedGroupConnectors = useMemo(() => {
+    if (selectedSeats.length < 2) return [];
+    const selectedItems = positionedSeats
+      .filter((s) => selectedSeatSet.has(s.seatCode))
+      .sort((a, b) => a.rowLabel.localeCompare(b.rowLabel) || a.colIdx - b.colIdx);
+    const lines: { key: string; x1: number; y1: number; x2: number; y2: number }[] = [];
+    for (let i = 0; i < selectedItems.length - 1; i++) {
+      const a = selectedItems[i];
+      const b = selectedItems[i + 1];
+      if (a.rowLabel === b.rowLabel && Math.abs(b.colIdx - a.colIdx) <= 1) {
+        lines.push({ key: `${a.seatCode}-${b.seatCode}`, x1: a.x, y1: a.y, x2: b.x, y2: b.y });
+      }
+    }
+    return lines;
+  }, [positionedSeats, selectedSeatSet, selectedSeats.length]);
+
   const inspectedCat = useMemo(() => {
     const targetId = hoveredCatId || selectedCategoryId;
     return categories.find((c) => c.id === targetId) || sortedCategories[0] || null;
@@ -390,13 +406,19 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
     if (!cat) return;
 
     if (seat.status === 'BOOKED') {
-      setSeatNotice(`Kursi ${seat.seatCode} sudah dipesan penonton lain. Silakan pilih kursi lain yang masih tersedia.`);
+      setSeatNotice({
+        type: 'warning',
+        text: `Kursi ${seat.seatCode} sudah dipesan penonton lain. Silakan pilih kursi lain yang masih tersedia.`,
+      });
       return;
     }
 
     const rem = getRemaining(cat);
     if (rem <= 0) {
-      setSeatNotice(`Kategori "${cat.name}" telah habis terjual. Silakan pilih zona lain yang masih tersedia.`);
+      setSeatNotice({
+        type: 'warning',
+        text: `Kategori "${cat.name}" telah habis terjual. Silakan pilih zona lain yang masih tersedia.`,
+      });
       return;
     }
 
@@ -444,14 +466,22 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
     if (selectedSeats.length < quantity) {
       onSelectSeats([...selectedSeats, seat.seatCode]);
     } else {
+      const replaced = selectedSeats[0];
       onSelectSeats([...selectedSeats.slice(1), seat.seatCode]);
+      setSeatNotice({
+        type: 'info',
+        text: `Kursi ${replaced} digantikan dengan kursi ${seat.seatCode}.`,
+      });
     }
   };
 
   const handleLegendClick = (cat: TicketCategory) => {
     const rem = getRemaining(cat);
     if (rem <= 0) {
-      setSeatNotice(`Kategori "${cat.name}" telah habis terjual. Silakan pilih zona lain yang masih tersedia.`);
+      setSeatNotice({
+        type: 'warning',
+        text: `Kategori "${cat.name}" telah habis terjual. Silakan pilih zona lain yang masih tersedia.`,
+      });
       return;
     }
     setSeatNotice(null);
@@ -626,6 +656,20 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
             STAGE
           </text>
 
+          {selectedGroupConnectors.map((conn) => (
+            <line
+              key={conn.key}
+              x1={conn.x1}
+              y1={conn.y1}
+              x2={conn.x2}
+              y2={conn.y2}
+              stroke="#C93018"
+              strokeWidth="6"
+              strokeOpacity="0.22"
+              strokeLinecap="round"
+            />
+          ))}
+
           {positionedSeats.map((seat) => {
             const cat = categoryMap.get(seat.categoryId);
             if (!cat) return null;
@@ -785,9 +829,13 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
       {seatNotice && (
         <div
           role="status"
-          className="rounded-lg border border-[#B91C1C]/30 bg-[#B91C1C]/10 px-3.5 py-2.5 text-xs font-medium text-[#B91C1C]"
+          className={`rounded-lg border px-3.5 py-2.5 text-xs font-medium ${
+            seatNotice.type === 'info'
+              ? 'border-[#CFC9BC] bg-white text-[#171614]'
+              : 'border-[#B91C1C]/30 bg-[#B91C1C]/10 text-[#B91C1C]'
+          }`}
         >
-          {seatNotice}
+          {seatNotice.text}
         </div>
       )}
 
@@ -822,12 +870,20 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
                 <span className="text-xs text-[#5C5850]">Nomor Kursi:</span>
                 {selectedSeats.length > 0 ? (
                   selectedSeats.map((code) => (
-                    <span
+                    <button
+                      type="button"
                       key={code}
-                      className="inline-flex items-center px-2 py-0.5 rounded bg-[#171614] text-white font-mono text-xs font-semibold"
+                      onClick={() => {
+                        if (onSelectSeats && quantity > 1) {
+                          onSelectSeats(selectedSeats.filter((c) => c !== code));
+                        }
+                      }}
+                      title={quantity > 1 ? `Hapus kursi ${code}` : `Kursi ${code}`}
+                      className="inline-flex items-center gap-1 min-h-[32px] px-2.5 py-1 rounded bg-[#171614] text-white font-mono text-xs font-semibold hover:bg-[#C93018] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C93018]"
                     >
-                      {code}
-                    </span>
+                      <span>{code}</span>
+                      {quantity > 1 && <span aria-hidden="true" className="text-[11px] opacity-80">×</span>}
+                    </button>
                   ))
                 ) : (
                   <span className="text-xs font-medium text-[#855A0E]">

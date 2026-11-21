@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   ArrowLeft,
   QrCode,
@@ -11,8 +11,8 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
-import { jsPDF } from 'jspdf';
-import { drawTicketCanvas } from '@/lib/ticketCanvas';
+import { resolveOrderTickets, downloadOrderPNG, downloadOrderPDF } from '@/lib/ticketCanvas';
+import { TicketPassSwitcher } from '@/components/ui/TicketPassSwitcher';
 import { parseDateFlexible, parseTimeString } from '@/lib/timeUtils';
 import type { OrderRecord } from '../landing/data';
 
@@ -54,6 +54,15 @@ export const TicketDetailPage: React.FC<TicketDetailPageProps> = ({ orderCode, c
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [activeTab, setActiveTab] = useState<number>(-1);
+
+  const tickets = useMemo(() => (foundOrder ? resolveOrderTickets(foundOrder) : []), [foundOrder]);
+
+  useEffect(() => {
+    setActiveTab(tickets.length > 1 ? 0 : -1);
+  }, [tickets.length, foundOrder?.orderCode]);
+
+  const activeTicket = activeTab >= 0 ? tickets[activeTab] || null : null;
 
   useEffect(() => {
     let targetCode = initialCode;
@@ -105,11 +114,7 @@ export const TicketDetailPage: React.FC<TicketDetailPageProps> = ({ orderCode, c
     if (!foundOrder) return;
     setIsDownloading(true);
     try {
-      const canvas = drawTicketCanvas(foundOrder);
-      const link = document.createElement('a');
-      link.download = `SymphoniaTic-Pass-${foundOrder.orderCode}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
+      downloadOrderPNG(foundOrder, activeTicket, activeTab >= 0 ? activeTab : undefined);
       showToast('E-Ticket PNG berhasil diunduh');
     } catch {
       showToast('Gagal memproses gambar tiket');
@@ -122,13 +127,7 @@ export const TicketDetailPage: React.FC<TicketDetailPageProps> = ({ orderCode, c
     if (!foundOrder) return;
     setIsDownloading(true);
     try {
-      const canvas = drawTicketCanvas(foundOrder);
-      const imgData = canvas.toDataURL('image/png');
-      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-      doc.setFillColor(246, 244, 238);
-      doc.rect(0, 0, 210, 297, 'F');
-      doc.addImage(imgData, 'PNG', 15, 15, 180, 247.5);
-      doc.save(`SymphoniaTic-Pass-${foundOrder.orderCode}.pdf`);
+      await downloadOrderPDF(foundOrder);
       showToast('Dokumen E-Ticket PDF berhasil diunduh');
     } catch {
       showToast('Gagal membuat dokumen PDF');
@@ -258,6 +257,8 @@ export const TicketDetailPage: React.FC<TicketDetailPageProps> = ({ orderCode, c
             </div>
           </div>
 
+          <TicketPassSwitcher tickets={tickets} activeTab={activeTab} onChangeTab={setActiveTab} />
+
           <div className="rounded-2xl border border-[#E4DFD3] bg-white overflow-hidden">
             <div className="h-1.5 w-full bg-[#C93018]" />
             <div className="grid grid-cols-1 lg:grid-cols-12">
@@ -265,7 +266,9 @@ export const TicketDetailPage: React.FC<TicketDetailPageProps> = ({ orderCode, c
                 <div className="space-y-4">
                   <div className="flex items-center justify-between gap-3">
                     <span className="px-2.5 py-1 rounded bg-[#ECE8DF] text-[11px] font-semibold text-[#C93018] uppercase tracking-wider">
-                      Konser Simfoni Resmi
+                      {activeTicket && tickets.length > 1
+                        ? `Pass Tiket ${activeTab + 1} dari ${tickets.length}`
+                        : 'Konser Simfoni Resmi'}
                     </span>
                     <span className="text-xs font-mono text-[#6B665D]">
                       ID: {foundOrder.id.slice(0, 8)}
@@ -295,7 +298,7 @@ export const TicketDetailPage: React.FC<TicketDetailPageProps> = ({ orderCode, c
                     <div>
                       <span className="text-[11px] font-semibold uppercase tracking-wider text-[#6B665D] block">Nomor Kursi</span>
                       <span className="text-[#C93018] font-mono font-bold block mt-0.5">
-                        {foundOrder.seatNumbers || 'Sesuai Kategori'}
+                        {activeTicket?.seatCode || foundOrder.seatNumbers || 'Sesuai Kategori'}
                       </span>
                     </div>
                     <div>
@@ -304,7 +307,9 @@ export const TicketDetailPage: React.FC<TicketDetailPageProps> = ({ orderCode, c
                     </div>
                     <div>
                       <span className="text-[11px] font-semibold uppercase tracking-wider text-[#6B665D] block">Pemegang Tiket</span>
-                      <span className="text-[#171614] font-semibold block mt-0.5">{foundOrder.userName}</span>
+                      <span className="text-[#171614] font-semibold block mt-0.5">
+                        {activeTicket?.attendeeName || foundOrder.userName}
+                      </span>
                     </div>
                     <div>
                       <span className="text-[11px] font-semibold uppercase tracking-wider text-[#6B665D] block">Venue &amp; Lokasi</span>
@@ -321,7 +326,7 @@ export const TicketDetailPage: React.FC<TicketDetailPageProps> = ({ orderCode, c
                     className="w-full sm:w-auto min-h-[46px] inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-[#C93018] text-white font-semibold text-xs uppercase tracking-wider hover:bg-[#A82511] transition-colors disabled:opacity-50"
                   >
                     <Download size={15} aria-hidden="true" />
-                    <span>Cetak PDF</span>
+                    <span>{tickets.length > 1 ? `Cetak ${tickets.length} Tiket (PDF)` : 'Cetak PDF'}</span>
                   </button>
                   <button
                     type="button"
@@ -330,7 +335,7 @@ export const TicketDetailPage: React.FC<TicketDetailPageProps> = ({ orderCode, c
                     className="w-full sm:w-auto min-h-[46px] inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-white border border-[#CFC9BC] text-[#171614] font-semibold text-xs uppercase tracking-wider hover:border-[#171614] transition-colors disabled:opacity-50"
                   >
                     <Download size={15} aria-hidden="true" />
-                    <span>Simpan PNG</span>
+                    <span>{activeTicket?.seatCode ? `Simpan PNG (${activeTicket.seatCode})` : 'Simpan PNG'}</span>
                   </button>
                 </div>
               </div>
@@ -342,7 +347,7 @@ export const TicketDetailPage: React.FC<TicketDetailPageProps> = ({ orderCode, c
               >
                 <div className="p-3 bg-white border border-[#E4DFD3] rounded-xl inline-block relative">
                   <QRCodeCanvas
-                    value={foundOrder.qrCode || foundOrder.orderCode}
+                    value={activeTicket?.qrCode || foundOrder.qrCode || foundOrder.orderCode}
                     size={164}
                     level="H"
                     bgColor="#FFFFFF"
@@ -358,14 +363,16 @@ export const TicketDetailPage: React.FC<TicketDetailPageProps> = ({ orderCode, c
                 </div>
                 <div className="text-center">
                   <span className="text-[11px] font-mono uppercase tracking-widest text-[#6B665D] block">
-                    Kode Scanner Gate
+                    {activeTicket?.seatCode ? `Kode Pass Kursi ${activeTicket.seatCode}` : 'Kode Scanner Gate'}
                   </span>
-                  <span className="text-sm font-mono font-bold text-[#171614] tracking-wider block mt-1">
-                    {foundOrder.orderCode}
+                  <span className="text-sm font-mono font-bold text-[#171614] tracking-wider block mt-1 break-all">
+                    {activeTicket?.seatCode ? `${foundOrder.orderCode}-${activeTicket.seatCode}` : foundOrder.orderCode}
                   </span>
                   <p className="text-xs text-[#5C5850] mt-2 max-w-[220px] leading-relaxed">
                     {isTicketExpired
                       ? 'Acara konser telah berakhir. Tiket ini tidak lagi dapat digunakan.'
+                      : activeTicket && tickets.length > 1
+                      ? 'QR Code ini dapat dipindai mandiri untuk kursi ini jika pengunjung datang terpisah.'
                       : 'Tunjukkan QR Code ini di gerbang masuk venue saat Open Gate.'}
                   </p>
                 </div>

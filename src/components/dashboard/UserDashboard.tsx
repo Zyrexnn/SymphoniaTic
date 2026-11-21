@@ -11,9 +11,10 @@ import {
   updateUserProfileAPI, changeUserPasswordAPI, formatIDR,
 } from '@/components/landing/data';
 import type { UserDashboardSummary, OrderRecord, RefundRecord } from '@/components/landing/data';
-import { drawTicketCanvas } from '@/lib/ticketCanvas';
+import { resolveOrderTickets, downloadOrderPNG, downloadOrderPDF } from '@/lib/ticketCanvas';
 import { FullscreenWorkspace } from '@/components/ui/fullscreen-sheet';
 import { TextInputField, fieldInputLight, FormField } from '@/components/ui/form-controls';
+import { TicketPassSwitcher } from '@/components/ui/TicketPassSwitcher';
 
 type Tab = 'summary' | 'orders' | 'refunds' | 'profile';
 
@@ -102,8 +103,18 @@ function KPICard({
 }
 
 function TicketModal({ order, onClose }: { order: OrderRecord; onClose: () => void }) {
+  const tickets = useMemo(() => resolveOrderTickets(order), [order]);
+  const [activeTab, setActiveTab] = useState<number>(() => (tickets.length > 1 ? 0 : -1));
   const [downloading, setDownloading] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+
+  const activeTicket = activeTab >= 0 ? tickets[activeTab] || null : null;
+  const activeQRValue = activeTicket?.qrCode || order.qrCode || order.orderCode;
+  const activeSeatLabel = activeTicket?.seatCode || order.seatNumbers || 'Sesuai Kategori';
+  const activeAttendee = activeTicket?.attendeeName || order.userName;
+  const activeDisplayCode = activeTicket?.seatCode
+    ? `${order.orderCode}-${activeTicket.seatCode}`
+    : order.orderCode;
 
   const copyCode = () => {
     navigator.clipboard.writeText(order.orderCode);
@@ -114,14 +125,7 @@ function TicketModal({ order, onClose }: { order: OrderRecord; onClose: () => vo
   const dlPNG = async () => {
     setDownloading('PNG');
     try {
-      const c = drawTicketCanvas(order);
-      const url = c.toDataURL('image/png');
-      const a = document.createElement('a');
-      a.download = `E-Ticket-${order.orderCode}.png`;
-      a.href = url;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      downloadOrderPNG(order, activeTicket, activeTab >= 0 ? activeTab : undefined);
     } catch (e) {
       console.error('PNG download error:', e);
     } finally {
@@ -132,16 +136,7 @@ function TicketModal({ order, onClose }: { order: OrderRecord; onClose: () => vo
   const dlPDF = async () => {
     setDownloading('PDF');
     try {
-      const c = drawTicketCanvas(order);
-      const { jsPDF } = await import('jspdf');
-      const img = c.toDataURL('image/png');
-      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-      const w = 180;
-      const h = (c.height * w) / c.width;
-      pdf.setFillColor(246, 244, 238);
-      pdf.rect(0, 0, 210, 297, 'F');
-      pdf.addImage(img, 'PNG', (pdf.internal.pageSize.getWidth() - w) / 2, 10, w, h);
-      pdf.save(`E-Ticket-${order.orderCode}.pdf`);
+      await downloadOrderPDF(order);
     } catch (e) {
       console.error('PDF download error:', e);
     } finally {
@@ -161,12 +156,14 @@ function TicketModal({ order, onClose }: { order: OrderRecord; onClose: () => vo
       backLabel="Tutup Pass"
     >
       <div className="space-y-6">
+        <TicketPassSwitcher tickets={tickets} activeTab={activeTab} onChangeTab={setActiveTab} />
+
         <div className="rounded-2xl border border-[#E4DFD3] bg-white overflow-hidden">
           <div className="h-1.5 w-full bg-[#C93018]" />
           <div className="bg-[#F6F4EE] p-6 sm:p-8 flex flex-col items-center justify-center text-center">
             <div className="p-3 bg-white border border-[#E4DFD3] rounded-xl">
               <QRCodeCanvas
-                value={order.qrCode || order.orderCode}
+                value={activeQRValue}
                 size={200}
                 level="H"
                 includeMargin={false}
@@ -175,12 +172,12 @@ function TicketModal({ order, onClose }: { order: OrderRecord; onClose: () => vo
               />
             </div>
             <div className="mt-4 flex items-center gap-3 bg-white text-[#171614] px-4 py-2 rounded-lg border border-[#CFC9BC]">
-              <span className="font-mono text-base font-bold tracking-wider">{order.orderCode}</span>
+              <span className="font-mono text-base font-bold tracking-wider break-all">{activeDisplayCode}</span>
               <button
                 type="button"
                 onClick={copyCode}
                 aria-label="Salin kode pesanan"
-                className="h-9 w-9 inline-flex items-center justify-center text-[#5C5850] hover:text-[#171614] rounded"
+                className="h-9 w-9 shrink-0 inline-flex items-center justify-center text-[#5C5850] hover:text-[#171614] rounded"
               >
                 {copied ? <Check className="w-4 h-4 text-[#1F6E43]" aria-hidden="true" /> : <Copy className="w-4 h-4" aria-hidden="true" />}
               </button>
@@ -205,18 +202,18 @@ function TicketModal({ order, onClose }: { order: OrderRecord; onClose: () => vo
             </div>
             <div>
               <span className="text-xs text-[#6B665D] block mb-1">Pemegang Tiket</span>
-              <span className="text-[#171614] font-semibold block">{order.userName}</span>
+              <span className="text-[#171614] font-semibold block">{activeAttendee}</span>
             </div>
             <div>
               <span className="text-xs text-[#6B665D] block mb-1">Kategori Kursi</span>
               <span className="text-[#171614] font-semibold block">
-                {order.categoryName} ({order.quantity}x Tiket)
+                {activeTicket && tickets.length > 1 ? order.categoryName : `${order.categoryName} (${order.quantity}x Tiket)`}
               </span>
             </div>
             <div>
               <span className="text-xs text-[#6B665D] block mb-1">Nomor Kursi</span>
               <span className="text-[#C93018] font-mono font-bold block">
-                {order.seatNumbers || 'Sesuai Kategori'}
+                {activeSeatLabel}
               </span>
             </div>
           </div>
@@ -230,7 +227,13 @@ function TicketModal({ order, onClose }: { order: OrderRecord; onClose: () => vo
             className="min-h-[48px] inline-flex items-center justify-center gap-2 py-3 px-4 text-sm font-semibold text-[#171614] border border-[#CFC9BC] bg-white hover:border-[#171614] rounded-lg transition-colors disabled:opacity-40"
           >
             <Download className="w-4 h-4" strokeWidth={1.7} aria-hidden="true" />
-            <span>{downloading === 'PNG' ? 'Memproses...' : 'Unduh Gambar (PNG)'}</span>
+            <span>
+              {downloading === 'PNG'
+                ? 'Memproses...'
+                : activeTicket?.seatCode
+                ? `Unduh PNG (${activeTicket.seatCode})`
+                : 'Unduh Gambar (PNG)'}
+            </span>
           </button>
           <button
             type="button"
@@ -239,7 +242,13 @@ function TicketModal({ order, onClose }: { order: OrderRecord; onClose: () => vo
             className="min-h-[48px] inline-flex items-center justify-center gap-2 py-3 px-4 text-sm font-semibold text-white bg-[#C93018] hover:bg-[#A82511] rounded-lg transition-colors disabled:opacity-40"
           >
             <Download className="w-4 h-4" strokeWidth={1.7} aria-hidden="true" />
-            <span>{downloading === 'PDF' ? 'Memproses...' : 'Unduh Dokumen (PDF)'}</span>
+            <span>
+              {downloading === 'PDF'
+                ? 'Memproses...'
+                : tickets.length > 1
+                ? `Unduh ${tickets.length} Tiket (PDF)`
+                : 'Unduh Dokumen (PDF)'}
+            </span>
           </button>
         </div>
       </div>
@@ -260,14 +269,7 @@ function TicketCard({ order, onOpenModal }: { order: OrderRecord; onOpenModal: (
   const dlPNG = async () => {
     setDownloading('PNG');
     try {
-      const c = drawTicketCanvas(order);
-      const url = c.toDataURL('image/png');
-      const a = document.createElement('a');
-      a.download = `E-Ticket-${order.orderCode}.png`;
-      a.href = url;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      downloadOrderPNG(order);
     } catch (e) {
       console.error('PNG download error:', e);
     } finally {
@@ -278,16 +280,7 @@ function TicketCard({ order, onOpenModal }: { order: OrderRecord; onOpenModal: (
   const dlPDF = async () => {
     setDownloading('PDF');
     try {
-      const c = drawTicketCanvas(order);
-      const { jsPDF } = await import('jspdf');
-      const img = c.toDataURL('image/png');
-      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-      const w = 180;
-      const h = (c.height * w) / c.width;
-      pdf.setFillColor(246, 244, 238);
-      pdf.rect(0, 0, 210, 297, 'F');
-      pdf.addImage(img, 'PNG', (pdf.internal.pageSize.getWidth() - w) / 2, 10, w, h);
-      pdf.save(`E-Ticket-${order.orderCode}.pdf`);
+      await downloadOrderPDF(order);
     } catch (e) {
       console.error('PDF download error:', e);
     } finally {

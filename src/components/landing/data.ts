@@ -56,6 +56,13 @@ export interface SeatItem {
   status: 'AVAILABLE' | 'BOOKED';
 }
 
+export interface TicketItem {
+  seatCode: string;
+  attendeeName: string;
+  qrCode: string;
+  status: string;
+}
+
 export interface OrderRecord {
   id: string;
   orderCode: string;
@@ -71,6 +78,9 @@ export interface OrderRecord {
   userEmail: string;
   qrCode: string;
   seatNumbers?: string;
+  attendeeNames?: string;
+  checkedInSeats?: string;
+  tickets?: TicketItem[];
   status: string;
   paymentMethod: string;
   createdAt: string;
@@ -433,6 +443,7 @@ export const createOrderAPI = async (payload: {
   userName: string;
   userEmail: string;
   seatNumbers?: string[];
+  attendeeNames?: string[];
 }) => {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   const userToken = getUserToken();
@@ -631,6 +642,9 @@ export const fetchAdminOrdersAPI = async (search = '', status = '') => {
         userEmail: String(o.userEmail || ''),
         qrCode: String(o.qrCode || ''),
         seatNumbers: o.seatNumbers ? String(o.seatNumbers) : '',
+        attendeeNames: o.attendeeNames ? String(o.attendeeNames) : '',
+        checkedInSeats: o.checkedInSeats ? String(o.checkedInSeats) : '',
+        tickets: Array.isArray(o.tickets) ? o.tickets : undefined,
         status: String(o.status || 'VERIFIED'),
         paymentMethod: String(o.paymentMethod || 'SANDBOX_PAYMENT'),
         createdAt: String(o.createdAt || ''),

@@ -20,9 +20,10 @@ import { QRCodeCanvas } from 'qrcode.react';
 import { formatIDR, createOrderAPI, lookupTicketAPI, getEventSeatsAPI } from './data';
 import type { EventItem, TicketCategory, OrderRecord, SeatItem } from './data';
 import { useAuth } from '@/context/AuthContext';
-import { drawTicketCanvas } from '@/lib/ticketCanvas';
+import { resolveOrderTickets, downloadOrderPNG, downloadOrderPDF } from '@/lib/ticketCanvas';
 import { FullscreenWorkspace } from '@/components/ui/fullscreen-sheet';
 import { TextInputField, fieldInputLight } from '@/components/ui/form-controls';
+import { TicketPassSwitcher } from '@/components/ui/TicketPassSwitcher';
 import { SeatingPlanVisualizer, getCategoryTierMap, pickBestAdjacentSeats } from './SeatingPlanVisualizer';
 
 interface BookingProps {
@@ -54,6 +55,7 @@ export const BookingModal: React.FC<BookingProps> = ({
   const [quantity, setQuantity] = useState(initialQuantity);
   const [userName, setUserName] = useState(user?.name || '');
   const [userEmail, setUserEmail] = useState(user?.email || '');
+  const [attendeeNames, setAttendeeNames] = useState<string[]>([]);
   const [eventSeats, setEventSeats] = useState<SeatItem[]>([]);
   const [seatsLoading, setSeatsLoading] = useState(true);
   const [seatsError, setSeatsError] = useState('');
@@ -118,6 +120,26 @@ export const BookingModal: React.FC<BookingProps> = ({
     }
   }, [user]);
 
+  useEffect(() => {
+    setAttendeeNames((prev) =>
+      Array.from({ length: quantity }, (_, i) => prev[i] ?? (i === 0 ? userName : ''))
+    );
+  }, [quantity]);
+
+  useEffect(() => {
+    if (userName) {
+      setAttendeeNames((prev) => {
+        if (prev.length === 0) return [userName];
+        if (!prev[0]?.trim()) {
+          const next = [...prev];
+          next[0] = userName;
+          return next;
+        }
+        return prev;
+      });
+    }
+  }, [userName]);
+
   const getRemainingQuota = (cat: TicketCategory) => {
     if (typeof cat.remainingQuota === 'number') return cat.remainingQuota;
     if (typeof cat.quota === 'number') return cat.quota;
@@ -157,6 +179,10 @@ export const BookingModal: React.FC<BookingProps> = ({
 
     setIsSubmitting(true);
     try {
+      const resolvedAttendees =
+        quantity > 1
+          ? Array.from({ length: quantity }, (_, i) => (attendeeNames[i] || '').trim() || userName.trim())
+          : undefined;
       const res = await createOrderAPI({
         eventId: String(event.id),
         ticketCategoryId: selectedCat.id,
@@ -164,6 +190,7 @@ export const BookingModal: React.FC<BookingProps> = ({
         userName: userName.trim(),
         userEmail: userEmail.trim(),
         seatNumbers: selectedSeats.length > 0 ? selectedSeats : undefined,
+        attendeeNames: resolvedAttendees,
       });
       if (res.success && res.data) {
         onSubmit({
@@ -466,6 +493,41 @@ export const BookingModal: React.FC<BookingProps> = ({
                   className={user ? 'bg-[#ECE8DF]' : ''}
                 />
               </div>
+
+              {quantity > 1 && (
+                <div className="pt-4 border-t border-[#E4DFD3] space-y-3">
+                  <div>
+                    <h4 className="text-xs font-semibold uppercase tracking-wider text-[#171614] m-0">
+                      Identitas Pemegang Kursi ({quantity} Tiket)
+                    </h4>
+                    <p className="text-xs text-[#5C5850] mt-1 mb-0">
+                      Nama masing-masing pengunjung akan dicetak di E-Ticket per kursi. Jika dikosongkan, nama pemesan utama akan digunakan.
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    {Array.from({ length: quantity }, (_, idx) => {
+                      const seatCode = selectedSeats[idx];
+                      const seatLabel = seatCode ? `Kursi ${seatCode}` : `Tiket ${idx + 1}`;
+                      return (
+                        <TextInputField
+                          key={`${seatLabel}-${idx}`}
+                          theme="light"
+                          label={idx === 0 ? `${seatLabel} (Pemesan)` : seatLabel}
+                          placeholder={`Nama pengunjung ${seatLabel.toLowerCase()} (opsional)`}
+                          value={attendeeNames[idx] ?? ''}
+                          onValueChange={(val) =>
+                            setAttendeeNames((prev) => {
+                              const next = [...prev];
+                              next[idx] = val;
+                              return next;
+                            })
+                          }
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </section>
           </div>
 
@@ -580,8 +642,22 @@ interface ConfirmProps {
 }
 
 export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) => {
+  const tickets = useMemo(() => resolveOrderTickets(order), [order]);
+  const [activeTab, setActiveTab] = useState<number>(() => (tickets.length > 1 ? 0 : -1));
   const [isDownloading, setIsDownloading] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    setActiveTab(tickets.length > 1 ? 0 : -1);
+  }, [order.orderCode, tickets.length]);
+
+  const activeTicket = activeTab >= 0 ? tickets[activeTab] || null : null;
+  const activeQRValue = activeTicket?.qrCode || order.qrCode || order.orderCode;
+  const activeSeatLabel = activeTicket?.seatCode || order.seatNumbers || 'Sesuai Kategori';
+  const activeAttendee = activeTicket?.attendeeName || order.userName;
+  const activeDisplayCode = activeTicket?.seatCode
+    ? `${order.orderCode}-${activeTicket.seatCode}`
+    : order.orderCode;
 
   const handleCopyCode = () => {
     navigator.clipboard.writeText(order.orderCode);
@@ -592,14 +668,7 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
   const handleDownloadPNG = async () => {
     setIsDownloading('PNG');
     try {
-      const canvas = drawTicketCanvas(order);
-      const dataUrl = canvas.toDataURL('image/png');
-      const link = document.createElement('a');
-      link.download = `E-Ticket-${order.orderCode}.png`;
-      link.href = dataUrl;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      downloadOrderPNG(order, activeTicket, activeTab >= 0 ? activeTab : undefined);
     } catch (err) {
       console.error('PNG download error:', err);
     } finally {
@@ -610,20 +679,7 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
   const handleDownloadPDF = async () => {
     setIsDownloading('PDF');
     try {
-      const canvas = drawTicketCanvas(order);
-      const jsPDFModule = await import('jspdf');
-      const jsPDF = jsPDFModule.jsPDF || jsPDFModule.default;
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const imgWidth = 180;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      const xPos = (pdfWidth - imgWidth) / 2;
-
-      pdf.setFillColor(246, 244, 238);
-      pdf.rect(0, 0, 210, 297, 'F');
-      pdf.addImage(imgData, 'PNG', xPos, 15, imgWidth, imgHeight);
-      pdf.save(`E-Ticket-${order.orderCode}.pdf`);
+      await downloadOrderPDF(order);
     } catch (err) {
       console.error('PDF download error:', err);
     } finally {
@@ -655,6 +711,8 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
           </div>
         </div>
 
+        <TicketPassSwitcher tickets={tickets} activeTab={activeTab} onChangeTab={setActiveTab} />
+
         <div
           data-ticket-card="true"
           className="bg-white border border-[#E4DFD3] rounded-2xl overflow-hidden"
@@ -665,10 +723,14 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
               <span className="font-display text-lg font-semibold text-[#171614] block leading-tight">
                 SymphoniaTic Pass
               </span>
-              <span className="text-xs text-[#5C5850]">Pass Masuk Konser Orkestra</span>
+              <span className="text-xs text-[#5C5850]">
+                {activeTicket && tickets.length > 1
+                  ? `Pass Tiket ${activeTab + 1} dari ${tickets.length} · Kursi ${activeTicket.seatCode}`
+                  : 'Pass Masuk Konser Orkestra'}
+              </span>
             </div>
             <span className="text-xs font-semibold text-[#1F6E43] bg-[#1F6E43]/10 border border-[#1F6E43]/25 px-3 py-1 rounded-md">
-              {order.status || 'VERIFIED'}
+              {activeTicket?.status || order.status || 'VERIFIED'}
             </span>
           </div>
 
@@ -699,17 +761,19 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
                 </div>
                 <div>
                   <span className="text-xs text-[#6B665D] block mb-0.5">Kategori Kursi</span>
-                  <span className="font-semibold text-[#171614]">{order.categoryName} ({order.quantity}x)</span>
+                  <span className="font-semibold text-[#171614]">
+                    {activeTicket && tickets.length > 1 ? order.categoryName : `${order.categoryName} (${order.quantity}x)`}
+                  </span>
                 </div>
                 <div>
                   <span className="text-xs text-[#6B665D] block mb-0.5">Nomor Kursi</span>
                   <span className="font-mono font-bold text-[#C93018]">
-                    {order.seatNumbers || 'Sesuai Kategori'}
+                    {activeSeatLabel}
                   </span>
                 </div>
                 <div>
-                  <span className="text-xs text-[#6B665D] block mb-0.5">Nama Pemesan</span>
-                  <span className="font-semibold text-[#171614]">{order.userName}</span>
+                  <span className="text-xs text-[#6B665D] block mb-0.5">Pemegang Tiket</span>
+                  <span className="font-semibold text-[#171614]">{activeAttendee}</span>
                 </div>
                 <div>
                   <span className="text-xs text-[#6B665D] block mb-0.5">Total Pembayaran</span>
@@ -722,7 +786,7 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
               <div className="p-3 bg-white border border-[#E4DFD3] rounded-xl inline-block">
                 <QRCodeCanvas
                   id="ticket-real-qrcode"
-                  value={order.qrCode || order.orderCode}
+                  value={activeQRValue}
                   size={170}
                   level="H"
                   includeMargin={false}
@@ -733,23 +797,25 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
 
               <div className="mt-4 w-full">
                 <span className="text-xs text-[#6B665D] uppercase tracking-wider block mb-1">
-                  Kode Pesanan Resmi
+                  {activeTicket && tickets.length > 1 ? 'Kode Pass Kursi' : 'Kode Pesanan Resmi'}
                 </span>
                 <div className="flex items-center justify-center gap-2">
-                  <span className="text-xl sm:text-2xl font-mono font-bold text-[#171614] tracking-wider tabular-nums">
-                    {order.orderCode}
+                  <span className="text-lg sm:text-xl font-mono font-bold text-[#171614] tracking-wider tabular-nums break-all">
+                    {activeDisplayCode}
                   </span>
                   <button
                     type="button"
                     onClick={handleCopyCode}
                     aria-label="Salin kode invoice"
-                    className="h-10 w-10 inline-flex items-center justify-center rounded-lg bg-white text-[#171614] hover:border-[#171614] border border-[#CFC9BC] transition-colors"
+                    className="h-10 w-10 shrink-0 inline-flex items-center justify-center rounded-lg bg-white text-[#171614] hover:border-[#171614] border border-[#CFC9BC] transition-colors"
                   >
                     {copied ? <Check className="w-4 h-4 text-[#1F6E43]" aria-hidden="true" /> : <Copy className="w-4 h-4" aria-hidden="true" />}
                   </button>
                 </div>
                 <p className="text-xs text-[#5C5850] mt-2 mb-0 leading-relaxed">
-                  Tunjukkan Kode QR ini kepada petugas di pintu masuk concert hall.
+                  {activeTicket && tickets.length > 1
+                    ? 'QR Code ini berlaku khusus untuk kursi ini, sehingga pemegang tiket dapat masuk gate secara terpisah.'
+                    : 'Tunjukkan Kode QR ini kepada petugas di pintu masuk concert hall.'}
                 </p>
               </div>
             </div>
@@ -764,7 +830,13 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
             className="min-h-[48px] bg-white hover:bg-[#ECE8DF] text-[#171614] border border-[#CFC9BC] rounded-lg py-3 px-4 text-sm font-semibold flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
           >
             <Download className="w-4 h-4" aria-hidden="true" />
-            <span>{isDownloading === 'PNG' ? 'Membuat...' : 'Unduh Gambar (PNG)'}</span>
+            <span>
+              {isDownloading === 'PNG'
+                ? 'Membuat...'
+                : activeTicket?.seatCode
+                ? `Unduh PNG (${activeTicket.seatCode})`
+                : 'Unduh Gambar (PNG)'}
+            </span>
           </button>
           <button
             type="button"
@@ -773,7 +845,13 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
             className="min-h-[48px] bg-[#C93018] hover:bg-[#A82511] text-white rounded-lg py-3 px-4 text-sm font-semibold flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
           >
             <Download className="w-4 h-4" aria-hidden="true" />
-            <span>{isDownloading === 'PDF' ? 'Membuat...' : 'Cetak Tiket (PDF)'}</span>
+            <span>
+              {isDownloading === 'PDF'
+                ? 'Membuat...'
+                : tickets.length > 1
+                ? `Unduh ${tickets.length} Tiket (PDF)`
+                : 'Cetak Tiket (PDF)'}
+            </span>
           </button>
           <a
             href={`/ticket/${order.orderCode}`}
