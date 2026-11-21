@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { MapPin, Clock, ArrowLeft, Minus, Plus, Ticket, AlertCircle } from 'lucide-react';
 import { CONCERT_EVENTS, fetchEventsAPI, formatIDR } from './data';
 import type { EventItem, TicketCategory, OrderRecord } from './data';
@@ -7,6 +7,7 @@ import { Footer } from './Footer';
 import { Header } from './Navbar';
 import { parseDate } from './Sections';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { SeatingPlanVisualizer, getCategoryTierMap } from './SeatingPlanVisualizer';
 
 type DetailTab = 'INFO' | 'RUNDOWN' | 'BENEFITS' | 'TERMS';
 const TABS: { id: DetailTab; label: string }[] = [
@@ -349,6 +350,8 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
     loadEvent(false);
   };
 
+  const tierMap = useMemo(() => getCategoryTierMap(event?.categories || []), [event?.categories]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F6F4EE] text-[#171614]">
@@ -616,26 +619,47 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
             )}
 
             {tab === 'BENEFITS' && (
-              <div className="space-y-4 max-w-[720px]">
-                <h2 className="font-display text-2xl sm:text-3xl font-semibold text-[#171614] mb-5">
-                  Kategori Tiket &amp; Fasilitas
+              <div className="space-y-6 max-w-[720px]">
+                <h2 className="font-display text-2xl sm:text-3xl font-semibold text-[#171614] mb-2">
+                  Denah Kursi, Kategori &amp; Fasilitas
                 </h2>
+
+                <SeatingPlanVisualizer
+                  venue={event.venue}
+                  categories={event.categories || []}
+                  selectedCategoryId={selectedCatId}
+                  quantity={1}
+                  onSelectCategory={(cat) => setSelectedCatId(cat.id)}
+                  compact
+                />
 
                 <div className="space-y-4">
                   {(event.categories || []).map((cat) => {
                     const rem = getRemainingQuota(cat);
                     const isSoldOut = rem <= 0;
+                    const tierMeta = tierMap.get(cat.id);
+                    const isSelected = selectedCatId === cat.id;
 
                     return (
                       <div
                         key={cat.id}
-                        className="p-5 rounded-xl bg-white border border-[#E4DFD3]"
+                        className={`p-5 rounded-xl bg-white transition-colors ${
+                          isSelected ? 'border-2 border-[#171614]' : 'border border-[#E4DFD3]'
+                        }`}
                       >
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="font-display text-xl font-semibold text-[#171614]">{cat.name}</span>
+                        <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <span
+                              className="w-3 h-3 rounded-full shrink-0"
+                              style={{ backgroundColor: isSoldOut ? '#857F74' : (tierMeta?.style.color || '#3E5668') }}
+                              aria-hidden="true"
+                            />
+                            <span className="font-display text-xl font-semibold text-[#171614]">{cat.name}</span>
+                          </div>
                           <span className="text-lg font-bold text-[#171614] tabular-nums">{formatIDR(cat.price)}</span>
                         </div>
                         <p className="text-xs text-[#5C5850] mb-3">
+                          {tierMeta ? `${tierMeta.style.zoneLabel} · ` : ''}
                           Sisa Kuota:{' '}
                           {isSoldOut ? (
                             <span className="font-bold text-[#B91C1C]">HABIS</span>

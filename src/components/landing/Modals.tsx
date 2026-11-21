@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useId } from 'react';
+﻿import React, { useState, useEffect, useId, useMemo } from 'react';
 import {
   X,
   CheckCircle2,
@@ -23,6 +23,7 @@ import { useAuth } from '@/context/AuthContext';
 import { drawTicketCanvas } from '@/lib/ticketCanvas';
 import { FullscreenWorkspace } from '@/components/ui/fullscreen-sheet';
 import { TextInputField, fieldInputLight } from '@/components/ui/form-controls';
+import { SeatingPlanVisualizer, getCategoryTierMap } from './SeatingPlanVisualizer';
 
 interface BookingProps {
   event: EventItem;
@@ -122,6 +123,8 @@ export const BookingModal: React.FC<BookingProps> = ({
   };
 
   const totalPrice = selectedCat.price * quantity;
+  const tierMap = useMemo(() => getCategoryTierMap(event.categories || []), [event.categories]);
+  const selectedTierMeta = tierMap.get(selectedCat.id);
   const canSubmit =
     !isSubmitting &&
     !isSelectedSoldOut &&
@@ -137,7 +140,7 @@ export const BookingModal: React.FC<BookingProps> = ({
       eyebrow="Reservasi Tiket Resmi"
       title={event.title}
       subtitle={`${event.artist} · ${event.venue}`}
-      maxWidthClass="max-w-5xl"
+      maxWidthClass="max-w-6xl"
       backLabel="Kembali"
       footer={
         !event.isClosed ? (
@@ -213,22 +216,64 @@ export const BookingModal: React.FC<BookingProps> = ({
               </div>
             )}
 
-            <section className="rounded-xl border border-[#E4DFD3] bg-white p-5 sm:p-6 space-y-4">
+            <div className="lg:hidden rounded-xl border border-[#E4DFD3] bg-white overflow-hidden">
+              {event.image && (
+                <div className="relative aspect-[16/9] w-full bg-[#11100E] overflow-hidden">
+                  <img
+                    src={event.image}
+                    alt={`Tampilan venue ${event.venue}`}
+                    width={800}
+                    height={450}
+                    className="w-full h-full object-cover"
+                  />
+                  <div
+                    className="absolute inset-x-0 bottom-0 px-4 py-3 flex items-end justify-between gap-2"
+                    style={{ background: 'linear-gradient(180deg, transparent 0%, rgba(17,16,14,0.88) 100%)' }}
+                  >
+                    <span className="text-xs font-semibold text-white">Referensi Venue</span>
+                    <span className="text-xs text-[#E7E2D8] truncate">{event.venue}</span>
+                  </div>
+                </div>
+              )}
+              <div className="p-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-[#5C5850]">
+                <span className="inline-flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5 text-[#C93018] shrink-0" aria-hidden="true" />
+                  <span>{event.date} &middot; {event.time}</span>
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-[#6B665D] shrink-0" aria-hidden="true" />
+                  <span>Open Gate {event.openGate}</span>
+                </span>
+              </div>
+            </div>
+
+            <section className="rounded-xl border border-[#E4DFD3] bg-white p-4 sm:p-6 space-y-5">
               <div className="flex items-center justify-between gap-2">
                 <div>
-                  <h3 className="text-sm font-semibold text-[#171614] m-0">1. Pilih Kategori Kursi</h3>
-                  <p className="text-xs text-[#5C5850] mt-0.5 m-0">Pilih kelas tempat duduk sesuai preferensi Anda.</p>
+                  <h3 className="text-sm font-semibold text-[#171614] m-0">1. Referensi Denah &amp; Kategori Kursi</h3>
+                  <p className="text-xs text-[#5C5850] mt-0.5 m-0">
+                    Pilih zona pada denah atau daftar kategori untuk melihat perkiraan posisi duduk Anda.
+                  </p>
                 </div>
                 <span className="text-xs text-[#6B665D] font-mono shrink-0">
                   {event.categories.length} Pilihan
                 </span>
               </div>
 
+              <SeatingPlanVisualizer
+                venue={event.venue}
+                categories={event.categories}
+                selectedCategoryId={selectedCat.id}
+                quantity={quantity}
+                onSelectCategory={setSelectedCat}
+              />
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {event.categories.map((cat) => {
                   const rem = getRemainingQuota(cat);
                   const isSoldOut = rem <= 0;
                   const isSelected = selectedCat.id === cat.id;
+                  const meta = tierMap.get(cat.id);
 
                   return (
                     <button
@@ -237,7 +282,7 @@ export const BookingModal: React.FC<BookingProps> = ({
                       disabled={isSoldOut}
                       aria-pressed={isSelected}
                       onClick={() => setSelectedCat(cat)}
-                      className={`text-left p-4 min-h-[84px] rounded-xl transition-colors border flex flex-col justify-between gap-2 ${
+                      className={`text-left p-4 min-h-[88px] rounded-xl transition-colors border flex flex-col justify-between gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C93018] ${
                         isSoldOut
                           ? 'bg-[#ECE8DF] border-[#E4DFD3] opacity-65'
                           : isSelected
@@ -246,9 +291,21 @@ export const BookingModal: React.FC<BookingProps> = ({
                       }`}
                     >
                       <div className="flex items-start justify-between gap-2 w-full">
-                        <span className={`text-sm font-semibold ${isSelected ? 'text-white' : 'text-[#171614]'}`}>
-                          {cat.name}
-                        </span>
+                        <div className="min-w-0">
+                          <span className={`inline-flex items-center gap-2 text-sm font-semibold ${isSelected ? 'text-white' : 'text-[#171614]'}`}>
+                            <span
+                              className="w-2.5 h-2.5 rounded-full shrink-0"
+                              style={{ backgroundColor: isSoldOut ? '#857F74' : (meta?.style.color || '#3E5668') }}
+                              aria-hidden="true"
+                            />
+                            <span className="truncate">{cat.name}</span>
+                          </span>
+                          {meta && (
+                            <span className={`block text-[11px] mt-0.5 ${isSelected ? 'text-[#D8D3C8]' : 'text-[#5C5850]'}`}>
+                              {meta.style.zoneLabel}
+                            </span>
+                          )}
+                        </div>
                         {isSoldOut ? (
                           <span className="text-[11px] font-mono font-semibold text-[#B91C1C] bg-[#B91C1C]/10 px-2 py-0.5 rounded shrink-0">
                             HABIS
@@ -346,8 +403,21 @@ export const BookingModal: React.FC<BookingProps> = ({
           <aside className="hidden lg:block lg:col-span-5 sticky top-6">
             <div className="rounded-xl border border-[#E4DFD3] bg-white overflow-hidden">
               {event.image && (
-                <div className="aspect-[16/9] w-full bg-[#ECE8DF] overflow-hidden">
-                  <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
+                <div className="relative aspect-[16/9] w-full bg-[#11100E] overflow-hidden">
+                  <img
+                    src={event.image}
+                    alt={`Tampilan venue ${event.venue}`}
+                    width={800}
+                    height={450}
+                    className="w-full h-full object-cover"
+                  />
+                  <div
+                    className="absolute inset-x-0 bottom-0 px-5 py-3.5 flex items-end justify-between gap-2"
+                    style={{ background: 'linear-gradient(180deg, transparent 0%, rgba(17,16,14,0.88) 100%)' }}
+                  >
+                    <span className="text-xs font-semibold text-white">Referensi Tampilan Venue</span>
+                    <span className="text-xs text-[#E7E2D8] truncate">{event.venue}</span>
+                  </div>
                 </div>
               )}
 
@@ -373,9 +443,23 @@ export const BookingModal: React.FC<BookingProps> = ({
                 </div>
 
                 <div className="border-t border-[#E4DFD3] pt-4 space-y-2.5 text-sm">
-                  <div className="flex justify-between gap-3">
-                    <span className="text-[#5C5850]">Kategori</span>
-                    <span className="text-[#171614] font-semibold text-right">{selectedCat.name}</span>
+                  <div className="flex justify-between gap-3 items-start">
+                    <span className="text-[#5C5850]">Zona &amp; Kategori</span>
+                    <div className="text-right">
+                      <span className="inline-flex items-center justify-end gap-1.5 text-[#171614] font-semibold">
+                        <span
+                          className="w-2.5 h-2.5 rounded-full shrink-0"
+                          style={{ backgroundColor: selectedTierMeta?.style.color || '#3E5668' }}
+                          aria-hidden="true"
+                        />
+                        <span>{selectedCat.name}</span>
+                      </span>
+                      {selectedTierMeta && (
+                        <span className="block text-[11px] text-[#5C5850]">
+                          {selectedTierMeta.style.zoneLabel}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="flex justify-between gap-3">
                     <span className="text-[#5C5850]">Harga Satuan</span>
@@ -395,7 +479,7 @@ export const BookingModal: React.FC<BookingProps> = ({
                 <button
                   type="submit"
                   disabled={!canSubmit}
-                  className="w-full min-h-[48px] rounded-lg bg-[#C93018] text-white font-semibold hover:bg-[#A82511] disabled:opacity-40 transition-colors py-3 px-6 text-sm flex items-center justify-center gap-2"
+                  className="w-full min-h-[48px] rounded-lg bg-[#C93018] text-white font-semibold hover:bg-[#A82511] disabled:opacity-40 transition-colors py-3 px-6 text-sm flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C93018] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
                 >
                   {isSubmitting ? (
                     <>
