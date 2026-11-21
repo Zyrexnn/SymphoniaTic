@@ -527,8 +527,11 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({ events = [],
                       <span className="text-white truncate block font-medium">{scanResult.order.userName}</span>
                     </div>
                     <div>
-                      <span className="text-[11px] text-[#A1A1AA] uppercase block">Kategori</span>
-                      <span className="text-white">{scanResult.order.categoryName} ({scanResult.order.quantity}x)</span>
+                      <span className="text-[11px] text-[#A1A1AA] uppercase block">Kategori &amp; Kursi</span>
+                      <span className="text-white">
+                        {scanResult.order.categoryName} ({scanResult.order.quantity}x)
+                        {scanResult.order.seatNumbers ? ` · ${scanResult.order.seatNumbers}` : ''}
+                      </span>
                     </div>
                     <div>
                       <span className="text-[11px] text-[#A1A1AA] uppercase block">Event Konser</span>

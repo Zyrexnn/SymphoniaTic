@@ -105,7 +105,10 @@ export const OrdersPanel: React.FC<OrdersPanelProps> = ({
                       <td className="px-5 py-4 font-mono text-white font-semibold">{ord.orderCode}</td>
                       <td className="px-5 py-4">
                         <span className="text-[#F4F4F6] block font-medium text-sm">{ord.eventTitle}</span>
-                        <span className="text-xs text-[#A1A1AA] block mt-0.5">{ord.categoryName}</span>
+                        <span className="text-xs text-[#A1A1AA] block mt-0.5">
+                          {ord.categoryName}
+                          {ord.seatNumbers ? ` · Kursi ${ord.seatNumbers}` : ''}
+                        </span>
                       </td>
                       <td className="px-5 py-4">
                         <span className="text-[#F4F4F6] block font-medium">{ord.userName}</span>
@@ -185,7 +188,10 @@ export const OrdersPanel: React.FC<OrdersPanelProps> = ({
 
                   <div>
                     <h3 className="text-sm font-medium text-[#F4F4F6] m-0">{ord.eventTitle}</h3>
-                    <p className="text-xs text-[#A1A1AA] mt-0.5 m-0">{ord.categoryName} &middot; {ord.quantity}x Tiket</p>
+                    <p className="text-xs text-[#A1A1AA] mt-0.5 m-0">
+                      {ord.categoryName} &middot; {ord.quantity}x Tiket
+                      {ord.seatNumbers ? ` · Kursi ${ord.seatNumbers}` : ''}
+                    </p>
                   </div>
 
                   <div className="flex justify-between items-center gap-3 text-xs text-[#A1A1AA] pt-1">

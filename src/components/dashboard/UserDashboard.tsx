@@ -207,10 +207,16 @@ function TicketModal({ order, onClose }: { order: OrderRecord; onClose: () => vo
               <span className="text-xs text-[#6B665D] block mb-1">Pemegang Tiket</span>
               <span className="text-[#171614] font-semibold block">{order.userName}</span>
             </div>
-            <div className="sm:col-span-2">
+            <div>
               <span className="text-xs text-[#6B665D] block mb-1">Kategori Kursi</span>
               <span className="text-[#171614] font-semibold block">
                 {order.categoryName} ({order.quantity}x Tiket)
+              </span>
+            </div>
+            <div>
+              <span className="text-xs text-[#6B665D] block mb-1">Nomor Kursi</span>
+              <span className="text-[#C93018] font-mono font-bold block">
+                {order.seatNumbers || 'Sesuai Kategori'}
               </span>
             </div>
           </div>
@@ -344,10 +350,16 @@ function TicketCard({ order, onOpenModal }: { order: OrderRecord; onOpenModal: (
             <span className="text-[#6B665D] block mb-0.5">Pemegang Tiket</span>
             <span className="text-[#171614] font-semibold">{order.userName}</span>
           </div>
-          <div className="col-span-2">
+          <div>
             <span className="text-[#6B665D] block mb-0.5">Kategori &amp; Jumlah</span>
             <span className="text-[#171614] font-semibold">
               {order.categoryName} ({order.quantity}x)
+            </span>
+          </div>
+          <div>
+            <span className="text-[#6B665D] block mb-0.5">Nomor Kursi</span>
+            <span className="text-[#C93018] font-mono font-bold">
+              {order.seatNumbers || 'Sesuai Kategori'}
             </span>
           </div>
         </div>
@@ -526,6 +538,12 @@ function SummaryPanel({ onSelectTab }: { onSelectTab: (t: Tab) => void }) {
                 <div>
                   <span className="text-[#6B665D] block mb-0.5">Kategori</span>
                   <span className="text-[#171614] font-semibold">{activeTicket.categoryName} ({activeTicket.quantity}x)</span>
+                </div>
+                <div>
+                  <span className="text-[#6B665D] block mb-0.5">Nomor Kursi</span>
+                  <span className="text-[#C93018] font-mono font-bold">
+                    {activeTicket.seatNumbers || 'Sesuai Kategori'}
+                  </span>
                 </div>
                 <div>
                   <span className="text-[#6B665D] block mb-0.5">Kode Order</span>

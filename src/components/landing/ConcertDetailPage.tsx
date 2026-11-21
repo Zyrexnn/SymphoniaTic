@@ -625,6 +625,7 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
                 </h2>
 
                 <SeatingPlanVisualizer
+                  eventId={String(event.id)}
                   venue={event.venue}
                   categories={event.categories || []}
                   selectedCategoryId={selectedCatId}

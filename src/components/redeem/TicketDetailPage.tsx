@@ -293,6 +293,12 @@ export const TicketDetailPage: React.FC<TicketDetailPageProps> = ({ orderCode, c
                       <span className="text-[#171614] font-semibold block mt-0.5">{foundOrder.categoryName}</span>
                     </div>
                     <div>
+                      <span className="text-[11px] font-semibold uppercase tracking-wider text-[#6B665D] block">Nomor Kursi</span>
+                      <span className="text-[#C93018] font-mono font-bold block mt-0.5">
+                        {foundOrder.seatNumbers || 'Sesuai Kategori'}
+                      </span>
+                    </div>
+                    <div>
                       <span className="text-[11px] font-semibold uppercase tracking-wider text-[#6B665D] block">Jumlah Tiket</span>
                       <span className="text-[#171614] font-semibold block mt-0.5">{foundOrder.quantity}x Kursi</span>
                     </div>

@@ -65,6 +65,7 @@ export function drawTicketCanvas(order: OrderRecord): HTMLCanvasElement {
   drawInfo(56, 312, 'Pemegang Tiket', order.userName);
   drawInfo(440, 312, 'Kategori Tiket', `${order.categoryName} (${order.quantity}x Tiket)`);
   drawInfo(56, 374, 'Kode Order', order.orderCode);
+  drawInfo(440, 374, 'Nomor Kursi', order.seatNumbers || 'Sesuai Kategori');
 
   ctx.strokeStyle = '#CFC9BC';
   ctx.setLineDash([6, 6]);

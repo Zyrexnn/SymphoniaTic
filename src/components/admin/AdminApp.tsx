@@ -396,7 +396,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
       showToast('Tidak ada data pesanan untuk diekspor!', 'error');
       return;
     }
-    const headers = ['Kode Pesanan', 'Event', 'Musisi', 'Venue', 'Tanggal', 'Nama Pemesan', 'Email', 'Kategori Tiket', 'Jumlah', 'Total Harga', 'Status', 'Waktu Transaksi'];
+    const headers = ['Kode Pesanan', 'Event', 'Musisi', 'Venue', 'Tanggal', 'Nama Pemesan', 'Email', 'Kategori Tiket', 'Nomor Kursi', 'Jumlah', 'Total Harga', 'Status', 'Waktu Transaksi'];
     const rows = ordersList.map((o) => [
       `"${o.orderCode}"`,
       `"${o.eventTitle.replace(/"/g, '""')}"`,
@@ -406,6 +406,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
       `"${o.userName.replace(/"/g, '""')}"`,
       `"${o.userEmail}"`,
       `"${o.categoryName}"`,
+      `"${(o.seatNumbers || '').replace(/"/g, '""')}"`,
       o.quantity,
       o.totalPrice,
       `"${o.status}"`,

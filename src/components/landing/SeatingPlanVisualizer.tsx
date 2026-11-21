@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from 'react';
-import type { TicketCategory } from './data';
-import { formatIDR } from './data';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Sparkles, RefreshCw, AlertCircle } from 'lucide-react';
+import type { TicketCategory, SeatItem } from './data';
+import { formatIDR, getEventSeatsAPI } from './data';
 
 export interface ZoneVisualStyle {
   color: string;
@@ -31,97 +32,203 @@ const TIER_PALETTE: ZoneVisualStyle[] = [
   },
 ];
 
-interface SeatNode {
-  id: string;
-  rowIdx: number;
+interface PositionedSeat {
+  seatCode: string;
   rowLabel: string;
-  colIdx: number;
-  seatNum: number;
+  seatNumber: number;
   x: number;
   y: number;
   dist: number;
-  tierIndex: number;
+  colIdx: number;
+  categoryId: string;
+  status: 'AVAILABLE' | 'BOOKED';
 }
 
 const STAGE_CX = 230;
 const STAGE_CY = 308;
 const STAGE_RADIUS = 80;
 const STAGE_CLEARANCE = 96;
-const ROW_LABELS = ['K', 'J', 'I', 'H', 'G', 'F', 'E', 'D', 'C', 'B', 'A'];
+const STANDARD_ROW_LABELS = ['K', 'J', 'I', 'H', 'G', 'F', 'E', 'D', 'C', 'B', 'A'];
 
-function buildHallSeats(tierCount: number): SeatNode[] {
-  const safeTiers = Math.max(1, tierCount);
-  const rawNodes: Omit<SeatNode, 'tierIndex'>[] = [];
+function rowLabelForExtraIndex(extraIdx: number): string {
+  const code = 'L'.charCodeAt(0) + extraIdx;
+  if (code <= 'Z'.charCodeAt(0)) {
+    return String.fromCharCode(code);
+  }
+  return `R${code - 'Z'.charCodeAt(0)}`;
+}
 
-  for (let rowIdx = 0; rowIdx < 11; rowIdx++) {
+interface SlotCoord {
+  seatCode: string;
+  rowLabel: string;
+  seatNumber: number;
+  x: number;
+  y: number;
+  dist: number;
+  colIdx: number;
+}
+
+function buildSlotCoordinateLookup(extraRowCount: number): {
+  byCode: Map<string, SlotCoord>;
+  rowHeaders: { label: string; y: number }[];
+} {
+  const byCode = new Map<string, SlotCoord>();
+  const rowHeaders: { label: string; y: number }[] = [];
+
+  for (let rowIdx = 0; rowIdx < STANDARD_ROW_LABELS.length; rowIdx++) {
     const y = 32 + rowIdx * 26;
-    const rowLabel = ROW_LABELS[rowIdx] || String(rowIdx + 1);
+    const rowLabel = STANDARD_ROW_LABELS[rowIdx];
+    rowHeaders.push({ label: rowLabel, y });
     let seatCounter = 0;
 
     for (let colIdx = 0; colIdx < 14; colIdx++) {
-      const x =
-        colIdx < 7
-          ? 209 - (6 - colIdx) * 26
-          : 251 + (colIdx - 7) * 26;
+      const x = colIdx < 7 ? 209 - (6 - colIdx) * 26 : 251 + (colIdx - 7) * 26;
       const dist = Math.hypot(x - STAGE_CX, y - STAGE_CY);
-
       if (dist < STAGE_CLEARANCE) continue;
 
       seatCounter += 1;
-      rawNodes.push({
-        id: `${rowLabel}-${seatCounter}`,
-        rowIdx,
+      const seatCode = `${rowLabel}-${seatCounter}`;
+      byCode.set(seatCode, {
+        seatCode,
         rowLabel,
-        colIdx,
-        seatNum: seatCounter,
+        seatNumber: seatCounter,
         x,
         y,
         dist,
+        colIdx,
       });
     }
   }
 
-  if (safeTiers === 1) {
-    return rawNodes.map((n) => ({ ...n, tierIndex: 0 }));
+  for (let extraIdx = 0; extraIdx < extraRowCount; extraIdx++) {
+    const y = 32 - (extraIdx + 1) * 26;
+    const rowLabel = rowLabelForExtraIndex(extraIdx);
+    rowHeaders.unshift({ label: rowLabel, y });
+
+    for (let colIdx = 0; colIdx < 14; colIdx++) {
+      const x = colIdx < 7 ? 209 - (6 - colIdx) * 26 : 251 + (colIdx - 7) * 26;
+      const dist = Math.hypot(x - STAGE_CX, y - STAGE_CY);
+      const seatNumber = colIdx + 1;
+      const seatCode = `${rowLabel}-${seatNumber}`;
+      byCode.set(seatCode, {
+        seatCode,
+        rowLabel,
+        seatNumber,
+        x,
+        y,
+        dist,
+        colIdx,
+      });
+    }
   }
 
-  if (safeTiers === 2) {
-    return rawNodes.map((n) => ({
-      ...n,
-      tierIndex: n.rowIdx >= 5 && n.dist <= 168 ? 0 : 1,
-    }));
-  }
-
-  if (safeTiers === 3) {
-    return rawNodes.map((n) => {
-      if (n.rowIdx >= 6 && n.dist <= 145) return { ...n, tierIndex: 0 };
-      if (n.rowIdx >= 4) return { ...n, tierIndex: 1 };
-      return { ...n, tierIndex: 2 };
-    });
-  }
-
-  // Group symmetric seat pairs by distance-weighted row score for 4+ dynamic tiers
-  const scored = rawNodes.map((n) => ({
-    id: n.id,
-    score: n.dist + (10 - n.rowIdx) * 8,
-  }));
-  const uniqueScores = Array.from(new Set(scored.map((s) => Math.round(s.score)))).sort((a, b) => a - b);
-  const scoreToTier = new Map<number, number>();
-  uniqueScores.forEach((sc, idx) => {
-    const t = Math.min(safeTiers - 1, Math.floor((idx * safeTiers) / uniqueScores.length));
-    scoreToTier.set(sc, t);
-  });
-
-  return rawNodes.map((n) => {
-    const key = Math.round(n.dist + (10 - n.rowIdx) * 8);
-    return {
-      ...n,
-      tierIndex: scoreToTier.get(key) ?? safeTiers - 1,
-    };
-  });
+  return { byCode, rowHeaders };
 }
 
-export function getCategoryTierMap(categories: TicketCategory[]): Map<string, { tierIndex: number; style: ZoneVisualStyle }> {
+function buildFallbackHallSeats(categories: TicketCategory[]): PositionedSeat[] {
+  const sorted = [...categories].sort((a, b) => b.price - a.price);
+  if (sorted.length === 0) return [];
+
+  const totalQuota = sorted.reduce((acc, c) => acc + Math.max(0, c.quota || 0), 0);
+  const extraRows = totalQuota > 138 ? Math.ceil((totalQuota - 138) / 14) : 0;
+  const { byCode } = buildSlotCoordinateLookup(extraRows);
+
+  const slots = Array.from(byCode.values()).sort((a, b) => {
+    const scoreA = a.dist + (STAGE_CY - a.y) * 0.38;
+    const scoreB = b.dist + (STAGE_CY - b.y) * 0.38;
+    if (Math.abs(scoreA - scoreB) > 0.5) return scoreA - scoreB;
+    return Math.abs(a.x - STAGE_CX) - Math.abs(b.x - STAGE_CX) || a.colIdx - b.colIdx;
+  });
+
+  const result: PositionedSeat[] = [];
+  let cursor = 0;
+
+  sorted.forEach((cat) => {
+    const quota = Math.max(0, cat.quota || 0);
+    const rem = typeof cat.remainingQuota === 'number' ? Math.max(0, cat.remainingQuota) : quota;
+    const bookedCount = Math.max(0, quota - rem);
+
+    for (let i = 0; i < quota && cursor < slots.length; i++) {
+      const slot = slots[cursor++];
+      result.push({
+        ...slot,
+        categoryId: cat.id,
+        status: i < bookedCount ? 'BOOKED' : 'AVAILABLE',
+      });
+    }
+  });
+
+  return result;
+}
+
+export function pickBestAdjacentSeats(
+  seats: SeatItem[],
+  categoryId: string,
+  quantity: number
+): string[] {
+  const target = Math.max(1, quantity);
+  const available = seats.filter((s) => s.categoryId === categoryId && s.status === 'AVAILABLE');
+  if (available.length === 0) return [];
+  if (available.length <= target) return available.map((s) => s.seatCode);
+
+  const { byCode } = buildSlotCoordinateLookup(8);
+  const byRow = new Map<string, { seat: SeatItem; coord: SlotCoord }[]>();
+
+  available.forEach((seat) => {
+    const coord = byCode.get(seat.seatCode) || {
+      seatCode: seat.seatCode,
+      rowLabel: seat.rowLabel,
+      seatNumber: seat.seatNumber,
+      x: STAGE_CX,
+      y: 150,
+      dist: 150,
+      colIdx: seat.seatNumber,
+    };
+    const list = byRow.get(seat.rowLabel) || [];
+    list.push({ seat, coord });
+    byRow.set(seat.rowLabel, list);
+  });
+
+  // Prioritaskan deretan kursi berdampingan dalam satu baris dengan jarak terdekat ke tengah panggung
+  let bestGroup: { codes: string[]; score: number } | null = null;
+  byRow.forEach((rowItems) => {
+    rowItems.sort((a, b) => a.seat.seatNumber - b.seat.seatNumber);
+    for (let i = 0; i <= rowItems.length - target; i++) {
+      const windowItems = rowItems.slice(i, i + target);
+      const isContiguous = windowItems.every(
+        (item, idx) => idx === 0 || item.seat.seatNumber === windowItems[idx - 1].seat.seatNumber + 1
+      );
+      const avgDist =
+        windowItems.reduce((sum, item) => sum + item.coord.dist + Math.abs(item.coord.x - STAGE_CX) * 0.4, 0) /
+        target;
+      const penalty = isContiguous ? 0 : 120;
+      const totalScore = avgDist + penalty;
+      if (!bestGroup || totalScore < bestGroup.score) {
+        bestGroup = {
+          codes: windowItems.map((item) => item.seat.seatCode),
+          score: totalScore,
+        };
+      }
+    }
+  });
+
+  if (bestGroup) {
+    return (bestGroup as { codes: string[]; score: number }).codes;
+  }
+
+  return available
+    .map((seat) => ({
+      seat,
+      coord: byCode.get(seat.seatCode),
+    }))
+    .sort((a, b) => (a.coord?.dist ?? 999) - (b.coord?.dist ?? 999))
+    .slice(0, target)
+    .map((item) => item.seat.seatCode);
+}
+
+export function getCategoryTierMap(
+  categories: TicketCategory[]
+): Map<string, { tierIndex: number; style: ZoneVisualStyle }> {
   const sorted = [...categories].sort((a, b) => b.price - a.price);
   const map = new Map<string, { tierIndex: number; style: ZoneVisualStyle }>();
   sorted.forEach((cat, idx) => {
@@ -138,112 +245,129 @@ function getRemaining(cat: TicketCategory): number {
 }
 
 interface SeatingPlanVisualizerProps {
+  eventId?: string;
   venue: string;
   categories: TicketCategory[];
   selectedCategoryId: string;
   quantity?: number;
+  eventSeats?: SeatItem[];
+  seatsLoading?: boolean;
+  seatsError?: string;
+  selectedSeats?: string[];
   onSelectCategory: (category: TicketCategory) => void;
+  onSelectSeats?: (seatCodes: string[]) => void;
+  onRetrySeats?: () => void;
   compact?: boolean;
 }
 
 export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
+  eventId,
   venue,
   categories,
   selectedCategoryId,
   quantity = 1,
+  eventSeats,
+  seatsLoading = false,
+  seatsError = '',
+  selectedSeats = [],
   onSelectCategory,
+  onSelectSeats,
+  onRetrySeats,
   compact = false,
 }) => {
   const [hoveredCatId, setHoveredCatId] = useState<string | null>(null);
-  const [anchorSeatId, setAnchorSeatId] = useState<string | null>(null);
-  const [soldOutNotice, setSoldOutNotice] = useState<string | null>(null);
+  const [hoveredSeat, setHoveredSeat] = useState<PositionedSeat | null>(null);
+  const [seatNotice, setSeatNotice] = useState<string | null>(null);
+  const [internalSeats, setInternalSeats] = useState<SeatItem[] | null>(null);
+  const [internalLoading, setInternalLoading] = useState(false);
+
+  const isSelectionMode = typeof onSelectSeats === 'function';
+
+  useEffect(() => {
+    if (eventSeats !== undefined || !eventId) return;
+    let active = true;
+    setInternalLoading(true);
+    getEventSeatsAPI(eventId)
+      .then((res) => {
+        if (active && res.success && Array.isArray(res.data)) {
+          setInternalSeats(res.data);
+        }
+      })
+      .catch(() => {
+        // Fallback ke tata letak estimasi jika endpoint kursi tidak terjangkau
+      })
+      .finally(() => {
+        if (active) setInternalLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [eventId, eventSeats]);
+
+  const resolvedBackendSeats = eventSeats !== undefined ? eventSeats : internalSeats;
+  const isLoading = seatsLoading || internalLoading;
 
   const sortedCategories = useMemo(
     () => [...categories].sort((a, b) => b.price - a.price),
     [categories]
   );
 
+  const categoryMap = useMemo(() => {
+    const map = new Map<string, TicketCategory>();
+    categories.forEach((c) => map.set(c.id, c));
+    return map;
+  }, [categories]);
+
   const tierMap = useMemo(() => getCategoryTierMap(categories), [categories]);
 
-  const seats = useMemo(
-    () => buildHallSeats(sortedCategories.length),
-    [sortedCategories.length]
+  const extraRowCount = useMemo(() => {
+    if (!resolvedBackendSeats || resolvedBackendSeats.length === 0) {
+      const totalQuota = categories.reduce((acc, c) => acc + Math.max(0, c.quota || 0), 0);
+      return totalQuota > 138 ? Math.ceil((totalQuota - 138) / 14) : 0;
+    }
+    let maxExtra = 0;
+    resolvedBackendSeats.forEach((s) => {
+      if (!STANDARD_ROW_LABELS.includes(s.rowLabel)) {
+        const code = s.rowLabel.charCodeAt(0) - 'L'.charCodeAt(0) + 1;
+        if (code > maxExtra && code < 20) maxExtra = code;
+      }
+    });
+    return maxExtra;
+  }, [resolvedBackendSeats, categories]);
+
+  const { byCode: slotLookup, rowHeaders } = useMemo(
+    () => buildSlotCoordinateLookup(extraRowCount),
+    [extraRowCount]
   );
 
-  const seatStateMap = useMemo(() => {
-    const byTier = new Map<number, SeatNode[]>();
-    seats.forEach((s) => {
-      const list = byTier.get(s.tierIndex) || [];
-      list.push(s);
-      byTier.set(s.tierIndex, list);
-    });
-
-    const soldIds = new Set<string>();
-    sortedCategories.forEach((cat, tierIdx) => {
-      const tierSeats = byTier.get(tierIdx) || [];
-      if (tierSeats.length === 0) return;
-
-      const rem = getRemaining(cat);
-      const totalQuota = Math.max(cat.quota || 0, rem);
-
-      if (rem <= 0) {
-        tierSeats.forEach((s) => soldIds.add(s.id));
-        return;
-      }
-
-      if (totalQuota > rem) {
-        const soldRatio = (totalQuota - rem) / totalQuota;
-        const maxSoldVisual = Math.max(0, tierSeats.length - Math.min(rem, tierSeats.length));
-        const visualSoldCount = Math.min(maxSoldVisual, Math.round(tierSeats.length * soldRatio));
-
-        // Fill sold seats deterministically from front-center outward to reflect real occupancy
-        const orderedForOccupancy = [...tierSeats].sort((a, b) => a.dist - b.dist || a.colIdx - b.colIdx);
-        for (let i = 0; i < visualSoldCount; i++) {
-          soldIds.add(orderedForOccupancy[i].id);
+  const positionedSeats = useMemo<PositionedSeat[]>(() => {
+    if (resolvedBackendSeats && resolvedBackendSeats.length > 0) {
+      return resolvedBackendSeats.map((s) => {
+        const coord = slotLookup.get(s.seatCode);
+        if (coord) {
+          return {
+            ...coord,
+            categoryId: s.categoryId,
+            status: s.status,
+          };
         }
-      }
-    });
-
-    return { byTier, soldIds };
-  }, [seats, sortedCategories]);
-
-  const previewSeatIds = useMemo(() => {
-    const activeTier = tierMap.get(selectedCategoryId)?.tierIndex;
-    if (activeTier === undefined) return new Set<string>();
-
-    const tierSeats = seatStateMap.byTier.get(activeTier) || [];
-    const availableSeats = tierSeats.filter((s) => !seatStateMap.soldIds.has(s.id));
-    if (availableSeats.length === 0) return new Set<string>();
-
-    const targetCount = Math.max(1, Math.min(quantity, availableSeats.length));
-
-    let ordered: SeatNode[];
-    const anchor = anchorSeatId ? availableSeats.find((s) => s.id === anchorSeatId) : null;
-    if (anchor) {
-      ordered = [...availableSeats].sort((a, b) => {
-        const sameRowA = a.rowIdx === anchor.rowIdx ? 0 : 1;
-        const sameRowB = b.rowIdx === anchor.rowIdx ? 0 : 1;
-        if (sameRowA !== sameRowB) return sameRowA - sameRowB;
-        return Math.hypot(a.x - anchor.x, a.y - anchor.y) - Math.hypot(b.x - anchor.x, b.y - anchor.y);
-      });
-    } else {
-      ordered = [...availableSeats].sort((a, b) => {
-        const centerDiffA = Math.abs(a.x - STAGE_CX) + a.dist * 0.4;
-        const centerDiffB = Math.abs(b.x - STAGE_CX) + b.dist * 0.4;
-        return centerDiffA - centerDiffB;
+        return {
+          seatCode: s.seatCode,
+          rowLabel: s.rowLabel,
+          seatNumber: s.seatNumber,
+          x: 42 + ((s.seatNumber - 1) % 14) * 26,
+          y: 32,
+          dist: 200,
+          colIdx: (s.seatNumber - 1) % 14,
+          categoryId: s.categoryId,
+          status: s.status,
+        };
       });
     }
+    return buildFallbackHallSeats(categories);
+  }, [resolvedBackendSeats, slotLookup, categories]);
 
-    return new Set(ordered.slice(0, targetCount).map((s) => s.id));
-  }, [tierMap, selectedCategoryId, seatStateMap, quantity, anchorSeatId]);
-
-  const previewRowSummary = useMemo(() => {
-    if (previewSeatIds.size === 0) return null;
-    const chosen = seats.filter((s) => previewSeatIds.has(s.id));
-    if (chosen.length === 0) return null;
-    const rows = Array.from(new Set(chosen.map((s) => s.rowLabel))).join(', ');
-    return `Baris ${rows} (${chosen.length} kursi)`;
-  }, [previewSeatIds, seats]);
+  const selectedSeatSet = useMemo(() => new Set(selectedSeats), [selectedSeats]);
 
   const inspectedCat = useMemo(() => {
     const targetId = hoveredCatId || selectedCategoryId;
@@ -261,32 +385,105 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
     );
   }
 
-  const handleSeatInteraction = (seat: SeatNode) => {
-    const cat = sortedCategories[seat.tierIndex];
+  const handleSeatInteraction = (seat: PositionedSeat) => {
+    const cat = categoryMap.get(seat.categoryId);
     if (!cat) return;
-    const rem = getRemaining(cat);
-    if (rem <= 0) {
-      setSoldOutNotice(`Kategori "${cat.name}" telah habis terjual. Silakan pilih zona lain yang masih tersedia.`);
+
+    if (seat.status === 'BOOKED') {
+      setSeatNotice(`Kursi ${seat.seatCode} sudah dipesan penonton lain. Silakan pilih kursi lain yang masih tersedia.`);
       return;
     }
-    setSoldOutNotice(null);
-    setAnchorSeatId(seat.id);
-    onSelectCategory(cat);
+
+    const rem = getRemaining(cat);
+    if (rem <= 0) {
+      setSeatNotice(`Kategori "${cat.name}" telah habis terjual. Silakan pilih zona lain yang masih tersedia.`);
+      return;
+    }
+
+    setSeatNotice(null);
+
+    if (!isSelectionMode) {
+      onSelectCategory(cat);
+      return;
+    }
+
+    if (cat.id !== selectedCategoryId) {
+      onSelectCategory(cat);
+      const sourceList: SeatItem[] = positionedSeats.map((ps) => ({
+        id: ps.seatCode,
+        eventId: eventId || '',
+        categoryId: ps.categoryId,
+        seatCode: ps.seatCode,
+        rowLabel: ps.rowLabel,
+        seatNumber: ps.seatNumber,
+        status: ps.status,
+      }));
+      if (quantity <= 1) {
+        onSelectSeats([seat.seatCode]);
+      } else {
+        const autoFill = pickBestAdjacentSeats(
+          sourceList.filter((s) => s.seatCode !== seat.seatCode),
+          cat.id,
+          quantity - 1
+        );
+        onSelectSeats([seat.seatCode, ...autoFill].slice(0, quantity));
+      }
+      return;
+    }
+
+    if (quantity <= 1) {
+      onSelectSeats([seat.seatCode]);
+      return;
+    }
+
+    if (selectedSeatSet.has(seat.seatCode)) {
+      onSelectSeats(selectedSeats.filter((code) => code !== seat.seatCode));
+      return;
+    }
+
+    if (selectedSeats.length < quantity) {
+      onSelectSeats([...selectedSeats, seat.seatCode]);
+    } else {
+      onSelectSeats([...selectedSeats.slice(1), seat.seatCode]);
+    }
   };
 
   const handleLegendClick = (cat: TicketCategory) => {
     const rem = getRemaining(cat);
     if (rem <= 0) {
-      setSoldOutNotice(`Kategori "${cat.name}" telah habis terjual. Silakan pilih zona lain yang masih tersedia.`);
+      setSeatNotice(`Kategori "${cat.name}" telah habis terjual. Silakan pilih zona lain yang masih tersedia.`);
       return;
     }
-    setSoldOutNotice(null);
-    setAnchorSeatId(null);
+    setSeatNotice(null);
     onSelectCategory(cat);
+  };
+
+  const handleAutoPick = () => {
+    if (!onSelectSeats) return;
+    setSeatNotice(null);
+    const sourceList: SeatItem[] = positionedSeats.map((ps) => ({
+      id: ps.seatCode,
+      eventId: eventId || '',
+      categoryId: ps.categoryId,
+      seatCode: ps.seatCode,
+      rowLabel: ps.rowLabel,
+      seatNumber: ps.seatNumber,
+      status: ps.status,
+    }));
+    const best = pickBestAdjacentSeats(sourceList, selectedCategoryId, quantity);
+    if (best.length > 0) {
+      onSelectSeats(best);
+    }
   };
 
   const inspectedMeta = inspectedCat ? tierMap.get(inspectedCat.id) : null;
   const inspectedRem = inspectedCat ? getRemaining(inspectedCat) : 0;
+
+  const extraTopSpace = extraRowCount * 26;
+  const viewBoxTop = -extraTopSpace;
+  const viewBoxHeight = 326 + extraTopSpace;
+
+  const hoveredSeatCategory = hoveredSeat ? categoryMap.get(hoveredSeat.categoryId) : null;
 
   return (
     <div className="rounded-xl border border-[#E4DFD3] bg-[#FAF8F4] p-3.5 sm:p-5 space-y-4">
@@ -299,23 +496,65 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
             {venue}
           </span>
         </div>
-        <span className="text-[11px] font-medium text-[#5C5850] bg-white border border-[#E4DFD3] rounded-md px-2.5 py-1">
-          Klik zona atau kursi untuk pratinjau
-        </span>
+
+        <div className="flex items-center gap-2">
+          {isLoading && (
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-[#5C5850] bg-white border border-[#E4DFD3] rounded-md px-2.5 py-1">
+              <RefreshCw className="w-3 h-3 animate-spin text-[#C93018]" aria-hidden="true" />
+              <span>Memuat kursi...</span>
+            </span>
+          )}
+          {isSelectionMode ? (
+            <button
+              type="button"
+              onClick={handleAutoPick}
+              disabled={isLoading || getRemaining(categoryMap.get(selectedCategoryId) || sortedCategories[0]) <= 0}
+              className="min-h-[36px] inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#171614] bg-white hover:bg-[#ECE8DF] border border-[#CFC9BC] rounded-md px-2.5 py-1 transition-colors disabled:opacity-45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C93018]"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-[#C93018]" aria-hidden="true" />
+              <span>Pilih Otomatis ({quantity}x)</span>
+            </button>
+          ) : (
+            <span className="text-[11px] font-medium text-[#5C5850] bg-white border border-[#E4DFD3] rounded-md px-2.5 py-1">
+              Klik zona atau kursi untuk melihat posisi
+            </span>
+          )}
+        </div>
       </div>
+
+      {seatsError && (
+        <div
+          role="alert"
+          className="rounded-lg border border-[#B91C1C]/30 bg-[#B91C1C]/10 px-3.5 py-2.5 text-xs text-[#B91C1C] flex items-center justify-between gap-3"
+        >
+          <span className="inline-flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
+            <span>{seatsError}</span>
+          </span>
+          {onRetrySeats && (
+            <button
+              type="button"
+              onClick={onRetrySeats}
+              className="text-xs font-semibold underline shrink-0"
+            >
+              Coba Lagi
+            </button>
+          )}
+        </div>
+      )}
 
       <div className="w-full overflow-hidden">
         <svg
-          viewBox="0 0 460 326"
+          viewBox={`0 ${viewBoxTop} 460 ${viewBoxHeight}`}
           role="img"
           aria-label={`Denah kursi konser ${venue} dengan panggung setengah lingkaran di bagian bawah`}
           className={`w-full h-auto mx-auto block select-none ${compact ? 'max-w-[420px]' : 'max-w-[480px]'}`}
         >
           <rect
             x="10"
-            y="8"
+            y={8 - extraTopSpace}
             width="440"
-            height="310"
+            height={310 + extraTopSpace}
             rx="12"
             fill="#FFFFFF"
             stroke="#E4DFD3"
@@ -324,7 +563,7 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
 
           <text
             x="230"
-            y="22"
+            y={20 - extraTopSpace}
             textAnchor="middle"
             fontSize="8.5"
             fontWeight="600"
@@ -334,23 +573,23 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
             AREA BELAKANG / BALKON
           </text>
 
-          {ROW_LABELS.map((label, idx) => (
+          {rowHeaders.map((row) => (
             <text
-              key={label}
+              key={row.label}
               x="25"
-              y={35 + idx * 26}
+              y={row.y + 3}
               textAnchor="middle"
               fontSize="9"
               fontWeight="600"
               fill="#6B665D"
             >
-              {label}
+              {row.label}
             </text>
           ))}
 
           <line
             x1="230"
-            y1="28"
+            y1={28 - extraTopSpace}
             x2="230"
             y2="218"
             stroke="#ECE8DF"
@@ -387,27 +626,27 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
             STAGE
           </text>
 
-          {seats.map((seat) => {
-            const cat = sortedCategories[seat.tierIndex];
+          {positionedSeats.map((seat) => {
+            const cat = categoryMap.get(seat.categoryId);
             if (!cat) return null;
 
             const style = tierMap.get(cat.id)?.style || TIER_PALETTE[0];
-            const isSoldOutSeat = seatStateMap.soldIds.has(seat.id);
+            const isBooked = seat.status === 'BOOKED';
             const isCatSelected = cat.id === selectedCategoryId;
             const isCatHovered = cat.id === hoveredCatId;
-            const isPreviewSeat = previewSeatIds.has(seat.id);
+            const isSelectedSeat = selectedSeatSet.has(seat.seatCode);
 
             let fill = style.color;
             let stroke = style.color;
             let strokeWidth = 1;
             let opacity = isCatSelected || isCatHovered ? 1 : 0.42;
 
-            if (isSoldOutSeat) {
+            if (isBooked) {
               fill = '#ECE8DF';
               stroke = '#857F74';
               strokeWidth = 1.1;
               opacity = 0.72;
-            } else if (isPreviewSeat) {
+            } else if (isSelectedSeat) {
               fill = '#C93018';
               stroke = '#171614';
               strokeWidth = 2;
@@ -416,26 +655,39 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
 
             return (
               <g
-                key={seat.id}
+                key={seat.seatCode}
+                role="button"
+                tabIndex={isBooked ? -1 : 0}
+                aria-label={`Kursi ${seat.seatCode}, ${cat.name}, ${isBooked ? 'Sudah dipesan' : isSelectedSeat ? 'Dipilih' : 'Tersedia'}`}
                 onClick={() => handleSeatInteraction(seat)}
-                onMouseEnter={() => setHoveredCatId(cat.id)}
-                onMouseLeave={() => setHoveredCatId(null)}
-                style={{ cursor: isSoldOutSeat ? 'not-allowed' : 'pointer' }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleSeatInteraction(seat);
+                  }
+                }}
+                onMouseEnter={() => {
+                  setHoveredCatId(cat.id);
+                  setHoveredSeat(seat);
+                }}
+                onMouseLeave={() => {
+                  setHoveredCatId(null);
+                  setHoveredSeat(null);
+                }}
+                style={{ cursor: isBooked ? 'not-allowed' : 'pointer', outline: 'none' }}
               >
                 <circle cx={seat.x} cy={seat.y} r={12} fill="transparent" />
                 <circle
                   cx={seat.x}
                   cy={seat.y}
-                  r={isPreviewSeat ? 9.2 : 8.2}
+                  r={isSelectedSeat ? 9.4 : 8.2}
                   fill={fill}
                   stroke={stroke}
                   strokeWidth={strokeWidth}
                   opacity={opacity}
                 />
-                {isPreviewSeat && (
-                  <circle cx={seat.x} cy={seat.y} r={2.6} fill="#FFFFFF" />
-                )}
-                {isSoldOutSeat && (
+                {isSelectedSeat && <circle cx={seat.x} cy={seat.y} r={2.6} fill="#FFFFFF" />}
+                {isBooked && (
                   <line
                     x1={seat.x - 3.5}
                     y1={seat.y - 3.5}
@@ -451,6 +703,16 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
           })}
         </svg>
       </div>
+
+      {hoveredSeat && hoveredSeatCategory && (
+        <div className="text-center text-xs font-medium text-[#171614] bg-white border border-[#E4DFD3] rounded-lg px-3 py-1.5">
+          Kursi <span className="font-mono font-bold">{hoveredSeat.seatCode}</span> &middot;{' '}
+          <span>{hoveredSeatCategory.name}</span> &middot;{' '}
+          <span className={hoveredSeat.status === 'BOOKED' ? 'text-[#B91C1C]' : 'text-[#1F6E43]'}>
+            {hoveredSeat.status === 'BOOKED' ? 'Sudah Terisi' : 'Tersedia'}
+          </span>
+        </div>
+      )}
 
       <div className="flex flex-wrap gap-2 justify-center" role="group" aria-label="Pilih zona kategori tempat duduk">
         {sortedCategories.map((cat) => {
@@ -504,29 +766,33 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
       <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5 text-[11px] text-[#5C5850]">
         <span className="inline-flex items-center gap-1.5">
           <span className="w-3 h-3 rounded-full bg-[#C93018] border-2 border-[#171614] inline-block" aria-hidden="true" />
-          <span>Pratinjau Kursi Dipilih ({quantity}x)</span>
+          <span>
+            {isSelectionMode
+              ? `Kursi Dipilih (${selectedSeats.length}/${quantity})`
+              : 'Zona Dipilih'}
+          </span>
         </span>
         <span className="inline-flex items-center gap-1.5">
           <span className="w-3 h-3 rounded-full bg-[#2B6E68] inline-block" aria-hidden="true" />
-          <span>Zona Tersedia</span>
+          <span>Kursi Tersedia</span>
         </span>
         <span className="inline-flex items-center gap-1.5">
           <span className="w-3 h-3 rounded-full bg-[#ECE8DF] border border-[#857F74] inline-block" aria-hidden="true" />
-          <span>Terisi / Habis</span>
+          <span>Terisi / Terpesan</span>
         </span>
       </div>
 
-      {soldOutNotice && (
+      {seatNotice && (
         <div
           role="status"
           className="rounded-lg border border-[#B91C1C]/30 bg-[#B91C1C]/10 px-3.5 py-2.5 text-xs font-medium text-[#B91C1C]"
         >
-          {soldOutNotice}
+          {seatNotice}
         </div>
       )}
 
       {inspectedCat && inspectedMeta && (
-        <div className="rounded-lg border border-[#E4DFD3] bg-white p-3.5 space-y-2">
+        <div className="rounded-lg border border-[#E4DFD3] bg-white p-3.5 space-y-2.5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2 min-w-0">
               <span
@@ -548,15 +814,39 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
 
           <p className="text-xs text-[#5C5850] m-0 leading-relaxed">
             {inspectedMeta.style.viewNote}
-            {inspectedCat.id === selectedCategoryId && previewRowSummary && inspectedRem > 0 && (
-              <span className="text-[#171614] font-medium">
-                {' '}Estimasi posisi pratinjau: {previewRowSummary}.
-              </span>
-            )}
           </p>
 
+          {isSelectionMode && inspectedCat.id === selectedCategoryId && inspectedRem > 0 && (
+            <div className="pt-2 border-t border-[#E4DFD3] flex flex-wrap items-center justify-between gap-2">
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="text-xs text-[#5C5850]">Nomor Kursi:</span>
+                {selectedSeats.length > 0 ? (
+                  selectedSeats.map((code) => (
+                    <span
+                      key={code}
+                      className="inline-flex items-center px-2 py-0.5 rounded bg-[#171614] text-white font-mono text-xs font-semibold"
+                    >
+                      {code}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-xs font-medium text-[#855A0E]">
+                    Belum ada kursi dipilih
+                  </span>
+                )}
+              </div>
+              {selectedSeats.length < quantity && (
+                <span className="text-[11px] font-medium text-[#C93018]">
+                  Pilih {quantity - selectedSeats.length} kursi lagi pada denah
+                </span>
+              )}
+            </div>
+          )}
+
           <p className="text-[11px] text-[#6B665D] m-0">
-            Denah ini memberikan referensi letak zona terhadap panggung. Penempatan kursi final mengikuti kategori tiket saat check-in.
+            {isSelectionMode
+              ? 'Nomor kursi yang Anda pilih akan dikunci khusus untuk transaksi ini dan dicetak pada E-Ticket resmi.'
+              : 'Ketersediaan kursi diperbarui secara langsung. Pemilihan nomor kursi dilakukan pada langkah reservasi tiket.'}
           </p>
         </div>
       )}

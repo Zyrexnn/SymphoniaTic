@@ -45,6 +45,17 @@ export interface EventItem {
   eventDateTime?: string;
 }
  
+export interface SeatItem {
+  id: string;
+  eventId: string;
+  categoryId: string;
+  seatCode: string;
+  rowLabel: string;
+  seatNumber: number;
+  orderId?: string;
+  status: 'AVAILABLE' | 'BOOKED';
+}
+
 export interface OrderRecord {
   id: string;
   orderCode: string;
@@ -59,6 +70,7 @@ export interface OrderRecord {
   userName: string;
   userEmail: string;
   qrCode: string;
+  seatNumbers?: string;
   status: string;
   paymentMethod: string;
   createdAt: string;
@@ -409,12 +421,18 @@ export const clearUserToken = () => {
   try { localStorage.removeItem(USER_TOKEN_KEY); } catch {}
 };
 
+export const getEventSeatsAPI = async (eventId: string): Promise<APIResponse<SeatItem[]>> => {
+  const res = await fetch(`${getApiBaseUrl()}/events/${encodeURIComponent(eventId)}/seats`);
+  return res.json();
+};
+
 export const createOrderAPI = async (payload: {
   eventId: string;
   ticketCategoryId: string;
   quantity: number;
   userName: string;
   userEmail: string;
+  seatNumbers?: string[];
 }) => {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   const userToken = getUserToken();
@@ -612,6 +630,7 @@ export const fetchAdminOrdersAPI = async (search = '', status = '') => {
         userName: String(o.userName || ''),
         userEmail: String(o.userEmail || ''),
         qrCode: String(o.qrCode || ''),
+        seatNumbers: o.seatNumbers ? String(o.seatNumbers) : '',
         status: String(o.status || 'VERIFIED'),
         paymentMethod: String(o.paymentMethod || 'SANDBOX_PAYMENT'),
         createdAt: String(o.createdAt || ''),

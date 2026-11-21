@@ -17,13 +17,13 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
-import { formatIDR, createOrderAPI, lookupTicketAPI } from './data';
-import type { EventItem, TicketCategory, OrderRecord } from './data';
+import { formatIDR, createOrderAPI, lookupTicketAPI, getEventSeatsAPI } from './data';
+import type { EventItem, TicketCategory, OrderRecord, SeatItem } from './data';
 import { useAuth } from '@/context/AuthContext';
 import { drawTicketCanvas } from '@/lib/ticketCanvas';
 import { FullscreenWorkspace } from '@/components/ui/fullscreen-sheet';
 import { TextInputField, fieldInputLight } from '@/components/ui/form-controls';
-import { SeatingPlanVisualizer, getCategoryTierMap } from './SeatingPlanVisualizer';
+import { SeatingPlanVisualizer, getCategoryTierMap, pickBestAdjacentSeats } from './SeatingPlanVisualizer';
 
 interface BookingProps {
   event: EventItem;
@@ -54,8 +54,62 @@ export const BookingModal: React.FC<BookingProps> = ({
   const [quantity, setQuantity] = useState(initialQuantity);
   const [userName, setUserName] = useState(user?.name || '');
   const [userEmail, setUserEmail] = useState(user?.email || '');
+  const [eventSeats, setEventSeats] = useState<SeatItem[]>([]);
+  const [seatsLoading, setSeatsLoading] = useState(true);
+  const [seatsError, setSeatsError] = useState('');
+  const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const loadEventSeats = async () => {
+    setSeatsLoading(true);
+    setSeatsError('');
+    try {
+      const res = await getEventSeatsAPI(String(event.id));
+      if (res.success && Array.isArray(res.data)) {
+        setEventSeats(res.data);
+      } else {
+        setSeatsError(res.message || 'Gagal memuat ketersediaan nomor kursi.');
+      }
+    } catch {
+      setSeatsError('Gagal terhubung ke server untuk memuat denah kursi.');
+    } finally {
+      setSeatsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadEventSeats();
+  }, [event.id]);
+
+  // Sinkronkan pilihan kursi saat data kursi dari server dimuat, kategori berganti, atau jumlah tiket berubah
+  useEffect(() => {
+    if (eventSeats.length === 0) return;
+
+    const validInCat = new Set(
+      eventSeats
+        .filter((s) => s.categoryId === selectedCat.id && s.status === 'AVAILABLE')
+        .map((s) => s.seatCode)
+    );
+    const kept = selectedSeats.filter((code) => validInCat.has(code));
+
+    if (kept.length === quantity) {
+      if (kept.length !== selectedSeats.length) {
+        setSelectedSeats(kept);
+      }
+      return;
+    }
+
+    if (kept.length > quantity) {
+      setSelectedSeats(kept.slice(0, quantity));
+      return;
+    }
+
+    const needed = quantity - kept.length;
+    const extraPool = eventSeats.filter((s) => !kept.includes(s.seatCode));
+    const additions = pickBestAdjacentSeats(extraPool, selectedCat.id, needed);
+    setSelectedSeats([...kept, ...additions]);
+  }, [eventSeats, selectedCat.id, quantity]);
 
   useEffect(() => {
     if (user) {
@@ -96,6 +150,10 @@ export const BookingModal: React.FC<BookingProps> = ({
       setErrorMessage('Mohon lengkapi nama dan email pemesan.');
       return;
     }
+    if (eventSeats.length > 0 && selectedSeats.length !== quantity) {
+      setErrorMessage(`Silakan pilih tepat ${quantity} nomor kursi pada denah sebelum melanjutkan.`);
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -105,6 +163,7 @@ export const BookingModal: React.FC<BookingProps> = ({
         quantity,
         userName: userName.trim(),
         userEmail: userEmail.trim(),
+        seatNumbers: selectedSeats.length > 0 ? selectedSeats : undefined,
       });
       if (res.success && res.data) {
         onSubmit({
@@ -114,6 +173,7 @@ export const BookingModal: React.FC<BookingProps> = ({
         });
       } else {
         setErrorMessage(res.message || 'Gagal memproses pesanan tiket.');
+        loadEventSeats();
       }
     } catch {
       setErrorMessage('Gagal terhubung ke server backend.');
@@ -125,10 +185,12 @@ export const BookingModal: React.FC<BookingProps> = ({
   const totalPrice = selectedCat.price * quantity;
   const tierMap = useMemo(() => getCategoryTierMap(event.categories || []), [event.categories]);
   const selectedTierMeta = tierMap.get(selectedCat.id);
+  const seatsReady = eventSeats.length === 0 || selectedSeats.length === quantity;
   const canSubmit =
     !isSubmitting &&
     !isSelectedSoldOut &&
     maxAllowedTickets > 0 &&
+    seatsReady &&
     userName.trim().length > 0 &&
     userEmail.trim().length > 0;
 
@@ -146,8 +208,8 @@ export const BookingModal: React.FC<BookingProps> = ({
         !event.isClosed ? (
           <div className="lg:hidden flex items-center justify-between gap-4">
             <div className="min-w-0">
-              <span className="text-xs text-[#5C5850] block">
-                {quantity}x {selectedCat.name}
+              <span className="text-xs text-[#5C5850] block truncate">
+                {quantity}x {selectedCat.name}{selectedSeats.length > 0 ? ` (${selectedSeats.join(', ')})` : ''}
               </span>
               <span className="text-lg font-bold text-[#171614] tabular-nums block truncate">
                 {formatIDR(totalPrice)}
@@ -250,9 +312,9 @@ export const BookingModal: React.FC<BookingProps> = ({
             <section className="rounded-xl border border-[#E4DFD3] bg-white p-4 sm:p-6 space-y-5">
               <div className="flex items-center justify-between gap-2">
                 <div>
-                  <h3 className="text-sm font-semibold text-[#171614] m-0">1. Referensi Denah &amp; Kategori Kursi</h3>
+                  <h3 className="text-sm font-semibold text-[#171614] m-0">1. Pilih Zona &amp; Nomor Kursi</h3>
                   <p className="text-xs text-[#5C5850] mt-0.5 m-0">
-                    Pilih zona pada denah atau daftar kategori untuk melihat perkiraan posisi duduk Anda.
+                    Pilih kategori lalu tentukan nomor kursi Anda langsung pada denah atau gunakan pilihan otomatis.
                   </p>
                 </div>
                 <span className="text-xs text-[#6B665D] font-mono shrink-0">
@@ -261,11 +323,18 @@ export const BookingModal: React.FC<BookingProps> = ({
               </div>
 
               <SeatingPlanVisualizer
+                eventId={String(event.id)}
                 venue={event.venue}
                 categories={event.categories}
                 selectedCategoryId={selectedCat.id}
                 quantity={quantity}
+                eventSeats={eventSeats}
+                seatsLoading={seatsLoading}
+                seatsError={seatsError}
+                selectedSeats={selectedSeats}
                 onSelectCategory={setSelectedCat}
+                onSelectSeats={setSelectedSeats}
+                onRetrySeats={loadEventSeats}
               />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -469,6 +538,12 @@ export const BookingModal: React.FC<BookingProps> = ({
                     <span className="text-[#5C5850]">Jumlah</span>
                     <span className="text-[#171614] font-mono">{quantity} tiket</span>
                   </div>
+                  <div className="flex justify-between gap-3 items-start">
+                    <span className="text-[#5C5850]">Nomor Kursi</span>
+                    <span className="text-[#171614] font-mono font-semibold text-right">
+                      {selectedSeats.length > 0 ? selectedSeats.join(', ') : 'Menunggu pilihan'}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="border-t border-[#E4DFD3] pt-4 flex items-center justify-between gap-3">
@@ -625,6 +700,12 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
                 <div>
                   <span className="text-xs text-[#6B665D] block mb-0.5">Kategori Kursi</span>
                   <span className="font-semibold text-[#171614]">{order.categoryName} ({order.quantity}x)</span>
+                </div>
+                <div>
+                  <span className="text-xs text-[#6B665D] block mb-0.5">Nomor Kursi</span>
+                  <span className="font-mono font-bold text-[#C93018]">
+                    {order.seatNumbers || 'Sesuai Kategori'}
+                  </span>
                 </div>
                 <div>
                   <span className="text-xs text-[#6B665D] block mb-0.5">Nama Pemesan</span>
@@ -861,8 +942,15 @@ export const OrdersDrawer: React.FC<OrdersProps> = ({ orders, onClose, onShowTic
                     </div>
                     <h4 className="text-sm font-bold text-[#171614] mb-1 m-0">{ord.eventTitle}</h4>
                     <p className="text-xs text-[#5C5850] mb-3 mt-0">{ord.artist}</p>
-                    <div className="flex items-center justify-between border-t border-[#E4DFD3] pt-3">
-                      <span className="text-xs text-[#5C5850]">{ord.categoryName} ({ord.quantity}x)</span>
+                    <div className="flex items-center justify-between border-t border-[#E4DFD3] pt-3 gap-2">
+                      <div className="text-xs text-[#5C5850] min-w-0">
+                        <span className="block truncate">{ord.categoryName} ({ord.quantity}x)</span>
+                        {ord.seatNumbers && (
+                          <span className="font-mono font-semibold text-[#171614] block mt-0.5">
+                            Kursi: {ord.seatNumbers}
+                          </span>
+                        )}
+                      </div>
                       <button
                         type="button"
                         onClick={() => onShowTicket(ord)}
