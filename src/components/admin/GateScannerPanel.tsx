@@ -10,16 +10,27 @@ import {
   FlipHorizontal,
   Clock,
   Users,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react';
 import {
   checkInTicketAPI,
   fetchGateAttendanceAPI,
   type EventItem,
   type GateAttendanceSummary,
-  type OrderRecord
+  type OrderRecord,
 } from '../landing/data';
-import { fieldInputBase } from '@/components/ui/form-controls';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Progress } from '@/components/ui/progress';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface ScanResultState {
   type: 'SUCCESS' | 'ERROR' | 'ALREADY_USED';
@@ -34,7 +45,10 @@ interface GateScannerPanelProps {
   onScanSuccess?: () => void;
 }
 
-export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({ events = [], onScanSuccess }) => {
+export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
+  events = [],
+  onScanSuccess,
+}) => {
   const [isScanning, setIsScanning] = useState(false);
   const [cameras, setCameras] = useState<Array<{ id: string; label: string }>>([]);
   const [selectedCameraId, setSelectedCameraId] = useState<string>('');
@@ -100,11 +114,12 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({ events = [],
         const devices = await Html5Qrcode.getCameras();
         if (devices && devices.length > 0) {
           setCameras(devices);
-          const backCam = devices.find((d) =>
-            d.label.toLowerCase().includes('back') ||
-            d.label.toLowerCase().includes('rear') ||
-            d.label.toLowerCase().includes('environment') ||
-            d.label.toLowerCase().includes('kamera belakang')
+          const backCam = devices.find(
+            (d) =>
+              d.label.toLowerCase().includes('back') ||
+              d.label.toLowerCase().includes('rear') ||
+              d.label.toLowerCase().includes('environment') ||
+              d.label.toLowerCase().includes('kamera belakang')
           );
           setSelectedCameraId(backCam ? backCam.id : devices[0].id);
         }
@@ -232,7 +247,7 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({ events = [],
         const devices = await Html5Qrcode.getCameras().catch(() => []);
         if (devices.length > 0) setCameras(devices);
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to start scanner:', err);
       try {
         if (html5QrCodeRef.current) {
@@ -270,215 +285,226 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({ events = [],
     setManualCode('');
   };
 
+  const attendancePct = attendance ? Math.min(100, Math.round(attendance.checkInPercentage)) : 0;
+
   return (
-    <div className="space-y-6 font-sans">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 bg-[#14161F] border border-[#272A38] rounded-xl">
-        <div>
-          <div className="flex flex-wrap items-center gap-2.5 mb-1">
-            <h2 className="text-base font-semibold text-[#F4F4F6] tracking-tight m-0">
-              Pemindai Gate Masuk (QR Scanner)
-            </h2>
-            <span
-              className={`text-[11px] font-mono px-2 py-0.5 rounded border ${
-                isScanning
-                  ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-300'
-                  : 'border-[#3E4357] bg-[#0C0D12] text-[#A1A1AA]'
-              }`}
-            >
-              {isScanning ? 'Kamera Aktif' : 'Siap Memindai'}
-            </span>
-          </div>
-          <p className="text-xs text-[#A1A1AA] font-normal m-0">
-            Arahkan kamera ke QR Code E-Ticket penonton atau masukkan kode manual untuk validasi pintu masuk.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2.5 self-start sm:self-auto">
-          <button
-            type="button"
-            onClick={() => setSoundEnabled(!soundEnabled)}
-            aria-pressed={soundEnabled}
-            className={`min-h-[44px] px-3.5 py-2 border rounded-lg text-xs font-medium flex items-center gap-2 transition-colors ${
-              soundEnabled ? 'border-white/40 text-white bg-white/10' : 'border-[#3E4357] text-[#A1A1AA] bg-[#0C0D12]'
-            }`}
-          >
-            {soundEnabled ? <Volume2 size={16} aria-hidden="true" /> : <VolumeX size={16} aria-hidden="true" />}
-            <span>{soundEnabled ? 'Audio On' : 'Muted'}</span>
-          </button>
-
-          {isScanning ? (
-            <button
-              type="button"
-              onClick={stopScanner}
-              className="min-h-[44px] px-4 py-2 border border-rose-500/40 bg-rose-500/15 text-rose-300 hover:bg-rose-500/25 text-xs font-semibold uppercase tracking-wider rounded-lg transition-colors"
-            >
-              Matikan Kamera
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={() => startScanner()}
-              className="min-h-[44px] px-4 py-2 bg-white text-[#0C0D12] hover:bg-neutral-200 text-xs font-semibold uppercase tracking-wider rounded-lg transition-colors flex items-center gap-2"
-            >
-              <Camera size={15} aria-hidden="true" />
-              <span>Aktifkan Kamera</span>
-            </button>
-          )}
-        </div>
-      </div>
-
-      <div className="p-5 bg-[#14161F] border border-[#272A38] rounded-xl space-y-3.5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-lg border border-emerald-500/30 bg-emerald-500/10 flex items-center justify-center shrink-0">
-              <Users size={16} className="text-emerald-400" aria-hidden="true" />
+    <div className="space-y-6 pb-8">
+      <Card>
+        <CardContent className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex flex-wrap items-center gap-2.5 mb-1">
+              <h2 className="text-base font-semibold text-card-foreground tracking-tight m-0">
+                Pemindai Gate Masuk (QR Scanner)
+              </h2>
+              <Badge variant={isScanning ? 'success' : 'secondary'} className="font-mono text-[11px]">
+                {isScanning ? 'Kamera Aktif' : 'Siap Memindai'}
+              </Badge>
             </div>
-            <div>
-              <h3 className="text-sm font-semibold text-[#F4F4F6] m-0">Progres Kehadiran Penonton</h3>
-              <p className="text-xs text-[#A1A1AA] m-0">
-                {attendance
-                  ? `Hadir: ${attendance.totalCheckedIn} dari ${attendance.totalTicketsIssued} tiket (${attendance.checkInPercentage}%)`
-                  : isAttendanceLoading
-                  ? 'Memuat data kehadiran...'
-                  : 'Data kehadiran belum tersedia'}
-              </p>
-            </div>
+            <p className="text-xs text-muted-foreground m-0 leading-relaxed">
+              Arahkan kamera ke QR Code E-Ticket penonton atau masukkan kode manual untuk validasi pintu masuk.
+            </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            {events.length > 0 && (
-              <select
-                aria-label="Filter kehadiran per konser"
-                value={selectedEventId}
-                onChange={(e) => setSelectedEventId(e.target.value)}
-                className="min-h-[44px] bg-[#0C0D12] border border-[#3E4357] text-white rounded-lg text-xs px-3 py-2 outline-none focus:border-white max-w-[240px]"
-              >
-                <option value="">Semua Konser</option>
-                {events.map((evt) => (
-                  <option key={evt.id} value={String(evt.id)}>
-                    {evt.title}
-                  </option>
-                ))}
-              </select>
+          <div className="flex flex-wrap items-center gap-2.5 self-start sm:self-auto">
+            <Button
+              type="button"
+              variant={soundEnabled ? 'secondary' : 'outline'}
+              onClick={() => setSoundEnabled(!soundEnabled)}
+              aria-pressed={soundEnabled}
+            >
+              {soundEnabled ? <Volume2 size={16} aria-hidden="true" /> : <VolumeX size={16} aria-hidden="true" />}
+              <span>{soundEnabled ? 'Audio On' : 'Muted'}</span>
+            </Button>
+
+            {isScanning ? (
+              <Button type="button" variant="destructive" onClick={stopScanner}>
+                Matikan Kamera
+              </Button>
+            ) : (
+              <Button type="button" variant="default" onClick={() => startScanner()}>
+                <Camera size={16} aria-hidden="true" />
+                <span>Aktifkan Kamera</span>
+              </Button>
             )}
-            <button
-              type="button"
-              onClick={() => loadAttendance(selectedEventId)}
-              disabled={isAttendanceLoading}
-              aria-label="Segarkan progres kehadiran"
-              className="min-h-[44px] px-3 py-2 border border-[#3E4357] bg-[#0C0D12] hover:border-white/60 text-xs text-[#E4E4E7] rounded-lg inline-flex items-center gap-1.5 transition-colors disabled:opacity-40"
-            >
-              <RefreshCw size={14} className={isAttendanceLoading ? 'animate-spin' : ''} aria-hidden="true" />
-              <span className="hidden sm:inline">Segarkan</span>
-            </button>
           </div>
-        </div>
+        </CardContent>
+      </Card>
 
-        <div className="space-y-1.5">
-          <div
-            role="progressbar"
-            aria-label="Persentase kehadiran penonton"
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={attendance ? Math.min(100, Math.round(attendance.checkInPercentage)) : 0}
-            className="w-full h-2.5 bg-[#0C0D12] border border-[#272A38] rounded-full overflow-hidden"
-          >
-            <div
-              className="h-full bg-emerald-500 transition-all duration-300"
-              style={{ width: `${attendance ? Math.min(100, attendance.checkInPercentage) : 0}%` }}
-            />
-          </div>
-          {attendance && (
-            <div className="flex justify-between items-center text-[11px] font-mono text-[#A1A1AA]">
-              <span>Sudah Masuk: {attendance.totalCheckedIn}</span>
-              <span>Belum Masuk: {attendance.remainingCheckIn}</span>
+      <Card>
+        <CardContent className="p-5 space-y-3.5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg border border-[#1F6E43]/30 bg-[#1F6E43]/10 dark:border-emerald-500/30 dark:bg-emerald-500/15 flex items-center justify-center shrink-0">
+                <Users size={16} className="text-[#1F6E43] dark:text-emerald-400" aria-hidden="true" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-card-foreground m-0">
+                  Progres Kehadiran Penonton
+                </h3>
+                <p className="text-xs text-muted-foreground m-0 tabular-nums">
+                  {attendance
+                    ? `Hadir: ${attendance.totalCheckedIn} dari ${attendance.totalTicketsIssued} tiket (${attendance.checkInPercentage}%)`
+                    : isAttendanceLoading
+                    ? 'Memuat data kehadiran...'
+                    : 'Data kehadiran belum tersedia'}
+                </p>
+              </div>
             </div>
-          )}
-        </div>
-      </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              {events.length > 0 && (
+                <Select
+                  value={selectedEventId || 'ALL'}
+                  onValueChange={(val) => setSelectedEventId(val === 'ALL' ? '' : val)}
+                >
+                  <SelectTrigger aria-label="Filter kehadiran per konser" className="w-full sm:w-[230px] text-xs">
+                    <SelectValue placeholder="Semua Konser" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ALL">Semua Konser</SelectItem>
+                    {events.map((evt) => (
+                      <SelectItem key={evt.id} value={String(evt.id)}>
+                        {evt.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => loadAttendance(selectedEventId)}
+                disabled={isAttendanceLoading}
+                aria-label="Segarkan progres kehadiran"
+              >
+                <RefreshCw
+                  size={14}
+                  className={isAttendanceLoading ? 'animate-spin' : ''}
+                  aria-hidden="true"
+                />
+                <span className="hidden sm:inline">Segarkan</span>
+              </Button>
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <Progress
+              value={attendancePct}
+              aria-label="Persentase kehadiran penonton"
+              indicatorClassName="bg-[#1F6E43] dark:bg-emerald-500"
+            />
+            {attendance && (
+              <div className="flex justify-between items-center text-[11px] font-mono text-muted-foreground tabular-nums">
+                <span>Sudah Masuk: {attendance.totalCheckedIn}</span>
+                <span>Belum Masuk: {attendance.remainingCheckIn}</span>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-7 flex flex-col gap-5">
-          <div className="border border-[#272A38] bg-[#14161F] p-5 rounded-xl flex flex-col items-center justify-center relative min-h-[340px]">
+          <Card className="p-5 flex flex-col items-center justify-center relative min-h-[340px]">
             {cameraError && (
-              <div role="alert" className="p-3.5 mb-4 w-full rounded-lg border border-rose-500/40 bg-rose-500/10 text-rose-200 text-xs flex items-center gap-2.5">
-                <AlertCircle size={16} className="shrink-0 text-rose-400" aria-hidden="true" />
+              <div
+                role="alert"
+                className="p-3.5 mb-4 w-full rounded-lg border border-[#B91C1C]/35 bg-[#B91C1C]/10 text-[#B91C1C] dark:border-rose-500/40 dark:bg-rose-500/15 dark:text-rose-200 text-xs flex items-center gap-2.5"
+              >
+                <AlertCircle size={16} className="shrink-0" aria-hidden="true" />
                 <span>{cameraError}</span>
               </div>
             )}
 
             <div
               id={scannerContainerId}
-              className={`w-full max-w-[420px] aspect-square bg-[#0C0D12] border border-[#272A38] rounded-xl overflow-hidden flex items-center justify-center relative ${
+              className={`w-full max-w-[400px] aspect-square bg-background border border-border rounded-xl overflow-hidden flex items-center justify-center relative ${
                 !isScanning ? 'hidden' : 'block'
               }`}
             />
 
             {!isScanning && (
               <div className="text-center p-8 space-y-3">
-                <div className="w-14 h-14 mx-auto rounded-xl border border-[#3E4357] flex items-center justify-center bg-[#0C0D12]">
-                  <Camera size={24} className="text-white" aria-hidden="true" />
+                <div className="w-14 h-14 mx-auto rounded-xl border border-border-strong flex items-center justify-center bg-background">
+                  <Camera size={24} className="text-[#C93018] dark:text-[#F2644E]" aria-hidden="true" />
                 </div>
-                <h3 className="text-sm font-semibold text-[#F4F4F6] m-0">Kamera Scanner Sedang Nonaktif</h3>
-                <p className="text-xs text-[#A1A1AA] font-normal max-w-xs mx-auto leading-relaxed">
+                <h3 className="text-sm font-semibold text-card-foreground m-0">
+                  Kamera Scanner Sedang Nonaktif
+                </h3>
+                <p className="text-xs text-muted-foreground max-w-xs mx-auto leading-relaxed">
                   Klik tombol Aktifkan Kamera di atas untuk mulai memindai QR Code tiket di gate.
                 </p>
               </div>
             )}
 
             {cameras.length > 1 && (
-              <div className="w-full mt-4 pt-4 border-t border-[#272A38] flex flex-wrap items-center justify-between gap-3 text-xs">
-                <label htmlFor="gate-camera-select" className="text-[#A1A1AA] font-medium flex items-center gap-1.5">
+              <div className="w-full mt-4 pt-4 border-t border-border flex flex-wrap items-center justify-between gap-3 text-xs">
+                <span className="text-muted-foreground font-medium flex items-center gap-1.5">
                   <FlipHorizontal size={14} aria-hidden="true" /> Pilih Kamera:
-                </label>
-                <select
-                  id="gate-camera-select"
+                </span>
+                <Select
                   value={selectedCameraId}
-                  onChange={(e) => {
-                    setSelectedCameraId(e.target.value);
-                    if (isScanning) startScanner(e.target.value);
+                  onValueChange={(val) => {
+                    setSelectedCameraId(val);
+                    if (isScanning) startScanner(val);
                   }}
-                  className="min-h-[40px] bg-[#0C0D12] border border-[#3E4357] text-white rounded-lg text-xs px-3 py-1.5 outline-none focus:border-white"
                 >
-                  {cameras.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.label || `Kamera ${c.id}`}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger aria-label="Pilih kamera scanner" className="w-full sm:w-[240px] text-xs">
+                    <SelectValue placeholder="Pilih Kamera" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {cameras.map((c) => (
+                      <SelectItem key={c.id} value={c.id} className="text-xs">
+                        {c.label || `Kamera ${c.id}`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             )}
-          </div>
+          </Card>
 
-          <form onSubmit={handleManualSubmit} className="p-4 border border-[#272A38] bg-[#14161F] rounded-xl flex flex-col sm:flex-row gap-3">
-            <div className="relative flex-1">
-              <Search size={16} className="text-[#A1A1AA] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" aria-hidden="true" />
-              <input
-                type="text"
-                aria-label="Input kode tiket manual"
-                placeholder="Input kode tiket manual (cth: SYM-893472)..."
-                value={manualCode}
-                onChange={(e) => setManualCode(e.target.value)}
-                className={`${fieldInputBase} pl-10`}
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={!manualCode || isProcessing}
-              className="min-h-[46px] px-5 py-2.5 bg-white text-[#0C0D12] hover:bg-neutral-200 text-xs uppercase font-semibold rounded-lg disabled:opacity-40 transition-colors shrink-0"
-            >
-              {isProcessing ? 'Verifikasi...' : 'Cek Manual'}
-            </button>
-          </form>
+          <Card>
+            <form onSubmit={handleManualSubmit} className="p-4 flex flex-col sm:flex-row gap-3">
+              <div className="relative flex-1">
+                <Search
+                  size={16}
+                  className="text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
+                  aria-hidden="true"
+                />
+                <Input
+                  type="text"
+                  aria-label="Input kode tiket manual"
+                  placeholder="Input kode tiket manual (cth: SYM-893472)..."
+                  value={manualCode}
+                  onChange={(e) => setManualCode(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <Button
+                type="submit"
+                variant="dark"
+                disabled={!manualCode || isProcessing}
+                className="shrink-0"
+              >
+                {isProcessing ? 'Verifikasi...' : 'Cek Manual'}
+              </Button>
+            </form>
+          </Card>
         </div>
 
         <div className="lg:col-span-5 flex flex-col gap-5">
-          <div className="border border-[#272A38] bg-[#14161F] rounded-xl p-5 flex flex-col justify-between">
-            <div className="border-b border-[#272A38] pb-3 mb-4 flex items-center justify-between">
-              <span className="text-xs font-mono text-[#A1A1AA] uppercase tracking-wider font-medium">
+          <Card className="p-5 flex flex-col justify-between">
+            <div className="border-b border-border pb-3 mb-4 flex items-center justify-between">
+              <span className="text-xs font-mono text-muted-foreground uppercase tracking-wider font-semibold">
                 Status Hasil Scan Terakhir
               </span>
-              {scanResult && <span className="text-xs font-mono text-white">{scanResult.timestamp}</span>}
+              {scanResult && (
+                <span className="text-xs font-mono text-foreground font-medium">
+                  {scanResult.timestamp}
+                </span>
+              )}
             </div>
 
             {scanResult ? (
@@ -486,112 +512,150 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({ events = [],
                 role="status"
                 className={`p-5 rounded-xl border space-y-4 ${
                   scanResult.type === 'SUCCESS'
-                    ? 'border-emerald-500/40 bg-emerald-950/30'
+                    ? 'border-[#1F6E43]/35 bg-[#1F6E43]/10 dark:border-emerald-500/40 dark:bg-emerald-950/35'
                     : scanResult.type === 'ALREADY_USED'
-                    ? 'border-amber-500/40 bg-amber-950/30'
-                    : 'border-rose-500/40 bg-rose-950/30'
+                    ? 'border-[#855A0E]/35 bg-[#855A0E]/10 dark:border-amber-500/40 dark:bg-amber-950/35'
+                    : 'border-[#B91C1C]/35 bg-[#B91C1C]/10 dark:border-rose-500/40 dark:bg-rose-950/35'
                 }`}
               >
                 <div className="flex items-start gap-3">
                   {scanResult.type === 'SUCCESS' ? (
-                    <CheckCircle2 size={24} className="text-emerald-400 shrink-0" aria-hidden="true" />
+                    <CheckCircle2
+                      size={24}
+                      className="text-[#1F6E43] dark:text-emerald-400 shrink-0"
+                      aria-hidden="true"
+                    />
                   ) : scanResult.type === 'ALREADY_USED' ? (
-                    <Clock size={24} className="text-amber-400 shrink-0" aria-hidden="true" />
+                    <Clock
+                      size={24}
+                      className="text-[#855A0E] dark:text-amber-400 shrink-0"
+                      aria-hidden="true"
+                    />
                   ) : (
-                    <AlertCircle size={24} className="text-rose-400 shrink-0" aria-hidden="true" />
+                    <AlertCircle
+                      size={24}
+                      className="text-[#B91C1C] dark:text-rose-400 shrink-0"
+                      aria-hidden="true"
+                    />
                   )}
                   <div>
                     <h3
                       className={`text-sm font-semibold tracking-wide m-0 ${
                         scanResult.type === 'SUCCESS'
-                          ? 'text-emerald-300'
+                          ? 'text-[#1F6E43] dark:text-emerald-300'
                           : scanResult.type === 'ALREADY_USED'
-                          ? 'text-amber-300'
-                          : 'text-rose-300'
+                          ? 'text-[#855A0E] dark:text-amber-300'
+                          : 'text-[#B91C1C] dark:text-rose-300'
                       }`}
                     >
                       {scanResult.title}
                     </h3>
-                    <p className="text-xs text-white/90 font-normal mt-1 m-0 leading-relaxed">{scanResult.message}</p>
+                    <p className="text-xs text-foreground mt-1 m-0 leading-relaxed">
+                      {scanResult.message}
+                    </p>
                   </div>
                 </div>
 
                 {scanResult.order && (
-                  <div className="pt-3 border-t border-white/15 grid grid-cols-2 gap-3 text-xs">
+                  <div className="pt-3 border-t border-border grid grid-cols-2 gap-3 text-xs">
                     <div>
-                      <span className="text-[11px] text-[#A1A1AA] uppercase block">Kode Tiket</span>
-                      <span className="font-mono text-white font-semibold text-sm">{scanResult.order.orderCode}</span>
+                      <span className="text-[11px] text-muted-foreground uppercase block">
+                        Kode Tiket
+                      </span>
+                      <span className="font-mono text-foreground font-semibold text-sm">
+                        {scanResult.order.orderCode}
+                      </span>
                     </div>
                     <div>
-                      <span className="text-[11px] text-[#A1A1AA] uppercase block">Pemegang</span>
-                      <span className="text-white truncate block font-medium">{scanResult.order.userName}</span>
+                      <span className="text-[11px] text-muted-foreground uppercase block">
+                        Pemegang
+                      </span>
+                      <span className="text-foreground truncate block font-medium">
+                        {scanResult.order.userName}
+                      </span>
                     </div>
                     <div>
-                      <span className="text-[11px] text-[#A1A1AA] uppercase block">Kategori &amp; Kursi</span>
-                      <span className="text-white">
+                      <span className="text-[11px] text-muted-foreground uppercase block">
+                        Kategori &amp; Kursi
+                      </span>
+                      <span className="text-foreground">
                         {scanResult.order.categoryName} ({scanResult.order.quantity}x)
                         {scanResult.order.seatNumbers ? ` · ${scanResult.order.seatNumbers}` : ''}
                       </span>
                     </div>
                     <div>
-                      <span className="text-[11px] text-[#A1A1AA] uppercase block">Event Konser</span>
-                      <span className="text-white truncate block">{scanResult.order.eventTitle}</span>
+                      <span className="text-[11px] text-muted-foreground uppercase block">
+                        Event Konser
+                      </span>
+                      <span className="text-foreground truncate block">
+                        {scanResult.order.eventTitle}
+                      </span>
                     </div>
                   </div>
                 )}
               </div>
             ) : (
-              <div className="p-8 text-center border border-dashed border-[#3E4357] rounded-xl text-xs font-normal text-[#A1A1AA]">
+              <div className="p-8 text-center border border-dashed border-border-strong rounded-xl text-xs text-muted-foreground bg-background">
                 Belum ada tiket yang dipindai pada sesi ini.
               </div>
             )}
-          </div>
+          </Card>
 
-          <div className="border border-[#272A38] bg-[#14161F] rounded-xl p-5 flex-1 flex flex-col">
-            <div className="border-b border-[#272A38] pb-3 mb-3 flex items-center justify-between">
-              <span className="text-xs font-mono text-[#A1A1AA] uppercase tracking-wider font-medium">
+          <Card className="p-5 flex-1 flex flex-col">
+            <div className="border-b border-border pb-3 mb-3 flex items-center justify-between">
+              <span className="text-xs font-mono text-muted-foreground uppercase tracking-wider font-semibold">
                 Riwayat Verifikasi Gate ({scanHistory.length})
               </span>
               {scanHistory.length > 0 && (
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="sm"
                   onClick={() => setScanHistory([])}
-                  className="text-xs text-[#A1A1AA] hover:text-white bg-transparent border-none px-2 py-1 rounded"
+                  className="h-8 min-h-[32px] px-2 text-xs"
                 >
                   Bersihkan
-                </button>
+                </Button>
               )}
             </div>
 
-            <div className="space-y-2 overflow-y-auto max-h-[220px] pr-1">
+            <div className="space-y-2 overflow-y-auto max-h-[240px] pr-1">
               {scanHistory.length === 0 ? (
-                <p className="text-xs text-[#94A3B8] font-normal text-center py-4">Riwayat scan kosong.</p>
+                <p className="text-xs text-muted-foreground text-center py-4 m-0">
+                  Riwayat scan masih kosong.
+                </p>
               ) : (
                 scanHistory.map((item, idx) => (
                   <div
                     key={idx}
-                    className="p-2.5 border border-[#272A38] bg-[#0C0D12] rounded-lg flex items-center justify-between gap-2 text-xs"
+                    className="p-2.5 border border-border bg-background rounded-lg flex items-center justify-between gap-2 text-xs"
                   >
                     <div className="flex items-center gap-2 truncate">
                       <span
                         aria-hidden="true"
                         className={`w-2 h-2 rounded-full shrink-0 ${
                           item.type === 'SUCCESS'
-                            ? 'bg-emerald-400'
+                            ? 'bg-[#1F6E43] dark:bg-emerald-400'
                             : item.type === 'ALREADY_USED'
-                            ? 'bg-amber-400'
-                            : 'bg-rose-400'
+                            ? 'bg-[#855A0E] dark:bg-amber-400'
+                            : 'bg-[#B91C1C] dark:bg-rose-400'
                         }`}
                       />
-                      <span className="font-mono text-white font-semibold shrink-0">{item.order?.orderCode || 'UNKNOWN'}</span>
-                      <span className="text-[#A1A1AA] truncate">{item.order?.userName || item.title}</span>
+                      <span className="font-mono text-foreground font-semibold shrink-0">
+                        {item.order?.orderCode || 'UNKNOWN'}
+                      </span>
+                      <span className="text-muted-foreground truncate">
+                        {item.order?.userName || item.title}
+                      </span>
                     </div>
-                    <span className="text-[11px] font-mono text-[#94A3B8] shrink-0">{item.timestamp}</span>
+                    <span className="text-[11px] font-mono text-muted-foreground shrink-0 tabular-nums">
+                      {item.timestamp}
+                    </span>
                   </div>
                 ))
               )}
             </div>
-          </div>
+          </Card>
         </div>
       </div>
     </div>

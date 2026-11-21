@@ -2,6 +2,11 @@ import React from 'react';
 import { Plus, Edit, Trash2, MapPin, Calendar, Clock, User, Ticket } from 'lucide-react';
 import type { EventItem, TicketCategory } from '../landing/data';
 import { formatIDR } from '../landing/data';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface EventsPanelProps {
   events: EventItem[];
@@ -16,53 +21,62 @@ interface EventsPanelProps {
 }
 
 export const EventsPanel: React.FC<EventsPanelProps> = ({
-  events, isLoading, onAddEvent, onEditEvent, onDeleteEvent, onToggleCloseEvent,
-  onAddCategory, onEditCategory, onDeleteCategory,
+  events,
+  isLoading,
+  onAddEvent,
+  onEditEvent,
+  onDeleteEvent,
+  onToggleCloseEvent,
+  onAddCategory,
+  onEditCategory,
+  onDeleteCategory,
 }) => (
   <div className="flex flex-col gap-6 pb-8">
-    <div className="border border-[#272A38] bg-[#14161F] p-5 sm:p-6 rounded-xl flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-      <div>
-        <h2 className="text-base font-semibold text-[#F4F4F6] tracking-tight m-0">Postingan Konser &amp; Kategori Tiket</h2>
-        <p className="text-xs font-normal text-[#A1A1AA] mt-1 m-0">
-          Kelola data konser, jam open gate, penutupan order tiket, lokasi venue, serta kuota tempat duduk.
-        </p>
-      </div>
-      <button
-        type="button"
-        onClick={onAddEvent}
-        className="min-h-[44px] px-4 py-2.5 text-sm font-semibold text-[#0C0D12] bg-white hover:bg-neutral-200 rounded-lg transition-colors flex items-center justify-center gap-2 shrink-0"
-      >
-        <Plus size={16} strokeWidth={2} aria-hidden="true" />
-        <span>Tambah Konser Baru</span>
-      </button>
-    </div>
+    <Card>
+      <CardContent className="p-5 sm:p-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <div>
+          <h2 className="text-base font-semibold text-card-foreground tracking-tight m-0">
+            Postingan Konser &amp; Kategori Tiket
+          </h2>
+          <p className="text-xs text-muted-foreground mt-1 m-0 leading-relaxed">
+            Kelola jadwal pertunjukan, jam open gate, penutupan penjualan tiket, lokasi venue, serta kuota kursi.
+          </p>
+        </div>
+        <Button type="button" onClick={onAddEvent} className="shrink-0">
+          <Plus size={16} strokeWidth={2} aria-hidden="true" />
+          <span>Tambah Konser Baru</span>
+        </Button>
+      </CardContent>
+    </Card>
 
     {isLoading && events.length === 0 ? (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {[1, 2].map((i) => (
-          <div key={i} className="border border-[#272A38] bg-[#14161F] rounded-xl p-6 space-y-4 animate-pulse">
-            <div className="h-24 bg-[#1D202D] rounded-lg" />
-            <div className="h-16 bg-[#1D202D] rounded-lg" />
-            <div className="h-24 bg-[#1D202D] rounded-lg" />
-          </div>
+          <Card key={i} className="p-6 space-y-4">
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-16 w-full" />
+            <Skeleton className="h-24 w-full" />
+          </Card>
         ))}
       </div>
     ) : events.length === 0 ? (
-      <div className="border border-dashed border-[#3E4357] bg-[#14161F] rounded-xl p-10 text-center flex flex-col items-center">
-        <Ticket className="w-10 h-10 text-[#94A3B8] mb-3" strokeWidth={1.5} aria-hidden="true" />
-        <h3 className="text-base font-semibold text-white m-0">Belum Ada Konser Terdaftar</h3>
-        <p className="text-sm text-[#A1A1AA] mt-1.5 mb-5 max-w-md">
-          Tambahkan jadwal konser pertama Anda untuk mulai membuka pemesanan tiket dan kategori kursi.
-        </p>
-        <button
-          type="button"
-          onClick={onAddEvent}
-          className="min-h-[44px] px-5 py-2.5 text-sm font-semibold text-[#0C0D12] bg-white hover:bg-neutral-200 rounded-lg inline-flex items-center gap-2"
-        >
-          <Plus size={16} aria-hidden="true" />
-          <span>Tambah Konser Pertama</span>
-        </button>
-      </div>
+      <Card className="border-dashed border-border-strong">
+        <CardContent className="p-10 text-center flex flex-col items-center">
+          <div className="w-12 h-12 rounded-xl border border-border bg-background flex items-center justify-center mb-3">
+            <Ticket className="w-6 h-6 text-muted-foreground" strokeWidth={1.6} aria-hidden="true" />
+          </div>
+          <h3 className="font-display text-2xl font-semibold text-foreground m-0">
+            Belum Ada Konser Terdaftar
+          </h3>
+          <p className="text-sm text-muted-foreground mt-1.5 mb-5 max-w-md">
+            Tambahkan jadwal konser pertama Anda untuk mulai membuka pemesanan tiket dan kategori kursi.
+          </p>
+          <Button type="button" onClick={onAddEvent}>
+            <Plus size={16} aria-hidden="true" />
+            <span>Tambah Konser Pertama</span>
+          </Button>
+        </CardContent>
+      </Card>
     ) : (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {events.map((evt) => (
@@ -93,58 +107,91 @@ interface EventCardProps {
 }
 
 const EventCard: React.FC<EventCardProps> = ({
-  event: evt, onEdit, onDelete, onToggleClose, onAddCategory, onEditCategory, onDeleteCategory,
+  event: evt,
+  onEdit,
+  onDelete,
+  onToggleClose,
+  onAddCategory,
+  onEditCategory,
+  onDeleteCategory,
 }) => (
-  <article className="border border-[#272A38] bg-[#14161F] rounded-xl p-5 sm:p-6 flex flex-col justify-between gap-5 hover:border-white/30 transition-colors">
+  <Card className="p-5 sm:p-6 flex flex-col justify-between gap-5 transition-colors hover:border-border-strong">
     <div>
       <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative w-full sm:w-28 h-44 sm:h-28 shrink-0 overflow-hidden rounded-lg border border-[#272A38] bg-[#0C0D12]">
-          <img src={evt.image} alt={evt.title} className="w-full h-full object-cover" />
+        <div className="relative w-full sm:w-28 h-44 sm:h-28 shrink-0 overflow-hidden rounded-lg border border-border bg-background">
+          <img
+            src={evt.image}
+            alt={evt.title}
+            width={224}
+            height={224}
+            className="w-full h-full object-cover"
+          />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[11px] font-mono tracking-wider text-white uppercase border border-white/25 bg-white/10 px-2.5 py-0.5 rounded">
+              <Badge variant="secondary" className="font-mono text-[11px] uppercase">
                 {evt.category || 'SIMFONI'}
-              </span>
+              </Badge>
               {evt.isClosed && (
-                <span className="text-[11px] font-mono text-rose-300 bg-rose-500/15 border border-rose-500/35 px-2 py-0.5 rounded">
+                <Badge variant="destructive" className="font-mono text-[11px]">
                   ORDER CLOSED
-                </span>
+                </Badge>
               )}
             </div>
+
             <div className="flex items-center gap-1.5">
-              <button
+              <Button
                 type="button"
+                size="sm"
+                variant="outline"
                 onClick={onToggleClose}
-                className={`min-h-[40px] px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors ${
+                className={
                   evt.isClosed
-                    ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/35 hover:bg-emerald-500/20'
-                    : 'bg-rose-500/10 text-rose-300 border-rose-500/35 hover:bg-rose-500/20'
-                }`}
+                    ? 'border-[#1F6E43]/35 bg-[#1F6E43]/10 text-[#1F6E43] hover:bg-[#1F6E43]/20 dark:border-emerald-500/35 dark:bg-emerald-500/15 dark:text-emerald-300'
+                    : 'border-[#B91C1C]/35 bg-[#B91C1C]/10 text-[#B91C1C] hover:bg-[#B91C1C]/20 dark:border-rose-500/35 dark:bg-rose-500/15 dark:text-rose-300'
+                }
               >
                 {evt.isClosed ? 'Buka Order' : 'Tutup Order'}
-              </button>
-              <button
-                type="button"
-                onClick={onEdit}
-                aria-label={`Edit event ${evt.title}`}
-                className="h-10 w-10 inline-flex items-center justify-center bg-[#0C0D12] border border-[#3E4357] rounded-lg text-[#E4E4E7] hover:text-white hover:border-white transition-colors"
-              >
-                <Edit size={15} strokeWidth={1.7} aria-hidden="true" />
-              </button>
-              <button
-                type="button"
-                onClick={onDelete}
-                aria-label={`Hapus event ${evt.title}`}
-                className="h-10 w-10 inline-flex items-center justify-center bg-[#0C0D12] border border-rose-500/35 rounded-lg text-rose-300 hover:text-rose-200 hover:bg-rose-500/15 transition-colors"
-              >
-                <Trash2 size={15} strokeWidth={1.7} aria-hidden="true" />
-              </button>
+              </Button>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={onEdit}
+                    aria-label={`Edit event ${evt.title}`}
+                  >
+                    <Edit size={15} strokeWidth={1.7} aria-hidden="true" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Edit Konser</TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={onDelete}
+                    aria-label={`Hapus event ${evt.title}`}
+                    className="border-[#B91C1C]/35 text-[#B91C1C] hover:bg-[#B91C1C]/10 dark:border-rose-500/35 dark:text-rose-300 dark:hover:bg-rose-500/15"
+                  >
+                    <Trash2 size={15} strokeWidth={1.7} aria-hidden="true" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Hapus Konser</TooltipContent>
+              </Tooltip>
             </div>
           </div>
-          <h3 className="text-base font-semibold text-white tracking-tight leading-snug m-0">{evt.title}</h3>
-          <p className="text-xs font-normal text-[#A1A1AA] mt-1 mb-0 truncate">{evt.artist}</p>
+
+          <h3 className="font-display text-2xl font-semibold text-card-foreground tracking-tight leading-tight m-0">
+            {evt.title}
+          </h3>
+          <p className="text-xs text-muted-foreground mt-1 mb-0 truncate">{evt.artist}</p>
         </div>
       </div>
 
@@ -155,74 +202,96 @@ const EventCard: React.FC<EventCardProps> = ({
         {evt.openGate && <DetailBox icon={Clock} label="Open Gate" value={evt.openGate} />}
       </div>
 
-      <div className="border-t border-[#272A38] mt-5 pt-4">
+      <div className="border-t border-border mt-5 pt-4">
         <div className="flex flex-wrap justify-between items-center gap-2 mb-3">
-          <span className="text-xs font-medium text-[#A1A1AA] uppercase tracking-wider">Kategori Tiket &amp; Kuota</span>
-          <button
-            type="button"
-            onClick={onAddCategory}
-            className="min-h-[40px] text-xs font-medium text-white bg-[#0C0D12] hover:bg-[#1D202D] border border-[#3E4357] hover:border-white/60 rounded-lg px-3 py-1.5 flex items-center gap-1.5 transition-colors"
-          >
+          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            Kategori Tiket &amp; Kuota
+          </span>
+          <Button type="button" variant="outline" size="sm" onClick={onAddCategory}>
             <Plus size={14} strokeWidth={1.8} aria-hidden="true" />
             <span>Kategori Baru</span>
-          </button>
+          </Button>
         </div>
 
         <div className="space-y-2.5">
           {evt.categories && evt.categories.length > 0 ? (
-            evt.categories.map((cat) => (
-              <div key={cat.id} className="border border-[#272A38] bg-[#0C0D12] rounded-lg p-3 flex flex-wrap items-center justify-between gap-3">
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-sm font-medium text-white truncate">{cat.name}</span>
-                    {(cat.remainingQuota !== undefined ? cat.remainingQuota : cat.quota) < 10 && (
-                      <span className="text-[11px] font-mono text-rose-300 bg-rose-500/15 border border-rose-500/30 px-2 py-0.5 rounded">
-                        Kuota Menipis
+            evt.categories.map((cat) => {
+              const remaining = cat.remainingQuota !== undefined ? cat.remainingQuota : cat.quota;
+              return (
+                <div
+                  key={cat.id}
+                  className="border border-border bg-background rounded-lg p-3 flex flex-wrap items-center justify-between gap-3"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-sm font-semibold text-foreground truncate">
+                        {cat.name}
                       </span>
-                    )}
+                      {remaining < 10 && (
+                        <Badge variant="destructive" className="font-mono text-[11px]">
+                          Kuota Menipis
+                        </Badge>
+                      )}
+                    </div>
+                    <span className="text-xs text-muted-foreground block mt-0.5 tabular-nums">
+                      Sisa {remaining} dari {cat.quota} kursi
+                    </span>
                   </div>
-                  <span className="text-xs font-normal text-[#A1A1AA] block mt-0.5">
-                    Sisa {cat.remainingQuota !== undefined ? cat.remainingQuota : cat.quota} dari {cat.quota} kursi
-                  </span>
-                </div>
-                <div className="flex items-center gap-2.5 shrink-0">
-                  <span className="text-xs font-mono text-white font-semibold">{formatIDR(cat.price)}</span>
-                  <div className="flex items-center gap-1">
-                    <button
-                      type="button"
-                      onClick={() => onEditCategory(cat)}
-                      aria-label={`Edit kategori ${cat.name}`}
-                      className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-[#3E4357] bg-[#14161F] text-[#E4E4E7] hover:text-white hover:border-white transition-colors"
-                    >
-                      <Edit size={14} strokeWidth={1.7} aria-hidden="true" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => onDeleteCategory(cat.id, cat.name)}
-                      aria-label={`Hapus kategori ${cat.name}`}
-                      className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-rose-500/35 bg-[#14161F] text-rose-300 hover:bg-rose-500/15 transition-colors"
-                    >
-                      <Trash2 size={14} strokeWidth={1.7} aria-hidden="true" />
-                    </button>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-xs font-mono text-foreground font-semibold tabular-nums">
+                      {formatIDR(cat.price)}
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => onEditCategory(cat)}
+                        aria-label={`Edit kategori ${cat.name}`}
+                      >
+                        <Edit size={14} strokeWidth={1.7} aria-hidden="true" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => onDeleteCategory(cat.id, cat.name)}
+                        aria-label={`Hapus kategori ${cat.name}`}
+                        className="border-[#B91C1C]/35 text-[#B91C1C] hover:bg-[#B91C1C]/10 dark:border-rose-500/35 dark:text-rose-300 dark:hover:bg-rose-500/15"
+                      >
+                        <Trash2 size={14} strokeWidth={1.7} aria-hidden="true" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           ) : (
-            <div className="text-xs font-normal text-[#A1A1AA] py-2">Belum ada kategori tiket disetel</div>
+            <div className="text-xs text-muted-foreground py-2">
+              Belum ada kategori tiket disetel.
+            </div>
           )}
         </div>
       </div>
     </div>
-  </article>
+  </Card>
 );
 
-const DetailBox: React.FC<{ icon: any; label: string; value: string }> = ({ icon: Icon, label, value }) => (
-  <div className="border border-[#272A38] bg-[#0C0D12] rounded-lg p-3 flex items-start gap-2.5">
-    <Icon size={14} className="text-[#E4E4E7] mt-0.5 shrink-0" strokeWidth={1.7} aria-hidden="true" />
+const DetailBox: React.FC<{ icon: React.ElementType; label: string; value: string }> = ({
+  icon: Icon,
+  label,
+  value,
+}) => (
+  <div className="border border-border bg-background rounded-lg p-3 flex items-start gap-2.5">
+    <Icon size={14} className="text-[#C93018] dark:text-[#F2644E] mt-0.5 shrink-0" strokeWidth={1.8} aria-hidden="true" />
     <div className="min-w-0">
-      <span className="text-[11px] font-medium text-[#94A3B8] tracking-wider uppercase block">{label}</span>
-      <span className="text-xs font-medium text-white block truncate mt-0.5">{value}</span>
+      <span className="text-[11px] font-semibold text-muted-foreground tracking-wider uppercase block">
+        {label}
+      </span>
+      <span className="text-xs font-medium text-foreground block truncate mt-0.5 tabular-nums">
+        {value}
+      </span>
     </div>
   </div>
 );

@@ -1,13 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import { RefreshCw, X, AlertCircle, Check } from 'lucide-react';
+import {
+  RefreshCw,
+  X,
+  AlertCircle,
+  Check,
+  ChevronDown,
+  ExternalLink,
+  LogOut,
+  ShieldCheck,
+  Sun,
+  Moon,
+} from 'lucide-react';
 import type { EventItem, TicketCategory, OrderRecord, AdminMetricsData, AdminRole } from '../landing/data';
 import {
-  adminLoginAPI, fetchAdminMetricsAPI, fetchEventsAPI, createEventAPI, updateEventAPI,
-  deleteEventAPI, createTicketCategoryAPI, updateTicketCategoryAPI,
-  deleteTicketCategoryAPI, fetchAdminOrdersAPI, updateOrderStatusAPI,
-  fetchAdminRefundsAPI, updateRefundStatusAPI, checkInTicketAPI,
+  adminLoginAPI,
+  fetchAdminMetricsAPI,
+  fetchEventsAPI,
+  createEventAPI,
+  updateEventAPI,
+  deleteEventAPI,
+  createTicketCategoryAPI,
+  updateTicketCategoryAPI,
+  deleteTicketCategoryAPI,
+  fetchAdminOrdersAPI,
+  updateOrderStatusAPI,
+  fetchAdminRefundsAPI,
+  updateRefundStatusAPI,
+  checkInTicketAPI,
 } from '../landing/data';
 
+import { AdminThemeProvider, AdminThemeToggle, useAdminTheme } from './AdminThemeContext';
 import { AdminLogin } from './AdminLogin';
 import { AdminSidebar, MobileHeader, MobileBottomNav, type TabId } from './AdminSidebar';
 import { MetricsPanel } from './MetricsPanel';
@@ -17,16 +39,51 @@ import { RefundsPanel, type RefundRecord } from './RefundsPanel';
 import { GateScannerPanel } from './GateScannerPanel';
 import { EventFormModal, type EventFormData } from './EventFormModal';
 import { CategoryFormModal } from './CategoryFormModal';
-import { ConfirmDialog } from '@/components/ui/fullscreen-sheet';
+import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { calculateDefaultOpenGate, generateDynamicRundown, isTimeBefore } from '@/lib/timeUtils';
 
 const EMPTY_EVENT_FORM: EventFormData = {
-  title: '', artist: '', venue: '', date: '', time: '',
+  title: '',
+  artist: '',
+  venue: '',
+  date: '',
+  time: '',
   category: 'SIMFONI UTAMA',
   categoryBadgeColor: 'bg-white/10 text-white border-white/20',
-  image: '', audioUrl: '', description: '', conductor: '', subtitle: '', openGate: '', address: '', googleMapsUrl: '',
+  image: '',
+  audioUrl: '',
+  description: '',
+  conductor: '',
+  subtitle: '',
+  openGate: '',
+  address: '',
+  googleMapsUrl: '',
   organizer: 'SymphoniaTic Production',
-  initialCatName: 'VIP Pit', initialCatPrice: 1000000, initialCatQuota: 50,
+  initialCatName: 'VIP Pit',
+  initialCatPrice: 1000000,
+  initialCatQuota: 50,
   rundown: [],
 };
 
@@ -37,7 +94,9 @@ interface AdminAppProps {
   onEventsUpdated?: () => void;
 }
 
-export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) => {
+const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) => {
+  const { theme, toggleTheme } = useAdminTheme();
+
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     try {
       return typeof window !== 'undefined' && !!sessionStorage.getItem('symphoniatic_admin_token');
@@ -65,7 +124,6 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
       return 'METRICS';
     }
   });
-  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   const [metrics, setMetrics] = useState<AdminMetricsData | null>(null);
   const [eventsList, setEventsList] = useState<EventItem[]>([]);
@@ -84,13 +142,22 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
   const [showAddEventModal, setShowAddEventModal] = useState(false);
   const [editingEvent, setEditingEvent] = useState<EventItem | null>(null);
   const [showAddCategoryModal, setShowAddCategoryModal] = useState<EventItem | null>(null);
-  const [editingCategory, setEditingCategory] = useState<{ eventId: string; cat: TicketCategory } | null>(null);
+  const [editingCategory, setEditingCategory] = useState<{
+    eventId: string;
+    cat: TicketCategory;
+  } | null>(null);
 
   const [eventForm, setEventForm] = useState(EMPTY_EVENT_FORM);
   const [catForm, setCatForm] = useState(EMPTY_CAT_FORM);
 
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
-  const [confirmModal, setConfirmModal] = useState<{ title: string; message: string; onConfirm: () => void } | null>(null);
+  const [confirmModal, setConfirmModal] = useState<{
+    title: string;
+    message: string;
+    confirmLabel?: string;
+    variant?: 'danger' | 'default';
+    onConfirm: () => void;
+  } | null>(null);
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
     setToast({ message, type });
@@ -169,7 +236,14 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
 
   const handleCreateEvent = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!eventForm.title || !eventForm.artist || !eventForm.venue || !eventForm.date || !eventForm.time || !eventForm.openGate) {
+    if (
+      !eventForm.title ||
+      !eventForm.artist ||
+      !eventForm.venue ||
+      !eventForm.date ||
+      !eventForm.time ||
+      !eventForm.openGate
+    ) {
       showToast('Judul, Musisi, Venue, Tanggal, Waktu Konser, dan Open Gate wajib diisi!', 'error');
       return;
     }
@@ -184,20 +258,31 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
 
     try {
       const res = await createEventAPI({
-        title: eventForm.title, artist: eventForm.artist, venue: eventForm.venue,
-        date: eventForm.date, time: eventForm.time, category: eventForm.category,
+        title: eventForm.title,
+        artist: eventForm.artist,
+        venue: eventForm.venue,
+        date: eventForm.date,
+        time: eventForm.time,
+        category: eventForm.category,
         categoryBadgeColor: eventForm.categoryBadgeColor,
-        image: eventForm.image || 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?q=80&w=1000&auto=format&fit=crop',
+        image:
+          eventForm.image ||
+          'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?q=80&w=1000&auto=format&fit=crop',
         audioUrl: eventForm.audioUrl || '',
-        conductor: eventForm.conductor, subtitle: eventForm.subtitle,
-        openGate: eventForm.openGate, address: eventForm.address,
-        organizer: eventForm.organizer, description: eventForm.description,
+        conductor: eventForm.conductor,
+        subtitle: eventForm.subtitle,
+        openGate: eventForm.openGate,
+        address: eventForm.address,
+        organizer: eventForm.organizer,
+        description: eventForm.description,
         rundown: eventForm.rundown,
-        categories: [{
-          name: catName,
-          price: catPrice,
-          quota: catQuota,
-        }],
+        categories: [
+          {
+            name: catName,
+            price: catPrice,
+            quota: catQuota,
+          },
+        ],
       });
       if (res.success) {
         setShowAddEventModal(false);
@@ -225,13 +310,21 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
     setIsLoading(true);
     try {
       const res = await updateEventAPI(String(editingEvent.id), {
-        title: eventForm.title, artist: eventForm.artist, venue: eventForm.venue,
-        date: eventForm.date, time: eventForm.time, category: eventForm.category,
-        categoryBadgeColor: eventForm.categoryBadgeColor, image: eventForm.image,
+        title: eventForm.title,
+        artist: eventForm.artist,
+        venue: eventForm.venue,
+        date: eventForm.date,
+        time: eventForm.time,
+        category: eventForm.category,
+        categoryBadgeColor: eventForm.categoryBadgeColor,
+        image: eventForm.image,
         audioUrl: eventForm.audioUrl || '',
-        conductor: eventForm.conductor, subtitle: eventForm.subtitle,
-        openGate: eventForm.openGate, address: eventForm.address,
-        organizer: eventForm.organizer, description: eventForm.description,
+        conductor: eventForm.conductor,
+        subtitle: eventForm.subtitle,
+        openGate: eventForm.openGate,
+        address: eventForm.address,
+        organizer: eventForm.organizer,
+        description: eventForm.description,
         rundown: eventForm.rundown,
       });
       if (res.success) {
@@ -254,6 +347,8 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
     setConfirmModal({
       title: 'Hapus Event Konser',
       message: `Apakah Anda yakin ingin menghapus konser "${title}"? Data kategori tiket terkait juga akan terhapus.`,
+      confirmLabel: 'Hapus Konser',
+      variant: 'danger',
       onConfirm: async () => {
         setConfirmModal(null);
         setIsLoading(true);
@@ -284,7 +379,9 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
     setIsLoading(true);
     try {
       const res = await createTicketCategoryAPI(String(showAddCategoryModal.id), {
-        name: catForm.name, price: Number(catForm.price), quota: Number(catForm.quota),
+        name: catForm.name,
+        price: Number(catForm.price),
+        quota: Number(catForm.quota),
       });
       if (res.success) {
         setShowAddCategoryModal(null);
@@ -308,7 +405,9 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
     setIsLoading(true);
     try {
       const res = await updateTicketCategoryAPI(editingCategory.cat.id, {
-        name: catForm.name, price: Number(catForm.price), quota: Number(catForm.quota),
+        name: catForm.name,
+        price: Number(catForm.price),
+        quota: Number(catForm.quota),
       });
       if (res.success) {
         setEditingCategory(null);
@@ -330,6 +429,8 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
     setConfirmModal({
       title: 'Hapus Kategori Tiket',
       message: `Hapus kategori tiket "${name}"?`,
+      confirmLabel: 'Hapus Kategori',
+      variant: 'danger',
       onConfirm: async () => {
         setConfirmModal(null);
         setIsLoading(true);
@@ -370,6 +471,8 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
     setConfirmModal({
       title: 'Konfirmasi Check-In Manual',
       message: `Tandai tiket "${order.orderCode}" atas nama ${order.userName} (${order.categoryName}, ${order.quantity}x) telah masuk gate sekarang?`,
+      confirmLabel: 'Proses Check-In',
+      variant: 'default',
       onConfirm: async () => {
         setConfirmModal(null);
         setCheckingInCode(order.orderCode);
@@ -396,23 +499,41 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
       showToast('Tidak ada data pesanan untuk diekspor!', 'error');
       return;
     }
-    const headers = ['Kode Pesanan', 'Event', 'Musisi', 'Venue', 'Tanggal', 'Nama Pemesan', 'Email', 'Kategori Tiket', 'Nomor Kursi', 'Jumlah', 'Total Harga', 'Status', 'Waktu Transaksi'];
-    const rows = ordersList.map((o) => [
-      `"${o.orderCode}"`,
-      `"${o.eventTitle.replace(/"/g, '""')}"`,
-      `"${o.artist.replace(/"/g, '""')}"`,
-      `"${o.venue.replace(/"/g, '""')}"`,
-      `"${o.date}"`,
-      `"${o.userName.replace(/"/g, '""')}"`,
-      `"${o.userEmail}"`,
-      `"${o.categoryName}"`,
-      `"${(o.seatNumbers || '').replace(/"/g, '""')}"`,
-      o.quantity,
-      o.totalPrice,
-      `"${o.status}"`,
-      `"${new Date(o.createdAt).toLocaleString('id-ID')}"`,
-    ].join(','));
-    const csv = 'data:text/csv;charset=utf-8,' + encodeURIComponent([headers.join(','), ...rows].join('\n'));
+    const headers = [
+      'Kode Pesanan',
+      'Event',
+      'Musisi',
+      'Venue',
+      'Tanggal',
+      'Nama Pemesan',
+      'Email',
+      'Kategori Tiket',
+      'Nomor Kursi',
+      'Jumlah',
+      'Total Harga',
+      'Status',
+      'Waktu Transaksi',
+    ];
+    const rows = ordersList.map((o) =>
+      [
+        `"${o.orderCode}"`,
+        `"${o.eventTitle.replace(/"/g, '""')}"`,
+        `"${o.artist.replace(/"/g, '""')}"`,
+        `"${o.venue.replace(/"/g, '""')}"`,
+        `"${o.date}"`,
+        `"${o.userName.replace(/"/g, '""')}"`,
+        `"${o.userEmail}"`,
+        `"${o.categoryName}"`,
+        `"${(o.seatNumbers || '').replace(/"/g, '""')}"`,
+        o.quantity,
+        o.totalPrice,
+        `"${o.status}"`,
+        `"${new Date(o.createdAt).toLocaleString('id-ID')}"`,
+      ].join(',')
+    );
+    const csv =
+      'data:text/csv;charset=utf-8,' +
+      encodeURIComponent([headers.join(','), ...rows].join('\n'));
     const link = document.createElement('a');
     link.href = csv;
     link.download = `SymphoniaTic_Orders_${new Date().toISOString().slice(0, 10)}.csv`;
@@ -451,16 +572,29 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
   }
 
   const tabLabels: Record<TabId, { title: string; subtitle: string }> = {
-    SCANNER: { title: 'Pemindai Kamera Gate & Validasi Check-In', subtitle: 'Sistem kontrol pintu masuk pertunjukan' },
-    METRICS: { title: 'Dashboard Metrik & Pendapatan Finansial', subtitle: 'Ringkasan transaksi dan kapasitas kursi konser' },
-    EVENTS: { title: 'Manajemen Postingan Tiket Konser', subtitle: 'Kelola konser, jadwal open gate, dan kategori kursi' },
+    SCANNER: {
+      title: 'Pemindai Kamera Gate & Validasi Check-In',
+      subtitle: 'Sistem kontrol pintu masuk pertunjukan',
+    },
+    METRICS: {
+      title: 'Dashboard Metrik & Pendapatan Finansial',
+      subtitle: 'Ringkasan transaksi dan kapasitas kursi konser',
+    },
+    EVENTS: {
+      title: 'Manajemen Postingan Tiket Konser',
+      subtitle: 'Kelola konser, jadwal open gate, dan kategori kursi',
+    },
     ORDERS: {
       title: 'Pengelolaan Pesanan & Laporan Transaksi',
-      subtitle: currentRole === 'PETUGAS'
-        ? 'Verifikasi data pesanan penonton dan check-in manual di gate'
-        : 'Cari, perbarui status, dan ekspor laporan pesanan',
+      subtitle:
+        currentRole === 'PETUGAS'
+          ? 'Verifikasi data pesanan penonton dan check-in manual di gate'
+          : 'Cari, perbarui status, dan ekspor laporan pesanan',
     },
-    REFUNDS: { title: 'Persetujuan Permohonan Refund Tiket', subtitle: 'Tinjau pengajuan pengembalian dana penonton' },
+    REFUNDS: {
+      title: 'Persetujuan Permohonan Refund Tiket',
+      subtitle: 'Tinjau pengajuan pengembalian dana penonton',
+    },
   };
 
   const filteredRefunds = (refundsList || []).filter((rf) => {
@@ -496,7 +630,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#0C0D12] text-[#F4F4F6] flex flex-col md:flex-row font-sans">
+    <SidebarProvider>
       <AdminSidebar
         activeTab={activeTab}
         role={currentRole}
@@ -508,60 +642,117 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
         totalRevenue={metrics?.totalRevenue || 0}
       />
 
-      <MobileHeader
-        activeTab={activeTab}
-        role={currentRole}
-        onTabChange={setActiveTab}
-        onLogout={handleLogout}
-        isOpen={isMobileSidebarOpen}
-        onToggle={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-        onRefresh={refreshData}
-        isLoading={isLoading}
-      />
+      <SidebarInset>
+        <MobileHeader
+          activeTab={activeTab}
+          role={currentRole}
+          onRefresh={refreshData}
+          isLoading={isLoading}
+        />
 
-      <main className="flex flex-col flex-1 min-w-0 bg-[#0C0D12]">
-        <header className="hidden md:flex sticky top-0 items-center justify-between px-6 py-4 border-b border-[#272A38] bg-[#0C0D12] z-20">
-          <div className="min-w-0">
-            <h1 className="text-lg font-semibold text-[#F4F4F6] tracking-tight m-0 truncate">{tabLabels[activeTab].title}</h1>
-            <p className="text-xs font-normal text-[#A1A1AA] mt-0.5 m-0 truncate">{tabLabels[activeTab].subtitle}</p>
+        <header className="hidden md:flex sticky top-0 items-center justify-between gap-4 px-6 py-3.5 border-b border-border bg-card z-20">
+          <div className="flex items-center gap-3 min-w-0">
+            <SidebarTrigger />
+            <Separator orientation="vertical" className="h-6" />
+            <div className="min-w-0">
+              <h1 className="font-display text-2xl font-semibold text-card-foreground tracking-tight leading-tight m-0 truncate">
+                {tabLabels[activeTab].title}
+              </h1>
+              <p className="text-xs text-muted-foreground mt-0.5 m-0 truncate">
+                {tabLabels[activeTab].subtitle}
+              </p>
+            </div>
           </div>
-          <div className="flex items-center gap-2.5 shrink-0">
-            <button
+
+          <div className="flex items-center gap-2 shrink-0">
+            <AdminThemeToggle />
+
+            <Button
               type="button"
+              variant="outline"
               onClick={refreshData}
               disabled={isLoading}
-              className="min-h-[44px] px-4 py-2 text-xs font-medium text-[#E4E4E7] border border-[#3E4357] bg-[#14161F] rounded-lg flex items-center gap-2 transition-colors hover:text-white hover:border-white/60 disabled:opacity-40"
             >
-              <RefreshCw size={14} strokeWidth={1.7} className={isLoading ? 'animate-spin' : ''} aria-hidden="true" />
-              <span>Refresh Data</span>
-            </button>
+              <RefreshCw
+                size={14}
+                strokeWidth={1.7}
+                className={isLoading ? 'animate-spin' : ''}
+                aria-hidden="true"
+              />
+              <span>Refresh</span>
+            </Button>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button type="button" variant="secondary" className="gap-2">
+                  <ShieldCheck
+                    size={15}
+                    className="text-[#C93018] dark:text-[#F2644E]"
+                    aria-hidden="true"
+                  />
+                  <span className="text-xs font-semibold">
+                    {currentRole === 'PETUGAS' ? 'Petugas Gate' : 'Administrator'}
+                  </span>
+                  <ChevronDown size={14} className="text-muted-foreground" aria-hidden="true" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel className="flex items-center justify-between">
+                  <span>Sesi Operasional</span>
+                  <Badge variant="outline" className="font-mono text-[10px]">
+                    {currentRole}
+                  </Badge>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={toggleTheme}>
+                  {theme === 'dark' ? (
+                    <Sun size={15} className="text-amber-300" aria-hidden="true" />
+                  ) : (
+                    <Moon size={15} aria-hidden="true" />
+                  )}
+                  <span>{theme === 'dark' ? 'Beralih ke Mode Terang' : 'Beralih ke Mode Gelap'}</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <a href="/" className="no-underline">
+                    <ExternalLink size={15} aria-hidden="true" />
+                    <span>Buka Halaman Utama</span>
+                  </a>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem variant="destructive" onClick={handleLogout}>
+                  <LogOut size={15} aria-hidden="true" />
+                  <span>Keluar Sesi</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             {onClose && (
-              <button
+              <Button
                 type="button"
+                variant="outline"
+                size="icon"
                 onClick={onClose}
                 aria-label="Tutup Admin"
-                className="h-11 w-11 inline-flex items-center justify-center text-[#A1A1AA] hover:text-white border border-[#3E4357] bg-[#14161F] rounded-lg transition-colors"
               >
                 <X size={16} strokeWidth={1.7} aria-hidden="true" />
-              </button>
+              </Button>
             )}
           </div>
         </header>
 
-        <div className="flex-1 p-4 sm:p-6 md:p-8 pb-28 md:pb-10 max-w-[1200px] mx-auto w-full space-y-6">
+        <main className="flex-1 p-4 sm:p-6 md:p-8 pb-24 md:pb-10 max-w-[1280px] mx-auto w-full space-y-6">
           {loadError && (
-            <div role="alert" className="p-4 rounded-xl border border-rose-500/40 bg-rose-500/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-2.5 text-sm text-rose-200">
-                <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" aria-hidden="true" />
+            <div
+              role="alert"
+              className="p-4 rounded-xl border border-[#B91C1C]/35 bg-[#B91C1C]/10 dark:border-rose-500/40 dark:bg-rose-500/15 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+            >
+              <div className="flex items-center gap-2.5 text-sm text-[#B91C1C] dark:text-rose-200">
+                <AlertCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
                 <span>{loadError}</span>
               </div>
-              <button
-                type="button"
-                onClick={refreshData}
-                className="min-h-[40px] px-4 py-2 rounded-lg bg-white text-[#0C0D12] text-xs font-semibold hover:bg-neutral-200 transition-colors shrink-0"
-              >
+              <Button type="button" variant="dark" size="sm" onClick={refreshData} className="shrink-0">
                 Coba Lagi
-              </button>
+              </Button>
             </div>
           )}
 
@@ -569,34 +760,55 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
             <GateScannerPanel events={eventsList} onScanSuccess={() => refreshData()} />
           )}
           {currentRole === 'ADMIN' && activeTab === 'METRICS' && (
-            <MetricsPanel metrics={metrics} eventsCount={eventsList.length} onGoToOrders={() => setActiveTab('ORDERS')} />
+            <MetricsPanel
+              metrics={metrics}
+              eventsCount={eventsList.length}
+              onGoToOrders={() => setActiveTab('ORDERS')}
+            />
           )}
           {currentRole === 'ADMIN' && activeTab === 'EVENTS' && (
             <EventsPanel
               events={eventsList}
               isLoading={isLoading}
-              onAddEvent={() => { setShowAddEventModal(true); setEventForm(EMPTY_EVENT_FORM); }}
+              onAddEvent={() => {
+                setShowAddEventModal(true);
+                setEventForm(EMPTY_EVENT_FORM);
+              }}
               onEditEvent={(evt) => {
                 const resolvedOpenGate = evt.openGate || calculateDefaultOpenGate(evt.time);
                 setEditingEvent(evt);
                 setEventForm({
-                  title: evt.title, artist: evt.artist, venue: evt.venue,
-                  date: evt.date, time: evt.time, category: evt.category,
-                  categoryBadgeColor: evt.categoryBadgeColor, image: evt.image,
+                  title: evt.title,
+                  artist: evt.artist,
+                  venue: evt.venue,
+                  date: evt.date,
+                  time: evt.time,
+                  category: evt.category,
+                  categoryBadgeColor: evt.categoryBadgeColor,
+                  image: evt.image,
                   audioUrl: evt.audioUrl || '',
-                  conductor: evt.conductor || '', subtitle: evt.subtitle || '',
-                  openGate: resolvedOpenGate, address: evt.address || '',
+                  conductor: evt.conductor || '',
+                  subtitle: evt.subtitle || '',
+                  openGate: resolvedOpenGate,
+                  address: evt.address || '',
                   googleMapsUrl: evt.googleMapsUrl || '',
-                  organizer: evt.organizer || '', description: evt.description || '',
-                  initialCatName: '', initialCatPrice: 0, initialCatQuota: 0,
-                  rundown: evt.rundown && evt.rundown.length > 0
-                    ? evt.rundown.map((item) => ({ ...item }))
-                    : generateDynamicRundown(evt.time, resolvedOpenGate),
+                  organizer: evt.organizer || '',
+                  description: evt.description || '',
+                  initialCatName: '',
+                  initialCatPrice: 0,
+                  initialCatQuota: 0,
+                  rundown:
+                    evt.rundown && evt.rundown.length > 0
+                      ? evt.rundown.map((item) => ({ ...item }))
+                      : generateDynamicRundown(evt.time, resolvedOpenGate),
                 });
               }}
               onDeleteEvent={handleDeleteEvent}
               onToggleCloseEvent={handleToggleCloseEvent}
-              onAddCategory={(evt) => { setShowAddCategoryModal(evt); setCatForm(EMPTY_CAT_FORM); }}
+              onAddCategory={(evt) => {
+                setShowAddCategoryModal(evt);
+                setCatForm(EMPTY_CAT_FORM);
+              }}
               onEditCategory={(eventId, cat) => {
                 setEditingCategory({ eventId, cat });
                 setCatForm({ name: cat.name, price: cat.price, quota: cat.quota });
@@ -630,8 +842,8 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
               onUpdateStatus={handleUpdateRefundStatus}
             />
           )}
-        </div>
-      </main>
+        </main>
+      </SidebarInset>
 
       <MobileBottomNav activeTab={activeTab} role={currentRole} onTabChange={setActiveTab} />
 
@@ -641,7 +853,10 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
         form={eventForm}
         isLoading={isLoading}
         onFormChange={setEventForm}
-        onClose={() => { setShowAddEventModal(false); setEditingEvent(null); }}
+        onClose={() => {
+          setShowAddEventModal(false);
+          setEditingEvent(null);
+        }}
         onSubmit={editingEvent ? handleUpdateEvent : handleCreateEvent}
       />
 
@@ -663,37 +878,64 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) 
           aria-live="polite"
           className={`fixed top-5 right-5 z-50 flex items-center gap-3 px-4 py-3 rounded-xl border shadow-xl text-sm font-medium max-w-sm ${
             toast.type === 'error'
-              ? 'bg-rose-950 border-rose-500/40 text-rose-200'
-              : 'bg-[#181B26] border-[#3E4357] text-white'
+              ? 'bg-[#B91C1C] border-[#B91C1C] text-white'
+              : 'bg-card border-border text-card-foreground'
           }`}
         >
           {toast.type === 'error' ? (
-            <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" aria-hidden="true" />
+            <AlertCircle className="w-4 h-4 text-white shrink-0" aria-hidden="true" />
           ) : (
-            <Check className="w-4 h-4 text-emerald-400 shrink-0" aria-hidden="true" />
+            <Check
+              className="w-4 h-4 text-[#1F6E43] dark:text-emerald-400 shrink-0"
+              aria-hidden="true"
+            />
           )}
           <span>{toast.message}</span>
           <button
             type="button"
             aria-label="Tutup notifikasi"
             onClick={() => setToast(null)}
-            className="ml-1 min-h-[32px] min-w-[32px] inline-flex items-center justify-center text-[#A1A1AA] hover:text-white rounded"
+            className="ml-1 min-h-[32px] min-w-[32px] inline-flex items-center justify-center opacity-75 hover:opacity-100 rounded"
           >
             <X className="w-4 h-4" aria-hidden="true" />
           </button>
         </div>
       )}
 
-      <ConfirmDialog
-        isOpen={!!confirmModal}
-        title={confirmModal?.title || ''}
-        message={confirmModal?.message || ''}
-        confirmLabel="Hapus"
-        cancelLabel="Batal"
-        variant="danger"
-        onConfirm={() => confirmModal?.onConfirm()}
-        onCancel={() => setConfirmModal(null)}
-      />
-    </div>
+      <AlertDialog
+        open={Boolean(confirmModal)}
+        onOpenChange={(open) => {
+          if (!open) setConfirmModal(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{confirmModal?.title || ''}</AlertDialogTitle>
+            <AlertDialogDescription>{confirmModal?.message || ''}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setConfirmModal(null)}>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => confirmModal?.onConfirm()}
+              className={
+                confirmModal?.variant === 'danger'
+                  ? 'bg-[#B91C1C] text-white hover:bg-[#991B1B]'
+                  : undefined
+              }
+            >
+              {confirmModal?.confirmLabel || 'Konfirmasi'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </SidebarProvider>
   );
 };
+
+export const AdminApp: React.FC<AdminAppProps> = (props) => (
+  <AdminThemeProvider>
+    <TooltipProvider delayDuration={150}>
+      <AdminAppInner {...props} />
+    </TooltipProvider>
+  </AdminThemeProvider>
+);

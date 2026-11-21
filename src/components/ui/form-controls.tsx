@@ -1,8 +1,10 @@
 import React, { useId } from 'react';
 import { cn } from '@/lib/utils';
 
-export const fieldInputBase =
-  'w-full min-h-[46px] bg-[#0C0D12] border border-[#3E4357] rounded-lg px-3.5 py-2.5 text-base sm:text-sm text-white placeholder:text-[#94A3B8] outline-none transition-colors focus:border-white focus:ring-2 focus:ring-white/25 disabled:opacity-50 disabled:cursor-not-allowed';
+export const fieldInputSemantic =
+  'w-full min-h-[44px] bg-card border border-input rounded-lg px-3.5 py-2 text-base sm:text-sm text-foreground placeholder:text-muted-foreground/80 outline-none transition-colors focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/25 disabled:opacity-50 disabled:bg-secondary disabled:cursor-not-allowed';
+
+export const fieldInputBase = fieldInputSemantic;
 
 export const fieldInputLight =
   'w-full min-h-[46px] bg-white border border-[#CFC9BC] rounded-lg px-3.5 py-2.5 text-base sm:text-sm text-[#171614] placeholder:text-[#6B665D] outline-none transition-colors focus:border-[#C93018] focus:ring-2 focus:ring-[#C93018]/20 disabled:opacity-50 disabled:bg-[#ECE8DF] disabled:cursor-not-allowed';
@@ -13,7 +15,7 @@ interface FormFieldProps {
   required?: boolean;
   hint?: string;
   error?: string;
-  theme?: 'dark' | 'light';
+  theme?: 'dark' | 'light' | 'auto';
   className?: string;
   children: React.ReactNode;
 }
@@ -24,35 +26,69 @@ export const FormField: React.FC<FormFieldProps> = ({
   required,
   hint,
   error,
-  theme = 'dark',
+  theme = 'auto',
   className,
   children,
 }) => {
-  const isLight = theme === 'light';
+  const isLightFixed = theme === 'light';
+  const isDarkFixed = theme === 'dark';
+
   return (
     <div className={cn('flex flex-col gap-1.5', className)}>
       <label
         htmlFor={htmlFor}
         className={cn(
           'text-xs font-semibold tracking-wide flex items-center gap-1',
-          isLight ? 'text-[#171614]' : 'text-[#E4E4E7]'
+          isLightFixed
+            ? 'text-[#171614]'
+            : isDarkFixed
+            ? 'text-[#E4E4E7]'
+            : 'text-foreground'
         )}
       >
         <span>{label}</span>
         {required && (
-          <span className={isLight ? 'text-[#C93018]' : 'text-rose-400'} aria-hidden="true">
+          <span
+            className={
+              isLightFixed
+                ? 'text-[#C93018]'
+                : isDarkFixed
+                ? 'text-rose-400'
+                : 'text-[#C93018] dark:text-[#F2644E]'
+            }
+            aria-hidden="true"
+          >
             *
           </span>
         )}
       </label>
       {children}
       {hint && !error && (
-        <p className={cn('text-xs leading-relaxed m-0', isLight ? 'text-[#6B665D]' : 'text-[#94A3B8]')}>
+        <p
+          className={cn(
+            'text-xs leading-relaxed m-0',
+            isLightFixed
+              ? 'text-[#6B665D]'
+              : isDarkFixed
+              ? 'text-[#94A3B8]'
+              : 'text-muted-foreground'
+          )}
+        >
           {hint}
         </p>
       )}
       {error && (
-        <p role="alert" className={cn('text-xs leading-relaxed m-0', isLight ? 'text-[#B91C1C]' : 'text-rose-400')}>
+        <p
+          role="alert"
+          className={cn(
+            'text-xs leading-relaxed m-0',
+            isLightFixed
+              ? 'text-[#B91C1C]'
+              : isDarkFixed
+              ? 'text-rose-400'
+              : 'text-[#B91C1C] dark:text-rose-400'
+          )}
+        >
           {error}
         </p>
       )}
@@ -64,7 +100,7 @@ interface TextInputFieldProps extends Omit<React.InputHTMLAttributes<HTMLInputEl
   label: string;
   hint?: string;
   error?: string;
-  theme?: 'dark' | 'light';
+  theme?: 'dark' | 'light' | 'auto';
   onValueChange: (value: string) => void;
   containerClassName?: string;
 }
@@ -73,7 +109,7 @@ export const TextInputField: React.FC<TextInputFieldProps> = ({
   label,
   hint,
   error,
-  theme = 'dark',
+  theme = 'auto',
   onValueChange,
   containerClassName,
   className,
@@ -83,7 +119,7 @@ export const TextInputField: React.FC<TextInputFieldProps> = ({
 }) => {
   const autoId = useId();
   const fieldId = id || autoId;
-  const isLight = theme === 'light';
+  const isLightFixed = theme === 'light';
 
   return (
     <FormField
@@ -101,11 +137,8 @@ export const TextInputField: React.FC<TextInputFieldProps> = ({
         aria-invalid={Boolean(error)}
         onChange={(e) => onValueChange(e.target.value)}
         className={cn(
-          isLight ? fieldInputLight : fieldInputBase,
-          error &&
-            (isLight
-              ? 'border-[#B91C1C] focus:border-[#B91C1C] focus:ring-[#B91C1C]/20'
-              : 'border-rose-500 focus:border-rose-400 focus:ring-rose-500/25'),
+          isLightFixed ? fieldInputLight : fieldInputSemantic,
+          error && 'border-[#B91C1C] focus-visible:border-[#B91C1C] focus-visible:ring-[#B91C1C]/20',
           className
         )}
         {...rest}
@@ -118,7 +151,7 @@ interface TextAreaFieldProps extends Omit<React.TextareaHTMLAttributes<HTMLTextA
   label: string;
   hint?: string;
   error?: string;
-  theme?: 'dark' | 'light';
+  theme?: 'dark' | 'light' | 'auto';
   onValueChange: (value: string) => void;
   containerClassName?: string;
 }
@@ -127,7 +160,7 @@ export const TextAreaField: React.FC<TextAreaFieldProps> = ({
   label,
   hint,
   error,
-  theme = 'dark',
+  theme = 'auto',
   onValueChange,
   containerClassName,
   className,
@@ -138,7 +171,7 @@ export const TextAreaField: React.FC<TextAreaFieldProps> = ({
 }) => {
   const autoId = useId();
   const fieldId = id || autoId;
-  const isLight = theme === 'light';
+  const isLightFixed = theme === 'light';
 
   return (
     <FormField
@@ -157,12 +190,9 @@ export const TextAreaField: React.FC<TextAreaFieldProps> = ({
         aria-invalid={Boolean(error)}
         onChange={(e) => onValueChange(e.target.value)}
         className={cn(
-          isLight ? fieldInputLight : fieldInputBase,
+          isLightFixed ? fieldInputLight : fieldInputSemantic,
           'min-h-[108px] resize-y leading-relaxed',
-          error &&
-            (isLight
-              ? 'border-[#B91C1C] focus:border-[#B91C1C] focus:ring-[#B91C1C]/20'
-              : 'border-rose-500 focus:border-rose-400 focus:ring-rose-500/25'),
+          error && 'border-[#B91C1C] focus-visible:border-[#B91C1C] focus-visible:ring-[#B91C1C]/20',
           className
         )}
         {...rest}

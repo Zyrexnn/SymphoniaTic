@@ -1,6 +1,23 @@
 import React, { useState, useId } from 'react';
-import { Lock, User, ArrowLeft, LogIn, KeyRound, Eye, EyeOff } from 'lucide-react';
-import { fieldInputBase } from '@/components/ui/form-controls';
+import {
+  Lock,
+  User,
+  ArrowLeft,
+  LogIn,
+  KeyRound,
+  Eye,
+  EyeOff,
+  AlertCircle,
+  ShieldCheck,
+  QrCode,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { AdminThemeToggle } from './AdminThemeContext';
 
 interface AdminLoginProps {
   username: string;
@@ -12,145 +29,297 @@ interface AdminLoginProps {
   onSubmit: (e: React.FormEvent) => void;
 }
 
+type RoleScope = 'ADMIN' | 'PETUGAS';
+
 export const AdminLogin: React.FC<AdminLoginProps> = ({
-  username, password, error, isLoading,
-  onUsernameChange, onPasswordChange, onSubmit,
+  username,
+  password,
+  error,
+  isLoading,
+  onUsernameChange,
+  onPasswordChange,
+  onSubmit,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const [roleScope, setRoleScope] = useState<RoleScope>(() =>
+    username.trim().toLowerCase() === 'petugas' ? 'PETUGAS' : 'ADMIN'
+  );
   const usernameId = useId();
   const passwordId = useId();
 
-  return (
-    <div className="min-h-[100dvh] w-full bg-[#0C0D12] text-white flex flex-col justify-between p-5 sm:p-8 font-sans">
-      <div className="mx-auto w-full max-w-5xl">
-        <a
-          href="/"
-          className="inline-flex items-center gap-2 min-h-[44px] px-3 py-2 text-xs font-medium text-[#A1A1AA] hover:text-white rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-        >
-          <ArrowLeft size={15} aria-hidden="true" />
-          <span>Kembali ke Halaman Utama</span>
-        </a>
-      </div>
+  const handleRoleScopeChange = (val: string) => {
+    const nextRole = val === 'PETUGAS' ? 'PETUGAS' : 'ADMIN';
+    setRoleScope(nextRole);
+  };
 
-      <main className="mx-auto w-full max-w-[440px] my-auto py-8">
-        <div className="border border-[#272A38] bg-[#14161F] p-6 sm:p-9 space-y-6 rounded-2xl">
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-11 h-11 rounded-xl border border-[#3E4357] flex items-center justify-center bg-[#0C0D12]">
-                <span className="text-base font-bold text-white tracking-[0.1em]">S</span>
-              </div>
-              <div>
-                <span className="text-sm font-semibold text-white block">SymphoniaTic</span>
-                <span className="text-[11px] font-medium text-[#A1A1AA] tracking-wider uppercase block">
-                  Portal Administrator &amp; Gate
-                </span>
-              </div>
-            </div>
-            <h1 className="text-2xl font-semibold text-white tracking-tight m-0">
-              Masuk Panel Operasional
-            </h1>
-            <p className="text-sm text-[#A1A1AA] m-0 mt-2 leading-relaxed">
-              Kelola jadwal konser, transaksi tiket, pengajuan refund, dan pemindaian QR di gerbang masuk.
+  const applyDemoCredentials = (targetRole: RoleScope) => {
+    setRoleScope(targetRole);
+    onUsernameChange(targetRole === 'PETUGAS' ? 'petugas' : 'admin');
+    onPasswordChange('123');
+  };
+
+  return (
+    <div className="min-h-[100dvh] w-full flex flex-col lg:flex-row bg-background text-foreground font-sans">
+      <aside className="hidden lg:flex lg:w-[44%] relative flex-col justify-between p-10 xl:p-14 overflow-hidden bg-[#11100E] text-[#F6F4EE]">
+        <img
+          src="/assets/login-image-hd.jpeg"
+          alt="Suasana ruang konser orkestra simfoni"
+          width={1200}
+          height={1600}
+          fetchPriority="high"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-[#11100E]/68" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#11100E] via-[#11100E]/45 to-[#11100E]/65" />
+
+        <div className="relative z-10">
+          <a
+            href="/"
+            className="inline-flex items-center gap-2 min-h-[44px] px-3 -ml-3 text-xs font-medium text-[#E7E2D8] hover:text-white transition-colors rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+          >
+            <ArrowLeft size={15} strokeWidth={1.7} aria-hidden="true" />
+            <span>Kembali ke Beranda</span>
+          </a>
+
+          <div className="mt-10 space-y-4">
+            <span className="inline-block text-xs font-semibold uppercase tracking-[0.22em] text-[#E7E2D8]">
+              SymphoniaTic Production
+            </span>
+            <h2 className="font-display text-4xl xl:text-[42px] leading-[1.12] tracking-[-0.02em] font-semibold text-white m-0">
+              Gerbang Operasional Konser &amp; Kontrol Gate
+            </h2>
+            <p className="text-sm text-[#D8D3C8] font-normal leading-relaxed max-w-md m-0">
+              Satu pintu masuk terpadu untuk tim manajemen acara serta petugas pemindaian tiket di aula pertunjukan.
             </p>
           </div>
-
-          <form onSubmit={onSubmit} className="space-y-5">
-            {error && (
-              <div role="alert" className="p-3.5 rounded-lg border border-rose-500/40 bg-rose-500/10 text-rose-200 text-sm leading-relaxed">
-                {error}
-              </div>
-            )}
-
-            <div className="space-y-1.5">
-              <label htmlFor={usernameId} className="text-xs font-medium text-[#E4E4E7] block">
-                Username
-              </label>
-              <div className="relative">
-                <User size={16} className="text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" aria-hidden="true" />
-                <input
-                  id={usernameId}
-                  type="text"
-                  required
-                  autoComplete="username"
-                  placeholder="admin"
-                  value={username}
-                  onChange={(e) => onUsernameChange(e.target.value)}
-                  className={`${fieldInputBase} pl-10`}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <label htmlFor={passwordId} className="text-xs font-medium text-[#E4E4E7] block">
-                Kata Sandi
-              </label>
-              <div className="relative">
-                <Lock size={16} className="text-[#94A3B8] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" aria-hidden="true" />
-                <input
-                  id={passwordId}
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  autoComplete="current-password"
-                  placeholder="Masukkan kata sandi"
-                  value={password}
-                  onChange={(e) => onPasswordChange(e.target.value)}
-                  className={`${fieldInputBase} pl-10 pr-12`}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-10 w-10 inline-flex items-center justify-center text-[#94A3B8] hover:text-white rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-                >
-                  {showPassword ? <EyeOff size={16} aria-hidden="true" /> : <Eye size={16} aria-hidden="true" />}
-                </button>
-              </div>
-            </div>
-
-            <div className="space-y-2 pt-1">
-              <p className="text-xs text-[#94A3B8] font-medium m-0">Isi cepat akun demo lokal:</p>
-              <div className="grid grid-cols-1 gap-2">
-                <button
-                  type="button"
-                  onClick={() => { onUsernameChange('admin'); onPasswordChange('123'); }}
-                  className="w-full min-h-[44px] py-2.5 px-3.5 border border-[#3E4357] bg-[#0C0D12] hover:border-white/60 rounded-lg text-[#E4E4E7] hover:text-white text-xs transition-colors flex items-center justify-between"
-                >
-                  <span className="flex items-center gap-2"><KeyRound size={14} aria-hidden="true" /> Administrator Penuh</span>
-                  <span className="font-mono text-white">admin / 123</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => { onUsernameChange('petugas'); onPasswordChange('123'); }}
-                  className="w-full min-h-[44px] py-2.5 px-3.5 border border-emerald-500/35 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg text-emerald-300 text-xs transition-colors flex items-center justify-between"
-                >
-                  <span className="flex items-center gap-2"><KeyRound size={14} aria-hidden="true" /> Petugas Gate Scanner</span>
-                  <span className="font-mono text-emerald-200">petugas / 123</span>
-                </button>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full min-h-[48px] py-3 px-4 bg-white text-[#0C0D12] hover:bg-neutral-200 font-semibold text-sm rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-40"
-            >
-              {isLoading ? (
-                <span>Memverifikasi...</span>
-              ) : (
-                <>
-                  <LogIn size={16} aria-hidden="true" />
-                  <span>Masuk ke Dashboard</span>
-                </>
-              )}
-            </button>
-          </form>
         </div>
-      </main>
 
-      <footer className="mx-auto w-full max-w-5xl text-center text-xs text-[#94A3B8]">
-        &copy; {new Date().getFullYear()} SymphoniaTic Production
-      </footer>
+        <div className="relative z-10 space-y-5">
+          <div className="grid grid-cols-1 gap-3 border border-white/15 bg-[#11100E]/80 rounded-xl p-4">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-[#C93018] text-white flex items-center justify-center shrink-0 mt-0.5">
+                <ShieldCheck size={16} aria-hidden="true" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-white m-0">Administrator</p>
+                <p className="text-xs text-[#D8D3C8] mt-0.5 m-0 leading-relaxed">
+                  Kelola metrik pendapatan, jadwal konser, kuota kursi, pesanan, dan tinjauan refund.
+                </p>
+              </div>
+            </div>
+            <div className="h-px bg-white/10" />
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-white/15 text-white flex items-center justify-center shrink-0 mt-0.5">
+                <QrCode size={16} aria-hidden="true" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-white m-0">Petugas Gate</p>
+                <p className="text-xs text-[#D8D3C8] mt-0.5 m-0 leading-relaxed">
+                  Pemindaian QR E-Ticket, pantauan kehadiran langsung, dan check-in manual di pintu masuk.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div className="w-12 h-0.5 bg-[#C93018] mb-3" />
+            <p className="text-xs text-[#D8D3C8] m-0">
+              &copy; {new Date().getFullYear()} SymphoniaTic Official
+            </p>
+          </div>
+        </div>
+      </aside>
+
+      <div className="w-full lg:w-[56%] flex-1 flex flex-col justify-between px-4 sm:px-8 md:px-12 lg:px-14 xl:px-20 py-5 sm:py-8">
+        <header className="flex items-center justify-between gap-3 w-full max-w-[460px] mx-auto lg:max-w-none">
+          <a
+            href="/"
+            className="lg:hidden inline-flex items-center gap-2 min-h-[44px] px-2 -ml-2 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <ArrowLeft size={15} strokeWidth={1.7} aria-hidden="true" />
+            <span>Beranda</span>
+          </a>
+          <div className="hidden lg:flex items-center gap-2 text-xs text-muted-foreground">
+            <span className="font-semibold uppercase tracking-[0.18em] text-[#C93018] dark:text-[#F2644E]">
+              Gateway Operasional
+            </span>
+          </div>
+          <AdminThemeToggle showLabel />
+        </header>
+
+        <main className="mx-auto w-full max-w-[460px] my-auto py-6 sm:py-8">
+          <Card className="border-border bg-card shadow-sm">
+            <CardHeader className="space-y-3 pb-4">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg border border-border-strong bg-background flex items-center justify-center shrink-0">
+                    <span className="font-display text-xl font-semibold text-foreground">S</span>
+                  </div>
+                  <div>
+                    <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#C93018] dark:text-[#F2644E] block">
+                      SymphoniaTic
+                    </span>
+                    <span className="text-xs text-muted-foreground block">
+                      Portal Admin &amp; Petugas Gate
+                    </span>
+                  </div>
+                </div>
+                <Badge variant="outline" className="font-mono text-[11px]">
+                  {roleScope === 'PETUGAS' ? 'GATE ACCESS' : 'ADMIN ACCESS'}
+                </Badge>
+              </div>
+
+              <div className="pt-1">
+                <h1 className="font-display text-3xl sm:text-[34px] leading-tight tracking-[-0.02em] font-semibold text-card-foreground m-0">
+                  Masuk Panel Operasional
+                </h1>
+                <p className="text-sm text-muted-foreground mt-1.5 mb-0 leading-relaxed">
+                  {roleScope === 'PETUGAS'
+                    ? 'Akses khusus petugas pintu masuk untuk pemindaian QR dan verifikasi penonton.'
+                    : 'Kelola pertunjukan, kuota kategori kursi, laporan transaksi, dan refund.'}
+                </p>
+              </div>
+
+              <Tabs value={roleScope} onValueChange={handleRoleScopeChange} className="pt-1">
+                <TabsList className="grid w-full grid-cols-2 h-11 p-1">
+                  <TabsTrigger value="ADMIN" className="min-h-[36px] text-xs font-semibold">
+                    Administrator
+                  </TabsTrigger>
+                  <TabsTrigger value="PETUGAS" className="min-h-[36px] text-xs font-semibold">
+                    Petugas Gate
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </CardHeader>
+
+            <CardContent className="space-y-5">
+              <form onSubmit={onSubmit} className="space-y-4">
+                {error && (
+                  <div
+                    role="alert"
+                    className="p-3.5 rounded-lg border border-[#B91C1C]/35 bg-[#B91C1C]/10 text-[#B91C1C] dark:border-rose-500/40 dark:bg-rose-500/15 dark:text-rose-200 text-sm flex items-start gap-2.5 leading-relaxed"
+                  >
+                    <AlertCircle className="size-4 shrink-0 mt-0.5" aria-hidden="true" />
+                    <span>{error}</span>
+                  </div>
+                )}
+
+                <div className="space-y-1.5">
+                  <Label htmlFor={usernameId}>Username Staf</Label>
+                  <div className="relative">
+                    <User
+                      size={16}
+                      className="text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
+                      aria-hidden="true"
+                    />
+                    <Input
+                      id={usernameId}
+                      type="text"
+                      required
+                      autoComplete="username"
+                      placeholder={roleScope === 'PETUGAS' ? 'petugas' : 'admin'}
+                      value={username}
+                      onChange={(e) => onUsernameChange(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor={passwordId}>Kata Sandi</Label>
+                  <div className="relative">
+                    <Lock
+                      size={16}
+                      className="text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
+                      aria-hidden="true"
+                    />
+                    <Input
+                      id={passwordId}
+                      type={showPassword ? 'text' : 'password'}
+                      required
+                      autoComplete="current-password"
+                      placeholder="Masukkan kata sandi"
+                      value={password}
+                      onChange={(e) => onPasswordChange(e.target.value)}
+                      className="pl-10 pr-12"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+                      className="absolute right-1 top-1/2 -translate-y-1/2 h-10 w-10 inline-flex items-center justify-center text-muted-foreground hover:text-foreground rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      {showPassword ? (
+                        <EyeOff size={16} aria-hidden="true" />
+                      ) : (
+                        <Eye size={16} aria-hidden="true" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  size="lg"
+                  className="w-full mt-2"
+                >
+                  {isLoading ? (
+                    <span>Memverifikasi Kredensial...</span>
+                  ) : (
+                    <>
+                      <LogIn size={16} aria-hidden="true" />
+                      <span>
+                        {roleScope === 'PETUGAS' ? 'Masuk Konsol Gate' : 'Masuk ke Dashboard Admin'}
+                      </span>
+                    </>
+                  )}
+                </Button>
+              </form>
+
+              <div className="pt-4 border-t border-border space-y-2.5">
+                <p className="text-xs font-medium text-muted-foreground m-0">
+                  Isi cepat akun demo lokal:
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <Button
+                    type="button"
+                    variant={roleScope === 'ADMIN' ? 'secondary' : 'outline'}
+                    size="sm"
+                    onClick={() => applyDemoCredentials('ADMIN')}
+                    className="min-h-[44px] justify-between px-3"
+                  >
+                    <span className="flex items-center gap-1.5 text-xs">
+                      <KeyRound size={13} aria-hidden="true" />
+                      <span>Admin</span>
+                    </span>
+                    <span className="font-mono text-[11px] text-muted-foreground">admin / 123</span>
+                  </Button>
+
+                  <Button
+                    type="button"
+                    variant={roleScope === 'PETUGAS' ? 'secondary' : 'outline'}
+                    size="sm"
+                    onClick={() => applyDemoCredentials('PETUGAS')}
+                    className="min-h-[44px] justify-between px-3"
+                  >
+                    <span className="flex items-center gap-1.5 text-xs">
+                      <KeyRound size={13} aria-hidden="true" />
+                      <span>Petugas</span>
+                    </span>
+                    <span className="font-mono text-[11px] text-muted-foreground">petugas / 123</span>
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </main>
+
+        <footer className="mx-auto w-full max-w-[460px] text-center text-xs text-muted-foreground lg:hidden">
+          &copy; {new Date().getFullYear()} SymphoniaTic Official
+        </footer>
+        <div className="hidden lg:block" />
+      </div>
     </div>
   );
 };

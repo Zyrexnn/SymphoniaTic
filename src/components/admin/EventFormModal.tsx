@@ -12,13 +12,39 @@ import {
   shiftTimeMinutes,
 } from '@/lib/timeUtils';
 import { FullscreenWorkspace } from '@/components/ui/fullscreen-sheet';
-import { FormField, TextInputField, TextAreaField, fieldInputBase } from '@/components/ui/form-controls';
+import { FormField, TextInputField, TextAreaField } from '@/components/ui/form-controls';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useAdminTheme } from './AdminThemeContext';
 
 export interface EventFormData {
-  title: string; artist: string; venue: string; date: string; time: string;
-  category: string; categoryBadgeColor: string; image: string; audioUrl?: string; description: string;
-  conductor: string; subtitle: string; openGate: string; address: string; googleMapsUrl: string;
-  organizer: string; initialCatName: string; initialCatPrice: number; initialCatQuota: number;
+  title: string;
+  artist: string;
+  venue: string;
+  date: string;
+  time: string;
+  category: string;
+  categoryBadgeColor: string;
+  image: string;
+  audioUrl?: string;
+  description: string;
+  conductor: string;
+  subtitle: string;
+  openGate: string;
+  address: string;
+  googleMapsUrl: string;
+  organizer: string;
+  initialCatName: string;
+  initialCatPrice: number;
+  initialCatQuota: number;
   rundown: RundownItem[];
 }
 
@@ -45,7 +71,13 @@ const GENRE_OPTIONS = [
 const TIMEZONE_OPTIONS = ['WIB', 'WITA', 'WIT'] as const;
 
 export const EventFormModal: React.FC<EventFormModalProps> = ({
-  isOpen, editingEvent, form, isLoading, onFormChange, onClose, onSubmit,
+  isOpen,
+  editingEvent,
+  form,
+  isLoading,
+  onFormChange,
+  onClose,
+  onSubmit,
 }) => {
   const [uploadError, setUploadError] = useState('');
   const [isUploading, setIsUploading] = useState(false);
@@ -86,7 +118,8 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
       (!isEdit || !form.openGate || normalizeTimeString(form.openGate) === prevAutoGate);
 
     const nextOpenGate = shouldAutoGate ? calculateDefaultOpenGate(newTime) : form.openGate;
-    const shouldAutoRundown = !rundownCustomized && (!isEdit || !form.rundown || form.rundown.length === 0);
+    const shouldAutoRundown =
+      !rundownCustomized && (!isEdit || !form.rundown || form.rundown.length === 0);
     const nextRundown = shouldAutoRundown
       ? generateDynamicRundown(newTime, nextOpenGate)
       : form.rundown;
@@ -142,7 +175,9 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
     update({ rundown: [...current, { time: nextTime, activity: 'Aktivitas Baru' }] });
   };
 
-  const hasGateOrderError = Boolean(form.openGate && form.time && !isTimeBefore(form.openGate, form.time));
+  const hasGateOrderError = Boolean(
+    form.openGate && form.time && !isTimeBefore(form.openGate, form.time)
+  );
   const canSyncRundown = Boolean(parseTimeString(form.time));
 
   const handleFormSubmit = (e: React.FormEvent) => {
@@ -152,25 +187,24 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
 
   const footer = (
     <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3">
-      <p className="text-xs text-[#94A3B8] m-0 hidden sm:block">
+      <p className="text-xs text-muted-foreground m-0 hidden sm:block">
         Periksa kembali jadwal konser, open gate, dan lokasi sebelum menyimpan.
       </p>
       <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
-        <button
-          type="button"
-          onClick={onClose}
-          className="min-h-[44px] px-5 py-2.5 text-sm font-medium text-[#E4E4E7] hover:text-white bg-[#0C0D12] border border-[#3E4357] hover:border-white/50 rounded-lg transition-colors"
-        >
+        <Button type="button" variant="outline" onClick={onClose}>
           Batal
-        </button>
-        <button
+        </Button>
+        <Button
           type="submit"
           form={formId}
           disabled={isLoading || hasGateOrderError}
-          className="min-h-[44px] px-6 py-2.5 text-sm font-semibold text-[#0C0D12] bg-white hover:bg-neutral-200 rounded-lg transition-colors disabled:opacity-40"
         >
-          {isLoading ? 'Menyimpan...' : isEdit ? 'Simpan Perubahan Event' : 'Simpan & Terbitkan Event'}
-        </button>
+          {isLoading
+            ? 'Menyimpan...'
+            : isEdit
+            ? 'Simpan Perubahan Event'
+            : 'Simpan & Terbitkan Event'}
+        </Button>
       </div>
     </div>
   );
@@ -184,19 +218,23 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
       subtitle="Lengkapi informasi pertunjukan, jadwal, rangkaian acara, serta kategori kursi."
       maxWidthClass="max-w-5xl"
       backLabel="Kembali ke Daftar"
+      theme="auto"
       footer={footer}
     >
       <form id={formId} onSubmit={handleFormSubmit} className="space-y-8">
-        <section className="rounded-xl border border-[#272A38] bg-[#14161F] p-5 sm:p-7 space-y-5">
-          <div className="border-b border-[#272A38] pb-3">
-            <h3 className="text-sm font-semibold text-white m-0">1. Informasi Utama Pertunjukan</h3>
-            <p className="text-xs text-[#94A3B8] mt-1 m-0">
+        <Card className="p-5 sm:p-7 space-y-5">
+          <div className="border-b border-border pb-3">
+            <h3 className="text-sm font-semibold text-card-foreground m-0">
+              1. Informasi Utama Pertunjukan
+            </h3>
+            <p className="text-xs text-muted-foreground mt-1 m-0">
               Judul, nama orkestra atau solois, konduktor, dan deskripsi resmi konser.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <TextInputField
+              theme="auto"
               label="Judul Konser"
               required
               value={form.title}
@@ -204,6 +242,7 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
               placeholder="Simfoni Beethoven No. 9"
             />
             <TextInputField
+              theme="auto"
               label="Musisi / Orkestra"
               required
               value={form.artist}
@@ -213,31 +252,35 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <FormField label="Kategori Genre Konser" htmlFor={categorySelectId} required>
-              <select
-                id={categorySelectId}
+            <FormField theme="auto" label="Kategori Genre Konser" htmlFor={categorySelectId} required>
+              <Select
                 value={form.category}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  update({ category: val, categoryBadgeColor: 'bg-white/10 text-white border-white/20' });
-                }}
-                className={fieldInputBase}
+                onValueChange={(val) =>
+                  update({ category: val, categoryBadgeColor: 'bg-white/10 text-white border-white/20' })
+                }
               >
-                {GENRE_OPTIONS.map((genre) => (
-                  <option key={genre} value={genre} className="bg-[#14161F]">
-                    {genre}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger id={categorySelectId}>
+                  <SelectValue placeholder="Pilih genre" />
+                </SelectTrigger>
+                <SelectContent>
+                  {GENRE_OPTIONS.map((genre) => (
+                    <SelectItem key={genre} value={genre}>
+                      {genre}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </FormField>
 
             <TextInputField
+              theme="auto"
               label="Konduktor"
               value={form.conductor}
               onValueChange={(v) => update({ conductor: v })}
               placeholder="Nama konduktor utama"
             />
             <TextInputField
+              theme="auto"
               label="Subtitle / Tagline"
               value={form.subtitle}
               onValueChange={(v) => update({ subtitle: v })}
@@ -246,18 +289,21 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
           </div>
 
           <TextAreaField
+            theme="auto"
             label="Deskripsi Konser"
             rows={4}
             value={form.description}
             onValueChange={(v) => update({ description: v })}
             placeholder="Tuliskan repertoar, latar belakang pertunjukan, dan catatan penting untuk penonton."
           />
-        </section>
+        </Card>
 
-        <section className="rounded-xl border border-[#272A38] bg-[#14161F] p-5 sm:p-7 space-y-5">
-          <div className="border-b border-[#272A38] pb-3">
-            <h3 className="text-sm font-semibold text-white m-0">2. Jadwal &amp; Lokasi Venue</h3>
-            <p className="text-xs text-[#94A3B8] mt-1 m-0">
+        <Card className="p-5 sm:p-7 space-y-5">
+          <div className="border-b border-border pb-3">
+            <h3 className="text-sm font-semibold text-card-foreground m-0">
+              2. Jadwal &amp; Lokasi Venue
+            </h3>
+            <p className="text-xs text-muted-foreground mt-1 m-0">
               Waktu Open Gate harus lebih awal daripada waktu dimulainya konser.
             </p>
           </div>
@@ -285,15 +331,16 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
           {hasGateOrderError && (
             <div
               role="alert"
-              className="p-4 rounded-xl border border-amber-500/40 bg-amber-500/10 text-amber-200 text-sm flex items-start gap-3"
+              className="p-4 rounded-xl border border-[#855A0E]/35 bg-[#855A0E]/10 text-[#855A0E] dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-200 text-sm flex items-start gap-3"
             >
-              <AlertTriangle size={18} className="text-amber-400 shrink-0 mt-0.5" aria-hidden="true" />
+              <AlertTriangle size={18} className="shrink-0 mt-0.5" aria-hidden="true" />
               <span>Waktu Open Gate harus lebih awal dari Waktu Konser.</span>
             </div>
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <TextInputField
+              theme="auto"
               label="Venue / Gedung"
               required
               value={form.venue}
@@ -301,6 +348,7 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
               placeholder="Aula Simfonia Jakarta"
             />
             <TextInputField
+              theme="auto"
               label="Alamat Lengkap Venue / Link Google Maps"
               value={form.address}
               onValueChange={(v) => update({ address: v })}
@@ -308,26 +356,27 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
               hint="Digunakan untuk petunjuk peta di halaman detail konser dan e-ticket."
             />
           </div>
-        </section>
+        </Card>
 
-        <section className="rounded-xl border border-[#272A38] bg-[#14161F] p-5 sm:p-7 space-y-5">
-          <div className="border-b border-[#272A38] pb-3">
-            <h3 className="text-sm font-semibold text-white m-0">3. Media Cover &amp; Audio Pratinjau</h3>
-            <p className="text-xs text-[#94A3B8] mt-1 m-0">
+        <Card className="p-5 sm:p-7 space-y-5">
+          <div className="border-b border-border pb-3">
+            <h3 className="text-sm font-semibold text-card-foreground m-0">
+              3. Media Cover &amp; Audio Pratinjau
+            </h3>
+            <p className="text-xs text-muted-foreground mt-1 m-0">
               Tempel URL gambar atau unggah berkas lokal untuk poster konser.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
             <div className="md:col-span-8 space-y-4">
-              <FormField label="URL Gambar Cover Konser" htmlFor={coverUrlId}>
-                <input
+              <FormField theme="auto" label="URL Gambar Cover Konser" htmlFor={coverUrlId}>
+                <Input
                   id={coverUrlId}
                   type="text"
                   placeholder="https://... atau unggah gambar lokal"
                   value={form.image}
                   onChange={(e) => update({ image: e.target.value })}
-                  className={fieldInputBase}
                 />
               </FormField>
 
@@ -361,20 +410,21 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
                 />
                 <label
                   htmlFor={uploadInputId}
-                  className="inline-flex items-center gap-2 min-h-[44px] px-4 py-2.5 border border-[#3E4357] bg-[#0C0D12] rounded-lg text-sm font-medium text-[#E4E4E7] hover:text-white hover:border-white/60 transition-colors select-none"
+                  className="inline-flex items-center gap-2 min-h-[44px] px-4 py-2.5 border border-border-strong bg-background rounded-lg text-sm font-medium text-foreground hover:border-foreground transition-colors select-none cursor-pointer"
                 >
                   <Upload className="w-4 h-4" aria-hidden="true" />
                   <span>{isUploading ? 'Mengunggah...' : 'Upload Gambar Lokal'}</span>
                 </label>
 
                 {uploadError && (
-                  <span role="alert" className="text-xs text-rose-400">
+                  <span role="alert" className="text-xs text-[#B91C1C] dark:text-rose-400">
                     {uploadError}
                   </span>
                 )}
               </div>
 
               <TextInputField
+                theme="auto"
                 label="URL Audio Cuplikan (Opsional)"
                 value={form.audioUrl || ''}
                 onValueChange={(v) => update({ audioUrl: v })}
@@ -383,8 +433,10 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
             </div>
 
             <div className="md:col-span-4">
-              <span className="block text-xs font-medium text-[#E4E4E7] mb-1.5">Pratinjau Poster</span>
-              <div className="aspect-[16/10] w-full rounded-xl border border-[#272A38] bg-[#0C0D12] overflow-hidden flex items-center justify-center">
+              <span className="block text-xs font-semibold text-foreground mb-1.5">
+                Pratinjau Poster
+              </span>
+              <div className="aspect-[16/10] w-full rounded-xl border border-border bg-background overflow-hidden flex items-center justify-center">
                 {form.image ? (
                   <img
                     src={form.image}
@@ -392,7 +444,7 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="text-center p-4 text-[#94A3B8]">
+                  <div className="text-center p-4 text-muted-foreground">
                     <ImageIcon className="w-6 h-6 mx-auto mb-1.5" aria-hidden="true" />
                     <span className="text-xs block">Belum ada gambar</span>
                   </div>
@@ -400,40 +452,44 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
               </div>
             </div>
           </div>
-        </section>
+        </Card>
 
-        <section className="rounded-xl border border-[#272A38] bg-[#14161F] p-5 sm:p-7 space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#272A38] pb-4">
+        <Card className="p-5 sm:p-7 space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
             <div>
-              <h3 className="text-sm font-semibold text-white m-0">4. Rangkaian Acara (Rundown)</h3>
-              <p className="text-xs text-[#94A3B8] mt-1 m-0">
+              <h3 className="text-sm font-semibold text-card-foreground m-0">
+                4. Rangkaian Acara (Rundown)
+              </h3>
+              <p className="text-xs text-muted-foreground mt-1 m-0">
                 Susun jadwal pintu dibuka, bagian pertama, jeda istirahat, hingga penutup.
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2.5">
-              <button
+              <Button
                 type="button"
+                variant="outline"
+                size="sm"
                 disabled={!canSyncRundown}
                 onClick={handleSyncRundown}
-                className="min-h-[44px] text-xs font-medium bg-[#0C0D12] border border-[#3E4357] rounded-lg px-3.5 py-2 flex items-center gap-2 text-[#E4E4E7] hover:text-white hover:border-white/60 disabled:opacity-40 transition-colors"
               >
                 <RefreshCw size={14} strokeWidth={1.8} aria-hidden="true" />
                 <span>Sinkronkan dari Waktu Konser</span>
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
+                variant="dark"
+                size="sm"
                 onClick={handleAddRundownItem}
-                className="min-h-[44px] text-xs font-semibold text-[#0C0D12] bg-white hover:bg-neutral-200 rounded-lg px-3.5 py-2 flex items-center gap-1.5 transition-colors"
               >
                 <Plus size={14} strokeWidth={2} aria-hidden="true" />
                 <span>Tambah Item</span>
-              </button>
+              </Button>
             </div>
           </div>
 
-          {(!form.rundown || form.rundown.length === 0) ? (
-            <div className="rounded-xl border border-dashed border-[#3E4357] bg-[#0C0D12] p-6 text-center">
-              <p className="text-sm text-[#A1A1AA] m-0">
+          {!form.rundown || form.rundown.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-border-strong bg-background p-6 text-center">
+              <p className="text-sm text-muted-foreground m-0">
                 Belum ada item rundown. Isi waktu konser lalu klik Sinkronkan, atau tambahkan item secara manual.
               </p>
             </div>
@@ -442,9 +498,9 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
               {form.rundown.map((item, idx) => (
                 <div
                   key={idx}
-                  className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center p-3.5 rounded-xl border border-[#272A38] bg-[#0C0D12]"
+                  className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center p-3.5 rounded-xl border border-border bg-background"
                 >
-                  <input
+                  <Input
                     type="text"
                     aria-label={`Waktu item rundown ${idx + 1}`}
                     placeholder="18:00 WIB"
@@ -456,9 +512,9 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
                       );
                       update({ rundown: updated });
                     }}
-                    className={`${fieldInputBase} sm:w-40 shrink-0 font-mono`}
+                    className="sm:w-40 shrink-0 font-mono"
                   />
-                  <input
+                  <Input
                     type="text"
                     aria-label={`Kegiatan item rundown ${idx + 1}`}
                     placeholder="Kegiatan / Movement"
@@ -470,37 +526,41 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
                       );
                       update({ rundown: updated });
                     }}
-                    className={`${fieldInputBase} flex-1`}
+                    className="flex-1"
                   />
-                  <button
+                  <Button
                     type="button"
-                    aria-label={`Hapus item rundown ${idx + 1}`}
+                    variant="outline"
                     onClick={() => {
                       setRundownCustomized(true);
                       const updated = form.rundown.filter((_, i) => i !== idx);
                       update({ rundown: updated });
                     }}
-                    className="min-h-[44px] min-w-[44px] px-3 inline-flex items-center justify-center gap-1.5 text-rose-400 bg-[#14161F] border border-rose-500/30 rounded-lg hover:bg-rose-500/20 transition-colors shrink-0"
+                    aria-label={`Hapus item rundown ${idx + 1}`}
+                    className="border-[#B91C1C]/35 text-[#B91C1C] hover:bg-[#B91C1C]/10 dark:border-rose-500/35 dark:text-rose-300 dark:hover:bg-rose-500/15 shrink-0"
                   >
                     <Trash2 size={15} aria-hidden="true" />
                     <span className="sm:hidden text-xs font-medium">Hapus Item</span>
-                  </button>
+                  </Button>
                 </div>
               ))}
             </div>
           )}
-        </section>
+        </Card>
 
         {!isEdit && (
-          <section className="rounded-xl border border-[#272A38] bg-[#14161F] p-5 sm:p-7 space-y-5">
-            <div className="border-b border-[#272A38] pb-3">
-              <h3 className="text-sm font-semibold text-white m-0">5. Kategori Tiket Awal</h3>
-              <p className="text-xs text-[#94A3B8] mt-1 m-0">
+          <Card className="p-5 sm:p-7 space-y-5">
+            <div className="border-b border-border pb-3">
+              <h3 className="text-sm font-semibold text-card-foreground m-0">
+                5. Kategori Tiket Awal
+              </h3>
+              <p className="text-xs text-muted-foreground mt-1 m-0">
                 Kategori tambahan dapat ditambahkan setelah konser diterbitkan.
               </p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
               <TextInputField
+                theme="auto"
                 label="Nama Kategori"
                 required
                 value={form.initialCatName}
@@ -508,15 +568,21 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
                 placeholder="VIP Pit"
               />
               <TextInputField
+                theme="auto"
                 label="Harga (IDR)"
                 required
                 type="number"
                 min={1000}
                 value={form.initialCatPrice}
                 onValueChange={(v) => update({ initialCatPrice: Number(v) })}
-                hint={form.initialCatPrice > 0 ? `Tampil sebagai ${formatIDR(form.initialCatPrice)}` : undefined}
+                hint={
+                  form.initialCatPrice > 0
+                    ? `Tampil sebagai ${formatIDR(form.initialCatPrice)}`
+                    : undefined
+                }
               />
               <TextInputField
+                theme="auto"
                 label="Kuota Kursi"
                 required
                 type="number"
@@ -525,7 +591,7 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
                 onValueChange={(v) => update({ initialCatQuota: Number(v) })}
               />
             </div>
-          </section>
+          </Card>
         )}
       </form>
     </FullscreenWorkspace>
@@ -540,6 +606,7 @@ interface DatePickerFieldProps {
 
 const DatePickerField: React.FC<DatePickerFieldProps> = ({ label, value, onChange }) => {
   const inputId = useId();
+  const { theme } = useAdminTheme();
   const parsed = parseDateFlexible(value);
   const isoValue = parsed ? parsed.iso : '';
 
@@ -555,18 +622,19 @@ const DatePickerField: React.FC<DatePickerFieldProps> = ({ label, value, onChang
 
   return (
     <FormField
+      theme="auto"
       label={label}
       htmlFor={inputId}
       required
       hint={value ? `Format tersimpan: ${value}` : 'Pilih tanggal dari kalender'}
     >
-      <input
+      <Input
         id={inputId}
         type="date"
         required
         value={isoValue}
         onChange={handleDateSelect}
-        className={`${fieldInputBase} [color-scheme:dark]`}
+        className={theme === 'dark' ? '[color-scheme:dark]' : '[color-scheme:light]'}
       />
     </FormField>
   );
@@ -579,8 +647,14 @@ interface TimePickerFieldProps {
   required?: boolean;
 }
 
-const TimePickerField: React.FC<TimePickerFieldProps> = ({ label, value, onChange, required = true }) => {
+const TimePickerField: React.FC<TimePickerFieldProps> = ({
+  label,
+  value,
+  onChange,
+  required = true,
+}) => {
   const inputId = useId();
+  const { theme } = useAdminTheme();
   const parsed = parseTimeString(value);
   const timeValue = parsed ? parsed.raw24 : '';
   const [fallbackTz, setFallbackTz] = useState<string>('WIB');
@@ -604,8 +678,7 @@ const TimePickerField: React.FC<TimePickerFieldProps> = ({ label, value, onChang
     }
   };
 
-  const handleTzChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const nextTz = e.target.value;
+  const handleTzChange = (nextTz: string) => {
     setFallbackTz(nextTz);
     if (parsed) {
       onChange(formatTimeString(parsed.hours, parsed.minutes, nextTz));
@@ -614,32 +687,35 @@ const TimePickerField: React.FC<TimePickerFieldProps> = ({ label, value, onChang
 
   return (
     <FormField
+      theme="auto"
       label={label}
       htmlFor={inputId}
       required={required}
       hint={value ? `Format tersimpan: ${value}` : undefined}
     >
       <div className="flex items-center gap-2">
-        <input
+        <Input
           id={inputId}
           type="time"
           required={required}
           value={timeValue}
           onChange={handleTimeSelect}
-          className={`${fieldInputBase} flex-1 min-w-0 [color-scheme:dark]`}
+          className={`flex-1 min-w-0 ${
+            theme === 'dark' ? '[color-scheme:dark]' : '[color-scheme:light]'
+          }`}
         />
-        <select
-          aria-label={`${label} zona waktu`}
-          value={activeTz}
-          onChange={handleTzChange}
-          className={`${fieldInputBase} w-[88px] shrink-0`}
-        >
-          {TIMEZONE_OPTIONS.map((tz) => (
-            <option key={tz} value={tz} className="bg-[#14161F]">
-              {tz}
-            </option>
-          ))}
-        </select>
+        <Select value={activeTz} onValueChange={handleTzChange}>
+          <SelectTrigger aria-label={`${label} zona waktu`} className="w-[88px] shrink-0">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {TIMEZONE_OPTIONS.map((tz) => (
+              <SelectItem key={tz} value={tz}>
+                {tz}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
     </FormField>
   );
