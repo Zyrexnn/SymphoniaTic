@@ -184,7 +184,7 @@ const RedeemPageContent: React.FC = () => {
             </form>
 
             <div className="flex flex-col justify-between gap-3 border-t border-[#E4DFD3] pt-4 text-xs text-[#5C5850] sm:flex-row sm:items-center">
-              <span className="font-mono text-xs text-[#6B665D]">Format kode: SYM- diikuti 6 digit angka</span>
+              <span className="font-mono text-xs text-[#6B665D]">Format kode: SYM- diikuti 6–8 karakter kode pesanan</span>
               <button
                 type="button"
                 onClick={handlePasteFromClipboard}

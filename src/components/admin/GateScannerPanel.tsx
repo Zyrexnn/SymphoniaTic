@@ -69,6 +69,8 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
   const html5QrCodeRef = useRef<Html5QrcodeType | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const bypassOpenGateRef = useRef(false);
+  const soundEnabledRef = useRef(true);
+  const selectedEventIdRef = useRef('');
   const isProcessingRef = useRef(false);
   const scannerContainerId = 'gate-qr-reader-container';
   const fileScannerContainerId = 'gate-qr-file-reader';
@@ -76,6 +78,14 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
   useEffect(() => {
     bypassOpenGateRef.current = bypassOpenGate;
   }, [bypassOpenGate]);
+
+  useEffect(() => {
+    soundEnabledRef.current = soundEnabled;
+  }, [soundEnabled]);
+
+  useEffect(() => {
+    selectedEventIdRef.current = selectedEventId;
+  }, [selectedEventId]);
 
   const loadAttendance = async (eventId = selectedEventId) => {
     setIsAttendanceLoading(true);
@@ -92,7 +102,7 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
   }, [selectedEventId]);
 
   const playBeep = (type: 'success' | 'error') => {
-    if (!soundEnabled || typeof window === 'undefined') return;
+    if (!soundEnabledRef.current || typeof window === 'undefined') return;
     try {
       const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
       if (!AudioCtx) return;
@@ -150,13 +160,13 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
   const lastScannedCodeRef = useRef<string>('');
   const lastScannedTimeRef = useRef<number>(0);
 
-  const handleVerifyCode = async (rawCode: string) => {
+  const handleVerifyCode = async (rawCode: string, skipDebounce = false) => {
     if (!rawCode) return;
     const code = normalizeTicketScanPayload(rawCode);
     if (!code) return;
     const nowTs = Date.now();
 
-    if (lastScannedCodeRef.current === code && nowTs - lastScannedTimeRef.current < 3000) {
+    if (!skipDebounce && lastScannedCodeRef.current === code && nowTs - lastScannedTimeRef.current < 3000) {
       return;
     }
     if (isProcessingRef.current) return;
@@ -184,7 +194,7 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
         };
         setScanResult(result);
         setScanHistory((prev) => [result, ...prev.slice(0, 19)]);
-        void loadAttendance(selectedEventId);
+        void loadAttendance(selectedEventIdRef.current);
         if (onScanSuccess) onScanSuccess();
       } else if (res.isAlreadyUsed) {
         playBeep('error');
@@ -317,16 +327,23 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
     setCameraError('');
     setIsProcessing(true);
     isProcessingRef.current = true;
+    let fileScanner: Html5QrcodeType | null = null;
     try {
       const { Html5Qrcode } = await import('html5-qrcode');
-      const fileScanner = new Html5Qrcode(fileScannerContainerId);
+      fileScanner = new Html5Qrcode(fileScannerContainerId);
       const decodedText = await fileScanner.scanFile(file, false);
       fileScanner.clear();
+      fileScanner = null;
       isProcessingRef.current = false;
       setIsProcessing(false);
-      await handleVerifyCode(decodedText);
+      await handleVerifyCode(decodedText, true);
     } catch (err) {
       console.error('QR file scan error:', err);
+      if (fileScanner) {
+        try {
+          fileScanner.clear();
+        } catch {}
+      }
       playBeep('error');
       setCameraError('QR Code tidak terbaca pada gambar tersebut. Pastikan gambar jelas dan tidak terpotong.');
       isProcessingRef.current = false;
@@ -346,7 +363,7 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
   const handleManualSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!manualCode) return;
-    handleVerifyCode(manualCode);
+    handleVerifyCode(manualCode, true);
     setManualCode('');
   };
 
