@@ -95,11 +95,27 @@ const EMPTY_EVENT_FORM: EventFormData = {
   address: '',
   googleMapsUrl: '',
   organizer: 'SymphoniaTic Production',
+  salesEndAt: '',
   initialCatName: 'VIP Pit',
   initialCatPrice: 1000000,
   initialCatQuota: 50,
   rundown: [],
 };
+
+function toLocalDateTimeInput(iso?: string): string {
+  if (!iso) return '';
+  const dt = new Date(iso);
+  if (Number.isNaN(dt.getTime())) return '';
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+}
+
+function toIsoOrNull(localVal?: string): string | null {
+  if (!localVal) return null;
+  const dt = new Date(localVal);
+  if (Number.isNaN(dt.getTime())) return null;
+  return dt.toISOString();
+}
 
 const EMPTY_CAT_FORM = { name: '', price: 500000, quota: 50 };
 
@@ -289,6 +305,7 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
         address: eventForm.address,
         organizer: eventForm.organizer,
         description: eventForm.description,
+        salesEndAt: toIsoOrNull(eventForm.salesEndAt),
         rundown: eventForm.rundown,
         categories: [
           {
@@ -339,6 +356,7 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
         address: eventForm.address,
         organizer: eventForm.organizer,
         description: eventForm.description,
+        salesEndAt: toIsoOrNull(eventForm.salesEndAt),
         rundown: eventForm.rundown,
       });
       if (res.success) {
@@ -812,6 +830,7 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
                   googleMapsUrl: evt.googleMapsUrl || '',
                   organizer: evt.organizer || '',
                   description: evt.description || '',
+                  salesEndAt: toLocalDateTimeInput(evt.salesEndAt),
                   initialCatName: '',
                   initialCatPrice: 0,
                   initialCatQuota: 0,

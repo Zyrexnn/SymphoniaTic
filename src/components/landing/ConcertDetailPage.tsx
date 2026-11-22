@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { MapPin, Clock, ArrowLeft, Minus, Plus, Ticket, AlertCircle } from 'lucide-react';
-import { CONCERT_EVENTS, fetchEventsAPI, formatIDR } from './data';
+import { CONCERT_EVENTS, fetchEventsAPI, formatIDR, formatSalesEndLabel } from './data';
 import type { EventItem, TicketCategory, OrderRecord } from './data';
 import { BookingModal, ETicketConfirmation } from './Modals';
 import { Footer } from './Footer';
@@ -84,6 +84,16 @@ const BuyCard: React.FC<BuyCardProps> = ({ event, selectedCatId, onSelectCategor
           <AlertCircle className="w-4 h-4 text-[#B91C1C] shrink-0 mt-0.5" aria-hidden="true" />
           <span>
             <strong>Seluruh Tiket Habis Terjual</strong>: Semua kategori kursi untuk konser ini telah habis.
+          </span>
+        </div>
+      )}
+
+      {!isClosed && !isAllSoldOut && event.salesEndAt && (
+        <div className="mb-5 p-3 border border-[#E4DFD3] bg-[#F6F4EE] text-[#5C5850] text-xs rounded-xl flex items-center gap-2">
+          <Clock className="w-3.5 h-3.5 text-[#855A0E] shrink-0" aria-hidden="true" />
+          <span>
+            Penjualan online ditutup pada{' '}
+            <strong className="text-[#171614]">{formatSalesEndLabel(event.salesEndAt)}</strong>
           </span>
         </div>
       )}

@@ -42,10 +42,16 @@ export interface EventFormData {
   address: string;
   googleMapsUrl: string;
   organizer: string;
+  salesEndAt: string;
   initialCatName: string;
   initialCatPrice: number;
   initialCatQuota: number;
   rundown: RundownItem[];
+}
+
+function toLocalDateTimeValue(dt: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
 }
 
 interface EventFormModalProps {
@@ -83,10 +89,12 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
   const [isUploading, setIsUploading] = useState(false);
   const [openGateCustomized, setOpenGateCustomized] = useState(false);
   const [rundownCustomized, setRundownCustomized] = useState(false);
+  const { theme } = useAdminTheme();
   const formId = useId();
   const categorySelectId = useId();
   const uploadInputId = useId();
   const coverUrlId = useId();
+  const salesCutoffId = useId();
 
   const isEdit = !!editingEvent;
 
@@ -178,6 +186,60 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
   const hasGateOrderError = Boolean(
     form.openGate && form.time && !isTimeBefore(form.openGate, form.time)
   );
+  const parsedFormDate = parseDateFlexible(form.date);
+  const parsedFormTime = parseTimeString(form.time);
+  const parsedFormGate = parseTimeString(form.openGate);
+  const canApplyCutoffPresets = Boolean(parsedFormDate && parsedFormTime);
+
+  const hasCutoffOrderError = (() => {
+    if (!form.salesEndAt || !parsedFormDate || !parsedFormTime) return false;
+    const cutoffDt = new Date(form.salesEndAt);
+    if (Number.isNaN(cutoffDt.getTime())) return false;
+    const concertDt = new Date(
+      Number(parsedFormDate.year),
+      parsedFormDate.monthIndex,
+      Number(parsedFormDate.day),
+      parsedFormTime.hours,
+      parsedFormTime.minutes,
+      0,
+      0
+    );
+    return cutoffDt.getTime() > concertDt.getTime();
+  })();
+
+  const applyCutoffPreset = (preset: 'one_hour_before_gate' | 'at_concert_start' | 'clear') => {
+    if (preset === 'clear') {
+      update({ salesEndAt: '' });
+      return;
+    }
+    if (!parsedFormDate || !parsedFormTime) return;
+    if (preset === 'at_concert_start') {
+      const concertDt = new Date(
+        Number(parsedFormDate.year),
+        parsedFormDate.monthIndex,
+        Number(parsedFormDate.day),
+        parsedFormTime.hours,
+        parsedFormTime.minutes,
+        0,
+        0
+      );
+      update({ salesEndAt: toLocalDateTimeValue(concertDt) });
+      return;
+    }
+    const baseTime = parsedFormGate || parsedFormTime;
+    const gateDt = new Date(
+      Number(parsedFormDate.year),
+      parsedFormDate.monthIndex,
+      Number(parsedFormDate.day),
+      baseTime.hours,
+      baseTime.minutes,
+      0,
+      0
+    );
+    const oneHourBefore = new Date(gateDt.getTime() - 60 * 60 * 1000);
+    update({ salesEndAt: toLocalDateTimeValue(oneHourBefore) });
+  };
+
   const canSyncRundown = Boolean(parseTimeString(form.time));
 
   const handleFormSubmit = (e: React.FormEvent) => {
@@ -197,7 +259,7 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
         <Button
           type="submit"
           form={formId}
-          disabled={isLoading || hasGateOrderError}
+          disabled={isLoading || hasGateOrderError || hasCutoffOrderError}
         >
           {isLoading
             ? 'Menyimpan...'
@@ -335,6 +397,65 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
             >
               <AlertTriangle size={18} className="shrink-0 mt-0.5" aria-hidden="true" />
               <span>Waktu Open Gate harus lebih awal dari Waktu Konser.</span>
+            </div>
+          )}
+
+          <FormField
+            theme="auto"
+            label="Batas Waktu Penjualan Tiket (Opsional)"
+            htmlFor={salesCutoffId}
+            hint="Kosongkan untuk menutup penjualan otomatis saat konser dimulai. Penutupan penjualan tidak memblokir check-in tiket yang sudah terjual."
+          >
+            <div className="flex flex-col lg:flex-row lg:items-center gap-3">
+              <Input
+                id={salesCutoffId}
+                type="datetime-local"
+                value={form.salesEndAt}
+                onChange={(e) => update({ salesEndAt: e.target.value })}
+                className={`lg:max-w-xs ${
+                  theme === 'dark' ? '[color-scheme:dark]' : '[color-scheme:light]'
+                }`}
+              />
+              <div className="flex flex-wrap items-center gap-2">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  disabled={!canApplyCutoffPresets}
+                  onClick={() => applyCutoffPreset('one_hour_before_gate')}
+                >
+                  1 Jam Sebelum Open Gate
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  disabled={!canApplyCutoffPresets}
+                  onClick={() => applyCutoffPreset('at_concert_start')}
+                >
+                  Saat Konser Dimulai
+                </Button>
+                {form.salesEndAt && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => applyCutoffPreset('clear')}
+                  >
+                    Reset (Otomatis)
+                  </Button>
+                )}
+              </div>
+            </div>
+          </FormField>
+
+          {hasCutoffOrderError && (
+            <div
+              role="alert"
+              className="p-4 rounded-xl border border-[#855A0E]/35 bg-[#855A0E]/10 text-[#855A0E] dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-200 text-sm flex items-start gap-3"
+            >
+              <AlertTriangle size={18} className="shrink-0 mt-0.5" aria-hidden="true" />
+              <span>Batas waktu penjualan tiket tidak boleh melebihi waktu mulai konser.</span>
             </div>
           )}
 

@@ -445,7 +445,7 @@ const EventsPageContent: React.FC = () => {
                   </span>
                   {featured.isClosed ? (
                     <span className="text-xl font-bold tracking-tight text-[#6B665D]">
-                      Penjualan Selesai
+                      Penjualan Ditutup
                     </span>
                   ) : getTotalRemaining(featured) <= 0 ? (
                     <span className="text-xl font-bold tracking-tight text-[#B91C1C]">

@@ -44,6 +44,7 @@ export interface EventItem {
   categories: TicketCategory[];
   isClosed?: boolean;
   eventDateTime?: string;
+  salesEndAt?: string;
 }
  
 export interface SeatItem {
@@ -334,9 +335,26 @@ export interface CreateEventInput {
   organizer?: string;
   subtitle?: string;
   description: string;
+  salesEndAt?: string | null;
   rundown?: RundownItem[];
   categories: { name: string; price: number; quota: number }[];
 }
+
+export const formatSalesEndLabel = (salesEndAt?: string): string => {
+  if (!salesEndAt) return '';
+  const date = new Date(salesEndAt);
+  if (Number.isNaN(date.getTime())) return '';
+  const formatted = new Intl.DateTimeFormat('id-ID', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    timeZone: 'Asia/Jakarta',
+  }).format(date);
+  return `${formatted.replace(/(\d{2})\.(\d{2})/, '$1:$2')} WIB`;
+};
 
 export const getApiBaseUrl = () => {
   if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_API_BASE_URL) {
@@ -393,6 +411,8 @@ export const fetchEventsAPI = async (): Promise<EventItem[]> => {
           organizer: evt.organizer || 'SymphoniaTic Production',
           description: evt.description,
           isClosed: Boolean(evt.isClosed),
+          eventDateTime: evt.eventDateTime || undefined,
+          salesEndAt: evt.salesEndAt || undefined,
           rundown: resolvedRundown,
           categories: (evt.categories || []).map((cat: any) => {
             const parsedPrice = typeof cat.price === 'string' ? parseFloat(cat.price) : (cat.price || 0);

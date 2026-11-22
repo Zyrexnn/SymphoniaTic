@@ -1,7 +1,7 @@
 import React from 'react';
 import { Plus, Edit, Trash2, MapPin, Calendar, Clock, User, Ticket } from 'lucide-react';
 import type { EventItem, TicketCategory } from '../landing/data';
-import { formatIDR } from '../landing/data';
+import { formatIDR, formatSalesEndLabel } from '../landing/data';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -114,46 +114,66 @@ const EventCard: React.FC<EventCardProps> = ({
   onAddCategory,
   onEditCategory,
   onDeleteCategory,
-}) => (
-  <Card className="p-5 sm:p-6 flex flex-col justify-between gap-5 transition-colors hover:border-border-strong">
-    <div>
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative w-full sm:w-28 h-44 sm:h-28 shrink-0 overflow-hidden rounded-lg border border-border bg-background">
-          <img
-            src={evt.image}
-            alt={evt.title}
-            width={224}
-            height={224}
-            className="w-full h-full object-cover"
-          />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="secondary" className="font-mono text-[11px] uppercase">
-                {evt.category || 'SIMFONI'}
-              </Badge>
-              {evt.isClosed && (
-                <Badge variant="destructive" className="font-mono text-[11px]">
-                  ORDER CLOSED
-                </Badge>
-              )}
-            </div>
+}) => {
+  const nowMs = Date.now();
+  const salesEndMs = evt.salesEndAt ? new Date(evt.salesEndAt).getTime() : NaN;
+  const eventStartMs = evt.eventDateTime ? new Date(evt.eventDateTime).getTime() : NaN;
+  const isClosedBySchedule =
+    (!Number.isNaN(salesEndMs) && salesEndMs <= nowMs) ||
+    (Number.isNaN(salesEndMs) && !Number.isNaN(eventStartMs) && eventStartMs <= nowMs);
 
-            <div className="flex items-center gap-1.5">
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={onToggleClose}
-                className={
-                  evt.isClosed
-                    ? 'border-[#1F6E43]/35 bg-[#1F6E43]/10 text-[#1F6E43] hover:bg-[#1F6E43]/20 dark:border-emerald-500/35 dark:bg-emerald-500/15 dark:text-emerald-300'
-                    : 'border-[#B91C1C]/35 bg-[#B91C1C]/10 text-[#B91C1C] hover:bg-[#B91C1C]/20 dark:border-rose-500/35 dark:bg-rose-500/15 dark:text-rose-300'
-                }
-              >
-                {evt.isClosed ? 'Buka Order' : 'Tutup Order'}
-              </Button>
+  return (
+    <Card className="p-5 sm:p-6 flex flex-col justify-between gap-5 transition-colors hover:border-border-strong">
+      <div>
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="relative w-full sm:w-28 h-44 sm:h-28 shrink-0 overflow-hidden rounded-lg border border-border bg-background">
+            <img
+              src={evt.image}
+              alt={evt.title}
+              width={224}
+              height={224}
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge variant="secondary" className="font-mono text-[11px] uppercase">
+                  {evt.category || 'SIMFONI'}
+                </Badge>
+                {evt.isClosed && (
+                  <Badge variant="destructive" className="font-mono text-[11px]">
+                    PENJUALAN DITUTUP
+                  </Badge>
+                )}
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="inline-flex">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        disabled={isClosedBySchedule}
+                        onClick={onToggleClose}
+                        className={
+                          evt.isClosed
+                            ? 'border-[#1F6E43]/35 bg-[#1F6E43]/10 text-[#1F6E43] hover:bg-[#1F6E43]/20 dark:border-emerald-500/35 dark:bg-emerald-500/15 dark:text-emerald-300'
+                            : 'border-[#B91C1C]/35 bg-[#B91C1C]/10 text-[#B91C1C] hover:bg-[#B91C1C]/20 dark:border-rose-500/35 dark:bg-rose-500/15 dark:text-rose-300'
+                        }
+                      >
+                        {isClosedBySchedule ? 'Tutup (Jadwal)' : evt.isClosed ? 'Buka Order' : 'Tutup Order'}
+                      </Button>
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {isClosedBySchedule
+                      ? 'Penjualan ditutup otomatis sesuai jadwal. Ubah Batas Penjualan melalui Edit Konser untuk membuka kembali.'
+                      : 'Mengatur status penjualan tiket online tanpa memblokir check-in tiket yang sudah terbit.'}
+                  </TooltipContent>
+                </Tooltip>
 
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -200,6 +220,9 @@ const EventCard: React.FC<EventCardProps> = ({
         <DetailBox icon={Calendar} label="Jadwal" value={`${evt.date} (${evt.time})`} />
         {evt.conductor && <DetailBox icon={User} label="Konduktor" value={evt.conductor} />}
         {evt.openGate && <DetailBox icon={Clock} label="Open Gate" value={evt.openGate} />}
+        {evt.salesEndAt && (
+          <DetailBox icon={Clock} label="Batas Penjualan" value={formatSalesEndLabel(evt.salesEndAt)} />
+        )}
       </div>
 
       <div className="border-t border-border mt-5 pt-4">
@@ -276,7 +299,8 @@ const EventCard: React.FC<EventCardProps> = ({
       </div>
     </div>
   </Card>
-);
+  );
+};
 
 const DetailBox: React.FC<{ icon: React.ElementType; label: string; value: string }> = ({
   icon: Icon,
