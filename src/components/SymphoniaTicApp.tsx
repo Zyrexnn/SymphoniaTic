@@ -143,8 +143,9 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative min-h-screen w-full bg-[#F6F4EE] text-[#171614]">
+    <div className="relative min-h-screen w-full bg-[#F4F3EF] text-[#141413]">
       <Header
+        variant="overlay"
         isScrolled={isScrolled}
         isMenuOpen={isMenuOpen}
         ordersCount={orders.length}
