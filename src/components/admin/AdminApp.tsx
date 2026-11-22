@@ -32,13 +32,27 @@ import {
 import { AdminThemeProvider, AdminThemeToggle, useAdminTheme } from './AdminThemeContext';
 import { AdminLogin } from './AdminLogin';
 import { AdminSidebar, MobileHeader, MobileBottomNav, type TabId } from './AdminSidebar';
-import { MetricsPanel } from './MetricsPanel';
 import { EventsPanel } from './EventsPanel';
 import { OrdersPanel } from './OrdersPanel';
 import { RefundsPanel, type RefundRecord } from './RefundsPanel';
-import { GateScannerPanel } from './GateScannerPanel';
 import { EventFormModal, type EventFormData } from './EventFormModal';
 import { CategoryFormModal } from './CategoryFormModal';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const MetricsPanel = React.lazy(() => import('./MetricsPanel').then((m) => ({ default: m.MetricsPanel })));
+const GateScannerPanel = React.lazy(() =>
+  import('./GateScannerPanel').then((m) => ({ default: m.GateScannerPanel }))
+);
+
+const PanelSkeleton: React.FC = () => (
+  <div className="space-y-4">
+    <Skeleton className="h-24 w-full rounded-xl" />
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <Skeleton className="h-64 w-full rounded-xl" />
+      <Skeleton className="h-64 w-full rounded-xl" />
+    </div>
+  </div>
+);
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Separator } from '@/components/ui/separator';
@@ -757,14 +771,18 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
           )}
 
           {activeTab === 'SCANNER' && (
-            <GateScannerPanel events={eventsList} onScanSuccess={() => refreshData()} />
+            <React.Suspense fallback={<PanelSkeleton />}>
+              <GateScannerPanel events={eventsList} onScanSuccess={() => refreshData()} />
+            </React.Suspense>
           )}
           {currentRole === 'ADMIN' && activeTab === 'METRICS' && (
-            <MetricsPanel
-              metrics={metrics}
-              eventsCount={eventsList.length}
-              onGoToOrders={() => setActiveTab('ORDERS')}
-            />
+            <React.Suspense fallback={<PanelSkeleton />}>
+              <MetricsPanel
+                metrics={metrics}
+                eventsCount={eventsList.length}
+                onGoToOrders={() => setActiveTab('ORDERS')}
+              />
+            </React.Suspense>
           )}
           {currentRole === 'ADMIN' && activeTab === 'EVENTS' && (
             <EventsPanel
