@@ -24,8 +24,8 @@ export const MetricsPanel: React.FC<MetricsPanelProps> = ({ metrics, eventsCount
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="flex flex-col justify-between">
           <CardHeader className="border-b border-border pb-4 flex-row items-center gap-3 space-y-0">
-            <div className="w-9 h-9 rounded-lg border border-border bg-background flex items-center justify-center text-[#C93018] dark:text-[#F2644E] shrink-0">
-              <TrendingUp size={16} strokeWidth={1.7} aria-hidden="true" />
+            <div className="w-9 h-9 rounded-none border border-border-strong bg-[#D4FF2A] text-[#141413] flex items-center justify-center shrink-0">
+              <TrendingUp size={16} strokeWidth={1.9} aria-hidden="true" />
             </div>
             <div className="min-w-0">
               <CardTitle className="font-sans text-sm font-semibold tracking-tight truncate">
@@ -44,7 +44,7 @@ export const MetricsPanel: React.FC<MetricsPanelProps> = ({ metrics, eventsCount
                 return (
                   <div
                     key={st.eventId}
-                    className="border border-border bg-background p-4 rounded-xl space-y-2.5"
+                    className="border border-border bg-background p-4 rounded-none space-y-2.5"
                   >
                     <div className="flex justify-between items-start gap-3">
                       <span className="text-sm font-medium text-foreground truncate">{st.title}</span>
@@ -69,7 +69,7 @@ export const MetricsPanel: React.FC<MetricsPanelProps> = ({ metrics, eventsCount
                 );
               })
             ) : (
-              <div className="text-center text-sm text-muted-foreground py-12 border border-dashed border-border-strong rounded-xl bg-background">
+              <div className="text-center text-sm text-muted-foreground py-12 border border-dashed border-border-strong rounded-none bg-background">
                 Belum ada data transaksi per konser.
               </div>
             )}
@@ -79,7 +79,7 @@ export const MetricsPanel: React.FC<MetricsPanelProps> = ({ metrics, eventsCount
         <Card className="flex flex-col justify-between">
           <CardHeader className="border-b border-border pb-4 flex-row items-center justify-between gap-3 space-y-0">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-9 h-9 rounded-lg border border-border bg-background flex items-center justify-center text-foreground shrink-0">
+              <div className="w-9 h-9 rounded-none border border-border bg-background flex items-center justify-center text-foreground shrink-0">
                 <Ticket size={16} strokeWidth={1.7} aria-hidden="true" />
               </div>
               <div className="min-w-0">
@@ -108,7 +108,7 @@ export const MetricsPanel: React.FC<MetricsPanelProps> = ({ metrics, eventsCount
               metrics.recentOrders.map((ro) => (
                 <div
                   key={ro.id}
-                  className="border border-border bg-background p-3.5 rounded-xl flex justify-between items-center gap-3"
+                  className="border border-border bg-background p-3.5 rounded-none flex justify-between items-center gap-3"
                 >
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-1">
@@ -133,7 +133,7 @@ export const MetricsPanel: React.FC<MetricsPanelProps> = ({ metrics, eventsCount
                 </div>
               ))
             ) : (
-              <div className="text-center text-sm text-muted-foreground py-12 border border-dashed border-border-strong rounded-xl bg-background">
+              <div className="text-center text-sm text-muted-foreground py-12 border border-dashed border-border-strong rounded-none bg-background">
                 Belum ada data pesanan terbaru.
               </div>
             )}

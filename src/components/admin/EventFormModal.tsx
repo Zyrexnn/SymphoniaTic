@@ -393,7 +393,7 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
           {hasGateOrderError && (
             <div
               role="alert"
-              className="p-4 rounded-xl border border-[#855A0E]/35 bg-[#855A0E]/10 text-[#855A0E] dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-200 text-sm flex items-start gap-3"
+              className="p-4 rounded-none border border-[#8A5A00]/35 bg-[#8A5A00]/10 text-[#8A5A00] dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-200 text-sm flex items-start gap-3"
             >
               <AlertTriangle size={18} className="shrink-0 mt-0.5" aria-hidden="true" />
               <span>Waktu Open Gate harus lebih awal dari Waktu Konser.</span>
@@ -452,7 +452,7 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
           {hasCutoffOrderError && (
             <div
               role="alert"
-              className="p-4 rounded-xl border border-[#855A0E]/35 bg-[#855A0E]/10 text-[#855A0E] dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-200 text-sm flex items-start gap-3"
+              className="p-4 rounded-none border border-[#8A5A00]/35 bg-[#8A5A00]/10 text-[#8A5A00] dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-200 text-sm flex items-start gap-3"
             >
               <AlertTriangle size={18} className="shrink-0 mt-0.5" aria-hidden="true" />
               <span>Batas waktu penjualan tiket tidak boleh melebihi waktu mulai konser.</span>
@@ -531,14 +531,14 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
                 />
                 <label
                   htmlFor={uploadInputId}
-                  className="inline-flex items-center gap-2 min-h-[44px] px-4 py-2.5 border border-border-strong bg-background rounded-lg text-sm font-medium text-foreground hover:border-foreground transition-colors select-none cursor-pointer"
+                  className="inline-flex items-center gap-2 min-h-[44px] px-4 py-2.5 border border-border-strong bg-background rounded-none text-sm font-medium text-foreground hover:border-foreground transition-colors select-none cursor-pointer"
                 >
                   <Upload className="w-4 h-4" aria-hidden="true" />
                   <span>{isUploading ? 'Mengunggah...' : 'Upload Gambar Lokal'}</span>
                 </label>
 
                 {uploadError && (
-                  <span role="alert" className="text-xs text-[#B91C1C] dark:text-rose-400">
+                  <span role="alert" className="text-xs text-[#C81E1E] dark:text-rose-400">
                     {uploadError}
                   </span>
                 )}
@@ -557,7 +557,7 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
               <span className="block text-xs font-semibold text-foreground mb-1.5">
                 Pratinjau Poster
               </span>
-              <div className="aspect-[16/10] w-full rounded-xl border border-border bg-background overflow-hidden flex items-center justify-center">
+              <div className="aspect-[16/10] w-full rounded-none border border-border bg-background overflow-hidden flex items-center justify-center">
                 {form.image ? (
                   <img
                     src={form.image}
@@ -609,7 +609,7 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
           </div>
 
           {!form.rundown || form.rundown.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-border-strong bg-background p-6 text-center">
+            <div className="rounded-none border border-dashed border-border-strong bg-background p-6 text-center">
               <p className="text-sm text-muted-foreground m-0">
                 Belum ada item rundown. Isi waktu konser lalu klik Sinkronkan, atau tambahkan item secara manual.
               </p>
@@ -619,7 +619,7 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
               {form.rundown.map((item, idx) => (
                 <div
                   key={idx}
-                  className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center p-3.5 rounded-xl border border-border bg-background"
+                  className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center p-3.5 rounded-none border border-border bg-background"
                 >
                   <Input
                     type="text"
@@ -658,7 +658,7 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
                       update({ rundown: updated });
                     }}
                     aria-label={`Hapus item rundown ${idx + 1}`}
-                    className="border-[#B91C1C]/35 text-[#B91C1C] hover:bg-[#B91C1C]/10 dark:border-rose-500/35 dark:text-rose-300 dark:hover:bg-rose-500/15 shrink-0"
+                    className="border-[#C81E1E]/35 text-[#C81E1E] hover:bg-[#C81E1E]/10 dark:border-rose-500/35 dark:text-rose-300 dark:hover:bg-rose-500/15 shrink-0"
                   >
                     <Trash2 size={15} aria-hidden="true" />
                     <span className="sm:hidden text-xs font-medium">Hapus Item</span>

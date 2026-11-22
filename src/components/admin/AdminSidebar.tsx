@@ -106,7 +106,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
               strokeWidth={1.75}
               className={
                 isActive
-                  ? 'text-[#C93018] dark:text-[#F2644E] shrink-0'
+                  ? 'text-[#141413] dark:text-[#D4FF2A] shrink-0'
                   : 'text-muted-foreground shrink-0'
               }
               aria-hidden="true"
@@ -115,7 +115,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
           </span>
           {showExpanded && badge && (
             <Badge
-              variant={isActive ? 'dark' : 'secondary'}
+              variant={isActive ? 'default' : 'secondary'}
               className="font-mono text-[11px] px-1.5 py-0.5 shrink-0"
             >
               {badge}
@@ -131,17 +131,17 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
       <SidebarHeader className={showExpanded ? 'p-4' : 'p-3 items-center'}>
         <a
           href="/"
-          className="flex items-center gap-3 no-underline group rounded-lg p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex items-center gap-3 no-underline group rounded-none p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          <div className="w-10 h-10 rounded-lg border border-border-strong bg-background flex items-center justify-center shrink-0 group-hover:border-[#C93018] transition-colors">
-            <span className="font-display text-xl font-semibold text-foreground">S</span>
+          <div className="w-10 h-10 rounded-none border border-border-strong bg-[#141413] text-[#D4FF2A] flex items-center justify-center shrink-0 transition-colors">
+            <span className="font-display text-xl font-extrabold">S.</span>
           </div>
           {showExpanded && (
             <div className="min-w-0">
-              <span className="text-sm font-semibold text-sidebar-foreground tracking-tight block truncate">
-                SymphoniaTic
+              <span className="text-sm font-bold text-sidebar-foreground tracking-tight block truncate">
+                SymphoniaTic.
               </span>
-              <span className="text-[11px] font-semibold text-[#C93018] dark:text-[#F2644E] tracking-wider uppercase block truncate">
+              <span className="text-[10px] font-bold text-muted-foreground tracking-wider uppercase block truncate">
                 {role === 'PETUGAS' ? 'Gate Officer' : 'Admin Portal'}
               </span>
             </div>
@@ -169,17 +169,17 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
 
       <SidebarFooter>
         {showExpanded && (
-          <div className="px-2.5 py-2 mb-1 rounded-lg border border-border bg-background flex items-center gap-2.5">
+          <div className="px-2.5 py-2 mb-1 rounded-none border border-border bg-background flex items-center gap-2.5">
             <ShieldCheck
               size={15}
-              className="text-[#C93018] dark:text-[#F2644E] shrink-0"
+              className="text-foreground dark:text-[#D4FF2A] shrink-0"
               aria-hidden="true"
             />
             <div className="min-w-0">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground block">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">
                 Peran Aktif
               </span>
-              <span className="text-xs font-semibold text-foreground block truncate">
+              <span className="text-xs font-bold text-foreground block truncate">
                 {role === 'PETUGAS' ? 'Petugas Gate Scanner' : 'Administrator Penuh'}
               </span>
             </div>
@@ -200,7 +200,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
               type="button"
               tooltip="Keluar Sesi"
               onClick={onLogout}
-              className={`text-[#B91C1C] dark:text-rose-300 hover:bg-[#B91C1C]/10 hover:text-[#B91C1C] dark:hover:text-rose-200 ${
+              className={`text-[#C81E1E] dark:text-rose-300 hover:bg-[#C81E1E]/10 hover:text-[#C81E1E] dark:hover:text-rose-200 ${
                 showExpanded ? 'justify-start' : 'justify-center'
               }`}
             >
@@ -235,10 +235,10 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
       <div className="flex items-center gap-2.5 min-w-0">
         <SidebarTrigger showLabelOnMobile />
         <div className="min-w-0">
-          <span className="text-xs font-semibold uppercase tracking-wider text-[#C93018] dark:text-[#F2644E] block truncate">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block truncate">
             {role === 'PETUGAS' ? 'Gate Officer' : 'Admin'}
           </span>
-          <span className="text-sm font-semibold text-foreground tracking-tight block truncate">
+          <span className="text-sm font-bold text-foreground tracking-tight block truncate">
             {currentItem.label}
           </span>
         </div>
@@ -287,22 +287,22 @@ export const MobileBottomNav: React.FC<{
             type="button"
             aria-current={isActive ? 'page' : undefined}
             onClick={() => onTabChange(item.id)}
-            className={`relative min-h-[48px] min-w-[52px] flex flex-col items-center justify-center py-1.5 px-2 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+            className={`relative min-h-[48px] min-w-[52px] flex flex-col items-center justify-center py-1.5 px-2 rounded-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
               isActive
-                ? 'text-foreground bg-secondary font-semibold'
+                ? 'text-foreground bg-secondary font-bold'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             {isActive && (
               <span
                 aria-hidden="true"
-                className="absolute top-0 left-3 right-3 h-0.5 rounded-b-full bg-[#C93018]"
+                className="absolute top-0 left-2 right-2 h-0.5 bg-[#141413] dark:bg-[#D4FF2A]"
               />
             )}
             <Icon
               size={18}
-              strokeWidth={isActive ? 2 : 1.6}
-              className={isActive ? 'text-[#C93018] dark:text-[#F2644E]' : undefined}
+              strokeWidth={isActive ? 2.2 : 1.6}
+              className={isActive ? 'text-foreground dark:text-[#D4FF2A]' : undefined}
               aria-hidden="true"
             />
             <span className="text-[11px] tracking-tight mt-1 truncate max-w-[68px]">

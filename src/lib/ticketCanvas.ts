@@ -75,99 +75,95 @@ export function drawTicketCanvas(order: OrderRecord, options?: TicketDrawOptions
   const qrPayload = options?.qrPayload || order.qrCode || order.orderCode;
   const displayCode = options?.seatCode ? `${order.orderCode}-${options.seatCode}` : order.orderCode;
 
-  ctx.fillStyle = '#F6F4EE';
+  ctx.fillStyle = '#F4F3EF';
   ctx.fillRect(0, 0, width, height);
 
   ctx.fillStyle = '#FFFFFF';
   ctx.fillRect(28, 28, width - 56, height - 56);
-  ctx.strokeStyle = '#E4DFD3';
+  ctx.strokeStyle = '#141413';
   ctx.lineWidth = 2;
   ctx.strokeRect(28, 28, width - 56, height - 56);
 
-  ctx.fillStyle = '#C93018';
+  ctx.fillStyle = '#141413';
+  ctx.fillRect(28, 28, width - 56, 86);
+
+  ctx.fillStyle = '#D4FF2A';
   ctx.fillRect(28, 28, width - 56, 8);
 
-  ctx.fillStyle = '#171614';
-  ctx.font = '600 32px Georgia, serif';
-  ctx.fillText('SymphoniaTic Pass', 56, 92);
+  ctx.fillStyle = '#F4F3EF';
+  ctx.font = '800 30px "Archivo", "Plus Jakarta Sans", sans-serif';
+  ctx.fillText('SymphoniaTic. Pass', 56, 86);
 
-  ctx.fillStyle = '#C93018';
-  ctx.font = '700 13px sans-serif';
+  ctx.fillStyle = '#D4FF2A';
+  ctx.font = '700 13px "JetBrains Mono", monospace';
   ctx.textAlign = 'right';
   const rightBadge =
     options?.ticketIndex && options?.totalTickets && options.totalTickets > 1
       ? `TIKET ${options.ticketIndex} DARI ${options.totalTickets}`
       : 'VERIFIED E-TICKET';
-  ctx.fillText(rightBadge, 744, 88);
+  ctx.fillText(rightBadge, 744, 83);
   ctx.textAlign = 'left';
 
-  ctx.strokeStyle = '#E4DFD3';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(56, 116);
-  ctx.lineTo(744, 116);
-  ctx.stroke();
+  ctx.fillStyle = '#52514D';
+  ctx.font = '700 11px "Plus Jakarta Sans", sans-serif';
+  ctx.fillText('• PERTUNJUKAN RESMI', 56, 148);
 
-  ctx.fillStyle = '#6B665D';
-  ctx.font = '600 11px sans-serif';
-  ctx.fillText('PERTUNJUKAN RESMI', 56, 144);
+  ctx.fillStyle = '#141413';
+  ctx.font = '800 28px "Archivo", "Plus Jakarta Sans", sans-serif';
+  ctx.fillText(order.eventTitle, 56, 184);
 
-  ctx.fillStyle = '#171614';
-  ctx.font = '600 28px Georgia, serif';
-  ctx.fillText(order.eventTitle, 56, 180);
-
-  ctx.fillStyle = '#5C5850';
-  ctx.font = '400 15px sans-serif';
-  ctx.fillText(order.artist, 56, 208);
+  ctx.fillStyle = '#52514D';
+  ctx.font = '500 15px "Plus Jakarta Sans", sans-serif';
+  ctx.fillText(order.artist, 56, 212);
 
   const drawInfo = (x: number, y: number, label: string, value: string) => {
-    ctx.fillStyle = '#6B665D';
-    ctx.font = '600 11px sans-serif';
+    ctx.fillStyle = '#6E6D68';
+    ctx.font = '700 11px "Plus Jakarta Sans", sans-serif';
     ctx.fillText(label.toUpperCase(), x, y);
-    ctx.fillStyle = '#171614';
-    ctx.font = '600 15px sans-serif';
+    ctx.fillStyle = '#141413';
+    ctx.font = '700 15px "Plus Jakarta Sans", sans-serif';
     ctx.fillText(value, x, y + 22);
   };
 
-  drawInfo(56, 250, 'Tanggal & Waktu', order.date);
-  drawInfo(440, 250, 'Open Gate', order.openGate || 'Sesuai Jadwal');
-  drawInfo(56, 312, 'Pemegang Tiket', displayAttendee);
-  drawInfo(440, 312, 'Kategori Tiket', displayCategory);
-  drawInfo(56, 374, 'Kode Order', order.orderCode);
-  drawInfo(440, 374, 'Nomor Kursi', displaySeat);
+  drawInfo(56, 254, 'Tanggal & Waktu', order.date);
+  drawInfo(440, 254, 'Open Gate', order.openGate || 'Sesuai Jadwal');
+  drawInfo(56, 316, 'Pemegang Tiket', displayAttendee);
+  drawInfo(440, 316, 'Kategori Tiket', displayCategory);
+  drawInfo(56, 378, 'Kode Order', order.orderCode);
+  drawInfo(440, 378, 'Nomor Kursi', displaySeat);
 
-  ctx.strokeStyle = '#CFC9BC';
+  ctx.strokeStyle = '#DFDDD6';
   ctx.setLineDash([6, 6]);
   ctx.beginPath();
-  ctx.moveTo(56, 422);
-  ctx.lineTo(width - 56, 422);
+  ctx.moveTo(56, 426);
+  ctx.lineTo(width - 56, 426);
   ctx.stroke();
   ctx.setLineDash([]);
 
-  ctx.fillStyle = '#F6F4EE';
-  ctx.fillRect(56, 450, 688, 172);
-  ctx.strokeStyle = '#E4DFD3';
+  ctx.fillStyle = '#F4F3EF';
+  ctx.fillRect(56, 452, 688, 172);
+  ctx.strokeStyle = '#DFDDD6';
   ctx.lineWidth = 1;
-  ctx.strokeRect(56, 450, 688, 172);
+  ctx.strokeRect(56, 452, 688, 172);
 
-  ctx.fillStyle = '#C93018';
-  ctx.font = '700 12px sans-serif';
-  ctx.fillText('PETUNJUK LOKASI VENUE & MAPS', 80, 484);
+  ctx.fillStyle = '#141413';
+  ctx.font = '700 12px "Plus Jakarta Sans", sans-serif';
+  ctx.fillText('• PETUNJUK LOKASI VENUE & MAPS', 80, 486);
 
-  ctx.fillStyle = '#171614';
-  ctx.font = '600 17px sans-serif';
-  ctx.fillText(order.venue, 80, 514);
+  ctx.fillStyle = '#141413';
+  ctx.font = '700 17px "Plus Jakarta Sans", sans-serif';
+  ctx.fillText(order.venue, 80, 516);
 
-  ctx.fillStyle = '#5C5850';
-  ctx.font = '400 13px sans-serif';
-  ctx.fillText(`Navigasi Peta: maps.google.com/?q=${encodeURIComponent(order.venue)}`, 80, 544);
+  ctx.fillStyle = '#52514D';
+  ctx.font = '400 13px "Plus Jakarta Sans", sans-serif';
+  ctx.fillText(`Navigasi Peta: maps.google.com/?q=${encodeURIComponent(order.venue)}`, 80, 546);
 
-  ctx.fillStyle = '#6B665D';
-  ctx.font = '400 12px sans-serif';
+  ctx.fillStyle = '#6E6D68';
+  ctx.font = '400 12px "Plus Jakarta Sans", sans-serif';
   ctx.fillText(
     `Tunjukkan dokumen E-Ticket ini saat memasuki gerbang pemeriksaan (${order.openGate ? `Open Gate ${order.openGate}` : 'Open Gate'}).`,
     80,
-    588
+    590
   );
 
   const qrSize = 196;
@@ -176,7 +172,8 @@ export function drawTicketCanvas(order: OrderRecord, options?: TicketDrawOptions
 
   ctx.fillStyle = '#FFFFFF';
   ctx.fillRect(qrX - 12, qrY - 12, qrSize + 24, qrSize + 24);
-  ctx.strokeStyle = '#E4DFD3';
+  ctx.strokeStyle = '#141413';
+  ctx.lineWidth = 2;
   ctx.strokeRect(qrX - 12, qrY - 12, qrSize + 24, qrSize + 24);
 
   try {
@@ -186,7 +183,7 @@ export function drawTicketCanvas(order: OrderRecord, options?: TicketDrawOptions
     const totalCount = moduleCount + quietZone * 2;
     const cellSize = qrSize / totalCount;
 
-    ctx.fillStyle = '#171614';
+    ctx.fillStyle = '#141413';
     for (let r = 0; r < moduleCount; r++) {
       for (let c = 0; c < moduleCount; c++) {
         if (qr.modules.get(r, c)) {
@@ -200,24 +197,25 @@ export function drawTicketCanvas(order: OrderRecord, options?: TicketDrawOptions
     console.error('Error generating canvas QR code:', err);
   }
 
-  ctx.fillStyle = '#171614';
-  ctx.font = '700 22px monospace';
+  ctx.fillStyle = '#141413';
+  ctx.font = '700 22px "JetBrains Mono", monospace';
   ctx.textAlign = 'center';
   ctx.fillText(displayCode, width / 2, 902);
 
-  ctx.fillStyle = '#6B665D';
-  ctx.font = '600 12px sans-serif';
+  ctx.fillStyle = '#52514D';
+  ctx.font = '700 12px "Plus Jakarta Sans", sans-serif';
   ctx.fillText('SIMPAN & TUNJUKKAN KODE QR RESMI INI KEPADA PETUGAS GATE', width / 2, 932);
 
-  ctx.strokeStyle = '#E4DFD3';
+  ctx.strokeStyle = '#DFDDD6';
+  ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(56, 962);
   ctx.lineTo(744, 962);
   ctx.stroke();
 
-  ctx.fillStyle = '#5C5850';
-  ctx.font = '400 13px sans-serif';
-  ctx.fillText('SymphoniaTic Orchestra Hall Verification · All Rights Reserved', width / 2, 996);
+  ctx.fillStyle = '#52514D';
+  ctx.font = '500 13px "Plus Jakarta Sans", sans-serif';
+  ctx.fillText('SymphoniaTic. Orchestra Hall Verification · All Rights Reserved', width / 2, 996);
 
   return canvas;
 }
@@ -276,7 +274,7 @@ export async function downloadOrderPDF(order: OrderRecord): Promise<void> {
     const canvas = drawTicketCanvas(order, opt);
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
     const xPos = (pdfWidth - imgWidth) / 2;
-    pdf.setFillColor(246, 244, 238);
+    pdf.setFillColor(244, 243, 239);
     pdf.rect(0, 0, 210, 297, 'F');
     pdf.addImage(canvas.toDataURL('image/png'), 'PNG', xPos, 15, imgWidth, imgHeight);
   });

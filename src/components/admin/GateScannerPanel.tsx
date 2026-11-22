@@ -448,8 +448,8 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
         <CardContent className="p-5 space-y-3.5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg border border-[#1F6E43]/30 bg-[#1F6E43]/10 dark:border-emerald-500/30 dark:bg-emerald-500/15 flex items-center justify-center shrink-0">
-                <Users size={16} className="text-[#1F6E43] dark:text-emerald-400" aria-hidden="true" />
+              <div className="w-9 h-9 rounded-none border border-[#156E3F]/30 bg-[#156E3F]/10 dark:border-emerald-500/30 dark:bg-emerald-500/15 flex items-center justify-center shrink-0">
+                <Users size={16} className="text-[#156E3F] dark:text-emerald-400" aria-hidden="true" />
               </div>
               <div>
                 <h3 className="text-sm font-semibold text-card-foreground m-0">
@@ -506,7 +506,7 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
             <Progress
               value={attendancePct}
               aria-label="Persentase kehadiran penonton"
-              indicatorClassName="bg-[#1F6E43] dark:bg-emerald-500"
+              indicatorClassName="bg-[#156E3F] dark:bg-emerald-500"
             />
             {attendance && (
               <div className="flex justify-between items-center text-[11px] font-mono text-muted-foreground tabular-nums">
@@ -524,7 +524,7 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
             {cameraError && (
               <div
                 role="alert"
-                className="p-3.5 mb-4 w-full rounded-lg border border-[#B91C1C]/35 bg-[#B91C1C]/10 text-[#B91C1C] dark:border-rose-500/40 dark:bg-rose-500/15 dark:text-rose-200 text-xs flex items-center gap-2.5"
+                className="p-3.5 mb-4 w-full rounded-none border border-[#C81E1E]/35 bg-[#C81E1E]/10 text-[#C81E1E] dark:border-rose-500/40 dark:bg-rose-500/15 dark:text-rose-200 text-xs flex items-center gap-2.5"
               >
                 <AlertCircle size={16} className="shrink-0" aria-hidden="true" />
                 <span>{cameraError}</span>
@@ -533,7 +533,7 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
 
             <div id={fileScannerContainerId} className="hidden" aria-hidden="true" />
 
-            <div className="w-full max-w-[400px] aspect-square bg-background border border-border rounded-xl overflow-hidden flex items-center justify-center relative">
+            <div className="w-full max-w-[400px] aspect-square bg-background border border-border rounded-none overflow-hidden flex items-center justify-center relative">
               <div
                 id={scannerContainerId}
                 className={`w-full h-full flex items-center justify-center ${
@@ -543,8 +543,8 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
 
               {!isScanning && (
                 <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center p-8 space-y-3 bg-background">
-                  <div className="w-14 h-14 mx-auto rounded-xl border border-border-strong flex items-center justify-center bg-background">
-                    <Camera size={24} className="text-[#C93018] dark:text-[#F2644E]" aria-hidden="true" />
+                  <div className="w-14 h-14 mx-auto rounded-none border border-border-strong flex items-center justify-center bg-background">
+                    <Camera size={24} className="text-foreground dark:text-[#D4FF2A]" aria-hidden="true" />
                   </div>
                   <h3 className="text-sm font-semibold text-card-foreground m-0">
                     Kamera Scanner Sedang Nonaktif
@@ -628,31 +628,31 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
             {scanResult ? (
               <div
                 role="status"
-                className={`p-5 rounded-xl border space-y-4 ${
+                className={`p-5 rounded-none border space-y-4 ${
                   scanResult.type === 'SUCCESS'
-                    ? 'border-[#1F6E43]/35 bg-[#1F6E43]/10 dark:border-emerald-500/40 dark:bg-emerald-950/35'
+                    ? 'border-[#156E3F]/35 bg-[#156E3F]/10 dark:border-emerald-500/40 dark:bg-emerald-950/35'
                     : scanResult.type === 'ALREADY_USED'
-                    ? 'border-[#855A0E]/35 bg-[#855A0E]/10 dark:border-amber-500/40 dark:bg-amber-950/35'
-                    : 'border-[#B91C1C]/35 bg-[#B91C1C]/10 dark:border-rose-500/40 dark:bg-rose-950/35'
+                    ? 'border-[#8A5A00]/35 bg-[#8A5A00]/10 dark:border-amber-500/40 dark:bg-amber-950/35'
+                    : 'border-[#C81E1E]/35 bg-[#C81E1E]/10 dark:border-rose-500/40 dark:bg-rose-950/35'
                 }`}
               >
                 <div className="flex items-start gap-3">
                   {scanResult.type === 'SUCCESS' ? (
                     <CheckCircle2
                       size={24}
-                      className="text-[#1F6E43] dark:text-emerald-400 shrink-0"
+                      className="text-[#156E3F] dark:text-emerald-400 shrink-0"
                       aria-hidden="true"
                     />
                   ) : scanResult.type === 'ALREADY_USED' ? (
                     <Clock
                       size={24}
-                      className="text-[#855A0E] dark:text-amber-400 shrink-0"
+                      className="text-[#8A5A00] dark:text-amber-400 shrink-0"
                       aria-hidden="true"
                     />
                   ) : (
                     <AlertCircle
                       size={24}
-                      className="text-[#B91C1C] dark:text-rose-400 shrink-0"
+                      className="text-[#C81E1E] dark:text-rose-400 shrink-0"
                       aria-hidden="true"
                     />
                   )}
@@ -660,10 +660,10 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
                     <h3
                       className={`text-sm font-semibold tracking-wide m-0 ${
                         scanResult.type === 'SUCCESS'
-                          ? 'text-[#1F6E43] dark:text-emerald-300'
+                          ? 'text-[#156E3F] dark:text-emerald-300'
                           : scanResult.type === 'ALREADY_USED'
-                          ? 'text-[#855A0E] dark:text-amber-300'
-                          : 'text-[#B91C1C] dark:text-rose-300'
+                          ? 'text-[#8A5A00] dark:text-amber-300'
+                          : 'text-[#C81E1E] dark:text-rose-300'
                       }`}
                     >
                       {scanResult.title}
@@ -732,7 +732,7 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
                 )}
               </div>
             ) : (
-              <div className="p-8 text-center border border-dashed border-border-strong rounded-xl text-xs text-muted-foreground bg-background">
+              <div className="p-8 text-center border border-dashed border-border-strong rounded-none text-xs text-muted-foreground bg-background">
                 Belum ada tiket yang dipindai pada sesi ini.
               </div>
             )}
@@ -765,17 +765,17 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
                 scanHistory.map((item, idx) => (
                   <div
                     key={idx}
-                    className="p-2.5 border border-border bg-background rounded-lg flex items-center justify-between gap-2 text-xs"
+                    className="p-2.5 border border-border bg-background rounded-none flex items-center justify-between gap-2 text-xs"
                   >
                     <div className="flex items-center gap-2 truncate">
                       <span
                         aria-hidden="true"
-                        className={`w-2 h-2 rounded-full shrink-0 ${
+                        className={`w-2 h-2 rounded-none shrink-0 ${
                           item.type === 'SUCCESS'
-                            ? 'bg-[#1F6E43] dark:bg-emerald-400'
+                            ? 'bg-[#156E3F] dark:bg-emerald-400'
                             : item.type === 'ALREADY_USED'
-                            ? 'bg-[#855A0E] dark:bg-amber-400'
-                            : 'bg-[#B91C1C] dark:bg-rose-400'
+                            ? 'bg-[#8A5A00] dark:bg-amber-400'
+                            : 'bg-[#C81E1E] dark:bg-rose-400'
                         }`}
                       />
                       <span className="font-mono text-foreground font-semibold shrink-0">

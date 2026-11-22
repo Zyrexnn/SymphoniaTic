@@ -92,57 +92,57 @@ const RedeemPageContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F6F4EE] font-sans text-[#171614] relative flex flex-col justify-between">
+    <div className="min-h-screen bg-[#F4F3EF] font-sans text-[#141413] relative flex flex-col justify-between">
       {toastMessage && (
         <div
           role="status"
           aria-live="polite"
-          className="fixed right-5 top-24 z-50 flex items-center gap-2 rounded-xl border border-[#E4DFD3] bg-white px-4 py-3 text-xs text-[#171614] shadow-md"
+          className="fixed right-5 top-24 z-50 flex items-center gap-2 rounded-none border border-[#141413] bg-white px-4 py-3 text-xs font-semibold text-[#141413]"
         >
-          <Check className="h-4 w-4 shrink-0 text-[#1F6E43]" strokeWidth={2} aria-hidden="true" />
+          <Check className="h-4 w-4 shrink-0 text-[#156E3F]" strokeWidth={2} aria-hidden="true" />
           <span>{toastMessage}</span>
         </div>
       )}
 
-      <Header isScrolled user={user} onLogout={logout} />
+      <Header user={user} onLogout={logout} />
 
-      <main className="mx-auto w-full max-w-[1160px] px-4 sm:px-6 md:px-10 pt-24 sm:pt-28 pb-16 flex-1">
+      <main className="mx-auto w-full max-w-[1360px] border-x border-[#DFDDD6] px-5 sm:px-8 lg:px-10 pt-24 sm:pt-28 pb-16 flex-1">
         <div className="flex flex-col gap-10 max-w-4xl mx-auto">
           <div className="flex flex-col items-start">
             <div className="mb-5 flex w-full flex-wrap items-center justify-between gap-4">
               <a
                 href="/"
-                className="inline-flex items-center gap-2 min-h-[44px] px-2 -ml-2 text-xs font-medium text-[#5C5850] hover:text-[#171614] transition-colors rounded-lg"
+                className="inline-flex items-center gap-2 min-h-[44px] px-2 -ml-2 text-xs font-bold uppercase tracking-wider text-[#52514D] hover:text-[#141413] transition-colors"
               >
-                <ArrowLeft className="h-4 w-4 text-[#171614]" strokeWidth={1.7} aria-hidden="true" />
+                <ArrowLeft className="h-4 w-4 text-[#141413]" strokeWidth={1.8} aria-hidden="true" />
                 <span>Kembali ke Beranda</span>
               </a>
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-white border border-[#E4DFD3]">
-                <QrCode className="h-3.5 w-3.5 text-[#C93018]" strokeWidth={1.7} aria-hidden="true" />
-                <span className="text-xs font-mono uppercase tracking-wider text-[#171614]">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-none bg-[#D4FF2A] border border-[#141413]">
+                <QrCode className="h-3.5 w-3.5 text-[#141413]" strokeWidth={2} aria-hidden="true" />
+                <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#141413]">
                   Portal Cek Tiket
                 </span>
               </div>
             </div>
 
-            <h1 className="font-display text-[clamp(32px,5vw,52px)] font-semibold leading-[1.08] tracking-[-0.02em] text-[#171614] m-0">
+            <h1 className="font-display text-[clamp(34px,5.2vw,60px)] font-extrabold leading-[0.95] tracking-[-0.04em] text-[#141413] m-0">
               Cek E-Ticket Konser Anda
             </h1>
-            <p className="mt-3 max-w-xl text-sm sm:text-base leading-relaxed text-[#5C5850]">
+            <p className="mt-4 max-w-xl text-sm sm:text-base leading-relaxed text-[#52514D]">
               Masukkan kode unik pesanan Anda untuk mengakses pass digital resmi, QR Code scanner gate, informasi lokasi venue, serta dokumen E-Ticket cetak PDF.
             </p>
           </div>
 
-          <div className="relative rounded-2xl border border-[#E4DFD3] bg-white p-5 sm:p-8 space-y-5">
+          <div className="relative rounded-none border border-[#141413] bg-white p-5 sm:p-8 space-y-5">
             <form onSubmit={handleSearchSubmit} className="space-y-3">
-              <label htmlFor={codeInputId} className="block text-xs font-semibold text-[#171614]">
+              <label htmlFor={codeInputId} className="block text-xs font-bold uppercase tracking-wider text-[#141413]">
                 Kode Pesanan Resmi
               </label>
-              <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="flex flex-col gap-2.5 sm:flex-row">
                 <div className="relative flex-1">
                   <Search
-                    className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B665D] pointer-events-none"
-                    strokeWidth={1.7}
+                    className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6E6D68] pointer-events-none"
+                    strokeWidth={1.8}
                     aria-hidden="true"
                   />
                   <input
@@ -159,7 +159,7 @@ const RedeemPageContent: React.FC = () => {
                       type="button"
                       onClick={() => setSearchCode('')}
                       aria-label="Hapus kode"
-                      className="absolute right-1 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-md text-[#6B665D] hover:text-[#171614]"
+                      className="absolute right-1 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-none text-[#6E6D68] hover:text-[#141413]"
                     >
                       <X className="h-4 w-4" aria-hidden="true" />
                     </button>
@@ -169,13 +169,13 @@ const RedeemPageContent: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isLoading || !searchCode.trim()}
-                  className="min-h-[46px] inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-[#C93018] px-7 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#A82511] disabled:opacity-40"
+                  className="min-h-[46px] inline-flex shrink-0 items-center justify-center gap-2 rounded-none bg-[#D4FF2A] border border-[#141413] px-7 py-3 text-xs font-bold uppercase tracking-wider text-[#141413] transition-colors hover:bg-[#C2EE1A] disabled:opacity-40"
                 >
                   {isLoading ? (
                     <span>Memeriksa...</span>
                   ) : (
                     <>
-                      <CheckCircle2 className="h-4 w-4" strokeWidth={1.8} aria-hidden="true" />
+                      <CheckCircle2 className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
                       <span>Verifikasi Tiket</span>
                     </>
                   )}
@@ -183,14 +183,14 @@ const RedeemPageContent: React.FC = () => {
               </div>
             </form>
 
-            <div className="flex flex-col justify-between gap-3 border-t border-[#E4DFD3] pt-4 text-xs text-[#5C5850] sm:flex-row sm:items-center">
-              <span className="font-mono text-xs text-[#6B665D]">Format kode: SYM- diikuti 6–8 karakter kode pesanan</span>
+            <div className="flex flex-col justify-between gap-3 border-t border-[#DFDDD6] pt-4 text-xs text-[#52514D] sm:flex-row sm:items-center">
+              <span className="font-mono text-xs text-[#6E6D68]">Format kode: SYM- diikuti 6-8 karakter kode pesanan</span>
               <button
                 type="button"
                 onClick={handlePasteFromClipboard}
-                className="min-h-[40px] inline-flex w-fit items-center gap-2 border border-[#CFC9BC] bg-[#F6F4EE] px-3.5 py-2 rounded-lg text-xs font-medium text-[#171614] hover:border-[#171614] transition-colors"
+                className="min-h-[40px] inline-flex w-fit items-center gap-2 border border-[#DFDDD6] bg-[#F4F3EF] px-3.5 py-2 rounded-none text-xs font-bold text-[#141413] hover:border-[#141413] transition-colors"
               >
-                <Copy className="h-3.5 w-3.5" strokeWidth={1.7} aria-hidden="true" />
+                <Copy className="h-3.5 w-3.5" strokeWidth={1.8} aria-hidden="true" />
                 <span>Tempel dari Clipboard</span>
               </button>
             </div>
@@ -199,25 +199,25 @@ const RedeemPageContent: React.FC = () => {
           {hasSearched && errorMessage && (
             <div
               role="alert"
-              className="flex items-start gap-3.5 rounded-xl border border-[#B91C1C]/30 bg-[#B91C1C]/10 p-5 text-sm"
+              className="flex items-start gap-3.5 rounded-none border border-[#C81E1E] bg-[#C81E1E]/10 p-5 text-sm"
             >
-              <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-[#B91C1C]" strokeWidth={1.7} aria-hidden="true" />
-              <div className="flex-1 leading-relaxed text-[#B91C1C]">
-                <p className="mb-1 font-semibold text-[#171614] m-0">Tiket Tidak Ditemukan</p>
-                <p className="text-xs text-[#B91C1C] m-0">{errorMessage}</p>
+              <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-[#C81E1E]" strokeWidth={1.8} aria-hidden="true" />
+              <div className="flex-1 leading-relaxed text-[#C81E1E]">
+                <p className="mb-1 font-bold text-[#141413] m-0">Tiket Tidak Ditemukan</p>
+                <p className="text-xs text-[#C81E1E] m-0">{errorMessage}</p>
               </div>
             </div>
           )}
 
           <section className="flex flex-col gap-5 pt-2">
-            <div className="border-b border-[#E4DFD3] pb-4">
-              <h2 className="flex items-center gap-2.5 font-display text-2xl font-semibold tracking-tight text-[#171614] m-0">
-                <ShieldCheck className="h-5 w-5 text-[#C93018]" strokeWidth={1.7} aria-hidden="true" />
+            <div className="border-b border-[#141413] pb-4">
+              <h2 className="flex items-center gap-2.5 font-display text-2xl font-extrabold tracking-[-0.03em] text-[#141413] m-0">
+                <ShieldCheck className="h-5 w-5 text-[#141413]" strokeWidth={2} aria-hidden="true" />
                 <span>Alur Verifikasi Tiket</span>
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-px bg-[#DFDDD6] border border-[#DFDDD6] md:grid-cols-3">
               {[
                 {
                   step: '01',
@@ -235,12 +235,12 @@ const RedeemPageContent: React.FC = () => {
                   body: 'Tunjukkan QR Code digital di pintu masuk hall konser saat Open Gate atau simpan berkas cetak PDF/PNG.',
                 },
               ].map((item) => (
-                <div key={item.step} className="flex flex-col gap-2 rounded-xl border border-[#E4DFD3] bg-white p-5">
-                  <span className="text-xl font-mono font-bold text-[#C93018]">
+                <div key={item.step} className="flex flex-col gap-2 bg-white p-6">
+                  <span className="inline-block w-fit bg-[#D4FF2A] px-2 py-0.5 text-sm font-mono font-bold text-[#141413]">
                     {item.step}
                   </span>
-                  <h3 className="text-sm font-semibold text-[#171614] m-0">{item.title}</h3>
-                  <p className="text-xs leading-relaxed text-[#5C5850] m-0">{item.body}</p>
+                  <h3 className="text-sm font-bold text-[#141413] m-0 mt-1">{item.title}</h3>
+                  <p className="text-xs leading-relaxed text-[#52514D] m-0">{item.body}</p>
                 </div>
               ))}
             </div>

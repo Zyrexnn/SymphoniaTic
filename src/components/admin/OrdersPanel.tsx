@@ -190,7 +190,7 @@ export const OrdersPanel: React.FC<OrdersPanelProps> = ({
                                 onClick={() => onManualCheckIn(ord)}
                                 disabled={isChecking}
                                 aria-label={`Check-in manual tiket ${ord.orderCode}`}
-                                className="border-[#1F6E43]/35 bg-[#1F6E43]/10 text-[#1F6E43] hover:bg-[#1F6E43]/20 dark:border-emerald-500/40 dark:bg-emerald-500/15 dark:text-emerald-300"
+                                className="border-[#156E3F]/35 bg-[#156E3F]/10 text-[#156E3F] hover:bg-[#156E3F]/20 dark:border-emerald-500/40 dark:bg-emerald-500/15 dark:text-emerald-300"
                               >
                                 <CheckCircle2 size={14} aria-hidden="true" />
                                 <span>{isChecking ? 'Memproses...' : 'Check-in Manual'}</span>
@@ -291,7 +291,7 @@ export const OrdersPanel: React.FC<OrdersPanelProps> = ({
                           onClick={() => onManualCheckIn(ord)}
                           disabled={isChecking}
                           aria-label={`Check-in manual tiket ${ord.orderCode}`}
-                          className="flex-1 border-[#1F6E43]/35 bg-[#1F6E43]/10 text-[#1F6E43] hover:bg-[#1F6E43]/20 dark:border-emerald-500/40 dark:bg-emerald-500/15 dark:text-emerald-300"
+                          className="flex-1 border-[#156E3F]/35 bg-[#156E3F]/10 text-[#156E3F] hover:bg-[#156E3F]/20 dark:border-emerald-500/40 dark:bg-emerald-500/15 dark:text-emerald-300"
                         >
                           <CheckCircle2 size={15} aria-hidden="true" />
                           <span>{isChecking ? 'Memproses...' : 'Check-in Manual'}</span>

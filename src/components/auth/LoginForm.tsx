@@ -119,42 +119,42 @@ function LoginFormInner() {
   };
 
   return (
-    <div className="min-h-[100dvh] w-full flex flex-col lg:flex-row bg-[#F6F4EE] text-[#171614]">
-      <div className="hidden lg:flex lg:w-[44%] relative flex-col justify-between p-10 xl:p-14 overflow-hidden bg-[#11100E] text-white">
+    <div className="min-h-[100dvh] w-full flex flex-col lg:flex-row bg-[#F4F3EF] text-[#141413]">
+      <div className="hidden lg:flex lg:w-[44%] relative flex-col justify-between p-10 xl:p-14 overflow-hidden bg-[#141413] text-[#F4F3EF] border-r border-[#141413]">
         <img
           src="/assets/login-image-hd.jpeg"
           alt="Gedung konser orkestra simfoni"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-[#11100E]/60" />
-        <div className="absolute bottom-0 left-0 right-0 h-44 bg-gradient-to-t from-[#11100E] via-[#11100E]/75 to-transparent" />
+        <div className="absolute inset-0 bg-[#141413]/65" />
+        <div className="absolute bottom-0 left-0 right-0 h-44 bg-gradient-to-t from-[#141413] via-[#141413]/80 to-transparent" />
 
         <div className="relative z-10">
           <a
             href="/"
-            className="inline-flex items-center gap-2 min-h-[44px] px-3 -ml-3 text-xs font-medium text-[#E7E2D8] hover:text-white transition-colors rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+            className="inline-flex items-center gap-2 min-h-[44px] px-3 -ml-3 text-xs font-bold uppercase tracking-wider text-[#D8D6CE] hover:text-[#D4FF2A] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4FF2A]"
           >
-            <ArrowLeft size={15} strokeWidth={1.7} aria-hidden="true" />
+            <ArrowLeft size={15} strokeWidth={1.8} aria-hidden="true" />
             <span>Kembali ke Beranda</span>
           </a>
 
           <div className="mt-10">
-            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[#E7E2D8]">
-              SymphoniaTic
+            <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#D4FF2A]">
+              • SymphoniaTic.
             </span>
-            <h2 className="font-display text-4xl leading-tight tracking-tight font-semibold text-white mt-3">
+            <h2 className="font-display text-4xl xl:text-5xl leading-[0.98] tracking-[-0.04em] font-extrabold text-[#F4F3EF] mt-3">
               Portal Tiket Resmi Pertunjukan Simfoni
             </h2>
-            <p className="text-sm text-[#D8D3C8] mt-3 font-normal leading-relaxed max-w-sm">
+            <p className="text-sm text-[#D8D6CE] mt-3 font-normal leading-relaxed max-w-sm">
               Satu akun untuk seluruh jadwal pertunjukan orkestra, opera, dan resital piano pilihan.
             </p>
           </div>
         </div>
 
         <div className="relative z-10">
-          <div className="w-12 h-px bg-[#C93018] mb-4" />
-          <p className="text-xs text-[#D8D3C8] m-0">
-            &copy; {new Date().getFullYear()} SymphoniaTic Official
+          <div className="w-12 h-0.5 bg-[#D4FF2A] mb-4" />
+          <p className="text-xs text-[#D8D6CE] m-0 font-mono">
+            &copy; {new Date().getFullYear()} SymphoniaTic. Official
           </p>
         </div>
       </div>
@@ -164,21 +164,21 @@ function LoginFormInner() {
           <div className="lg:hidden mb-6">
             <a
               href="/"
-              className="inline-flex items-center gap-2 min-h-[44px] px-2 -ml-2 text-xs font-medium text-[#5C5850] hover:text-[#171614] transition-colors rounded-lg"
+              className="inline-flex items-center gap-2 min-h-[44px] px-2 -ml-2 text-xs font-bold uppercase tracking-wider text-[#52514D] hover:text-[#141413] transition-colors"
             >
-              <ArrowLeft size={15} strokeWidth={1.7} aria-hidden="true" />
+              <ArrowLeft size={15} strokeWidth={1.8} aria-hidden="true" />
               <span>Kembali ke Beranda</span>
             </a>
           </div>
 
           <div className="mb-8">
-            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[#C93018]">
-              SymphoniaTic
+            <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#141413] bg-[#D4FF2A] px-2 py-0.5 inline-block">
+              SymphoniaTic.
             </span>
-            <h1 className="font-display text-3xl sm:text-4xl leading-tight tracking-[-0.02em] font-semibold text-[#171614] mt-2">
+            <h1 className="font-display text-3xl sm:text-5xl leading-[0.98] tracking-[-0.04em] font-extrabold text-[#141413] mt-3">
               Masuk ke Akun
             </h1>
-            <p className="text-sm text-[#5C5850] mt-2 font-normal leading-relaxed">
+            <p className="text-sm text-[#52514D] mt-2 font-normal leading-relaxed">
               Akses riwayat e-ticket, pengajuan refund, dan kelola profil Anda.
             </p>
           </div>
@@ -186,7 +186,7 @@ function LoginFormInner() {
           <div
             role="tablist"
             aria-label="Metode masuk"
-            className="grid grid-cols-2 gap-1.5 p-1.5 bg-white border border-[#E4DFD3] rounded-xl mb-7"
+            className="grid grid-cols-2 gap-px bg-[#DFDDD6] border border-[#141413] mb-7"
           >
             {MODE_TABS.map(({ key, label }) => (
               <button
@@ -195,10 +195,10 @@ function LoginFormInner() {
                 role="tab"
                 aria-selected={mode === key}
                 onClick={() => switchMode(key)}
-                className={`min-h-[44px] px-4 py-2 text-xs font-semibold uppercase tracking-wider rounded-lg transition-colors ${
+                className={`min-h-[44px] px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-none transition-colors ${
                   mode === key
-                    ? 'bg-[#171614] text-white'
-                    : 'text-[#5C5850] hover:text-[#171614] hover:bg-[#F6F4EE]'
+                    ? 'bg-[#141413] text-[#D4FF2A]'
+                    : 'bg-white text-[#52514D] hover:text-[#141413] hover:bg-[#EAE8E1]'
                 }`}
               >
                 {label}
@@ -253,8 +253,8 @@ function LoginFormInner() {
 
           {mode === 'otp' && otpStep === 2 && (
             <form onSubmit={verifyOtp} className="flex flex-col gap-5">
-              <p className="text-xs text-[#5C5850] m-0">
-                Kode dikirim ke <span className="text-[#171614] font-semibold">{otpEmail}</span>
+              <p className="text-xs text-[#52514D] m-0">
+                Kode dikirim ke <span className="text-[#141413] font-bold">{otpEmail}</span>
               </p>
               <Field
                 label="Kode OTP (6 digit)"
@@ -284,13 +284,13 @@ function LoginFormInner() {
             </form>
           )}
 
-          <div className="mt-10 pt-6 border-t border-[#E4DFD3] flex flex-col gap-3 text-sm text-[#5C5850]">
-            <a href="/forgot-password" className="hover:text-[#C93018] transition-colors w-fit py-1">
+          <div className="mt-10 pt-6 border-t border-[#DFDDD6] flex flex-col gap-3 text-sm text-[#52514D]">
+            <a href="/forgot-password" className="hover:text-[#141413] font-medium transition-colors w-fit py-1">
               Lupa kata sandi?
             </a>
             <span>
               Belum punya akun?{' '}
-              <a href="/register" className="text-[#C93018] underline underline-offset-4 hover:text-[#A82511] font-semibold">
+              <a href="/register" className="text-[#141413] underline underline-offset-4 hover:bg-[#D4FF2A] px-1 font-bold">
                 Daftar di sini
               </a>
             </span>

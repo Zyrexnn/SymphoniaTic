@@ -17,8 +17,8 @@ import type { AdminMetricsData } from '@/components/landing/data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAdminTheme } from '@/components/admin/AdminThemeContext';
 
-const PLAYBILL_CHART_LIGHT = ['#C93018', '#171614', '#1F6E43', '#855A0E', '#5C5850'];
-const PLAYBILL_CHART_DARK = ['#E04F36', '#F6F4EE', '#4ADE80', '#FBBF24', '#A8A296'];
+const PLAYBILL_CHART_LIGHT = ['#141413', '#52514D', '#156E3F', '#8A5A00', '#9E9C94'];
+const PLAYBILL_CHART_DARK = ['#D4FF2A', '#F4F3EF', '#4ADE80', '#FBBF24', '#8A8880'];
 
 interface DashboardProps {
   metrics?: AdminMetricsData | null;
@@ -54,15 +54,15 @@ export const Dashboard: React.FC<DashboardProps> = ({ metrics, eventsCount = 0 }
     color: palette[idx % palette.length],
   }));
 
-  const axisColor = isDark ? '#C5BFB3' : '#5C5850';
-  const gridColor = isDark ? 'rgba(246, 244, 238, 0.08)' : 'rgba(23, 22, 20, 0.08)';
-  const strokeColor = isDark ? '#E04F36' : '#C93018';
+  const axisColor = isDark ? '#B8B6AE' : '#52514D';
+  const gridColor = isDark ? 'rgba(244, 243, 239, 0.08)' : 'rgba(20, 20, 19, 0.08)';
+  const strokeColor = isDark ? '#D4FF2A' : '#141413';
   const tooltipStyle = {
-    backgroundColor: isDark ? '#1D1A17' : '#FFFFFF',
-    borderColor: isDark ? '#433D35' : '#CFC9BC',
-    color: isDark ? '#F6F4EE' : '#171614',
+    backgroundColor: isDark ? '#1C1C1A' : '#FFFFFF',
+    borderColor: isDark ? '#52514D' : '#141413',
+    color: isDark ? '#F4F3EF' : '#141413',
     fontSize: '12px',
-    borderRadius: '10px',
+    borderRadius: '0px',
   };
 
   return (
@@ -141,7 +141,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ metrics, eventsCount = 0 }
                 </ResponsiveContainer>
               </div>
             ) : (
-              <div className="h-64 flex flex-col items-center justify-center text-center border border-dashed border-border-strong rounded-xl p-6 bg-background">
+              <div className="h-64 flex flex-col items-center justify-center text-center border border-dashed border-border-strong rounded-none p-6 bg-background">
                 <p className="text-sm font-semibold text-foreground m-0">
                   Belum Ada Riwayat Pendapatan Bulanan
                 </p>
@@ -182,7 +182,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ metrics, eventsCount = 0 }
                           <Cell
                             key={`cell-${index}`}
                             fill={entry.color}
-                            stroke={isDark ? '#191714' : '#FFFFFF'}
+                            stroke={isDark ? '#1C1C1A' : '#FFFFFF'}
                             strokeWidth={2}
                           />
                         ))}
@@ -214,7 +214,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ metrics, eventsCount = 0 }
                 </div>
               </>
             ) : (
-              <div className="h-64 flex flex-col items-center justify-center text-center border border-dashed border-border-strong rounded-xl mt-2 p-6 bg-background">
+              <div className="h-64 flex flex-col items-center justify-center text-center border border-dashed border-border-strong rounded-none mt-2 p-6 bg-background">
                 <p className="text-sm font-semibold text-foreground m-0">
                   Belum Ada Data Kategori Terjual
                 </p>
@@ -244,9 +244,9 @@ const KPIWidget: React.FC<{
           {label}
         </span>
         <div
-          className={`w-9 h-9 rounded-lg border flex items-center justify-center shrink-0 ${
+          className={`w-9 h-9 rounded-none border flex items-center justify-center shrink-0 ${
             accent
-              ? 'border-[#C93018]/30 bg-[#C93018]/10 text-[#C93018] dark:border-[#F2644E]/35 dark:bg-[#C93018]/20 dark:text-[#F2644E]'
+              ? 'border-[#141413] bg-[#D4FF2A] text-[#141413]'
               : 'border-border bg-background text-foreground'
           }`}
         >

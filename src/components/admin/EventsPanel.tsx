@@ -62,7 +62,7 @@ export const EventsPanel: React.FC<EventsPanelProps> = ({
     ) : events.length === 0 ? (
       <Card className="border-dashed border-border-strong">
         <CardContent className="p-10 text-center flex flex-col items-center">
-          <div className="w-12 h-12 rounded-xl border border-border bg-background flex items-center justify-center mb-3">
+          <div className="w-12 h-12 rounded-none border border-border bg-background flex items-center justify-center mb-3">
             <Ticket className="w-6 h-6 text-muted-foreground" strokeWidth={1.6} aria-hidden="true" />
           </div>
           <h3 className="font-display text-2xl font-semibold text-foreground m-0">
@@ -126,7 +126,7 @@ const EventCard: React.FC<EventCardProps> = ({
     <Card className="p-5 sm:p-6 flex flex-col justify-between gap-5 transition-colors hover:border-border-strong">
       <div>
         <div className="flex flex-col sm:flex-row gap-4">
-          <div className="relative w-full sm:w-28 h-44 sm:h-28 shrink-0 overflow-hidden rounded-lg border border-border bg-background">
+          <div className="relative w-full sm:w-28 h-44 sm:h-28 shrink-0 overflow-hidden rounded-none border border-border bg-background">
             <img
               src={evt.image}
               alt={evt.title}
@@ -160,8 +160,8 @@ const EventCard: React.FC<EventCardProps> = ({
                         onClick={onToggleClose}
                         className={
                           evt.isClosed
-                            ? 'border-[#1F6E43]/35 bg-[#1F6E43]/10 text-[#1F6E43] hover:bg-[#1F6E43]/20 dark:border-emerald-500/35 dark:bg-emerald-500/15 dark:text-emerald-300'
-                            : 'border-[#B91C1C]/35 bg-[#B91C1C]/10 text-[#B91C1C] hover:bg-[#B91C1C]/20 dark:border-rose-500/35 dark:bg-rose-500/15 dark:text-rose-300'
+                            ? 'border-[#156E3F]/35 bg-[#156E3F]/10 text-[#156E3F] hover:bg-[#156E3F]/20 dark:border-emerald-500/35 dark:bg-emerald-500/15 dark:text-emerald-300'
+                            : 'border-[#C81E1E]/35 bg-[#C81E1E]/10 text-[#C81E1E] hover:bg-[#C81E1E]/20 dark:border-rose-500/35 dark:bg-rose-500/15 dark:text-rose-300'
                         }
                       >
                         {isClosedBySchedule ? 'Tutup (Jadwal)' : evt.isClosed ? 'Buka Order' : 'Tutup Order'}
@@ -198,7 +198,7 @@ const EventCard: React.FC<EventCardProps> = ({
                     size="icon"
                     onClick={onDelete}
                     aria-label={`Hapus event ${evt.title}`}
-                    className="border-[#B91C1C]/35 text-[#B91C1C] hover:bg-[#B91C1C]/10 dark:border-rose-500/35 dark:text-rose-300 dark:hover:bg-rose-500/15"
+                    className="border-[#C81E1E]/35 text-[#C81E1E] hover:bg-[#C81E1E]/10 dark:border-rose-500/35 dark:text-rose-300 dark:hover:bg-rose-500/15"
                   >
                     <Trash2 size={15} strokeWidth={1.7} aria-hidden="true" />
                   </Button>
@@ -243,7 +243,7 @@ const EventCard: React.FC<EventCardProps> = ({
               return (
                 <div
                   key={cat.id}
-                  className="border border-border bg-background rounded-lg p-3 flex flex-wrap items-center justify-between gap-3"
+                  className="border border-border bg-background rounded-none p-3 flex flex-wrap items-center justify-between gap-3"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
@@ -281,7 +281,7 @@ const EventCard: React.FC<EventCardProps> = ({
                         size="icon"
                         onClick={() => onDeleteCategory(cat.id, cat.name)}
                         aria-label={`Hapus kategori ${cat.name}`}
-                        className="border-[#B91C1C]/35 text-[#B91C1C] hover:bg-[#B91C1C]/10 dark:border-rose-500/35 dark:text-rose-300 dark:hover:bg-rose-500/15"
+                        className="border-[#C81E1E]/35 text-[#C81E1E] hover:bg-[#C81E1E]/10 dark:border-rose-500/35 dark:text-rose-300 dark:hover:bg-rose-500/15"
                       >
                         <Trash2 size={14} strokeWidth={1.7} aria-hidden="true" />
                       </Button>
@@ -307,8 +307,8 @@ const DetailBox: React.FC<{ icon: React.ElementType; label: string; value: strin
   label,
   value,
 }) => (
-  <div className="border border-border bg-background rounded-lg p-3 flex items-start gap-2.5">
-    <Icon size={14} className="text-[#C93018] dark:text-[#F2644E] mt-0.5 shrink-0" strokeWidth={1.8} aria-hidden="true" />
+  <div className="border border-border bg-background rounded-none p-3 flex items-start gap-2.5">
+    <Icon size={14} className="text-foreground dark:text-[#D4FF2A] mt-0.5 shrink-0" strokeWidth={1.8} aria-hidden="true" />
     <div className="min-w-0">
       <span className="text-[11px] font-semibold text-muted-foreground tracking-wider uppercase block">
         {label}

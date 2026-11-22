@@ -27,8 +27,8 @@ export const StatCard: React.FC<StatCardProps> = ({
         <span className="text-xs font-semibold text-muted-foreground tracking-wider uppercase truncate">
           {label}
         </span>
-        <div className="w-9 h-9 rounded-lg border border-border bg-background flex items-center justify-center text-[#C93018] dark:text-[#F2644E] shrink-0">
-          <Icon size={16} strokeWidth={1.7} aria-hidden="true" />
+        <div className="w-9 h-9 rounded-none border border-border-strong bg-[#D4FF2A] text-[#141413] flex items-center justify-center shrink-0">
+          <Icon size={16} strokeWidth={1.9} aria-hidden="true" />
         </div>
       </div>
 

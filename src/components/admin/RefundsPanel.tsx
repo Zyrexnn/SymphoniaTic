@@ -185,7 +185,7 @@ export const RefundsPanel: React.FC<RefundsPanelProps> = ({
                             aria-label={`Salin nomor rekening ${rf.accountNumber}`}
                           >
                             {copiedId === rf.id ? (
-                              <Check size={13} className="text-[#1F6E43] dark:text-emerald-400" aria-hidden="true" />
+                              <Check size={13} className="text-[#156E3F] dark:text-emerald-400" aria-hidden="true" />
                             ) : (
                               <Copy size={13} aria-hidden="true" />
                             )}
@@ -212,7 +212,7 @@ export const RefundsPanel: React.FC<RefundsPanelProps> = ({
                               size="sm"
                               variant="outline"
                               onClick={() => handleOpenActionModal(rf, 'APPROVED')}
-                              className="border-[#1F6E43]/35 bg-[#1F6E43]/10 text-[#1F6E43] hover:bg-[#1F6E43]/20 dark:border-emerald-500/35 dark:bg-emerald-500/15 dark:text-emerald-300"
+                              className="border-[#156E3F]/35 bg-[#156E3F]/10 text-[#156E3F] hover:bg-[#156E3F]/20 dark:border-emerald-500/35 dark:bg-emerald-500/15 dark:text-emerald-300"
                             >
                               Setujui
                             </Button>
@@ -221,7 +221,7 @@ export const RefundsPanel: React.FC<RefundsPanelProps> = ({
                               size="sm"
                               variant="outline"
                               onClick={() => handleOpenActionModal(rf, 'REJECTED')}
-                              className="border-[#B91C1C]/35 bg-[#B91C1C]/10 text-[#B91C1C] hover:bg-[#B91C1C]/20 dark:border-rose-500/35 dark:bg-rose-500/15 dark:text-rose-300"
+                              className="border-[#C81E1E]/35 bg-[#C81E1E]/10 text-[#C81E1E] hover:bg-[#C81E1E]/20 dark:border-rose-500/35 dark:bg-rose-500/15 dark:text-rose-300"
                             >
                               Tolak
                             </Button>
@@ -265,7 +265,7 @@ export const RefundsPanel: React.FC<RefundsPanelProps> = ({
                     </p>
                   </div>
 
-                  <div className="border border-border bg-background rounded-lg p-3 text-xs space-y-1">
+                  <div className="border border-border bg-background rounded-none p-3 text-xs space-y-1">
                     <span className="text-[11px] uppercase tracking-wider text-muted-foreground block">
                       Rekening Tujuan
                     </span>
@@ -281,7 +281,7 @@ export const RefundsPanel: React.FC<RefundsPanelProps> = ({
                         aria-label={`Salin nomor rekening ${rf.accountNumber}`}
                       >
                         {copiedId === rf.id ? (
-                          <Check size={14} className="text-[#1F6E43] dark:text-emerald-400" aria-hidden="true" />
+                          <Check size={14} className="text-[#156E3F] dark:text-emerald-400" aria-hidden="true" />
                         ) : (
                           <Copy size={14} aria-hidden="true" />
                         )}
@@ -307,7 +307,7 @@ export const RefundsPanel: React.FC<RefundsPanelProps> = ({
                         type="button"
                         variant="outline"
                         onClick={() => handleOpenActionModal(rf, 'APPROVED')}
-                        className="flex-1 border-[#1F6E43]/35 bg-[#1F6E43]/10 text-[#1F6E43] hover:bg-[#1F6E43]/20 dark:border-emerald-500/35 dark:bg-emerald-500/15 dark:text-emerald-300"
+                        className="flex-1 border-[#156E3F]/35 bg-[#156E3F]/10 text-[#156E3F] hover:bg-[#156E3F]/20 dark:border-emerald-500/35 dark:bg-emerald-500/15 dark:text-emerald-300"
                       >
                         Setujui
                       </Button>
@@ -315,7 +315,7 @@ export const RefundsPanel: React.FC<RefundsPanelProps> = ({
                         type="button"
                         variant="outline"
                         onClick={() => handleOpenActionModal(rf, 'REJECTED')}
-                        className="flex-1 border-[#B91C1C]/35 bg-[#B91C1C]/10 text-[#B91C1C] hover:bg-[#B91C1C]/20 dark:border-rose-500/35 dark:bg-rose-500/15 dark:text-rose-300"
+                        className="flex-1 border-[#C81E1E]/35 bg-[#C81E1E]/10 text-[#C81E1E] hover:bg-[#C81E1E]/20 dark:border-rose-500/35 dark:bg-rose-500/15 dark:text-rose-300"
                       >
                         Tolak
                       </Button>
@@ -400,7 +400,7 @@ export const RefundsPanel: React.FC<RefundsPanelProps> = ({
                   <span className="text-xs text-muted-foreground block mb-1.5">
                     Alasan Pemohon
                   </span>
-                  <p className="text-sm text-foreground bg-background border border-border rounded-lg p-3.5 m-0 leading-relaxed">
+                  <p className="text-sm text-foreground bg-background border border-border rounded-none p-3.5 m-0 leading-relaxed">
                     {selectedRefund.reason}
                   </p>
                 </div>

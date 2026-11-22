@@ -46,10 +46,10 @@ const GateScannerPanel = React.lazy(() =>
 
 const PanelSkeleton: React.FC = () => (
   <div className="space-y-4">
-    <Skeleton className="h-24 w-full rounded-xl" />
+    <Skeleton className="h-24 w-full rounded-none" />
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <Skeleton className="h-64 w-full rounded-xl" />
-      <Skeleton className="h-64 w-full rounded-xl" />
+      <Skeleton className="h-64 w-full rounded-none" />
+      <Skeleton className="h-64 w-full rounded-none" />
     </div>
   </div>
 );
@@ -719,7 +719,7 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
                 <Button type="button" variant="secondary" className="gap-2">
                   <ShieldCheck
                     size={15}
-                    className="text-[#C93018] dark:text-[#F2644E]"
+                    className="text-foreground dark:text-[#D4FF2A]"
                     aria-hidden="true"
                   />
                   <span className="text-xs font-semibold">
@@ -776,9 +776,9 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
           {loadError && (
             <div
               role="alert"
-              className="p-4 rounded-xl border border-[#B91C1C]/35 bg-[#B91C1C]/10 dark:border-rose-500/40 dark:bg-rose-500/15 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+              className="p-4 rounded-none border border-[#C81E1E]/35 bg-[#C81E1E]/10 dark:border-rose-500/40 dark:bg-rose-500/15 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
             >
-              <div className="flex items-center gap-2.5 text-sm text-[#B91C1C] dark:text-rose-200">
+              <div className="flex items-center gap-2.5 text-sm text-[#C81E1E] dark:text-rose-200">
                 <AlertCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
                 <span>{loadError}</span>
               </div>
@@ -913,9 +913,9 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
         <div
           role="status"
           aria-live="polite"
-          className={`fixed top-5 right-5 z-50 flex items-center gap-3 px-4 py-3 rounded-xl border shadow-xl text-sm font-medium max-w-sm ${
+          className={`fixed top-5 right-5 z-50 flex items-center gap-3 px-4 py-3 rounded-none border shadow-xl text-sm font-medium max-w-sm ${
             toast.type === 'error'
-              ? 'bg-[#B91C1C] border-[#B91C1C] text-white'
+              ? 'bg-[#C81E1E] border-[#C81E1E] text-white'
               : 'bg-card border-border text-card-foreground'
           }`}
         >
@@ -923,7 +923,7 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
             <AlertCircle className="w-4 h-4 text-white shrink-0" aria-hidden="true" />
           ) : (
             <Check
-              className="w-4 h-4 text-[#1F6E43] dark:text-emerald-400 shrink-0"
+              className="w-4 h-4 text-[#156E3F] dark:text-emerald-400 shrink-0"
               aria-hidden="true"
             />
           )}
@@ -932,7 +932,7 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
             type="button"
             aria-label="Tutup notifikasi"
             onClick={() => setToast(null)}
-            className="ml-1 min-h-[32px] min-w-[32px] inline-flex items-center justify-center opacity-75 hover:opacity-100 rounded"
+            className="ml-1 min-h-[32px] min-w-[32px] inline-flex items-center justify-center opacity-75 hover:opacity-100 rounded-none"
           >
             <X className="w-4 h-4" aria-hidden="true" />
           </button>
@@ -956,7 +956,7 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
               onClick={() => confirmModal?.onConfirm()}
               className={
                 confirmModal?.variant === 'danger'
-                  ? 'bg-[#B91C1C] text-white hover:bg-[#991B1B]'
+                  ? 'bg-[#C81E1E] text-white hover:bg-[#9E1616]'
                   : undefined
               }
             >
