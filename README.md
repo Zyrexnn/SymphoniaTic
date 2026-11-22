@@ -49,6 +49,8 @@ npm run dev
 | `npm run dev` | Menjalankan server development Astro SSR di `http://localhost:4321` |
 | `npm run build` | Membangun bundle produksi SSR ke direktori `dist/` |
 | `npm run preview` | Menjalankan preview dari hasil build produksi lokal |
+| `npm test` | Menjalankan unit test utilitas (`src/lib/*.test.ts`) |
+| `npm run test:e2e` | Menjalankan pengujian browser Playwright E2E |
 | `npx tsc --noEmit --ignoreDeprecations 6.0` | Memeriksa validitas tipe TypeScript tanpa mengemit file |
 | `npm run astro -- --help` | Menampilkan daftar perintah Astro CLI |
 
