@@ -42,8 +42,8 @@ const EdukasiPageContent: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#F6F4EE] text-[#171614]">
-      <Header isScrolled user={user} onLogout={logout} />
+    <div className="min-h-screen bg-[#F4F3EF] text-[#141413]">
+      <Header variant="overlay" user={user} onLogout={logout} />
       <EducationHero />
       <EducationNav active={active} onSelect={scrollTo} />
       <main>

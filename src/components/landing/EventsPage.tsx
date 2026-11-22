@@ -29,11 +29,11 @@ const titleCase = (s: string): string =>
 const DateBlock: React.FC<{ date?: string }> = ({ date }) => {
   const { day, month, year } = parseDate(date);
   return (
-    <div className="absolute top-4 left-4 sm:left-5 rounded-lg bg-[#C93018] px-3.5 py-2.5 text-center text-white">
-      <span className="block font-display text-2xl leading-none font-semibold tabular-nums">
+    <div className="absolute top-3 left-3 sm:left-4 bg-[#D4FF2A] px-3.5 py-2 text-center text-[#141413]">
+      <span className="block font-display text-2xl leading-none font-extrabold tabular-nums">
         {day}
       </span>
-      <span className="block mt-1 leading-none text-[11px] font-semibold tracking-[0.16em] uppercase">
+      <span className="block mt-1 leading-none text-[10px] font-bold tracking-[0.16em] uppercase">
         {month} {year}
       </span>
     </div>
@@ -50,7 +50,7 @@ const FeaturedImage: React.FC<{ event: EventItem; unavailable: boolean }> = ({ e
       onError={() => {
         if (src !== fallback) setSrc(fallback);
       }}
-      className={`absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03] ${
+      className={`absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03] ${
         unavailable ? 'grayscale brightness-75' : ''
       }`}
     />
@@ -187,20 +187,21 @@ const EventsPageContent: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F6F4EE] text-[#171614]">
-      <Header isScrolled user={user} onLogout={logout} />
+    <div className="min-h-screen bg-[#F4F3EF] text-[#141413]">
+      <Header user={user} onLogout={logout} />
 
-      <section className="relative overflow-hidden border-b border-[#E4DFD3]">
-        <div className="mx-auto max-w-[1360px] px-4 sm:px-8 lg:px-10 pt-24 pb-12 md:pt-28 md:pb-16">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">
+      <section className="relative overflow-hidden border-b border-[#DFDDD6] pt-[64px]">
+        <div className="mx-auto max-w-[1360px] border-x border-[#DFDDD6] px-5 sm:px-8 lg:px-10 py-12 md:py-16">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12">
             <div className="lg:col-span-7 max-w-[720px]">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#C93018] m-0">
-                Katalog Musim 2026–2027
+              <p className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-[#141413] m-0">
+                <span className="inline-block w-1.5 h-1.5 bg-[#141413]" aria-hidden="true" />
+                <span>Katalog Musim 2026-2027</span>
               </p>
-              <h1 className="mt-2.5 font-display text-[clamp(34px,5vw,56px)] leading-[1.06] font-semibold tracking-[-0.02em] text-[#171614] m-0">
+              <h1 className="mt-3 font-display text-[clamp(36px,5.4vw,64px)] leading-[0.95] font-extrabold tracking-[-0.04em] text-[#141413] m-0">
                 Temukan Konser &amp; Pertunjukan Musik Pilihan
               </h1>
-              <p className="mt-4 max-w-[540px] text-base md:text-lg leading-relaxed text-[#5C5850]">
+              <p className="mt-4 max-w-[540px] text-sm sm:text-base leading-relaxed text-[#52514D]">
                 Jelajahi pertunjukan orkestra, simfoni, balet, dan ansambel kamar. Pesan tiket resmi dan terima E-Ticket instan.
               </p>
 
@@ -210,9 +211,9 @@ const EventsPageContent: React.FC = () => {
                 className="mt-7 group/input relative"
               >
                 <Search
-                  size={20}
+                  size={18}
                   strokeWidth={2}
-                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#6B665D] transition-colors group-focus-within:text-[#C93018]"
+                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#6E6D68] transition-colors group-focus-within:text-[#141413]"
                   aria-hidden="true"
                 />
                 <input
@@ -221,58 +222,58 @@ const EventsPageContent: React.FC = () => {
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Cari konser, artis, atau venue..."
                   aria-label="Cari konser, artis, atau venue"
-                  className="min-h-[54px] w-full rounded-xl border border-[#CFC9BC] bg-white pl-12 pr-14 text-base text-[#171614] placeholder-[#6B665D] outline-none transition-colors focus:border-[#C93018] focus:ring-2 focus:ring-[#C93018]/20"
+                  className="min-h-[52px] w-full rounded-none border border-[#141413] bg-white pl-12 pr-14 text-base text-[#141413] placeholder-[#6E6D68] outline-none transition-colors focus:ring-2 focus:ring-[#141413]"
                 />
                 {query && (
                   <button
                     type="button"
                     onClick={() => setQuery('')}
                     aria-label="Bersihkan pencarian"
-                    className="absolute right-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-lg bg-[#ECE8DF] text-[#171614] transition-colors hover:bg-[#E4DFD3] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C93018]"
+                    className="absolute right-2 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-none bg-[#EAE8E1] text-[#141413] transition-colors hover:bg-[#D4FF2A]"
                   >
-                    <X size={17} strokeWidth={2} aria-hidden="true" />
+                    <X size={16} strokeWidth={2} aria-hidden="true" />
                   </button>
                 )}
               </form>
 
-              <div className="mt-6 flex flex-wrap items-center gap-3">
-                <span className="inline-flex items-center gap-2 rounded-lg bg-white border border-[#E4DFD3] px-4 py-2 text-sm font-medium text-[#171614]">
-                  <MapPin size={14} strokeWidth={2} className="text-[#C93018]" aria-hidden="true" />
+              <div className="mt-5 flex flex-wrap items-center gap-2.5">
+                <span className="inline-flex items-center gap-2 rounded-none bg-white border border-[#DFDDD6] px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-[#141413]">
+                  <MapPin size={13} strokeWidth={2} aria-hidden="true" />
                   Jakarta, ID
                 </span>
-                <span className="inline-flex items-center gap-2 rounded-lg bg-white border border-[#E4DFD3] px-4 py-2 text-sm font-medium text-[#171614]">
-                  <Calendar size={14} strokeWidth={2} className="text-[#C93018]" aria-hidden="true" />
+                <span className="inline-flex items-center gap-2 rounded-none bg-[#D4FF2A] border border-[#141413]/20 px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-[#141413]">
+                  <Calendar size={13} strokeWidth={2} aria-hidden="true" />
                   Jadwal Resmi
                 </span>
               </div>
             </div>
 
             <div className="hidden lg:block lg:col-span-5">
-              <div className="rounded-xl border border-[#E4DFD3] bg-white p-7">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#C93018] m-0">
-                  Informasi Musim Ini
+              <div className="rounded-none border border-[#141413] bg-white p-7">
+                <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#141413] m-0">
+                  • Informasi Musim Ini
                 </p>
                 <div className="mt-4 flex items-baseline gap-2.5">
-                  <span className="font-display text-5xl font-semibold leading-none tracking-tight text-[#171614] tabular-nums">
+                  <span className="font-display text-5xl font-extrabold leading-none tracking-[-0.04em] text-[#141413] tabular-nums">
                     {sourceEvents.length}
                   </span>
-                  <span className="text-sm font-medium text-[#5C5850]">pertunjukan aktif</span>
+                  <span className="text-sm font-medium text-[#52514D]">pertunjukan aktif</span>
                 </div>
-                <div className="mt-6 space-y-3.5 border-t border-[#E4DFD3] pt-5">
+                <div className="mt-6 space-y-3 border-t border-[#DFDDD6] pt-5">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-[#5C5850]">Venue Pilihan</span>
-                    <span className="font-semibold text-[#171614]">{venueCount} lokasi</span>
+                    <span className="text-[#52514D]">Venue Pilihan</span>
+                    <span className="font-bold text-[#141413]">{venueCount} lokasi</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-[#5C5850]">Kategori Musik</span>
-                    <span className="font-semibold text-[#171614]">{categories.length} jenis</span>
+                    <span className="text-[#52514D]">Kategori Musik</span>
+                    <span className="font-bold text-[#141413]">{categories.length} jenis</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-[#5C5850]">Tiket Mulai</span>
-                    <span className="font-bold text-[#171614] tabular-nums">{formatIDR(seasonMin)}</span>
+                    <span className="text-[#52514D]">Tiket Mulai</span>
+                    <span className="font-extrabold text-[#141413] tabular-nums">{formatIDR(seasonMin)}</span>
                   </div>
                 </div>
-                <div className="mt-6 rounded-lg bg-[#F6F4EE] border border-[#E4DFD3] px-4 py-3.5 text-xs leading-relaxed text-[#5C5850]">
+                <div className="mt-6 rounded-none bg-[#F4F3EF] border border-[#DFDDD6] px-4 py-3 text-xs leading-relaxed text-[#52514D]">
                   E-Ticket dengan Kode QR resmi dikirim langsung ke akun dan email Anda setelah pemesanan.
                 </div>
               </div>
@@ -287,8 +288,8 @@ const EventsPageContent: React.FC = () => {
         />
       </section>
 
-      <div className="sticky top-[68px] z-30 border-b border-[#E4DFD3] bg-[#F6F4EE]/95 backdrop-blur-md">
-        <div className="mx-auto max-w-[1360px] px-4 sm:px-8 lg:px-10">
+      <div className="sticky top-[64px] z-30 border-b border-[#DFDDD6] bg-[#F4F3EF]">
+        <div className="mx-auto max-w-[1360px] border-x border-[#DFDDD6] px-5 sm:px-8 lg:px-10">
           <div className="flex flex-wrap items-center gap-2 py-3">
             {filterChips.map((chip) => {
               const active = activeFilter === chip.id;
@@ -298,16 +299,16 @@ const EventsPageContent: React.FC = () => {
                   type="button"
                   onClick={() => selectFilter(chip.id)}
                   aria-pressed={active}
-                  className={`min-h-[44px] flex shrink-0 items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C93018] ${
+                  className={`min-h-[44px] flex shrink-0 items-center gap-2 rounded-none px-4 py-2 text-xs font-bold uppercase tracking-wider transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413] ${
                     active
-                      ? 'bg-[#C93018] text-white font-semibold'
-                      : 'bg-white text-[#171614] border border-[#CFC9BC] hover:border-[#171614]'
+                      ? 'bg-[#141413] text-[#D4FF2A]'
+                      : 'bg-white text-[#141413] border border-[#DFDDD6] hover:border-[#141413]'
                   }`}
                 >
                   <span>{chip.label}</span>
                   <span
-                    className={`rounded px-1.5 py-0.5 text-[11px] font-bold tabular-nums ${
-                      active ? 'bg-black/20 text-white' : 'bg-[#ECE8DF] text-[#5C5850]'
+                    className={`px-1.5 py-0.5 text-[10px] font-mono font-bold tabular-nums ${
+                      active ? 'bg-[#D4FF2A] text-[#141413]' : 'bg-[#EAE8E1] text-[#52514D]'
                     }`}
                   >
                     {chip.count}
@@ -319,17 +320,17 @@ const EventsPageContent: React.FC = () => {
         </div>
       </div>
 
-      <div ref={resultsRef} className="mx-auto max-w-[1360px] px-4 sm:px-8 lg:px-10 pt-12 pb-6 scroll-mt-32">
+      <div ref={resultsRef} className="mx-auto max-w-[1360px] border-x border-[#DFDDD6] px-5 sm:px-8 lg:px-10 pt-12 pb-6 scroll-mt-32">
         {fetchError && (
           <div
             role="alert"
-            className="mb-8 p-4 rounded-xl border border-[#855A0E]/30 bg-[#855A0E]/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+            className="mb-8 p-4 rounded-none border border-[#8A5A00] bg-[#8A5A00]/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
           >
-            <span className="text-sm text-[#171614]">{fetchError}</span>
+            <span className="text-sm text-[#141413]">{fetchError}</span>
             <button
               type="button"
               onClick={loadEvents}
-              className="min-h-[40px] px-4 py-2 rounded-lg bg-[#C93018] text-white text-xs font-semibold hover:bg-[#A82511] shrink-0"
+              className="min-h-[40px] px-4 py-2 rounded-none bg-[#141413] text-[#D4FF2A] text-xs font-bold uppercase tracking-wider hover:bg-[#2A2A28] shrink-0"
             >
               Muat Ulang
             </button>
@@ -337,19 +338,19 @@ const EventsPageContent: React.FC = () => {
         )}
 
         {hasCriteria ? (
-          <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
+          <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#C93018] m-0">
-                Hasil Pencarian
+              <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#141413] m-0">
+                • Hasil Pencarian
               </p>
-              <h2 className="mt-2 font-display text-2xl sm:text-3xl font-semibold tracking-tight text-[#171614] mb-0">
+              <h2 className="mt-2 font-display text-2xl sm:text-4xl font-extrabold tracking-[-0.035em] text-[#141413] mb-0">
                 {filtered.length} konser ditemukan
               </h2>
               {query.trim() && (
-                <p className="mt-1.5 text-sm text-[#5C5850] mb-0">
-                  untuk &ldquo;<span className="font-semibold text-[#171614]">{query.trim()}</span>&rdquo;
+                <p className="mt-1.5 text-sm text-[#52514D] mb-0">
+                  untuk &ldquo;<span className="font-bold text-[#141413]">{query.trim()}</span>&rdquo;
                   {activeFilter !== 'SEMUA' && (
-                    <> · filter <span className="font-semibold text-[#171614]">{titleCase(activeFilter)}</span></>
+                    <> · filter <span className="font-bold text-[#141413]">{titleCase(activeFilter)}</span></>
                   )}
                 </p>
               )}
@@ -360,7 +361,7 @@ const EventsPageContent: React.FC = () => {
                 setQuery('');
                 setActiveFilter('SEMUA');
               }}
-              className="min-h-[44px] inline-flex items-center gap-2 rounded-lg border border-[#CFC9BC] bg-white px-4 py-2 text-sm font-medium text-[#171614] transition-colors hover:border-[#171614] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C93018]"
+              className="min-h-[44px] inline-flex items-center gap-2 rounded-none border border-[#141413] bg-white px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#141413] transition-colors hover:bg-[#141413] hover:text-[#D4FF2A]"
             >
               <X size={15} strokeWidth={2} aria-hidden="true" />
               <span>Reset Filter</span>
@@ -368,10 +369,10 @@ const EventsPageContent: React.FC = () => {
           </div>
         ) : (
           <div className="mb-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#C93018] m-0">
-              Agenda Pertunjukan
+            <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#141413] m-0">
+              • Agenda Pertunjukan
             </p>
-            <h2 className="mt-2 font-display text-3xl sm:text-4xl font-semibold tracking-tight text-[#171614] mb-0">
+            <h2 className="mt-2 font-display text-3xl sm:text-5xl font-extrabold tracking-[-0.04em] text-[#141413] mb-0">
               Semua Konser
             </h2>
           </div>
@@ -379,34 +380,34 @@ const EventsPageContent: React.FC = () => {
       </div>
 
       {featured && !hasCriteria && (
-        <section className="mx-auto max-w-[1360px] px-4 sm:px-8 lg:px-10 pb-12">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center rounded-2xl border border-[#E4DFD3] bg-white p-5 sm:p-6 lg:p-10">
+        <section className="mx-auto max-w-[1360px] border-x border-[#DFDDD6] px-5 sm:px-8 lg:px-10 pb-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center rounded-none border border-[#141413] bg-white p-5 sm:p-6 lg:p-10">
             <div className="lg:col-span-7">
               <a
                 href={`/concert/${featured.id}`}
-                className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C93018] rounded-xl"
+                className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413]"
               >
-                <div className="relative aspect-[16/10] overflow-hidden rounded-xl bg-[#11100E]">
+                <div className="relative aspect-[16/10] overflow-hidden bg-[#141413] chamfer-br">
                   <FeaturedImage
                     event={featured}
                     unavailable={!!featured.isClosed || getTotalRemaining(featured) <= 0}
                   />
                   {featured.isClosed ? (
-                    <div className="absolute inset-0 flex items-center justify-center bg-[#11100E]/65">
-                      <span className="rounded-md border border-white/30 bg-[#11100E]/90 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-white">
+                    <div className="absolute inset-0 flex items-center justify-center bg-[#141413]/70">
+                      <span className="border border-white/30 bg-[#141413] px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-[#F4F3EF]">
                         Penjualan Ditutup
                       </span>
                     </div>
                   ) : getTotalRemaining(featured) <= 0 ? (
-                    <div className="absolute inset-0 flex items-center justify-center bg-[#11100E]/65">
-                      <span className="rounded-md bg-[#C93018] px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-white">
+                    <div className="absolute inset-0 flex items-center justify-center bg-[#141413]/70">
+                      <span className="bg-[#C81E1E] px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-white">
                         Tiket Habis
                       </span>
                     </div>
                   ) : (
                     <DateBlock date={featured.date} />
                   )}
-                  <span className="absolute bottom-4 left-4 rounded-md bg-[#11100E]/85 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-white">
+                  <span className="absolute bottom-4 left-4 bg-[#141413] px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#F4F3EF]">
                     Pertunjukan Pilihan
                   </span>
                 </div>
@@ -414,29 +415,29 @@ const EventsPageContent: React.FC = () => {
             </div>
 
             <div className="lg:col-span-5">
-              <span className="inline-flex items-center px-3 py-1 rounded-md bg-[#ECE8DF] text-xs font-semibold uppercase tracking-widest text-[#C93018]">
-                Sorotan Utama
+              <span className="inline-flex items-center px-3 py-1 bg-[#D4FF2A] text-[10px] font-bold uppercase tracking-[0.16em] text-[#141413]">
+                • Sorotan Utama
               </span>
-              <h2 className="mt-4 font-display text-2xl sm:text-3xl lg:text-4xl font-semibold leading-[1.1] tracking-tight text-[#171614] mb-0">
+              <h2 className="mt-4 font-display text-2xl sm:text-4xl font-extrabold leading-[1.02] tracking-[-0.035em] text-[#141413] mb-0">
                 {featured.title}
               </h2>
-              <p className="mt-2 text-base font-normal text-[#5C5850] mb-0">{featured.artist}</p>
+              <p className="mt-2 text-base font-medium text-[#52514D] mb-0">{featured.artist}</p>
 
-              <div className="mt-6 space-y-3 border-t border-[#E4DFD3] pt-5">
+              <div className="mt-6 space-y-3 border-t border-[#DFDDD6] pt-5">
                 {featuredMeta.map((m) => (
                   <div
                     key={m.label}
-                    className="flex items-center justify-between gap-6 border-b border-[#E4DFD3] pb-3 text-sm"
+                    className="flex items-center justify-between gap-6 border-b border-[#DFDDD6] pb-3 text-sm"
                   >
-                    <span className="text-[#6B665D]">{m.label}</span>
-                    <span className="text-right font-medium text-[#171614]">{m.value}</span>
+                    <span className="text-[#6E6D68]">{m.label}</span>
+                    <span className="text-right font-semibold text-[#141413]">{m.value}</span>
                   </div>
                 ))}
               </div>
 
               <div className="mt-6 flex flex-col sm:flex-row sm:items-center gap-5">
                 <div>
-                  <span className="block text-xs font-medium text-[#6B665D]">
+                  <span className="block text-[11px] font-bold uppercase tracking-wider text-[#6E6D68]">
                     {featured.isClosed
                       ? 'Status Penjualan'
                       : getTotalRemaining(featured) <= 0
@@ -444,28 +445,28 @@ const EventsPageContent: React.FC = () => {
                       : 'Mulai dari'}
                   </span>
                   {featured.isClosed ? (
-                    <span className="text-xl font-bold tracking-tight text-[#6B665D]">
+                    <span className="text-xl font-bold tracking-tight text-[#6E6D68]">
                       Penjualan Ditutup
                     </span>
                   ) : getTotalRemaining(featured) <= 0 ? (
-                    <span className="text-xl font-bold tracking-tight text-[#B91C1C]">
+                    <span className="text-xl font-bold tracking-tight text-[#C81E1E]">
                       Tiket Habis
                     </span>
                   ) : (
-                    <span className="text-2xl font-bold tracking-tight text-[#171614] tabular-nums">
+                    <span className="text-2xl font-extrabold tracking-tight text-[#141413] tabular-nums">
                       {formatIDR(getLowestPrice(featured))}
                     </span>
                   )}
                 </div>
                 {featured.isClosed || getTotalRemaining(featured) <= 0 ? (
-                  <div className="min-h-[48px] inline-flex items-center justify-center gap-2 rounded-lg bg-[#ECE8DF] border border-[#E4DFD3] px-6 py-3 text-sm font-semibold text-[#6B665D] sm:ml-auto select-none">
+                  <div className="min-h-[48px] inline-flex items-center justify-center gap-2 rounded-none bg-[#EAE8E1] border border-[#DFDDD6] px-6 py-3 text-xs font-bold uppercase tracking-wider text-[#6E6D68] sm:ml-auto select-none">
                     <Ticket size={16} strokeWidth={2} aria-hidden="true" />
                     <span>{featured.isClosed ? 'Penjualan Ditutup' : 'Tiket Habis'}</span>
                   </div>
                 ) : (
                   <a
                     href={`/concert/${featured.id}`}
-                    className="min-h-[48px] inline-flex items-center justify-center gap-2 rounded-lg bg-[#C93018] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#A82511] sm:ml-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C93018]"
+                    className="min-h-[48px] inline-flex items-center justify-center gap-2 rounded-none bg-[#D4FF2A] border border-[#141413] px-6 py-3 text-xs font-bold uppercase tracking-wider text-[#141413] transition-colors hover:bg-[#C2EE1A] sm:ml-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413]"
                   >
                     <Ticket size={16} strokeWidth={2} aria-hidden="true" />
                     <span>Lihat Jadwal &amp; Tiket</span>
@@ -478,37 +479,38 @@ const EventsPageContent: React.FC = () => {
         </section>
       )}
 
-      <section className="mx-auto max-w-[1360px] px-4 sm:px-8 lg:px-10 pb-20">
+      <section className="mx-auto max-w-[1360px] border-x border-[#DFDDD6] px-5 sm:px-8 lg:px-10 pb-20">
         {isLoading && sourceEvents.length === 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-[#DFDDD6] border border-[#DFDDD6]">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="rounded-xl border border-[#E4DFD3] bg-white p-4 space-y-4 animate-pulse">
-                <div className="aspect-[16/10] bg-[#ECE8DF] rounded-lg" />
-                <div className="h-5 bg-[#ECE8DF] rounded w-3/4" />
-                <div className="h-4 bg-[#ECE8DF] rounded w-1/2" />
+              <div key={i} className="bg-white p-4 space-y-4 animate-pulse">
+                <div className="aspect-[16/10] bg-[#EAE8E1]" />
+                <div className="h-5 bg-[#EAE8E1] w-3/4" />
+                <div className="h-4 bg-[#EAE8E1] w-1/2" />
               </div>
             ))}
           </div>
         ) : mainEvents.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-[#DFDDD6] border border-[#DFDDD6]">
             {mainEvents.map((event) => (
               <ConcertCard
                 key={String(event.id)}
                 event={event}
                 saved={favorites.has(String(event.id))}
                 onToggleSave={() => toggleSave(event.id)}
+                className="border-0"
               />
             ))}
           </div>
         ) : (
-          <div className="mx-auto max-w-md py-16 text-center rounded-2xl border border-[#E4DFD3] bg-white p-8">
-            <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#ECE8DF] text-[#171614]">
+          <div className="mx-auto max-w-md py-16 text-center rounded-none border border-[#DFDDD6] bg-white p-8">
+            <span className="mx-auto flex h-14 w-14 items-center justify-center bg-[#EAE8E1] text-[#141413]">
               <Search size={22} strokeWidth={1.6} aria-hidden="true" />
             </span>
-            <h3 className="mt-5 font-display text-2xl font-semibold text-[#171614]">
+            <h3 className="mt-5 font-display text-2xl font-extrabold tracking-tight text-[#141413]">
               Tidak ada konser yang cocok
             </h3>
-            <p className="mt-2 text-sm leading-relaxed text-[#5C5850]">
+            <p className="mt-2 text-sm leading-relaxed text-[#52514D]">
               Gunakan kata kunci lain atau atur ulang filter pencarian untuk melihat seluruh jadwal.
             </p>
             <button
@@ -517,7 +519,7 @@ const EventsPageContent: React.FC = () => {
                 setQuery('');
                 setActiveFilter('SEMUA');
               }}
-              className="mt-6 min-h-[44px] inline-flex items-center gap-2 rounded-lg bg-[#C93018] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#A82511] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C93018]"
+              className="mt-6 min-h-[44px] inline-flex items-center gap-2 rounded-none bg-[#141413] px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-[#D4FF2A] transition-colors hover:bg-[#2A2A28]"
             >
               Reset Semua Filter
             </button>

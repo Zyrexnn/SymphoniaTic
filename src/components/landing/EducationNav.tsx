@@ -10,10 +10,10 @@ export const EducationNav: React.FC<EducationNavProps> = ({ active, onSelect }) 
   return (
     <nav
       aria-label="Bagian halaman edukasi"
-      className="sticky top-[62px] sm:top-[68px] z-20 border-b border-[#E4DFD3] bg-[#F6F4EE]/95 backdrop-blur-md"
+      className="sticky top-[64px] z-20 border-b border-[#DFDDD6] bg-[#F4F3EF]"
     >
-      <div className="mx-auto max-w-[1360px] px-4 sm:px-8 lg:px-10">
-        <ul className="no-scrollbar flex gap-5 sm:gap-8 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 list-none m-0">
+      <div className="mx-auto max-w-[1360px] border-x border-[#DFDDD6] px-5 sm:px-8 lg:px-10">
+        <ul className="no-scrollbar flex gap-4 sm:gap-7 overflow-x-auto -mx-5 px-5 sm:mx-0 sm:px-0 list-none m-0">
           {EDUKASI_NAV.map((item) => {
             const isActive = active === item.id;
             return (
@@ -22,13 +22,17 @@ export const EducationNav: React.FC<EducationNavProps> = ({ active, onSelect }) 
                   type="button"
                   onClick={() => onSelect(item.id)}
                   aria-current={isActive ? 'true' : undefined}
-                  className={`flex min-h-11 cursor-pointer items-center gap-2 whitespace-nowrap border-b-2 bg-transparent text-sm transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C93018] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F6F4EE] ${
+                  className={`flex min-h-11 cursor-pointer items-center gap-2 whitespace-nowrap border-b-2 bg-transparent text-xs font-bold uppercase tracking-wider transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413] ${
                     isActive
-                      ? 'border-[#C93018] font-semibold text-[#171614]'
-                      : 'border-transparent font-normal text-[#5C5850] hover:text-[#171614]'
+                      ? 'border-[#141413] text-[#141413]'
+                      : 'border-transparent text-[#52514D] hover:text-[#141413]'
                   }`}
                 >
-                  <span className={`text-[10px] font-mono font-semibold tracking-wider ${isActive ? 'text-[#C93018]' : 'text-[#6B665D]'}`}>
+                  <span
+                    className={`px-1.5 py-0.5 text-[10px] font-mono font-bold tracking-wider ${
+                      isActive ? 'bg-[#D4FF2A] text-[#141413]' : 'text-[#6E6D68]'
+                    }`}
+                  >
                     {item.number}
                   </span>
                   <span>{item.label}</span>

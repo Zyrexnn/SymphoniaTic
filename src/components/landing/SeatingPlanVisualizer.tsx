@@ -392,7 +392,7 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
 
   if (categories.length === 0) {
     return (
-      <div className="rounded-xl border border-[#E4DFD3] bg-[#FAF8F4] p-6 text-center">
+      <div className="rounded-none border border-[#DFDDD6] bg-white p-6 text-center">
         <p className="text-sm font-semibold text-[#171614] m-0">Denah Kursi Belum Tersedia</p>
         <p className="text-xs text-[#5C5850] mt-1 mb-0">
           Kategori tempat duduk untuk pertunjukan ini belum dikonfigurasi.

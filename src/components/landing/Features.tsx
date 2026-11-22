@@ -26,31 +26,31 @@ const FEATURES = [
 ];
 
 export const Features: React.FC = () => (
-  <section className="mx-auto max-w-[1360px] px-4 sm:px-8 lg:px-10 py-16 bg-[#F6F4EE]">
+  <section className="mx-auto max-w-[1360px] border-x border-[#DFDDD6] px-5 sm:px-8 lg:px-10 py-16 bg-[#F4F3EF]">
     <Reveal>
       <div className="mb-12 max-w-2xl">
-        <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#C93018] block mb-3">
-          Keunggulan Layanan
+        <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#141413] block mb-3">
+          • Keunggulan Layanan
         </span>
-        <h2 className="font-display text-3xl sm:text-4xl font-semibold tracking-[-0.02em] text-[#171614]">
+        <h2 className="font-display text-3xl sm:text-5xl font-extrabold tracking-[-0.04em] leading-[0.98] text-[#141413]">
           Standar Resmi Pemesanan Tiket Musik Klasik
         </h2>
       </div>
     </Reveal>
 
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-[#DFDDD6] border border-[#DFDDD6]">
       {FEATURES.map((f, i) => {
         const Icon = f.icon;
         return (
-          <Reveal key={f.title} delay={i * 0.08}>
-            <div className="flex flex-col p-6 rounded-xl bg-white border border-[#E4DFD3] transition-colors duration-200 hover:border-[#171614] h-full">
-              <div className="w-10 h-10 rounded-lg bg-[#ECE8DF] flex items-center justify-center mb-4">
-                <Icon size={20} strokeWidth={1.8} className="text-[#C93018]" aria-hidden="true" />
+          <Reveal key={f.title} delay={i * 0.06}>
+            <div className="flex flex-col p-6 rounded-none bg-white transition-colors duration-150 hover:bg-[#F9F8F5] h-full">
+              <div className="w-10 h-10 rounded-none bg-[#D4FF2A] border border-[#141413] flex items-center justify-center mb-4">
+                <Icon size={18} strokeWidth={2} className="text-[#141413]" aria-hidden="true" />
               </div>
-              <h3 className="font-display text-xl font-semibold text-[#171614] tracking-tight mb-2">
+              <h3 className="font-display text-xl font-extrabold text-[#141413] tracking-[-0.03em] mb-2">
                 {f.title}
               </h3>
-              <p className="text-xs sm:text-sm font-normal text-[#5C5850] leading-relaxed m-0">
+              <p className="text-xs sm:text-sm font-normal text-[#52514D] leading-relaxed m-0">
                 {f.desc}
               </p>
             </div>

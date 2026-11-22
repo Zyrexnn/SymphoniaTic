@@ -8,7 +8,7 @@ export const BoomerangVideoBg: React.FC = () => {
   const [src, setSrc] = useState(CLASSICAL_HERO_IMAGE);
 
   return (
-    <div className="absolute inset-0 z-0 overflow-hidden bg-[#11100E]">
+    <div className="absolute inset-0 z-0 overflow-hidden bg-[#141413]">
       <img
         src={src}
         alt="Panggung konser orkestra simfoni"
