@@ -28,7 +28,7 @@ function DropdownMenuContent({
         data-slot="dropdown-menu-content"
         sideOffset={sideOffset}
         className={cn(
-          "z-50 min-w-[12rem] overflow-hidden rounded-xl border border-border bg-popover p-1.5 text-popover-foreground shadow-lg",
+          "z-50 min-w-[12rem] overflow-hidden rounded-none border border-border-strong bg-popover p-1.5 text-popover-foreground shadow-sm",
           className
         )}
         {...props}
@@ -71,7 +71,7 @@ function DropdownMenuItem({
       data-slot="dropdown-menu-item"
       data-variant={variant}
       className={cn(
-        "relative flex min-h-[38px] cursor-pointer items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm outline-none select-none transition-colors focus:bg-secondary focus:text-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[variant=destructive]:text-[#B91C1C] dark:data-[variant=destructive]:text-rose-300 data-[variant=destructive]:focus:bg-[#B91C1C]/10",
+        "relative flex min-h-[38px] cursor-pointer items-center gap-2 rounded-none px-2.5 py-1.5 text-sm outline-none select-none transition-colors focus:bg-secondary focus:text-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[variant=destructive]:text-[#C81E1E] dark:data-[variant=destructive]:text-rose-300 data-[variant=destructive]:focus:bg-[#C81E1E]/10",
         inset && "pl-8",
         className
       )}
@@ -113,14 +113,14 @@ function DropdownMenuRadioItem({
     <DropdownMenuPrimitive.RadioItem
       data-slot="dropdown-menu-radio-item"
       className={cn(
-        "relative flex min-h-[38px] cursor-pointer items-center rounded-lg py-1.5 pr-2.5 pl-8 text-sm outline-none select-none transition-colors focus:bg-secondary focus:text-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "relative flex min-h-[38px] cursor-pointer items-center rounded-none py-1.5 pr-2.5 pl-8 text-sm outline-none select-none transition-colors focus:bg-secondary focus:text-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className
       )}
       {...props}
     >
       <span className="absolute left-2.5 flex size-3.5 items-center justify-center">
         <DropdownMenuPrimitive.ItemIndicator>
-          <Circle className="size-2 fill-[#C93018] text-[#C93018]" aria-hidden="true" />
+          <Circle className="size-2 fill-[#141413] text-[#141413] dark:fill-[#D4FF2A] dark:text-[#D4FF2A]" aria-hidden="true" />
         </DropdownMenuPrimitive.ItemIndicator>
       </span>
       {children}
@@ -138,7 +138,7 @@ function DropdownMenuCheckboxItem({
     <DropdownMenuPrimitive.CheckboxItem
       data-slot="dropdown-menu-checkbox-item"
       className={cn(
-        "relative flex min-h-[38px] cursor-pointer items-center rounded-lg py-1.5 pr-2.5 pl-8 text-sm outline-none select-none transition-colors focus:bg-secondary focus:text-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "relative flex min-h-[38px] cursor-pointer items-center rounded-none py-1.5 pr-2.5 pl-8 text-sm outline-none select-none transition-colors focus:bg-secondary focus:text-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className
       )}
       checked={checked}
@@ -146,7 +146,7 @@ function DropdownMenuCheckboxItem({
     >
       <span className="absolute left-2.5 flex size-3.5 items-center justify-center">
         <DropdownMenuPrimitive.ItemIndicator>
-          <Check className="size-4 text-[#C93018]" aria-hidden="true" />
+          <Check className="size-4 text-[#141413] dark:text-[#D4FF2A]" aria-hidden="true" />
         </DropdownMenuPrimitive.ItemIndicator>
       </span>
       {children}

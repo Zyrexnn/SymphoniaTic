@@ -35,7 +35,7 @@ function DialogOverlay({
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
       className={cn(
-        "fixed inset-0 z-50 bg-[#11100E]/70 backdrop-blur-[2px]",
+        "fixed inset-0 z-50 bg-[#141413]/75",
         className
       )}
       {...props}
@@ -57,7 +57,7 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "fixed top-[50%] left-[50%] z-50 grid w-[calc(100%-2rem)] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-xl duration-200",
+          "fixed top-[50%] left-[50%] z-50 grid w-[calc(100%-2rem)] max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 rounded-none border border-border-strong bg-card p-6 text-card-foreground duration-150",
           className
         )}
         {...props}
@@ -66,7 +66,7 @@ function DialogContent({
         {showCloseButton && (
           <DialogPrimitive.Close
             aria-label="Tutup dialog"
-            className="absolute top-4 right-4 inline-flex h-10 w-10 items-center justify-center rounded-lg border border-transparent text-muted-foreground transition-colors hover:border-border hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="absolute top-4 right-4 inline-flex h-10 w-10 items-center justify-center rounded-none border border-transparent text-muted-foreground transition-colors hover:border-border-strong hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <X className="size-4" aria-hidden="true" />
           </DialogPrimitive.Close>
@@ -106,7 +106,7 @@ function DialogTitle({
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className={cn("font-display text-2xl font-semibold leading-tight tracking-tight", className)}
+      className={cn("font-display text-2xl font-bold leading-tight tracking-[-0.03em]", className)}
       {...props}
     />
   );

@@ -222,9 +222,9 @@ function SidebarMenuButton({
       data-active={isActive}
       aria-current={isActive ? "page" : undefined}
       className={cn(
-        "relative flex min-h-[44px] w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
+        "relative flex min-h-[44px] w-full items-center gap-3 rounded-none px-3 py-2 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
         isActive
-          ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold border border-border-strong before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:rounded-r-full before:bg-[#C93018]"
+          ? "bg-sidebar-accent text-sidebar-accent-foreground font-semibold border border-border-strong before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-[#141413] dark:before:bg-[#D4FF2A]"
           : "text-muted-foreground border border-transparent hover:bg-sidebar-accent/70 hover:text-sidebar-foreground",
         !open && !isMobile && "justify-center px-0",
         className

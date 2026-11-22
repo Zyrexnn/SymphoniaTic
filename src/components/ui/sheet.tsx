@@ -33,7 +33,7 @@ function SheetOverlay({
   return (
     <SheetPrimitive.Overlay
       data-slot="sheet-overlay"
-      className={cn("fixed inset-0 z-50 bg-[#11100E]/70", className)}
+      className={cn("fixed inset-0 z-50 bg-[#141413]/75", className)}
       {...props}
     />
   );
@@ -78,7 +78,7 @@ function SheetContent({
         {showCloseButton && (
           <SheetPrimitive.Close
             aria-label="Tutup panel"
-            className="absolute top-3.5 right-3.5 inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground transition-colors hover:border-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="absolute top-3.5 right-3.5 inline-flex h-10 w-10 items-center justify-center rounded-none border border-border bg-background text-muted-foreground transition-colors hover:border-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <X className="size-4" aria-hidden="true" />
           </SheetPrimitive.Close>
@@ -115,7 +115,7 @@ function SheetTitle({
   return (
     <SheetPrimitive.Title
       data-slot="sheet-title"
-      className={cn("font-display text-xl font-semibold text-foreground", className)}
+      className={cn("font-display text-xl font-bold tracking-[-0.03em] text-foreground", className)}
       {...props}
     />
   );

@@ -70,13 +70,13 @@ export const FullscreenWorkspace: React.FC<FullscreenWorkspaceProps> = ({
       aria-labelledby={titleId}
       className={cn(
         'fixed inset-0 z-50 flex flex-col outline-none',
-        isLightFixed ? 'bg-[#F6F4EE] text-[#171614]' : 'bg-background text-foreground'
+        isLightFixed ? 'bg-[#F4F3EF] text-[#141413]' : 'bg-background text-foreground'
       )}
     >
       <header
         className={cn(
           'shrink-0 border-b',
-          isLightFixed ? 'border-[#E4DFD3] bg-white' : 'border-border bg-card'
+          isLightFixed ? 'border-[#DFDDD6] bg-white' : 'border-border bg-card'
         )}
       >
         <div
@@ -91,9 +91,9 @@ export const FullscreenWorkspace: React.FC<FullscreenWorkspaceProps> = ({
               onClick={onClose}
               aria-label={backLabel}
               className={cn(
-                'inline-flex items-center justify-center gap-2 min-h-[44px] min-w-[44px] px-3 rounded-lg border transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2',
+                'inline-flex items-center justify-center gap-2 min-h-[44px] min-w-[44px] px-3 rounded-none border transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2',
                 isLightFixed
-                  ? 'bg-[#F6F4EE] border-[#CFC9BC] text-[#171614] hover:border-[#171614] focus-visible:ring-[#C93018]'
+                  ? 'bg-[#F4F3EF] border-[#DFDDD6] text-[#141413] hover:border-[#141413] focus-visible:ring-[#141413]'
                   : 'bg-background border-border-strong text-foreground hover:border-foreground focus-visible:ring-ring'
               )}
             >
@@ -105,18 +105,18 @@ export const FullscreenWorkspace: React.FC<FullscreenWorkspaceProps> = ({
               {eyebrow && (
                 <span
                   className={cn(
-                    'block text-[11px] font-semibold uppercase tracking-wider truncate',
-                    isLightFixed ? 'text-[#C93018]' : 'text-[#C93018] dark:text-[#F2644E]'
+                    'block text-[11px] font-semibold uppercase tracking-[0.14em] truncate',
+                    isLightFixed ? 'text-[#141413]' : 'text-[#141413] dark:text-[#D4FF2A]'
                   )}
                 >
-                  {eyebrow}
+                  • {eyebrow}
                 </span>
               )}
               <h2
                 id={titleId}
                 className={cn(
-                  'font-display text-xl sm:text-2xl font-semibold tracking-tight truncate m-0',
-                  isLightFixed ? 'text-[#171614]' : 'text-foreground'
+                  'font-display text-xl sm:text-2xl font-bold tracking-[-0.03em] truncate m-0',
+                  isLightFixed ? 'text-[#141413]' : 'text-foreground'
                 )}
               >
                 {title}
@@ -125,7 +125,7 @@ export const FullscreenWorkspace: React.FC<FullscreenWorkspaceProps> = ({
                 <p
                   className={cn(
                     'text-xs truncate mt-0.5 m-0',
-                    isLightFixed ? 'text-[#5C5850]' : 'text-muted-foreground'
+                    isLightFixed ? 'text-[#52514D]' : 'text-muted-foreground'
                   )}
                 >
                   {subtitle}
@@ -141,9 +141,9 @@ export const FullscreenWorkspace: React.FC<FullscreenWorkspaceProps> = ({
               onClick={onClose}
               aria-label="Tutup jendela"
               className={cn(
-                'inline-flex items-center justify-center h-11 w-11 rounded-lg border transition-colors focus-visible:outline-none focus-visible:ring-2',
+                'inline-flex items-center justify-center h-11 w-11 rounded-none border transition-colors focus-visible:outline-none focus-visible:ring-2',
                 isLightFixed
-                  ? 'bg-[#F6F4EE] border-[#CFC9BC] text-[#5C5850] hover:text-[#171614] hover:border-[#171614] focus-visible:ring-[#C93018]'
+                  ? 'bg-[#F4F3EF] border-[#DFDDD6] text-[#52514D] hover:text-[#141413] hover:border-[#141413] focus-visible:ring-[#141413]'
                   : 'bg-background border-border-strong text-muted-foreground hover:text-foreground hover:border-foreground focus-visible:ring-ring'
               )}
             >
@@ -163,7 +163,7 @@ export const FullscreenWorkspace: React.FC<FullscreenWorkspaceProps> = ({
         <footer
           className={cn(
             'shrink-0 border-t pb-[env(safe-area-inset-bottom)]',
-            isLightFixed ? 'border-[#E4DFD3] bg-white' : 'border-border bg-card'
+            isLightFixed ? 'border-[#DFDDD6] bg-white' : 'border-border bg-card'
           )}
         >
           <div className={cn('mx-auto w-full px-4 sm:px-8 py-4', maxWidthClass)}>
@@ -215,7 +215,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-[#11100E]/70"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-[#141413]/75"
       onClick={onCancel}
     >
       <div
@@ -225,10 +225,10 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
         aria-describedby={descId}
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          'w-full sm:max-w-md border-t sm:border rounded-t-2xl sm:rounded-2xl p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-xl',
+          'w-full sm:max-w-md border-t sm:border rounded-none p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]',
           isLightFixed
-            ? 'bg-white border-[#E4DFD3] text-[#171614]'
-            : 'bg-card border-border text-card-foreground'
+            ? 'bg-white border-[#141413] text-[#141413]'
+            : 'bg-card border-border-strong text-card-foreground'
         )}
       >
         <div className="flex items-start gap-3 mb-3">
@@ -236,8 +236,8 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             className={cn(
               'w-5 h-5 shrink-0 mt-0.5',
               variant === 'danger'
-                ? 'text-[#B91C1C] dark:text-rose-400'
-                : 'text-[#855A0E] dark:text-amber-400'
+                ? 'text-[#C81E1E] dark:text-rose-400'
+                : 'text-[#8A5A00] dark:text-amber-400'
             )}
             aria-hidden="true"
           />
@@ -245,8 +245,8 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             <h3
               id={titleId}
               className={cn(
-                'text-base font-semibold m-0',
-                isLightFixed ? 'text-[#171614]' : 'text-card-foreground'
+                'text-base font-bold m-0',
+                isLightFixed ? 'text-[#141413]' : 'text-card-foreground'
               )}
             >
               {title}
@@ -255,7 +255,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
               id={descId}
               className={cn(
                 'text-sm leading-relaxed mt-2 mb-0',
-                isLightFixed ? 'text-[#5C5850]' : 'text-muted-foreground'
+                isLightFixed ? 'text-[#52514D]' : 'text-muted-foreground'
               )}
             >
               {message}
@@ -268,9 +268,9 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             type="button"
             onClick={onCancel}
             className={cn(
-              'w-full sm:w-auto min-h-[44px] px-5 py-2.5 text-sm font-medium border rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2',
+              'w-full sm:w-auto min-h-[44px] px-5 py-2.5 text-sm font-semibold border rounded-none transition-colors focus-visible:outline-none focus-visible:ring-2',
               isLightFixed
-                ? 'text-[#171614] bg-[#F6F4EE] border-[#CFC9BC] hover:border-[#171614] focus-visible:ring-[#C93018]'
+                ? 'text-[#141413] bg-[#F4F3EF] border-[#DFDDD6] hover:border-[#141413] focus-visible:ring-[#141413]'
                 : 'text-foreground bg-background border-border-strong hover:border-foreground focus-visible:ring-ring'
             )}
           >
@@ -280,10 +280,10 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             type="button"
             onClick={onConfirm}
             className={cn(
-              'w-full sm:w-auto min-h-[44px] px-5 py-2.5 text-sm font-semibold rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2',
+              'w-full sm:w-auto min-h-[44px] px-5 py-2.5 text-sm font-semibold rounded-none transition-colors focus-visible:outline-none focus-visible:ring-2',
               variant === 'danger'
-                ? 'text-white bg-[#B91C1C] hover:bg-[#991B1B] focus-visible:ring-[#B91C1C]'
-                : 'text-white bg-[#C93018] hover:bg-[#A82511] focus-visible:ring-[#C93018]'
+                ? 'text-white bg-[#C81E1E] hover:bg-[#A61717] focus-visible:ring-[#C81E1E]'
+                : 'text-[#141413] bg-[#D4FF2A] hover:bg-[#C2EE1A] focus-visible:ring-[#141413]'
             )}
           >
             {confirmLabel}

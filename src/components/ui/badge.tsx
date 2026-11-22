@@ -3,20 +3,24 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex items-center gap-1.5 rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center gap-1.5 rounded-none border px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
   {
     variants: {
       variant: {
-        default: "border-transparent bg-[#C93018] text-white hover:bg-[#A82511]",
-        dark: "border-transparent bg-[#171614] text-[#F6F4EE] dark:bg-[#F6F4EE] dark:text-[#171614]",
-        secondary: "border-border bg-secondary text-secondary-foreground",
+        default:
+          "border-[#141413]/20 bg-[#D4FF2A] text-[#141413] hover:bg-[#C2EE1A]",
+        dark:
+          "border-transparent bg-[#141413] text-[#F4F3EF] dark:bg-[#F4F3EF] dark:text-[#141413]",
+        secondary:
+          "border-border bg-secondary text-secondary-foreground",
         success:
-          "border-[#1F6E43]/25 bg-[#1F6E43]/10 text-[#1F6E43] dark:border-emerald-500/35 dark:bg-emerald-500/15 dark:text-emerald-300",
+          "border-[#156E3F]/30 bg-[#156E3F]/10 text-[#156E3F] dark:border-emerald-500/35 dark:bg-emerald-500/15 dark:text-emerald-300",
         warning:
-          "border-[#855A0E]/25 bg-[#855A0E]/10 text-[#855A0E] dark:border-amber-500/35 dark:bg-amber-500/15 dark:text-amber-300",
+          "border-[#8A5A00]/30 bg-[#8A5A00]/10 text-[#8A5A00] dark:border-amber-500/35 dark:bg-amber-500/15 dark:text-amber-300",
         destructive:
-          "border-[#B91C1C]/25 bg-[#B91C1C]/10 text-[#B91C1C] dark:border-rose-500/35 dark:bg-rose-500/15 dark:text-rose-300",
-        outline: "text-foreground border-border-strong bg-transparent",
+          "border-[#C81E1E]/30 bg-[#C81E1E]/10 text-[#C81E1E] dark:border-rose-500/35 dark:bg-rose-500/15 dark:text-rose-300",
+        outline:
+          "text-foreground border-border-strong bg-transparent",
       },
     },
     defaultVariants: {

@@ -2,12 +2,12 @@ import React, { useId } from 'react';
 import { cn } from '@/lib/utils';
 
 export const fieldInputSemantic =
-  'w-full min-h-[44px] bg-card border border-input rounded-lg px-3.5 py-2 text-base sm:text-sm text-foreground placeholder:text-muted-foreground/80 outline-none transition-colors focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/25 disabled:opacity-50 disabled:bg-secondary disabled:cursor-not-allowed';
+  'w-full min-h-[44px] bg-card border border-input rounded-none px-3.5 py-2 text-base sm:text-sm text-foreground placeholder:text-muted-foreground/80 outline-none transition-colors focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/20 disabled:opacity-50 disabled:bg-secondary disabled:cursor-not-allowed';
 
 export const fieldInputBase = fieldInputSemantic;
 
 export const fieldInputLight =
-  'w-full min-h-[46px] bg-white border border-[#CFC9BC] rounded-lg px-3.5 py-2.5 text-base sm:text-sm text-[#171614] placeholder:text-[#6B665D] outline-none transition-colors focus:border-[#C93018] focus:ring-2 focus:ring-[#C93018]/20 disabled:opacity-50 disabled:bg-[#ECE8DF] disabled:cursor-not-allowed';
+  'w-full min-h-[46px] bg-white border border-[#B8B5AC] rounded-none px-3.5 py-2.5 text-base sm:text-sm text-[#141413] placeholder:text-[#6E6D68] outline-none transition-colors focus:border-[#141413] focus:ring-2 focus:ring-[#141413]/15 disabled:opacity-50 disabled:bg-[#EAE8E1] disabled:cursor-not-allowed';
 
 interface FormFieldProps {
   label: string;
@@ -40,7 +40,7 @@ export const FormField: React.FC<FormFieldProps> = ({
         className={cn(
           'text-xs font-semibold tracking-wide flex items-center gap-1',
           isLightFixed
-            ? 'text-[#171614]'
+            ? 'text-[#141413]'
             : isDarkFixed
             ? 'text-[#E4E4E7]'
             : 'text-foreground'
@@ -51,10 +51,10 @@ export const FormField: React.FC<FormFieldProps> = ({
           <span
             className={
               isLightFixed
-                ? 'text-[#C93018]'
+                ? 'text-[#C81E1E]'
                 : isDarkFixed
-                ? 'text-rose-400'
-                : 'text-[#C93018] dark:text-[#F2644E]'
+                ? 'text-[#D4FF2A]'
+                : 'text-[#C81E1E] dark:text-[#D4FF2A]'
             }
             aria-hidden="true"
           >
@@ -68,7 +68,7 @@ export const FormField: React.FC<FormFieldProps> = ({
           className={cn(
             'text-xs leading-relaxed m-0',
             isLightFixed
-              ? 'text-[#6B665D]'
+              ? 'text-[#6E6D68]'
               : isDarkFixed
               ? 'text-[#94A3B8]'
               : 'text-muted-foreground'
@@ -83,10 +83,10 @@ export const FormField: React.FC<FormFieldProps> = ({
           className={cn(
             'text-xs leading-relaxed m-0',
             isLightFixed
-              ? 'text-[#B91C1C]'
+              ? 'text-[#C81E1E]'
               : isDarkFixed
               ? 'text-rose-400'
-              : 'text-[#B91C1C] dark:text-rose-400'
+              : 'text-[#C81E1E] dark:text-rose-400'
           )}
         >
           {error}
@@ -138,7 +138,7 @@ export const TextInputField: React.FC<TextInputFieldProps> = ({
         onChange={(e) => onValueChange(e.target.value)}
         className={cn(
           isLightFixed ? fieldInputLight : fieldInputSemantic,
-          error && 'border-[#B91C1C] focus-visible:border-[#B91C1C] focus-visible:ring-[#B91C1C]/20',
+          error && 'border-[#C81E1E] focus-visible:border-[#C81E1E] focus-visible:ring-[#C81E1E]/20',
           className
         )}
         {...rest}
@@ -192,7 +192,7 @@ export const TextAreaField: React.FC<TextAreaFieldProps> = ({
         className={cn(
           isLightFixed ? fieldInputLight : fieldInputSemantic,
           'min-h-[108px] resize-y leading-relaxed',
-          error && 'border-[#B91C1C] focus-visible:border-[#B91C1C] focus-visible:ring-[#B91C1C]/20',
+          error && 'border-[#C81E1E] focus-visible:border-[#C81E1E] focus-visible:ring-[#C81E1E]/20',
           className
         )}
         {...rest}
