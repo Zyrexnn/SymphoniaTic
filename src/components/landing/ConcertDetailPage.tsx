@@ -525,7 +525,7 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
         </div>
       </section>
 
-      {/* Section 4: Dark Band — "Di Atas Panggung" (Who's on stage) */}
+      {/* Section 4: Dark Band - "Di Atas Panggung" (Who's on stage) */}
       <section className="bg-[#141413] text-[#F4F3EF] border-b border-white/15">
         <div className="mx-auto max-w-[1360px] border-x border-white/15 px-5 sm:px-8 lg:px-10 py-14 sm:py-20">
           <SectionHeading
@@ -582,7 +582,7 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
         </div>
       </section>
 
-      {/* Section 5: "Rangkaian Acara" (How the night runs — Hairline Timetable) */}
+      {/* Section 5: "Rangkaian Acara" (How the night runs - Hairline Timetable) */}
       <section className="bg-[#F4F3EF] border-b border-[#DFDDD6]">
         <div className="mx-auto max-w-[1360px] border-x border-[#DFDDD6] px-5 sm:px-8 lg:px-10 py-14 sm:py-20">
           <SectionHeading
