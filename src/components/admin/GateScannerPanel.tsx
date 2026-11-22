@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Html5Qrcode } from 'html5-qrcode';
+import type { Html5Qrcode as Html5QrcodeType } from 'html5-qrcode';
 import {
   Camera,
   CheckCircle2,
@@ -11,6 +11,8 @@ import {
   Clock,
   Users,
   RefreshCw,
+  Upload,
+  ShieldAlert,
 } from 'lucide-react';
 import {
   checkInTicketAPI,
@@ -19,6 +21,7 @@ import {
   type GateAttendanceSummary,
   type OrderRecord,
 } from '../landing/data';
+import { normalizeTicketScanPayload } from '@/lib/qrPayload';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -61,9 +64,18 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
   const [selectedEventId, setSelectedEventId] = useState('');
   const [attendance, setAttendance] = useState<GateAttendanceSummary | null>(null);
   const [isAttendanceLoading, setIsAttendanceLoading] = useState(false);
+  const [bypassOpenGate, setBypassOpenGate] = useState(false);
 
-  const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
+  const html5QrCodeRef = useRef<Html5QrcodeType | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const bypassOpenGateRef = useRef(false);
+  const isProcessingRef = useRef(false);
   const scannerContainerId = 'gate-qr-reader-container';
+  const fileScannerContainerId = 'gate-qr-file-reader';
+
+  useEffect(() => {
+    bypassOpenGateRef.current = bypassOpenGate;
+  }, [bypassOpenGate]);
 
   const loadAttendance = async (eventId = selectedEventId) => {
     setIsAttendanceLoading(true);
@@ -111,6 +123,7 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
   useEffect(() => {
     const initCameras = async () => {
       try {
+        const { Html5Qrcode } = await import('html5-qrcode');
         const devices = await Html5Qrcode.getCameras();
         if (devices && devices.length > 0) {
           setCameras(devices);
@@ -139,28 +152,33 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
 
   const handleVerifyCode = async (rawCode: string) => {
     if (!rawCode) return;
-    const code = rawCode.trim().replace(/^QR-/, '');
+    const code = normalizeTicketScanPayload(rawCode);
+    if (!code) return;
     const nowTs = Date.now();
 
     if (lastScannedCodeRef.current === code && nowTs - lastScannedTimeRef.current < 3000) {
       return;
     }
-    if (isProcessing) return;
+    if (isProcessingRef.current) return;
 
     lastScannedCodeRef.current = code;
     lastScannedTimeRef.current = nowTs;
+    isProcessingRef.current = true;
     setIsProcessing(true);
 
     try {
-      const res = await checkInTicketAPI(code);
+      const res = await checkInTicketAPI(code, bypassOpenGateRef.current);
       const now = new Date().toLocaleTimeString('id-ID');
 
       if (res.success && res.data) {
         playBeep('success');
+        const seatProgress = res.data.checkedInSeats
+          ? ` · Kursi masuk: ${res.data.checkedInSeats}`
+          : '';
         const result: ScanResultState = {
           type: 'SUCCESS',
           title: 'CHECK-IN BERHASIL (VALID)',
-          message: `Tiket sah untuk ${res.data.userName} (${res.data.categoryName}, ${res.data.quantity}x)`,
+          message: `${res.message || `Tiket sah untuk ${res.data.userName}`} (${res.data.categoryName}${seatProgress})`,
           order: res.data,
           timestamp: now,
         };
@@ -182,9 +200,13 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
       } else {
         playBeep('error');
         let errTitle = 'TIKET TIDAK VALID / VOID';
+        let errMsg = res.message || 'Kode tiket tidak ditemukan di sistem database.';
         const lowerMsg = (res.message || '').toLowerCase();
         if (lowerMsg.includes('belum dibuka')) {
           errTitle = 'GERBANG BELUM DIBUKA';
+          if (!bypassOpenGateRef.current) {
+            errMsg = `${errMsg} Aktifkan tombol "Mode Uji Coba Gate" jika ingin melakukan gladi/uji pemindaian lebih awal.`;
+          }
         } else if (lowerMsg.includes('telah selesai') || lowerMsg.includes('kedaluwarsa')) {
           errTitle = 'KONSER TELAH BERAKHIR';
         } else if (lowerMsg.includes('telah ditutup')) {
@@ -194,7 +216,7 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
         const result: ScanResultState = {
           type: 'ERROR',
           title: errTitle,
-          message: res.message || 'Kode tiket tidak ditemukan di sistem database.',
+          message: errMsg,
           order: res.data,
           timestamp: now,
         };
@@ -210,15 +232,33 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
         timestamp: new Date().toLocaleTimeString('id-ID'),
       });
     } finally {
+      isProcessingRef.current = false;
       setIsProcessing(false);
     }
   };
 
+  const waitForNextFrame = () =>
+    new Promise<void>((resolve) => {
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+    });
+
   const startScanner = async (camId?: string) => {
     setCameraError('');
+
+    if (typeof window !== 'undefined' && !window.isSecureContext) {
+      setCameraError(
+        'Akses kamera langsung diblokir browser karena halaman dibuka melalui HTTP non-localhost. Gunakan tombol "Unggah Foto QR" atau input manual.'
+      );
+      setIsScanning(false);
+      return;
+    }
+
     setIsScanning(true);
+    await waitForNextFrame();
 
     try {
+      const { Html5Qrcode } = await import('html5-qrcode');
+
       if (html5QrCodeRef.current) {
         try {
           await html5QrCodeRef.current.stop();
@@ -262,18 +302,43 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
       } catch (fallbackErr) {
         console.error('Fallback camera failed:', fallbackErr);
       }
-      setCameraError('Gagal mengakses kamera. Pastikan Anda telah mengizinkan akses kamera pada browser.');
+      setCameraError(
+        'Gagal mengakses kamera. Pastikan izin kamera aktif atau gunakan tombol "Unggah Foto QR".'
+      );
       setIsScanning(false);
     }
   };
 
+  const handleScanImageFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+
+    setCameraError('');
+    setIsProcessing(true);
+    isProcessingRef.current = true;
+    try {
+      const { Html5Qrcode } = await import('html5-qrcode');
+      const fileScanner = new Html5Qrcode(fileScannerContainerId);
+      const decodedText = await fileScanner.scanFile(file, false);
+      fileScanner.clear();
+      isProcessingRef.current = false;
+      setIsProcessing(false);
+      await handleVerifyCode(decodedText);
+    } catch (err) {
+      console.error('QR file scan error:', err);
+      playBeep('error');
+      setCameraError('QR Code tidak terbaca pada gambar tersebut. Pastikan gambar jelas dan tidak terpotong.');
+      isProcessingRef.current = false;
+      setIsProcessing(false);
+    }
+  };
+
   const stopScanner = async () => {
-    if (html5QrCodeRef.current && isScanning) {
+    if (html5QrCodeRef.current) {
       try {
         await html5QrCodeRef.current.stop();
-      } catch (err) {
-        console.error('Error stopping scanner:', err);
-      }
+      } catch {}
     }
     setIsScanning(false);
   };
@@ -308,20 +373,52 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
           <div className="flex flex-wrap items-center gap-2.5 self-start sm:self-auto">
             <Button
               type="button"
+              variant={bypassOpenGate ? 'default' : 'outline'}
+              onClick={() => setBypassOpenGate((prev) => !prev)}
+              aria-pressed={bypassOpenGate}
+              className="min-h-[44px]"
+              title="Izinkan pemindaian tiket meski waktu Open Gate konser belum dimulai (mode gladi / uji coba)"
+            >
+              <ShieldAlert size={16} aria-hidden="true" />
+              <span>{bypassOpenGate ? 'Bypass Open Gate: Aktif' : 'Mode Uji Coba Gate'}</span>
+            </Button>
+
+            <Button
+              type="button"
               variant={soundEnabled ? 'secondary' : 'outline'}
               onClick={() => setSoundEnabled(!soundEnabled)}
               aria-pressed={soundEnabled}
+              className="min-h-[44px]"
             >
               {soundEnabled ? <Volume2 size={16} aria-hidden="true" /> : <VolumeX size={16} aria-hidden="true" />}
               <span>{soundEnabled ? 'Audio On' : 'Muted'}</span>
             </Button>
 
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleScanImageFile}
+              className="hidden"
+              aria-label="Pilih gambar QR Code tiket"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isProcessing}
+              className="min-h-[44px]"
+            >
+              <Upload size={16} aria-hidden="true" />
+              <span>Unggah Foto QR</span>
+            </Button>
+
             {isScanning ? (
-              <Button type="button" variant="destructive" onClick={stopScanner}>
+              <Button type="button" variant="destructive" onClick={stopScanner} className="min-h-[44px]">
                 Matikan Kamera
               </Button>
             ) : (
-              <Button type="button" variant="default" onClick={() => startScanner()}>
+              <Button type="button" variant="default" onClick={() => startScanner()} className="min-h-[44px]">
                 <Camera size={16} aria-hidden="true" />
                 <span>Aktifkan Kamera</span>
               </Button>
@@ -417,26 +514,30 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
               </div>
             )}
 
-            <div
-              id={scannerContainerId}
-              className={`w-full max-w-[400px] aspect-square bg-background border border-border rounded-xl overflow-hidden flex items-center justify-center relative ${
-                !isScanning ? 'hidden' : 'block'
-              }`}
-            />
+            <div id={fileScannerContainerId} className="hidden" aria-hidden="true" />
 
-            {!isScanning && (
-              <div className="text-center p-8 space-y-3">
-                <div className="w-14 h-14 mx-auto rounded-xl border border-border-strong flex items-center justify-center bg-background">
-                  <Camera size={24} className="text-[#C93018] dark:text-[#F2644E]" aria-hidden="true" />
+            <div className="w-full max-w-[400px] aspect-square bg-background border border-border rounded-xl overflow-hidden flex items-center justify-center relative">
+              <div
+                id={scannerContainerId}
+                className={`w-full h-full flex items-center justify-center ${
+                  isScanning ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                }`}
+              />
+
+              {!isScanning && (
+                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center p-8 space-y-3 bg-background">
+                  <div className="w-14 h-14 mx-auto rounded-xl border border-border-strong flex items-center justify-center bg-background">
+                    <Camera size={24} className="text-[#C93018] dark:text-[#F2644E]" aria-hidden="true" />
+                  </div>
+                  <h3 className="text-sm font-semibold text-card-foreground m-0">
+                    Kamera Scanner Sedang Nonaktif
+                  </h3>
+                  <p className="text-xs text-muted-foreground max-w-xs mx-auto leading-relaxed">
+                    Klik Aktifkan Kamera di atas untuk memindai langsung, atau gunakan Unggah Foto QR jika kamera tidak tersedia.
+                  </p>
                 </div>
-                <h3 className="text-sm font-semibold text-card-foreground m-0">
-                  Kamera Scanner Sedang Nonaktif
-                </h3>
-                <p className="text-xs text-muted-foreground max-w-xs mx-auto leading-relaxed">
-                  Klik tombol Aktifkan Kamera di atas untuk mulai memindai QR Code tiket di gate.
-                </p>
-              </div>
-            )}
+              )}
+            </div>
 
             {cameras.length > 1 && (
               <div className="w-full mt-4 pt-4 border-t border-border flex flex-wrap items-center justify-between gap-3 text-xs">

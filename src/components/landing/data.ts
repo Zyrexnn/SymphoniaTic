@@ -1,4 +1,5 @@
 import { calculateDefaultOpenGate, generateDynamicRundown } from '@/lib/timeUtils';
+import { normalizeTicketScanPayload } from '@/lib/qrPayload';
 
 export interface APIResponse<T = any> {
   success: boolean;
@@ -669,8 +670,8 @@ export const updateOrderStatusAPI = async (orderId: string, status: string) => {
   return res.json();
 };
 
-export const checkInTicketAPI = async (code: string) => {
-  const cleanCode = code.trim().replace(/^QR-/, '');
+export const checkInTicketAPI = async (code: string, bypassOpenGate = false) => {
+  const cleanCode = normalizeTicketScanPayload(code);
   try {
     const res = await fetch(`${getApiBaseUrl()}/admin/tickets/checkin`, {
       method: 'POST',
@@ -678,7 +679,7 @@ export const checkInTicketAPI = async (code: string) => {
         'Content-Type': 'application/json',
         ...getAdminAuthHeaders(),
       },
-      body: JSON.stringify({ code: cleanCode }),
+      body: JSON.stringify({ code: cleanCode, bypassOpenGate }),
     });
     const data = await res.json();
     if (res.ok && data.success) {
