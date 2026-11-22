@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { ExternalLink, Search } from 'lucide-react';
+import { ExternalLink, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
 import { FullscreenWorkspace } from '@/components/ui/fullscreen-sheet';
 
 const CONCERT_TERMS = [
@@ -26,142 +24,162 @@ export const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="border-t border-[#E4DFD3] bg-white text-[#171614]">
-      <div className="mx-auto max-w-[1360px] px-4 sm:px-8 lg:px-10 pt-14 pb-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 pb-10">
-          <div className="lg:col-span-5 flex flex-col justify-between gap-6">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-[#171614] rounded-lg flex items-center justify-center shrink-0">
-                  <span className="font-display text-lg font-semibold text-[#F6F4EE]">S</span>
-                </div>
-                <div>
-                  <span className="font-display text-xl font-semibold text-[#171614] tracking-tight block leading-tight">
-                    SymphoniaTic
-                  </span>
-                  <span className="text-[10px] font-semibold text-[#6B665D] tracking-[0.2em] uppercase block">
-                    Harmoni Nusantara
-                  </span>
-                </div>
-              </div>
-              <p className="text-sm text-[#5C5850] leading-relaxed max-w-sm m-0">
-                Platform tiket resmi untuk pertunjukan orkestra, simfoni, balet, dan resital musik klasik di Indonesia.
+    <footer className="bg-[#D4FF2A] text-[#141413] border-t border-[#141413] overflow-x-clip">
+      <div className="mx-auto max-w-[1360px] border-x border-[#141413]/20">
+        {/* Top CTA & Quick E-Ticket Lookup Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 border-b border-[#141413]/20">
+          <div className="lg:col-span-4 px-5 sm:px-8 lg:px-10 py-8 lg:py-12 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-[#141413]/20">
+            <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#141413]">
+              • Portal Tiket Resmi
+            </span>
+            <div className="mt-6 lg:mt-0">
+              <p className="font-display text-2xl sm:text-3xl font-extrabold tracking-[-0.04em] leading-none tabular-nums m-0">
+                19:30 WIB
+              </p>
+              <p className="text-xs font-medium text-[#141413]/80 mt-1.5 mb-0">
+                Standar jam panggung konser simfoni malam
               </p>
             </div>
+          </div>
 
-            <form onSubmit={handleQuickLookup} className="max-w-sm">
+          <div className="lg:col-span-8 px-5 sm:px-8 lg:px-10 py-8 lg:py-12">
+            <h2 className="font-display text-3xl sm:text-5xl font-extrabold tracking-[-0.04em] leading-[0.96] text-[#141413] max-w-xl m-0">
+              Akses E-Ticket.
+              <br />
+              Siap sebelum pintu dibuka.
+            </h2>
+            <p className="mt-4 text-sm text-[#141413]/85 max-w-lg leading-relaxed mb-0">
+              Masukkan kode booking atau kode tiket Anda untuk membuka pass QR digital, unduh PNG resolusi tinggi, atau cetak PDF A4.
+            </p>
+
+            <form onSubmit={handleQuickLookup} className="mt-6 max-w-md">
               <label
                 htmlFor="footer-ticket-lookup"
-                className="block text-xs font-semibold uppercase tracking-[0.14em] text-[#171614] mb-2"
+                className="block text-[11px] font-bold uppercase tracking-[0.14em] text-[#141413] mb-2"
               >
-                Cek Cepat E-Ticket
+                Kode Booking / Tiket
               </label>
-              <div className="flex items-center gap-2">
-                <div className="relative flex-1">
-                  <Search
-                    size={15}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B665D] pointer-events-none"
-                    aria-hidden="true"
-                  />
-                  <Input
-                    id="footer-ticket-lookup"
-                    type="text"
-                    value={ticketCode}
-                    onChange={(e) => setTicketCode(e.target.value)}
-                    placeholder="Kode SYM-XXXXXX"
-                    className="min-h-[44px] border-[#CFC9BC] bg-[#F6F4EE] pl-9 pr-3 text-sm text-[#171614] placeholder:text-[#6B665D] focus-visible:border-[#C93018] focus-visible:ring-[#C93018]/20"
-                  />
-                </div>
-                <Button type="submit" variant="dark" className="shrink-0">
-                  Cek
-                </Button>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                <input
+                  id="footer-ticket-lookup"
+                  type="text"
+                  value={ticketCode}
+                  onChange={(e) => setTicketCode(e.target.value)}
+                  placeholder="Contoh: SYM-XXXXXX"
+                  className="min-h-[44px] flex-1 rounded-none border border-[#141413] bg-white px-3.5 py-2 font-mono text-sm text-[#141413] placeholder:text-[#6E6D68] outline-none focus-visible:ring-2 focus-visible:ring-[#141413]"
+                />
+                <button
+                  type="submit"
+                  className="min-h-[44px] inline-flex items-center justify-center gap-2 rounded-none bg-[#141413] px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-[#D4FF2A] hover:bg-[#2A2A28] transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413] focus-visible:ring-offset-2 focus-visible:ring-offset-[#D4FF2A]"
+                >
+                  <span>Cek Tiket</span>
+                  <ArrowRight size={14} strokeWidth={2.2} aria-hidden="true" />
+                </button>
               </div>
             </form>
           </div>
+        </div>
 
-          <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-8">
-            <div>
-              <p className="text-xs font-semibold text-[#171614] tracking-[0.16em] uppercase mb-4">
-                Navigasi
-              </p>
-              <div className="flex flex-col gap-2 items-start">
-                <a href="/" className="min-h-[36px] inline-flex items-center text-sm text-[#5C5850] hover:text-[#C93018] transition-colors no-underline">
-                  Beranda
-                </a>
-                <a href="/events" className="min-h-[36px] inline-flex items-center text-sm text-[#5C5850] hover:text-[#C93018] transition-colors no-underline">
-                  Jadwal Konser
-                </a>
-                <a href="/edukasi" className="min-h-[36px] inline-flex items-center text-sm text-[#5C5850] hover:text-[#C93018] transition-colors no-underline">
-                  Edukasi &amp; Etiket
-                </a>
-              </div>
+        {/* 4-Column Compact Directory */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 border-b border-[#141413]/20">
+          <div className="px-5 sm:px-8 py-7 border-r border-b lg:border-b-0 border-[#141413]/20">
+            <p className="text-[11px] font-bold tracking-[0.16em] uppercase text-[#141413]/75 mb-3 mt-0">
+              Program
+            </p>
+            <div className="flex flex-col gap-1.5 items-start">
+              <a href="/" className="min-h-[36px] inline-flex items-center text-sm font-semibold text-[#141413] hover:underline no-underline">
+                Beranda
+              </a>
+              <a href="/events" className="min-h-[36px] inline-flex items-center text-sm font-semibold text-[#141413] hover:underline no-underline">
+                Jadwal Konser
+              </a>
+              <a href="/edukasi" className="min-h-[36px] inline-flex items-center text-sm font-semibold text-[#141413] hover:underline no-underline">
+                Edukasi &amp; Etiket
+              </a>
             </div>
+          </div>
 
-            <div>
-              <p className="text-xs font-semibold text-[#171614] tracking-[0.16em] uppercase mb-4">
-                Layanan
-              </p>
-              <div className="flex flex-col gap-2 items-start">
-                <a href="/redeem" className="min-h-[36px] inline-flex items-center text-sm text-[#5C5850] hover:text-[#C93018] transition-colors no-underline">
-                  Cek E-Ticket
-                </a>
-                <a href="/refund" className="min-h-[36px] inline-flex items-center text-sm text-[#5C5850] hover:text-[#C93018] transition-colors no-underline">
-                  Pengajuan Refund
-                </a>
-                <a href="/admin" className="min-h-[36px] inline-flex items-center text-sm text-[#5C5850] hover:text-[#C93018] transition-colors no-underline">
-                  Portal Admin
-                </a>
-                <span className="text-xs text-[#6B665D] mt-1">support@symphoniatic.id</span>
-              </div>
+          <div className="px-5 sm:px-8 py-7 lg:border-r border-b lg:border-b-0 border-[#141413]/20">
+            <p className="text-[11px] font-bold tracking-[0.16em] uppercase text-[#141413]/75 mb-3 mt-0">
+              Layanan
+            </p>
+            <div className="flex flex-col gap-1.5 items-start">
+              <a href="/redeem" className="min-h-[36px] inline-flex items-center text-sm font-semibold text-[#141413] hover:underline no-underline">
+                Cek E-Ticket
+              </a>
+              <a href="/refund" className="min-h-[36px] inline-flex items-center text-sm font-semibold text-[#141413] hover:underline no-underline">
+                Pengajuan Refund
+              </a>
+              <a href="/dashboard" className="min-h-[36px] inline-flex items-center text-sm font-semibold text-[#141413] hover:underline no-underline">
+                Akun &amp; Pesanan
+              </a>
             </div>
+          </div>
 
-            <div>
-              <p className="text-xs font-semibold text-[#171614] tracking-[0.16em] uppercase mb-4">
-                Ikuti Kami
-              </p>
-              <div className="flex flex-col gap-2 items-start">
-                {[
-                  { name: 'Instagram', href: 'https://instagram.com' },
-                  { name: 'Twitter / X', href: 'https://x.com' },
-                  { name: 'YouTube', href: 'https://youtube.com' },
-                  { name: 'TikTok', href: 'https://tiktok.com' },
-                ].map((s) => (
-                  <a
-                    key={s.name}
-                    href={s.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="min-h-[36px] text-sm text-[#5C5850] hover:text-[#C93018] transition-colors no-underline inline-flex items-center gap-1.5 group"
-                  >
-                    <span>{s.name}</span>
-                    <ExternalLink
-                      size={12}
-                      strokeWidth={1.6}
-                      className="text-[#6B665D] group-hover:text-[#C93018] transition-colors"
-                      aria-hidden="true"
-                    />
-                  </a>
-                ))}
-              </div>
+          <div className="px-5 sm:px-8 py-7 border-r border-[#141413]/20">
+            <p className="text-[11px] font-bold tracking-[0.16em] uppercase text-[#141413]/75 mb-3 mt-0">
+              Ikuti Kami
+            </p>
+            <div className="flex flex-col gap-1.5 items-start">
+              {[
+                { name: 'Instagram', href: 'https://instagram.com' },
+                { name: 'Twitter / X', href: 'https://x.com' },
+                { name: 'YouTube', href: 'https://youtube.com' },
+              ].map((s) => (
+                <a
+                  key={s.name}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="min-h-[36px] text-sm font-semibold text-[#141413] hover:underline no-underline inline-flex items-center gap-1.5"
+                >
+                  <span>{s.name}</span>
+                  <ExternalLink size={12} strokeWidth={2} aria-hidden="true" />
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div className="px-5 sm:px-8 py-7">
+            <p className="text-[11px] font-bold tracking-[0.16em] uppercase text-[#141413]/75 mb-3 mt-0">
+              Informasi
+            </p>
+            <div className="flex flex-col gap-1.5 items-start">
+              <a href="/admin" className="min-h-[36px] inline-flex items-center text-sm font-semibold text-[#141413] hover:underline no-underline">
+                Portal Admin
+              </a>
+              <button
+                type="button"
+                onClick={() => setShowTermsModal(true)}
+                className="min-h-[36px] text-left text-sm font-semibold text-[#141413] hover:underline bg-transparent border-none p-0"
+              >
+                Syarat &amp; Ketentuan
+              </button>
+              <span className="text-xs font-mono text-[#141413]/80 pt-1">
+                support@symphoniatic.id
+              </span>
             </div>
           </div>
         </div>
 
-        <Separator className="bg-[#E4DFD3]" />
-
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-6">
-          <p className="text-xs text-[#6B665D] m-0">
-            &copy; {new Date().getFullYear()} SymphoniaTic Production. Seluruh hak cipta dilindungi.
+        {/* Legal Meta Strip */}
+        <div className="px-5 sm:px-8 lg:px-10 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs font-medium text-[#141413]/80 border-b border-[#141413]/20">
+          <p className="m-0">
+            &copy; {new Date().getFullYear()} SymphoniaTic Production. Harmoni Nusantara.
           </p>
-          <div className="flex flex-wrap items-center gap-5">
-            <button
-              type="button"
-              onClick={() => setShowTermsModal(true)}
-              className="text-xs font-medium text-[#5C5850] hover:text-[#C93018] transition-colors bg-transparent border-none p-0 py-1"
-            >
-              Syarat &amp; Ketentuan Pengunjung
-            </button>
-          </div>
+          <p className="m-0 font-mono text-[11px]">
+            INDONESIA CLASSICAL TICKETING
+          </p>
+        </div>
+
+        {/* Massive Edge-to-Edge Wordmark */}
+        <div className="px-3 sm:px-6 pt-4 pb-2 sm:pb-4 overflow-hidden select-none">
+          <p
+            aria-hidden="true"
+            className="font-display font-extrabold tracking-[-0.055em] leading-[0.84] text-[#141413] text-[clamp(36px,11.6vw,164px)] whitespace-nowrap m-0"
+          >
+            SymphoniaTic.
+          </p>
         </div>
       </div>
 
@@ -185,10 +203,10 @@ export const Footer: React.FC = () => {
           </div>
         }
       >
-        <ol className="space-y-4 text-sm sm:text-base text-[#171614] leading-relaxed pl-5 m-0">
+        <ol className="space-y-4 text-sm sm:text-base text-[#141413] leading-relaxed pl-5 m-0">
           {CONCERT_TERMS.map((term, idx) => (
-            <li key={idx} className="pl-2 text-[#5C5850]">
-              <span className="text-[#171614]">{term}</span>
+            <li key={idx} className="pl-2 text-[#52514D]">
+              <span className="text-[#141413]">{term}</span>
             </li>
           ))}
         </ol>
