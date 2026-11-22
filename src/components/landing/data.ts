@@ -81,6 +81,9 @@ export interface OrderRecord {
   seatNumbers?: string;
   attendeeNames?: string;
   checkedInSeats?: string;
+  checkedInAt?: string;
+  checkedInSeat?: string;
+  checkedInAttendee?: string;
   tickets?: TicketItem[];
   status: string;
   paymentMethod: string;

@@ -669,10 +669,10 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
                     </div>
                     <div>
                       <span className="text-[11px] text-muted-foreground uppercase block">
-                        Pemegang
+                        Pemilik Kursi
                       </span>
                       <span className="text-foreground truncate block font-medium">
-                        {scanResult.order.userName}
+                        {scanResult.order.checkedInAttendee || scanResult.order.userName}
                       </span>
                     </div>
                     <div>
@@ -681,7 +681,9 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
                       </span>
                       <span className="text-foreground">
                         {scanResult.order.categoryName} ({scanResult.order.quantity}x)
-                        {scanResult.order.seatNumbers ? ` · ${scanResult.order.seatNumbers}` : ''}
+                        {scanResult.order.checkedInSeat || scanResult.order.seatNumbers
+                          ? ` · ${scanResult.order.checkedInSeat || scanResult.order.seatNumbers}`
+                          : ''}
                       </span>
                     </div>
                     <div>
@@ -692,6 +694,23 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
                         {scanResult.order.eventTitle}
                       </span>
                     </div>
+                    {scanResult.order.checkedInAt && (
+                      <div className="col-span-2">
+                        <span className="text-[11px] text-muted-foreground uppercase block">
+                          Waktu Check-In Tercatat
+                        </span>
+                        <span className="font-mono text-foreground font-medium">
+                          {new Date(scanResult.order.checkedInAt).toLocaleString('id-ID', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}{' '}
+                          WIB
+                        </span>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
