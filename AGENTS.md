@@ -79,8 +79,8 @@ fe/
   - `client:only="react"` for components requiring browser-only APIs (Canvas, jsPDF, Web Audio).
 
 ### C. UI / Visual Aesthetics
-- **Theme**: Concert Hall & Warm Playbill aesthetic (`fe/DESIGN.md`). Atmospheric dark stage (`#11100E`) for hero photography, paired with Warm Ivory (`#F6F4EE`) reading surfaces, Crisp Paper (`#FFFFFF`) cards with `1px` `#E4DFD3` borders, Charcoal Ink (`#171614`) typography, and Stage Vermilion (`#C93018`) reserved for primary CTAs, featured date ribbons, and active indicators.
-- Adhere to `DESIGN.md` guidelines. Avoid generic or flat templates.
+- **Theme**: Swiss Editorial Brutalist Event Zine (`fe/DESIGN.md`). Stage Charcoal (`#141413`) for hero photography and dark stage bands, paired with Warm Newsprint (`#F4F3EF`) reading surfaces, Crisp White (`#FFFFFF`) cards with `1px` `#DFDDD6` Swiss hairline grid borders, `#141413` Neo-Grotesque typography (`Archivo` + `Plus Jakarta Sans`), and Electric Acid Lime (`#D4FF2A`, always paired with `#141413` ink) reserved for primary focal CTAs, featured ticket tiers, editorial highlights, and the full-bleed footer.
+- Adhere to `DESIGN.md` guidelines. Maintain `0px` sharp corners (`rounded-none`) and `45deg` chamfered corner accents (`.chamfer-br` / `.chamfer-tr`). Avoid generic or rounded pill templates.
 
 ### D. E-Ticket & Pass Generation
 - E-Ticket passes must render cleanly on mobile viewports and support dual export options:
@@ -94,10 +94,10 @@ fe/
 Follow these strict rules to eliminate generic AI frontend slop:
 
 ### A. Visual & UI Craftsmanship (`antislop-ui`)
-- **Glassmorphism Dose Cap (R-10)**: Maximum 1 to 2 elements using `backdrop-blur` (for example, floating navbar or modal overlay). FORBIDDEN: coating every card, sidebar, and hero section in frosted blur that flattens contrast.
-- **Colors & Gradients (R-01)**: FORBIDDEN: generic AI gradients (blue-to-purple, cyan-to-pink). Use the SymphoniaTic palette from `DESIGN.md` (Warm Ivory `#F6F4EE`, Crisp Paper `#FFFFFF`, Concert Hall Stage `#11100E`, Charcoal Ink `#171614`, and Stage Vermilion `#C93018`).
-- **Border Radii (R-11)**: FORBIDDEN: making every button, card, and input pill-shaped. Use a consistent scale (`rounded-xl` for cards, `rounded-lg` for buttons).
-- **Glow & Shadow (R-12, R-13)**: Glow is strictly an attention accent for at most 1 to 2 key elements (such as primary checkout button or playing audio state). Avoid overly soft shadows that make the page float without a ground plane.
+- **Glassmorphism Dose Cap (R-10)**: Maximum 1 to 2 elements using `backdrop-blur` (for example, transparent navbar over hero photography). FORBIDDEN: coating every card, sidebar, and hero section in frosted blur that flattens contrast.
+- **Colors & Gradients (R-01)**: FORBIDDEN: generic AI gradients (blue-to-purple, cyan-to-pink). Use the SymphoniaTic palette from `DESIGN.md` (Warm Newsprint `#F4F3EF`, Crisp White `#FFFFFF`, Stage Charcoal `#141413`, Hairline `#DFDDD6`, and Electric Acid Lime `#D4FF2A` strictly paired with `#141413` ink).
+- **Border Radii (R-11)**: FORBIDDEN: making every button, card, and input pill-shaped or soft-rounded. Use sharp `0px` geometry (`rounded-none`) across buttons, inputs, cards, badges, and modals, plus `.chamfer-br` / `.chamfer-tr` corner cuts for featured media.
+- **Glow & Shadow (R-12, R-13)**: Avoid soft drop shadows and decorative glow. Use crisp `1px` `#DFDDD6` / `#141413` structural hairline borders and solid surface contrast.
 - **Functional Completeness (R-26, C-2)**: FORBIDDEN: dead controls or ghost links that do nothing. Every button must trigger navigation, open a dialog, or provide clear validation feedback.
 
 ### B. Copywriting & Content Integrity (`antislop-copywriting`)
