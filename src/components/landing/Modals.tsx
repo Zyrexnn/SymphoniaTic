@@ -235,10 +235,10 @@ export const BookingModal: React.FC<BookingProps> = ({
         !event.isClosed ? (
           <div className="lg:hidden flex items-center justify-between gap-4">
             <div className="min-w-0">
-              <span className="text-xs text-[#5C5850] block truncate">
+              <span className="text-xs text-[#52514D] block truncate">
                 {quantity}x {selectedCat.name}{selectedSeats.length > 0 ? ` (${selectedSeats.join(', ')})` : ''}
               </span>
-              <span className="text-lg font-bold text-[#171614] tabular-nums block truncate">
+              <span className="text-lg font-extrabold text-[#141413] tabular-nums block truncate">
                 {formatIDR(totalPrice)}
               </span>
             </div>
@@ -246,7 +246,7 @@ export const BookingModal: React.FC<BookingProps> = ({
               type="submit"
               form={formId}
               disabled={!canSubmit}
-              className="min-h-[48px] shrink-0 rounded-lg bg-[#C93018] text-white font-semibold hover:bg-[#A82511] disabled:opacity-40 transition-colors px-5 py-3 text-sm flex items-center justify-center gap-2"
+              className="min-h-[48px] shrink-0 rounded-none bg-[#D4FF2A] text-[#141413] border border-[#141413] font-bold hover:bg-[#C2EE1A] disabled:opacity-40 transition-colors px-5 py-3 text-xs uppercase tracking-wider flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <>
@@ -262,15 +262,15 @@ export const BookingModal: React.FC<BookingProps> = ({
       }
     >
       {event.isClosed ? (
-        <div className="max-w-xl mx-auto rounded-2xl border border-[#E4DFD3] bg-white p-6 sm:p-8 space-y-5">
+        <div className="max-w-xl mx-auto rounded-none border border-[#DFDDD6] bg-white p-6 sm:p-8 space-y-5">
           <div
             role="alert"
-            className="p-4 border border-[#855A0E]/30 bg-[#855A0E]/10 text-[#171614] text-sm rounded-xl leading-relaxed flex items-start gap-3"
+            className="p-4 border border-[#8A5A00] bg-[#8A5A00]/10 text-[#141413] text-sm rounded-none leading-relaxed flex items-start gap-3"
           >
-            <AlertCircle className="w-5 h-5 text-[#855A0E] shrink-0 mt-0.5" aria-hidden="true" />
+            <AlertCircle className="w-5 h-5 text-[#8A5A00] shrink-0 mt-0.5" aria-hidden="true" />
             <div>
-              <p className="font-semibold text-base text-[#855A0E] mb-1 m-0">Penjualan Tiket Ditutup</p>
-              <p className="m-0 text-[#5C5850]">
+              <p className="font-bold text-base text-[#8A5A00] mb-1 m-0">Penjualan Tiket Ditutup</p>
+              <p className="m-0 text-[#52514D]">
                 Pertunjukan konser ini sudah dimulai atau penjualan tiket telah dihentikan oleh pihak penyelenggara.
               </p>
             </div>
@@ -278,7 +278,7 @@ export const BookingModal: React.FC<BookingProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="w-full min-h-[46px] py-3 text-sm font-semibold text-[#171614] bg-[#F6F4EE] hover:bg-[#ECE8DF] border border-[#CFC9BC] rounded-lg transition-colors"
+            className="w-full min-h-[46px] py-3 text-xs font-bold uppercase tracking-wider text-[#141413] bg-[#F4F3EF] hover:bg-[#EAE8E1] border border-[#141413] rounded-none transition-colors"
           >
             Kembali ke Halaman Konser
           </button>
@@ -289,25 +289,25 @@ export const BookingModal: React.FC<BookingProps> = ({
             {errorMessage && (
               <div
                 role="alert"
-                className="p-4 bg-[#B91C1C]/10 border border-[#B91C1C]/30 text-[#B91C1C] text-sm rounded-xl flex items-start gap-3"
+                className="p-4 bg-[#C81E1E]/10 border border-[#C81E1E] text-[#C81E1E] text-sm rounded-none flex items-start gap-3"
               >
-                <AlertCircle className="w-5 h-5 shrink-0 text-[#B91C1C] mt-0.5" aria-hidden="true" />
+                <AlertCircle className="w-5 h-5 shrink-0 text-[#C81E1E] mt-0.5" aria-hidden="true" />
                 <span>{errorMessage}</span>
               </div>
             )}
 
             {user && (
-              <div className="p-4 bg-white border border-[#E4DFD3] rounded-xl flex items-start gap-3 text-sm text-[#5C5850]">
-                <CheckCircle2 className="w-5 h-5 shrink-0 text-[#1F6E43] mt-0.5" aria-hidden="true" />
+              <div className="p-4 bg-white border border-[#DFDDD6] rounded-none flex items-start gap-3 text-sm text-[#52514D]">
+                <CheckCircle2 className="w-5 h-5 shrink-0 text-[#156E3F] mt-0.5" aria-hidden="true" />
                 <span>
-                  Terhubung sebagai <strong className="text-[#171614]">{user.name}</strong> ({user.email}). E-Ticket otomatis tersimpan di akun Anda.
+                  Terhubung sebagai <strong className="text-[#141413]">{user.name}</strong> ({user.email}). E-Ticket otomatis tersimpan di akun Anda.
                 </span>
               </div>
             )}
 
-            <div className="lg:hidden rounded-xl border border-[#E4DFD3] bg-white overflow-hidden">
+            <div className="lg:hidden rounded-none border border-[#DFDDD6] bg-white overflow-hidden">
               {event.image && (
-                <div className="relative aspect-[16/9] w-full bg-[#11100E] overflow-hidden">
+                <div className="relative aspect-[16/9] w-full bg-[#141413] overflow-hidden">
                   <img
                     src={event.image}
                     alt={`Tampilan venue ${event.venue}`}
@@ -317,34 +317,34 @@ export const BookingModal: React.FC<BookingProps> = ({
                   />
                   <div
                     className="absolute inset-x-0 bottom-0 px-4 py-3 flex items-end justify-between gap-2"
-                    style={{ background: 'linear-gradient(180deg, transparent 0%, rgba(17,16,14,0.88) 100%)' }}
+                    style={{ background: 'linear-gradient(180deg, transparent 0%, rgba(20,20,19,0.9) 100%)' }}
                   >
                     <span className="text-xs font-semibold text-white">Referensi Venue</span>
-                    <span className="text-xs text-[#E7E2D8] truncate">{event.venue}</span>
+                    <span className="text-xs text-[#D8D6CE] truncate">{event.venue}</span>
                   </div>
                 </div>
               )}
-              <div className="p-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-[#5C5850]">
+              <div className="p-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-[#52514D]">
                 <span className="inline-flex items-center gap-1.5">
-                  <Calendar className="w-3.5 h-3.5 text-[#C93018] shrink-0" aria-hidden="true" />
+                  <Calendar className="w-3.5 h-3.5 text-[#141413] shrink-0" aria-hidden="true" />
                   <span>{event.date} &middot; {event.time}</span>
                 </span>
                 <span className="inline-flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-[#6B665D] shrink-0" aria-hidden="true" />
+                  <Clock className="w-3.5 h-3.5 text-[#6E6D68] shrink-0" aria-hidden="true" />
                   <span>Open Gate {event.openGate}</span>
                 </span>
               </div>
             </div>
 
-            <section className="rounded-xl border border-[#E4DFD3] bg-white p-4 sm:p-6 space-y-5">
+            <section className="rounded-none border border-[#DFDDD6] bg-white p-4 sm:p-6 space-y-5">
               <div className="flex items-center justify-between gap-2">
                 <div>
-                  <h3 className="text-sm font-semibold text-[#171614] m-0">1. Pilih Zona &amp; Nomor Kursi</h3>
-                  <p className="text-xs text-[#5C5850] mt-0.5 m-0">
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-[#141413] m-0">1. Pilih Zona &amp; Nomor Kursi</h3>
+                  <p className="text-xs text-[#52514D] mt-0.5 m-0">
                     Pilih kategori lalu tentukan nomor kursi Anda langsung pada denah atau gunakan pilihan otomatis.
                   </p>
                 </div>
-                <span className="text-xs text-[#6B665D] font-mono shrink-0">
+                <span className="text-xs text-[#6E6D68] font-mono shrink-0">
                   {event.categories.length} Pilihan
                 </span>
               </div>
@@ -364,7 +364,7 @@ export const BookingModal: React.FC<BookingProps> = ({
                 onRetrySeats={loadEventSeats}
               />
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-[#DFDDD6] border border-[#DFDDD6]">
                 {event.categories.map((cat) => {
                   const rem = getRemainingQuota(cat);
                   const isSoldOut = rem <= 0;
@@ -378,41 +378,41 @@ export const BookingModal: React.FC<BookingProps> = ({
                       disabled={isSoldOut}
                       aria-pressed={isSelected}
                       onClick={() => setSelectedCat(cat)}
-                      className={`text-left p-4 min-h-[88px] rounded-xl transition-colors border flex flex-col justify-between gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C93018] ${
+                      className={`text-left p-4 min-h-[88px] rounded-none transition-colors flex flex-col justify-between gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413] ${
                         isSoldOut
-                          ? 'bg-[#ECE8DF] border-[#E4DFD3] opacity-65'
+                          ? 'bg-[#EAE8E1] opacity-65'
                           : isSelected
-                          ? 'bg-[#171614] border-2 border-[#171614] text-white'
-                          : 'bg-[#F6F4EE] border-[#CFC9BC] text-[#171614] hover:border-[#171614]'
+                          ? 'bg-[#D4FF2A] text-[#141413]'
+                          : 'bg-white text-[#141413] hover:bg-[#F4F3EF]'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-2 w-full">
                         <div className="min-w-0">
-                          <span className={`inline-flex items-center gap-2 text-sm font-semibold ${isSelected ? 'text-white' : 'text-[#171614]'}`}>
+                          <span className="inline-flex items-center gap-2 text-sm font-bold text-[#141413]">
                             <span
-                              className="w-2.5 h-2.5 rounded-full shrink-0"
-                              style={{ backgroundColor: isSoldOut ? '#857F74' : (meta?.style.color || '#3E5668') }}
+                              className="w-2.5 h-2.5 rounded-none shrink-0 border border-[#141413]"
+                              style={{ backgroundColor: isSoldOut ? '#6E6D68' : (meta?.style.color || '#3E5668') }}
                               aria-hidden="true"
                             />
                             <span className="truncate">{cat.name}</span>
                           </span>
                           {meta && (
-                            <span className={`block text-[11px] mt-0.5 ${isSelected ? 'text-[#D8D3C8]' : 'text-[#5C5850]'}`}>
+                            <span className={`block text-[11px] mt-0.5 ${isSelected ? 'text-[#141413]/80' : 'text-[#52514D]'}`}>
                               {meta.style.zoneLabel}
                             </span>
                           )}
                         </div>
                         {isSoldOut ? (
-                          <span className="text-[11px] font-mono font-semibold text-[#B91C1C] bg-[#B91C1C]/10 px-2 py-0.5 rounded shrink-0">
+                          <span className="text-[11px] font-mono font-bold text-[#C81E1E] bg-[#C81E1E]/10 px-2 py-0.5 shrink-0">
                             HABIS
                           </span>
                         ) : (
-                          <span className={`text-xs shrink-0 tabular-nums ${isSelected ? 'text-[#D8D3C8]' : 'text-[#5C5850]'}`}>
+                          <span className={`text-xs shrink-0 tabular-nums font-medium ${isSelected ? 'text-[#141413]' : 'text-[#52514D]'}`}>
                             Sisa {rem}
                           </span>
                         )}
                       </div>
-                      <span className={`text-base font-bold tabular-nums block ${isSelected ? 'text-white' : 'text-[#171614]'}`}>
+                      <span className="text-base font-extrabold tabular-nums block text-[#141413]">
                         {formatIDR(cat.price)}
                       </span>
                     </button>
@@ -421,20 +421,20 @@ export const BookingModal: React.FC<BookingProps> = ({
               </div>
             </section>
 
-            <section className="rounded-xl border border-[#E4DFD3] bg-white p-5 sm:p-6 space-y-4">
+            <section className="rounded-none border border-[#DFDDD6] bg-white p-5 sm:p-6 space-y-4">
               <div>
-                <h3 className="text-sm font-semibold text-[#171614] m-0">2. Jumlah Tiket</h3>
-                <p className="text-xs text-[#5C5850] mt-0.5 m-0">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-[#141413] m-0">2. Jumlah Tiket</h3>
+                <p className="text-xs text-[#52514D] mt-0.5 m-0">
                   {isSelectedSoldOut ? 'Kategori ini sedang habis' : `Maksimal ${maxAllowedTickets} tiket per transaksi`}
                 </p>
               </div>
 
               {isSelectedSoldOut ? (
-                <div className="p-3.5 bg-[#B91C1C]/10 border border-[#B91C1C]/25 text-[#B91C1C] text-sm rounded-xl">
+                <div className="p-3.5 bg-[#C81E1E]/10 border border-[#C81E1E] text-[#C81E1E] text-sm rounded-none">
                   Kategori kursi ini telah habis dipesan. Silakan pilih kategori lain.
                 </div>
               ) : (
-                <div className="grid grid-cols-4 gap-3">
+                <div className="grid grid-cols-4 gap-2">
                   {[1, 2, 3, 4].map((num) => {
                     const isDisabled = num > maxAllowedTickets;
                     const active = quantity === num;
@@ -445,12 +445,12 @@ export const BookingModal: React.FC<BookingProps> = ({
                         disabled={isDisabled}
                         aria-pressed={active}
                         onClick={() => setQuantity(num)}
-                        className={`min-h-[48px] py-2.5 rounded-lg text-sm font-semibold transition-colors border tabular-nums ${
+                        className={`min-h-[48px] py-2.5 rounded-none text-sm font-bold transition-colors border tabular-nums ${
                           isDisabled
-                            ? 'opacity-45 bg-[#ECE8DF] border-[#E4DFD3] text-[#6B665D]'
+                            ? 'opacity-45 bg-[#EAE8E1] border-[#DFDDD6] text-[#6E6D68]'
                             : active
-                            ? 'bg-[#171614] text-white border-[#171614]'
-                            : 'bg-[#F6F4EE] text-[#171614] border-[#CFC9BC] hover:border-[#171614]'
+                            ? 'bg-[#141413] text-[#D4FF2A] border-[#141413]'
+                            : 'bg-[#F4F3EF] text-[#141413] border-[#DFDDD6] hover:border-[#141413]'
                         }`}
                       >
                         {num}
@@ -461,10 +461,10 @@ export const BookingModal: React.FC<BookingProps> = ({
               )}
             </section>
 
-            <section className="rounded-xl border border-[#E4DFD3] bg-white p-5 sm:p-6 space-y-5">
+            <section className="rounded-none border border-[#DFDDD6] bg-white p-5 sm:p-6 space-y-5">
               <div>
-                <h3 className="text-sm font-semibold text-[#171614] m-0">3. Data Pemesan</h3>
-                <p className="text-xs text-[#5C5850] mt-0.5 m-0">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-[#141413] m-0">3. Data Pemesan</h3>
+                <p className="text-xs text-[#52514D] mt-0.5 m-0">
                   Digunakan untuk penerbitan E-Ticket resmi dan verifikasi di pintu masuk.
                 </p>
               </div>
@@ -478,7 +478,7 @@ export const BookingModal: React.FC<BookingProps> = ({
                   value={userName}
                   onValueChange={setUserName}
                   readOnly={!!user}
-                  className={user ? 'bg-[#ECE8DF]' : ''}
+                  className={user ? 'bg-[#EAE8E1]' : ''}
                 />
                 <TextInputField
                   theme="light"
@@ -490,17 +490,17 @@ export const BookingModal: React.FC<BookingProps> = ({
                   onValueChange={setUserEmail}
                   readOnly={!!user}
                   hint="E-Ticket resmi dan invoice akan dikirimkan ke email ini."
-                  className={user ? 'bg-[#ECE8DF]' : ''}
+                  className={user ? 'bg-[#EAE8E1]' : ''}
                 />
               </div>
 
               {quantity > 1 && (
-                <div className="pt-4 border-t border-[#E4DFD3] space-y-3">
+                <div className="pt-4 border-t border-[#DFDDD6] space-y-3">
                   <div>
-                    <h4 className="text-xs font-semibold uppercase tracking-wider text-[#171614] m-0">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-[#141413] m-0">
                       Identitas Pemegang Kursi ({quantity} Tiket)
                     </h4>
-                    <p className="text-xs text-[#5C5850] mt-1 mb-0">
+                    <p className="text-xs text-[#52514D] mt-1 mb-0">
                       Nama masing-masing pengunjung akan dicetak di E-Ticket per kursi. Jika dikosongkan, nama pemesan utama akan digunakan.
                     </p>
                   </div>
@@ -532,9 +532,9 @@ export const BookingModal: React.FC<BookingProps> = ({
           </div>
 
           <aside className="hidden lg:block lg:col-span-5 sticky top-6">
-            <div className="rounded-xl border border-[#E4DFD3] bg-white overflow-hidden">
+            <div className="rounded-none border border-[#141413] bg-white overflow-hidden">
               {event.image && (
-                <div className="relative aspect-[16/9] w-full bg-[#11100E] overflow-hidden">
+                <div className="relative aspect-[16/9] w-full bg-[#141413] overflow-hidden">
                   <img
                     src={event.image}
                     alt={`Tampilan venue ${event.venue}`}
@@ -544,79 +544,79 @@ export const BookingModal: React.FC<BookingProps> = ({
                   />
                   <div
                     className="absolute inset-x-0 bottom-0 px-5 py-3.5 flex items-end justify-between gap-2"
-                    style={{ background: 'linear-gradient(180deg, transparent 0%, rgba(17,16,14,0.88) 100%)' }}
+                    style={{ background: 'linear-gradient(180deg, transparent 0%, rgba(20,20,19,0.9) 100%)' }}
                   >
                     <span className="text-xs font-semibold text-white">Referensi Tampilan Venue</span>
-                    <span className="text-xs text-[#E7E2D8] truncate">{event.venue}</span>
+                    <span className="text-xs text-[#D8D6CE] truncate">{event.venue}</span>
                   </div>
                 </div>
               )}
 
               <div className="p-6 space-y-5">
                 <div>
-                  <h3 className="font-display text-2xl font-semibold text-[#171614] m-0">
+                  <h3 className="font-display text-2xl font-extrabold tracking-[-0.03em] text-[#141413] m-0">
                     Ringkasan Pesanan
                   </h3>
-                  <div className="mt-3 space-y-2 text-xs text-[#5C5850]">
+                  <div className="mt-3 space-y-2 text-xs text-[#52514D]">
                     <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-[#C93018] shrink-0" aria-hidden="true" />
+                      <Calendar className="w-4 h-4 text-[#141413] shrink-0" aria-hidden="true" />
                       <span>{event.date} &middot; {event.time}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-[#6B665D] shrink-0" aria-hidden="true" />
+                      <Clock className="w-4 h-4 text-[#6E6D68] shrink-0" aria-hidden="true" />
                       <span>Open Gate {event.openGate}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <MapPin className="w-4 h-4 text-[#6B665D] shrink-0" aria-hidden="true" />
+                      <MapPin className="w-4 h-4 text-[#6E6D68] shrink-0" aria-hidden="true" />
                       <span>{event.venue}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="border-t border-[#E4DFD3] pt-4 space-y-2.5 text-sm">
+                <div className="border-t border-[#DFDDD6] pt-4 space-y-2.5 text-sm">
                   <div className="flex justify-between gap-3 items-start">
-                    <span className="text-[#5C5850]">Zona &amp; Kategori</span>
+                    <span className="text-[#52514D]">Zona &amp; Kategori</span>
                     <div className="text-right">
-                      <span className="inline-flex items-center justify-end gap-1.5 text-[#171614] font-semibold">
+                      <span className="inline-flex items-center justify-end gap-1.5 text-[#141413] font-bold">
                         <span
-                          className="w-2.5 h-2.5 rounded-full shrink-0"
+                          className="w-2.5 h-2.5 rounded-none shrink-0 border border-[#141413]"
                           style={{ backgroundColor: selectedTierMeta?.style.color || '#3E5668' }}
                           aria-hidden="true"
                         />
                         <span>{selectedCat.name}</span>
                       </span>
                       {selectedTierMeta && (
-                        <span className="block text-[11px] text-[#5C5850]">
+                        <span className="block text-[11px] text-[#52514D]">
                           {selectedTierMeta.style.zoneLabel}
                         </span>
                       )}
                     </div>
                   </div>
                   <div className="flex justify-between gap-3">
-                    <span className="text-[#5C5850]">Harga Satuan</span>
-                    <span className="text-[#171614] font-mono tabular-nums">{formatIDR(selectedCat.price)}</span>
+                    <span className="text-[#52514D]">Harga Satuan</span>
+                    <span className="text-[#141413] font-mono tabular-nums">{formatIDR(selectedCat.price)}</span>
                   </div>
                   <div className="flex justify-between gap-3">
-                    <span className="text-[#5C5850]">Jumlah</span>
-                    <span className="text-[#171614] font-mono">{quantity} tiket</span>
+                    <span className="text-[#52514D]">Jumlah</span>
+                    <span className="text-[#141413] font-mono">{quantity} tiket</span>
                   </div>
                   <div className="flex justify-between gap-3 items-start">
-                    <span className="text-[#5C5850]">Nomor Kursi</span>
-                    <span className="text-[#171614] font-mono font-semibold text-right">
+                    <span className="text-[#52514D]">Nomor Kursi</span>
+                    <span className="text-[#141413] font-mono font-bold text-right">
                       {selectedSeats.length > 0 ? selectedSeats.join(', ') : 'Menunggu pilihan'}
                     </span>
                   </div>
                 </div>
 
-                <div className="border-t border-[#E4DFD3] pt-4 flex items-center justify-between gap-3">
-                  <span className="text-sm font-semibold text-[#5C5850]">Total Pembayaran</span>
-                  <span className="text-2xl font-bold text-[#171614] tabular-nums">{formatIDR(totalPrice)}</span>
+                <div className="border-t border-[#DFDDD6] pt-4 flex items-center justify-between gap-3">
+                  <span className="text-sm font-bold text-[#52514D]">Total Pembayaran</span>
+                  <span className="font-display text-2xl font-extrabold text-[#141413] tabular-nums">{formatIDR(totalPrice)}</span>
                 </div>
 
                 <button
                   type="submit"
                   disabled={!canSubmit}
-                  className="w-full min-h-[48px] rounded-lg bg-[#C93018] text-white font-semibold hover:bg-[#A82511] disabled:opacity-40 transition-colors py-3 px-6 text-sm flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C93018] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+                  className="w-full min-h-[48px] rounded-none bg-[#D4FF2A] text-[#141413] border border-[#141413] font-bold uppercase tracking-wider hover:bg-[#C2EE1A] disabled:opacity-40 transition-colors py-3 px-6 text-xs flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
                 >
                   {isSubmitting ? (
                     <>
@@ -699,13 +699,13 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
       backLabel="Tutup Pass"
     >
       <div className="space-y-6">
-        <div className="flex items-start gap-3 p-4 bg-white border border-[#E4DFD3] rounded-xl text-sm text-[#5C5850]">
-          <Mail className="w-5 h-5 text-[#C93018] shrink-0 mt-0.5" strokeWidth={1.8} aria-hidden="true" />
+        <div className="flex items-start gap-3 p-4 bg-white border border-[#DFDDD6] rounded-none text-sm text-[#52514D]">
+          <Mail className="w-5 h-5 text-[#141413] shrink-0 mt-0.5" strokeWidth={1.8} aria-hidden="true" />
           <div className="leading-relaxed">
-            <p className="text-[#171614] font-medium m-0">
-              E-Ticket dan konfirmasi pesanan telah dikirim ke <span className="font-semibold">{order.userEmail}</span>.
+            <p className="text-[#141413] font-semibold m-0">
+              E-Ticket dan konfirmasi pesanan telah dikirim ke <span className="font-bold">{order.userEmail}</span>.
             </p>
-            <p className="text-xs text-[#5C5850] mt-1 m-0">
+            <p className="text-xs text-[#52514D] mt-1 m-0">
               Simpan pass digital ini atau periksa folder inbox email Anda untuk mengunduh tanda masuk resmi.
             </p>
           </div>
@@ -715,75 +715,75 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
 
         <div
           data-ticket-card="true"
-          className="bg-white border border-[#E4DFD3] rounded-2xl overflow-hidden"
+          className="bg-white border border-[#141413] rounded-none overflow-hidden"
         >
-          <div className="h-1.5 w-full bg-[#C93018]" />
-          <div className="px-6 py-4 border-b border-[#E4DFD3] bg-[#F6F4EE] flex flex-wrap items-center justify-between gap-3">
+          <div className="h-2 w-full bg-[#D4FF2A] border-b border-[#141413]" />
+          <div className="px-6 py-4 border-b border-[#DFDDD6] bg-[#141413] text-[#F4F3EF] flex flex-wrap items-center justify-between gap-3">
             <div>
-              <span className="font-display text-lg font-semibold text-[#171614] block leading-tight">
-                SymphoniaTic Pass
+              <span className="font-display text-lg font-extrabold tracking-tight text-[#F4F3EF] block leading-tight">
+                SymphoniaTic<span className="text-[#D4FF2A]">.</span> Pass
               </span>
-              <span className="text-xs text-[#5C5850]">
+              <span className="text-xs text-[#B8B6AE]">
                 {activeTicket && tickets.length > 1
                   ? `Pass Tiket ${activeTab + 1} dari ${tickets.length} · Kursi ${activeTicket.seatCode}`
                   : 'Pass Masuk Konser Orkestra'}
               </span>
             </div>
-            <span className="text-xs font-semibold text-[#1F6E43] bg-[#1F6E43]/10 border border-[#1F6E43]/25 px-3 py-1 rounded-md">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#141413] bg-[#D4FF2A] px-3 py-1">
               {activeTicket?.status || order.status || 'VERIFIED'}
             </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-12">
-            <div className="md:col-span-7 p-6 sm:p-8 space-y-6 border-b md:border-b-0 md:border-r border-[#E4DFD3]">
+            <div className="md:col-span-7 p-6 sm:p-8 space-y-6 border-b md:border-b-0 md:border-r border-[#DFDDD6]">
               <div>
-                <span className="text-xs font-semibold text-[#C93018] uppercase tracking-wider block mb-1">
-                  Pertunjukan
+                <span className="text-[10px] font-bold text-[#52514D] uppercase tracking-[0.16em] block mb-1">
+                  • Pertunjukan
                 </span>
-                <h3 className="font-display text-2xl sm:text-3xl font-semibold text-[#171614] leading-snug m-0">
+                <h3 className="font-display text-2xl sm:text-3xl font-extrabold tracking-[-0.03em] text-[#141413] leading-tight m-0">
                   {order.eventTitle}
                 </h3>
-                <p className="text-sm text-[#5C5850] mt-1 mb-0">{order.artist}</p>
+                <p className="text-sm text-[#52514D] mt-1 mb-0">{order.artist}</p>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[#E4DFD3] text-sm">
+              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[#DFDDD6] text-sm">
                 <div>
-                  <span className="text-xs text-[#6B665D] block mb-0.5">Tanggal Konser</span>
-                  <span className="font-semibold text-[#171614]">{order.date}</span>
+                  <span className="text-xs text-[#6E6D68] block mb-0.5">Tanggal Konser</span>
+                  <span className="font-bold text-[#141413]">{order.date}</span>
                 </div>
                 <div>
-                  <span className="text-xs text-[#6B665D] block mb-0.5">Open Gate</span>
-                  <span className="font-semibold text-[#171614]">{order.openGate || 'Sesuai Jadwal Venue'}</span>
+                  <span className="text-xs text-[#6E6D68] block mb-0.5">Open Gate</span>
+                  <span className="font-bold text-[#141413]">{order.openGate || 'Sesuai Jadwal Venue'}</span>
                 </div>
                 <div>
-                  <span className="text-xs text-[#6B665D] block mb-0.5">Gedung &amp; Lokasi</span>
-                  <span className="font-semibold text-[#171614]">{order.venue}</span>
+                  <span className="text-xs text-[#6E6D68] block mb-0.5">Gedung &amp; Lokasi</span>
+                  <span className="font-bold text-[#141413]">{order.venue}</span>
                 </div>
                 <div>
-                  <span className="text-xs text-[#6B665D] block mb-0.5">Kategori Kursi</span>
-                  <span className="font-semibold text-[#171614]">
+                  <span className="text-xs text-[#6E6D68] block mb-0.5">Kategori Kursi</span>
+                  <span className="font-bold text-[#141413]">
                     {activeTicket && tickets.length > 1 ? order.categoryName : `${order.categoryName} (${order.quantity}x)`}
                   </span>
                 </div>
                 <div>
-                  <span className="text-xs text-[#6B665D] block mb-0.5">Nomor Kursi</span>
-                  <span className="font-mono font-bold text-[#C93018]">
+                  <span className="text-xs text-[#6E6D68] block mb-0.5">Nomor Kursi</span>
+                  <span className="inline-block font-mono font-bold text-[#141413] bg-[#D4FF2A] px-2 py-0.5">
                     {activeSeatLabel}
                   </span>
                 </div>
                 <div>
-                  <span className="text-xs text-[#6B665D] block mb-0.5">Pemegang Tiket</span>
-                  <span className="font-semibold text-[#171614]">{activeAttendee}</span>
+                  <span className="text-xs text-[#6E6D68] block mb-0.5">Pemegang Tiket</span>
+                  <span className="font-bold text-[#141413]">{activeAttendee}</span>
                 </div>
                 <div>
-                  <span className="text-xs text-[#6B665D] block mb-0.5">Total Pembayaran</span>
-                  <span className="font-semibold text-[#171614] tabular-nums">{formatIDR(order.totalPrice)}</span>
+                  <span className="text-xs text-[#6E6D68] block mb-0.5">Total Pembayaran</span>
+                  <span className="font-bold text-[#141413] tabular-nums">{formatIDR(order.totalPrice)}</span>
                 </div>
               </div>
             </div>
 
-            <div className="md:col-span-5 p-6 sm:p-8 bg-[#F6F4EE] flex flex-col items-center justify-center text-center">
-              <div className="p-3 bg-white border border-[#E4DFD3] rounded-xl inline-block">
+            <div className="md:col-span-5 p-6 sm:p-8 bg-[#F4F3EF] flex flex-col items-center justify-center text-center">
+              <div className="p-3 bg-white border border-[#141413] rounded-none inline-block">
                 <QRCodeCanvas
                   id="ticket-real-qrcode"
                   value={activeQRValue}
@@ -791,28 +791,28 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
                   level="H"
                   includeMargin={false}
                   bgColor="#FFFFFF"
-                  fgColor="#171614"
+                  fgColor="#141413"
                 />
               </div>
 
               <div className="mt-4 w-full">
-                <span className="text-xs text-[#6B665D] uppercase tracking-wider block mb-1">
+                <span className="text-[11px] font-bold text-[#52514D] uppercase tracking-wider block mb-1">
                   {activeTicket && tickets.length > 1 ? 'Kode Pass Kursi' : 'Kode Pesanan Resmi'}
                 </span>
                 <div className="flex items-center justify-center gap-2">
-                  <span className="text-lg sm:text-xl font-mono font-bold text-[#171614] tracking-wider tabular-nums break-all">
+                  <span className="text-lg sm:text-xl font-mono font-bold text-[#141413] tracking-wider tabular-nums break-all">
                     {activeDisplayCode}
                   </span>
                   <button
                     type="button"
                     onClick={handleCopyCode}
                     aria-label="Salin kode invoice"
-                    className="h-10 w-10 shrink-0 inline-flex items-center justify-center rounded-lg bg-white text-[#171614] hover:border-[#171614] border border-[#CFC9BC] transition-colors"
+                    className="h-10 w-10 shrink-0 inline-flex items-center justify-center rounded-none bg-white text-[#141413] hover:border-[#141413] border border-[#DFDDD6] transition-colors"
                   >
-                    {copied ? <Check className="w-4 h-4 text-[#1F6E43]" aria-hidden="true" /> : <Copy className="w-4 h-4" aria-hidden="true" />}
+                    {copied ? <Check className="w-4 h-4 text-[#156E3F]" aria-hidden="true" /> : <Copy className="w-4 h-4" aria-hidden="true" />}
                   </button>
                 </div>
-                <p className="text-xs text-[#5C5850] mt-2 mb-0 leading-relaxed">
+                <p className="text-xs text-[#52514D] mt-2 mb-0 leading-relaxed">
                   {activeTicket && tickets.length > 1
                     ? 'QR Code ini berlaku khusus untuk kursi ini, sehingga pemegang tiket dapat masuk gate secara terpisah.'
                     : 'Tunjukkan Kode QR ini kepada petugas di pintu masuk concert hall.'}
@@ -827,7 +827,7 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
             type="button"
             onClick={handleDownloadPNG}
             disabled={!!isDownloading}
-            className="min-h-[48px] bg-white hover:bg-[#ECE8DF] text-[#171614] border border-[#CFC9BC] rounded-lg py-3 px-4 text-sm font-semibold flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+            className="min-h-[48px] bg-white hover:bg-[#EAE8E1] text-[#141413] border border-[#141413] rounded-none py-3 px-4 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
           >
             <Download className="w-4 h-4" aria-hidden="true" />
             <span>
@@ -842,7 +842,7 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
             type="button"
             onClick={handleDownloadPDF}
             disabled={!!isDownloading}
-            className="min-h-[48px] bg-[#C93018] hover:bg-[#A82511] text-white rounded-lg py-3 px-4 text-sm font-semibold flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+            className="min-h-[48px] bg-[#D4FF2A] hover:bg-[#C2EE1A] text-[#141413] border border-[#141413] rounded-none py-3 px-4 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
           >
             <Download className="w-4 h-4" aria-hidden="true" />
             <span>
@@ -855,7 +855,7 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
           </button>
           <a
             href={`/ticket/${order.orderCode}`}
-            className="min-h-[48px] bg-[#171614] hover:bg-[#2C2A26] text-white rounded-lg py-3 px-4 text-sm font-semibold flex items-center justify-center gap-2 transition-colors"
+            className="min-h-[48px] bg-[#141413] hover:bg-[#2A2A28] text-[#F4F3EF] rounded-none py-3 px-4 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors"
           >
             <ExternalLink className="w-4 h-4" aria-hidden="true" />
             <span>Buka Halaman Tiket</span>
@@ -911,7 +911,7 @@ export const OrdersDrawer: React.FC<OrdersProps> = ({ orders, onClose, onShowTic
 
   return (
     <div
-      className="fixed inset-0 z-50 flex justify-end bg-[#11100E]/65"
+      className="fixed inset-0 z-50 flex justify-end bg-[#141413]/70"
       onClick={onClose}
     >
       <div
@@ -919,31 +919,31 @@ export const OrdersDrawer: React.FC<OrdersProps> = ({ orders, onClose, onShowTic
         aria-modal="true"
         aria-label="Cek Tiket dan Invoice"
         onClick={(e) => e.stopPropagation()}
-        className="w-full sm:max-w-md text-[#171614] h-full flex flex-col overflow-y-auto bg-[#F6F4EE] border-l border-[#E4DFD3]"
+        className="w-full sm:max-w-md text-[#141413] h-full flex flex-col overflow-y-auto bg-[#F4F3EF] border-l border-[#141413]"
       >
-        <div className="flex items-center justify-between border-b border-[#E4DFD3] px-5 py-4 bg-white sticky top-0 z-10">
+        <div className="flex items-center justify-between border-b border-[#DFDDD6] px-5 py-4 bg-white sticky top-0 z-10">
           <div className="flex items-center gap-2.5">
-            <QrCode className="w-5 h-5 text-[#C93018]" strokeWidth={1.8} aria-hidden="true" />
-            <h2 className="font-display text-xl font-semibold text-[#171614] m-0">Cek Tiket &amp; Invoice</h2>
+            <QrCode className="w-5 h-5 text-[#141413]" strokeWidth={1.8} aria-hidden="true" />
+            <h2 className="font-display text-xl font-extrabold tracking-tight text-[#141413] m-0">Cek Tiket &amp; Invoice</h2>
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Tutup laci tiket"
-            className="h-11 w-11 inline-flex items-center justify-center text-[#5C5850] hover:text-[#171614] bg-[#F6F4EE] border border-[#CFC9BC] rounded-lg transition-colors"
+            className="h-11 w-11 inline-flex items-center justify-center text-[#52514D] hover:text-[#141413] bg-[#F4F3EF] border border-[#DFDDD6] rounded-none transition-colors"
           >
             <X className="w-5 h-5" strokeWidth={1.7} aria-hidden="true" />
           </button>
         </div>
 
         <div className="px-5 py-6 space-y-6 flex-1">
-          <form onSubmit={handleSearch} className="space-y-3 border-b border-[#E4DFD3] pb-6">
-            <label htmlFor="drawer-order-search" className="text-xs font-semibold text-[#171614] block">
+          <form onSubmit={handleSearch} className="space-y-3 border-b border-[#DFDDD6] pb-6">
+            <label htmlFor="drawer-order-search" className="text-xs font-bold uppercase tracking-wider text-[#141413] block">
               Cari Cepat Kode Pesanan
             </label>
             <div className="flex gap-2">
               <div className="relative flex-1">
-                <Search className="w-4 h-4 text-[#6B665D] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" aria-hidden="true" />
+                <Search className="w-4 h-4 text-[#6E6D68] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" aria-hidden="true" />
                 <input
                   id="drawer-order-search"
                   type="text"
@@ -956,7 +956,7 @@ export const OrdersDrawer: React.FC<OrdersProps> = ({ orders, onClose, onShowTic
               <button
                 type="submit"
                 disabled={isSearching || !searchCode.trim()}
-                className="min-h-[46px] px-4 bg-[#C93018] text-white hover:bg-[#A82511] rounded-lg text-xs font-semibold uppercase tracking-wider disabled:opacity-40 shrink-0"
+                className="min-h-[46px] px-4 bg-[#D4FF2A] text-[#141413] border border-[#141413] hover:bg-[#C2EE1A] rounded-none text-xs font-bold uppercase tracking-wider disabled:opacity-40 shrink-0"
               >
                 {isSearching ? '...' : 'Cari'}
               </button>
@@ -964,22 +964,22 @@ export const OrdersDrawer: React.FC<OrdersProps> = ({ orders, onClose, onShowTic
 
             {hasSearched && !isSearching && (
               foundOrder ? (
-                <div className="p-4 rounded-xl bg-white border border-[#171614] space-y-2">
+                <div className="p-4 rounded-none bg-white border border-[#141413] space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="font-mono text-sm font-bold text-[#171614]">{foundOrder.orderCode}</span>
-                    <span className="text-xs font-semibold text-[#1F6E43]">{foundOrder.status}</span>
+                    <span className="font-mono text-sm font-bold text-[#141413]">{foundOrder.orderCode}</span>
+                    <span className="text-xs font-bold text-[#156E3F]">{foundOrder.status}</span>
                   </div>
-                  <p className="text-sm font-semibold text-[#171614] m-0">{foundOrder.eventTitle}</p>
+                  <p className="text-sm font-bold text-[#141413] m-0">{foundOrder.eventTitle}</p>
                   <button
                     type="button"
                     onClick={() => onShowTicket(foundOrder)}
-                    className="w-full min-h-[44px] mt-2 rounded-lg bg-[#C93018] text-white text-xs font-semibold hover:bg-[#A82511]"
+                    className="w-full min-h-[44px] mt-2 rounded-none bg-[#141413] text-[#D4FF2A] text-xs font-bold uppercase tracking-wider hover:bg-[#2A2A28]"
                   >
                     Buka E-Ticket &amp; QR
                   </button>
                 </div>
               ) : (
-                <p role="status" className="text-xs text-[#B91C1C] m-0">
+                <p role="status" className="text-xs text-[#C81E1E] m-0">
                   Kode pesanan tidak ditemukan. Periksa kembali format SYM-XXXXXX.
                 </p>
               )
@@ -987,7 +987,7 @@ export const OrdersDrawer: React.FC<OrdersProps> = ({ orders, onClose, onShowTic
 
             <a
               href="/redeem"
-              className="w-full min-h-[44px] bg-white border border-[#CFC9BC] text-[#171614] py-2.5 px-4 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 hover:border-[#171614] transition-colors"
+              className="w-full min-h-[44px] bg-white border border-[#141413] text-[#141413] py-2.5 px-4 rounded-none text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#EAE8E1] transition-colors"
             >
               <QrCode className="w-4 h-4" strokeWidth={1.8} aria-hidden="true" />
               <span>Buka Halaman Redeem Tiket Resmi</span>
@@ -995,36 +995,36 @@ export const OrdersDrawer: React.FC<OrdersProps> = ({ orders, onClose, onShowTic
           </form>
 
           <div>
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-[#5C5850] mb-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[#52514D] mb-3">
               E-Ticket di Akun Anda ({orders.length})
             </h3>
             {orders.length === 0 ? (
-              <div className="text-center py-8 bg-white border border-[#E4DFD3] rounded-xl p-5">
-                <Ticket className="w-8 h-8 mx-auto mb-3 text-[#6B665D]" strokeWidth={1.5} aria-hidden="true" />
-                <p className="text-sm font-semibold text-[#171614] m-0">Belum Ada Tiket Tersimpan</p>
-                <p className="text-xs text-[#5C5850] mt-1 m-0">
+              <div className="text-center py-8 bg-white border border-[#DFDDD6] rounded-none p-5">
+                <Ticket className="w-8 h-8 mx-auto mb-3 text-[#6E6D68]" strokeWidth={1.5} aria-hidden="true" />
+                <p className="text-sm font-bold text-[#141413] m-0">Belum Ada Tiket Tersimpan</p>
+                <p className="text-xs text-[#52514D] mt-1 m-0">
                   Pesan tiket konser baru atau cari menggunakan kode invoice di atas.
                 </p>
               </div>
             ) : (
               <div className="space-y-3">
                 {orders.map((ord, idx) => (
-                  <div key={ord.id || idx} className="p-4 rounded-xl bg-white border border-[#E4DFD3]">
+                  <div key={ord.id || idx} className="p-4 rounded-none bg-white border border-[#DFDDD6]">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-mono font-bold text-[#171614] tabular-nums">
+                      <span className="text-sm font-mono font-bold text-[#141413] tabular-nums">
                         {ord.orderCode}
                       </span>
-                      <span className="text-[11px] font-semibold text-[#1F6E43] bg-[#1F6E43]/10 px-2.5 py-0.5 rounded border border-[#1F6E43]/25">
+                      <span className="text-[11px] font-bold text-[#156E3F] bg-[#156E3F]/10 px-2.5 py-0.5 border border-[#156E3F]/30">
                         {ord.status}
                       </span>
                     </div>
-                    <h4 className="text-sm font-bold text-[#171614] mb-1 m-0">{ord.eventTitle}</h4>
-                    <p className="text-xs text-[#5C5850] mb-3 mt-0">{ord.artist}</p>
-                    <div className="flex items-center justify-between border-t border-[#E4DFD3] pt-3 gap-2">
-                      <div className="text-xs text-[#5C5850] min-w-0">
+                    <h4 className="text-sm font-bold text-[#141413] mb-1 m-0">{ord.eventTitle}</h4>
+                    <p className="text-xs text-[#52514D] mb-3 mt-0">{ord.artist}</p>
+                    <div className="flex items-center justify-between border-t border-[#DFDDD6] pt-3 gap-2">
+                      <div className="text-xs text-[#52514D] min-w-0">
                         <span className="block truncate">{ord.categoryName} ({ord.quantity}x)</span>
                         {ord.seatNumbers && (
-                          <span className="font-mono font-semibold text-[#171614] block mt-0.5">
+                          <span className="font-mono font-semibold text-[#141413] block mt-0.5">
                             Kursi: {ord.seatNumbers}
                           </span>
                         )}
@@ -1032,7 +1032,7 @@ export const OrdersDrawer: React.FC<OrdersProps> = ({ orders, onClose, onShowTic
                       <button
                         type="button"
                         onClick={() => onShowTicket(ord)}
-                        className="min-h-[40px] px-3 rounded-lg bg-[#171614] text-white hover:bg-[#C93018] flex items-center gap-1.5 text-xs font-semibold transition-colors"
+                        className="min-h-[40px] px-3 rounded-none bg-[#141413] text-[#F4F3EF] hover:bg-[#D4FF2A] hover:text-[#141413] flex items-center gap-1.5 text-xs font-bold transition-colors"
                       >
                         <QrCode className="w-3.5 h-3.5" strokeWidth={2} aria-hidden="true" />
                         <span>Tampilkan QR</span>

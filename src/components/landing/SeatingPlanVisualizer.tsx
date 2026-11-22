@@ -516,21 +516,21 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
   const hoveredSeatCategory = hoveredSeat ? categoryMap.get(hoveredSeat.categoryId) : null;
 
   return (
-    <div className="rounded-xl border border-[#E4DFD3] bg-[#FAF8F4] p-3.5 sm:p-5 space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E4DFD3] pb-3">
+    <div className="rounded-none border border-[#DFDDD6] bg-white p-3.5 sm:p-5 space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#DFDDD6] pb-3">
         <div>
-          <span className="text-xs font-semibold uppercase tracking-wider text-[#171614] block">
-            Denah Tempat Duduk
+          <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#141413] block">
+            • Denah Tempat Duduk
           </span>
-          <span className="text-xs text-[#5C5850] block mt-0.5 truncate max-w-[260px] sm:max-w-none">
+          <span className="text-xs text-[#52514D] block mt-0.5 truncate max-w-[260px] sm:max-w-none">
             {venue}
           </span>
         </div>
 
         <div className="flex items-center gap-2">
           {isLoading && (
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-[#5C5850] bg-white border border-[#E4DFD3] rounded-md px-2.5 py-1">
-              <RefreshCw className="w-3 h-3 animate-spin text-[#C93018]" aria-hidden="true" />
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-[#52514D] bg-[#F4F3EF] border border-[#DFDDD6] rounded-none px-2.5 py-1">
+              <RefreshCw className="w-3 h-3 animate-spin text-[#141413]" aria-hidden="true" />
               <span>Memuat kursi...</span>
             </span>
           )}
@@ -539,13 +539,13 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
               type="button"
               onClick={handleAutoPick}
               disabled={isLoading || getRemaining(categoryMap.get(selectedCategoryId) || sortedCategories[0]) <= 0}
-              className="min-h-[36px] inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#171614] bg-white hover:bg-[#ECE8DF] border border-[#CFC9BC] rounded-md px-2.5 py-1 transition-colors disabled:opacity-45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C93018]"
+              className="min-h-[36px] inline-flex items-center gap-1.5 text-[11px] font-bold text-[#141413] bg-[#D4FF2A] hover:bg-[#C2EE1A] border border-[#141413] rounded-none px-2.5 py-1 transition-colors disabled:opacity-45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413]"
             >
-              <Sparkles className="w-3.5 h-3.5 text-[#C93018]" aria-hidden="true" />
+              <Sparkles className="w-3.5 h-3.5 text-[#141413]" aria-hidden="true" />
               <span>Pilih Otomatis ({quantity}x)</span>
             </button>
           ) : (
-            <span className="text-[11px] font-medium text-[#5C5850] bg-white border border-[#E4DFD3] rounded-md px-2.5 py-1">
+            <span className="text-[11px] font-medium text-[#52514D] bg-[#F4F3EF] border border-[#DFDDD6] rounded-none px-2.5 py-1">
               Klik zona atau kursi untuk melihat posisi
             </span>
           )}
@@ -555,7 +555,7 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
       {seatsError && (
         <div
           role="alert"
-          className="rounded-lg border border-[#B91C1C]/30 bg-[#B91C1C]/10 px-3.5 py-2.5 text-xs text-[#B91C1C] flex items-center justify-between gap-3"
+          className="rounded-none border border-[#C81E1E] bg-[#C81E1E]/10 px-3.5 py-2.5 text-xs text-[#C81E1E] flex items-center justify-between gap-3"
         >
           <span className="inline-flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
@@ -585,9 +585,9 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
             y={8 - extraTopSpace}
             width="440"
             height={310 + extraTopSpace}
-            rx="12"
-            fill="#FFFFFF"
-            stroke="#E4DFD3"
+            rx="0"
+            fill="#F4F3EF"
+            stroke="#DFDDD6"
             strokeWidth="1.2"
           />
 
@@ -596,9 +596,9 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
             y={20 - extraTopSpace}
             textAnchor="middle"
             fontSize="8.5"
-            fontWeight="600"
+            fontWeight="700"
             letterSpacing="1.6"
-            fill="#6B665D"
+            fill="#52514D"
           >
             AREA BELAKANG / BALKON
           </text>
@@ -610,8 +610,8 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
               y={row.y + 3}
               textAnchor="middle"
               fontSize="9"
-              fontWeight="600"
-              fill="#6B665D"
+              fontWeight="700"
+              fill="#52514D"
             >
               {row.label}
             </text>
@@ -622,15 +622,15 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
             y1={28 - extraTopSpace}
             x2="230"
             y2="218"
-            stroke="#ECE8DF"
+            stroke="#DFDDD6"
             strokeWidth="1.2"
             strokeDasharray="3 3"
           />
 
           <path
             d={`M ${STAGE_CX - STAGE_RADIUS} ${STAGE_CY} A ${STAGE_RADIUS} ${STAGE_RADIUS} 0 0 1 ${STAGE_CX + STAGE_RADIUS} ${STAGE_CY} Z`}
-            fill="#ECE8DF"
-            stroke="#CFC9BC"
+            fill="#141413"
+            stroke="#141413"
             strokeWidth="1.5"
           />
           <text
@@ -640,7 +640,7 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
             fontSize="11"
             fontWeight="700"
             letterSpacing="1.4"
-            fill="#171614"
+            fill="#D4FF2A"
           >
             PANGGUNG
           </text>
@@ -649,9 +649,9 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
             y={STAGE_CY - 9}
             textAnchor="middle"
             fontSize="8.5"
-            fontWeight="500"
+            fontWeight="600"
             letterSpacing="1"
-            fill="#5C5850"
+            fill="#F4F3EF"
           >
             STAGE
           </text>
@@ -663,7 +663,7 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
               y1={conn.y1}
               x2={conn.x2}
               y2={conn.y2}
-              stroke="#C93018"
+              stroke="#141413"
               strokeWidth="6"
               strokeOpacity="0.22"
               strokeLinecap="round"
@@ -686,13 +686,13 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
             let opacity = isCatSelected || isCatHovered ? 1 : 0.42;
 
             if (isBooked) {
-              fill = '#ECE8DF';
-              stroke = '#857F74';
+              fill = '#EAE8E1';
+              stroke = '#6E6D68';
               strokeWidth = 1.1;
               opacity = 0.72;
             } else if (isSelectedSeat) {
-              fill = '#C93018';
-              stroke = '#171614';
+              fill = '#D4FF2A';
+              stroke = '#141413';
               strokeWidth = 2;
               opacity = 1;
             }
@@ -730,14 +730,14 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
                   strokeWidth={strokeWidth}
                   opacity={opacity}
                 />
-                {isSelectedSeat && <circle cx={seat.x} cy={seat.y} r={2.6} fill="#FFFFFF" />}
+                {isSelectedSeat && <circle cx={seat.x} cy={seat.y} r={2.8} fill="#141413" />}
                 {isBooked && (
                   <line
                     x1={seat.x - 3.5}
                     y1={seat.y - 3.5}
                     x2={seat.x + 3.5}
                     y2={seat.y + 3.5}
-                    stroke="#857F74"
+                    stroke="#6E6D68"
                     strokeWidth="1.2"
                     strokeLinecap="round"
                   />
@@ -749,10 +749,10 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
       </div>
 
       {hoveredSeat && hoveredSeatCategory && (
-        <div className="text-center text-xs font-medium text-[#171614] bg-white border border-[#E4DFD3] rounded-lg px-3 py-1.5">
+        <div className="text-center text-xs font-medium text-[#141413] bg-[#F4F3EF] border border-[#DFDDD6] rounded-none px-3 py-1.5">
           Kursi <span className="font-mono font-bold">{hoveredSeat.seatCode}</span> &middot;{' '}
           <span>{hoveredSeatCategory.name}</span> &middot;{' '}
-          <span className={hoveredSeat.status === 'BOOKED' ? 'text-[#B91C1C]' : 'text-[#1F6E43]'}>
+          <span className={hoveredSeat.status === 'BOOKED' ? 'text-[#C81E1E]' : 'text-[#156E3F]'}>
             {hoveredSeat.status === 'BOOKED' ? 'Sudah Terisi' : 'Tersedia'}
           </span>
         </div>
@@ -777,28 +777,28 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
               onBlur={() => setHoveredCatId(null)}
               aria-pressed={isSelected}
               aria-disabled={isSoldOut}
-              className={`min-h-[44px] inline-flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C93018] ${
+              className={`min-h-[44px] inline-flex items-center gap-2 px-3 py-2 rounded-none border text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413] ${
                 isSoldOut
-                  ? 'bg-[#ECE8DF] border-[#E4DFD3] text-[#6B665D] opacity-75'
+                  ? 'bg-[#EAE8E1] border-[#DFDDD6] text-[#6E6D68] opacity-75'
                   : isSelected
-                  ? 'bg-white border-2 border-[#171614] text-[#171614] font-semibold'
-                  : 'bg-white/80 border-[#CFC9BC] text-[#171614] hover:border-[#171614]'
+                  ? 'bg-[#D4FF2A] border-[#141413] text-[#141413] font-bold'
+                  : 'bg-[#F4F3EF] border-[#DFDDD6] text-[#141413] hover:border-[#141413]'
               }`}
             >
               <span
-                className="w-3.5 h-3.5 rounded-full shrink-0 border"
+                className="w-3 h-3 rounded-none shrink-0 border"
                 style={{
-                  backgroundColor: isSoldOut ? '#ECE8DF' : color,
-                  borderColor: isSoldOut ? '#857F74' : color,
+                  backgroundColor: isSoldOut ? '#EAE8E1' : color,
+                  borderColor: isSoldOut ? '#6E6D68' : '#141413',
                 }}
                 aria-hidden="true"
               />
               <span className="truncate max-w-[140px] sm:max-w-none">{cat.name}</span>
-              <span className="tabular-nums font-semibold text-[#171614]">
+              <span className="tabular-nums font-bold text-[#141413]">
                 {formatIDR(cat.price)}
               </span>
               {isSoldOut && (
-                <span className="text-[10px] font-mono font-bold text-[#B91C1C] uppercase">
+                <span className="text-[10px] font-mono font-bold text-[#C81E1E] uppercase">
                   Habis
                 </span>
               )}
@@ -807,9 +807,9 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
         })}
       </div>
 
-      <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5 text-[11px] text-[#5C5850]">
+      <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5 text-[11px] text-[#52514D]">
         <span className="inline-flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded-full bg-[#C93018] border-2 border-[#171614] inline-block" aria-hidden="true" />
+          <span className="w-3 h-3 rounded-full bg-[#D4FF2A] border-2 border-[#141413] inline-block" aria-hidden="true" />
           <span>
             {isSelectionMode
               ? `Kursi Dipilih (${selectedSeats.length}/${quantity})`
@@ -821,7 +821,7 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
           <span>Kursi Tersedia</span>
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded-full bg-[#ECE8DF] border border-[#857F74] inline-block" aria-hidden="true" />
+          <span className="w-3 h-3 rounded-full bg-[#EAE8E1] border border-[#6E6D68] inline-block" aria-hidden="true" />
           <span>Terisi / Terpesan</span>
         </span>
       </div>
@@ -829,10 +829,10 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
       {seatNotice && (
         <div
           role="status"
-          className={`rounded-lg border px-3.5 py-2.5 text-xs font-medium ${
+          className={`rounded-none border px-3.5 py-2.5 text-xs font-medium ${
             seatNotice.type === 'info'
-              ? 'border-[#CFC9BC] bg-white text-[#171614]'
-              : 'border-[#B91C1C]/30 bg-[#B91C1C]/10 text-[#B91C1C]'
+              ? 'border-[#141413] bg-[#F4F3EF] text-[#141413]'
+              : 'border-[#C81E1E] bg-[#C81E1E]/10 text-[#C81E1E]'
           }`}
         >
           {seatNotice.text}
@@ -840,34 +840,34 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
       )}
 
       {inspectedCat && inspectedMeta && (
-        <div className="rounded-lg border border-[#E4DFD3] bg-white p-3.5 space-y-2.5">
+        <div className="rounded-none border border-[#DFDDD6] bg-[#F4F3EF] p-3.5 space-y-2.5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2 min-w-0">
               <span
-                className="w-3 h-3 rounded-full shrink-0"
+                className="w-3 h-3 rounded-none shrink-0 border border-[#141413]"
                 style={{ backgroundColor: inspectedMeta.style.color }}
                 aria-hidden="true"
               />
-              <span className="text-xs font-semibold text-[#171614] truncate">
+              <span className="text-xs font-bold text-[#141413] truncate">
                 {inspectedCat.name}
               </span>
-              <span className="text-[11px] font-medium text-[#5C5850] bg-[#F6F4EE] border border-[#E4DFD3] rounded px-2 py-0.5">
+              <span className="text-[11px] font-medium text-[#141413] bg-white border border-[#DFDDD6] rounded-none px-2 py-0.5">
                 {inspectedMeta.style.zoneLabel}
               </span>
             </div>
-            <span className="text-xs font-semibold tabular-nums text-[#171614]">
+            <span className="text-xs font-bold tabular-nums text-[#141413]">
               {inspectedRem > 0 ? `Sisa ${inspectedRem} kursi` : 'Kuota habis'}
             </span>
           </div>
 
-          <p className="text-xs text-[#5C5850] m-0 leading-relaxed">
+          <p className="text-xs text-[#52514D] m-0 leading-relaxed">
             {inspectedMeta.style.viewNote}
           </p>
 
           {isSelectionMode && inspectedCat.id === selectedCategoryId && inspectedRem > 0 && (
-            <div className="pt-2 border-t border-[#E4DFD3] flex flex-wrap items-center justify-between gap-2">
+            <div className="pt-2 border-t border-[#DFDDD6] flex flex-wrap items-center justify-between gap-2">
               <div className="flex flex-wrap items-center gap-1.5">
-                <span className="text-xs text-[#5C5850]">Nomor Kursi:</span>
+                <span className="text-xs text-[#52514D]">Nomor Kursi:</span>
                 {selectedSeats.length > 0 ? (
                   selectedSeats.map((code) => (
                     <button
@@ -879,27 +879,27 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
                         }
                       }}
                       title={quantity > 1 ? `Hapus kursi ${code}` : `Kursi ${code}`}
-                      className="inline-flex items-center gap-1 min-h-[32px] px-2.5 py-1 rounded bg-[#171614] text-white font-mono text-xs font-semibold hover:bg-[#C93018] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C93018]"
+                      className="inline-flex items-center gap-1 min-h-[32px] px-2.5 py-1 rounded-none bg-[#141413] text-[#D4FF2A] font-mono text-xs font-bold hover:bg-[#2A2A28] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413]"
                     >
                       <span>{code}</span>
                       {quantity > 1 && <span aria-hidden="true" className="text-[11px] opacity-80">×</span>}
                     </button>
                   ))
                 ) : (
-                  <span className="text-xs font-medium text-[#855A0E]">
+                  <span className="text-xs font-medium text-[#8A5A00]">
                     Belum ada kursi dipilih
                   </span>
                 )}
               </div>
               {selectedSeats.length < quantity && (
-                <span className="text-[11px] font-medium text-[#C93018]">
+                <span className="text-[11px] font-bold text-[#C81E1E]">
                   Pilih {quantity - selectedSeats.length} kursi lagi pada denah
                 </span>
               )}
             </div>
           )}
 
-          <p className="text-[11px] text-[#6B665D] m-0">
+          <p className="text-[11px] text-[#6E6D68] m-0">
             {isSelectionMode
               ? 'Nomor kursi yang Anda pilih akan dikunci khusus untuk transaksi ini dan dicetak pada E-Ticket resmi.'
               : 'Ketersediaan kursi diperbarui secara langsung. Pemilihan nomor kursi dilakukan pada langkah reservasi tiket.'}
