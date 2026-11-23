@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ticket, ArrowUpRight, TrendingUp } from 'lucide-react';
+import { Ticket, ArrowUpRight, TrendingUp, Download } from 'lucide-react';
 import { formatIDR } from '../landing/data';
 import type { AdminMetricsData } from '../landing/data';
 import { StatusBadge, ProgressBar } from './ui';
@@ -11,14 +11,44 @@ interface MetricsPanelProps {
   metrics: AdminMetricsData | null;
   eventsCount: number;
   onGoToOrders: () => void;
+  onExportFinancialCSV?: () => void;
 }
 
-export const MetricsPanel: React.FC<MetricsPanelProps> = ({ metrics, eventsCount, onGoToOrders }) => {
+export const MetricsPanel: React.FC<MetricsPanelProps> = ({
+  metrics,
+  eventsCount,
+  onGoToOrders,
+  onExportFinancialCSV,
+}) => {
   const eventStats = metrics?.eventStats || [];
   const maxEventRevenue = Math.max(...eventStats.map((s) => s.revenue), 1);
 
   return (
     <div className="flex flex-col gap-6 pb-8">
+      {onExportFinancialCSV && (
+        <Card>
+          <CardContent className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h2 className="text-sm sm:text-base font-semibold text-card-foreground tracking-tight m-0">
+                Ringkasan Eksekutif &amp; Pembukuan Pendapatan
+              </h2>
+              <p className="text-xs text-muted-foreground mt-0.5 m-0">
+                Unduh rekapitulasi pendapatan per konser dan transaksi aktif dalam format CSV.
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onExportFinancialCSV}
+              className="shrink-0 min-h-[44px]"
+            >
+              <Download size={15} strokeWidth={1.7} aria-hidden="true" />
+              <span>Unduh Laporan Keuangan (CSV)</span>
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
       <Dashboard metrics={metrics} eventsCount={eventsCount} onGoToOrders={onGoToOrders} />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

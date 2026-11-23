@@ -10,6 +10,8 @@ import {
   QrCode,
   ShieldCheck,
   Tag,
+  Users,
+  History,
 } from 'lucide-react';
 import { formatIDR, type AdminRole } from '../landing/data';
 import {
@@ -29,7 +31,15 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { AdminThemeToggle } from './AdminThemeContext';
 
-export type TabId = 'METRICS' | 'EVENTS' | 'PROMOS' | 'ORDERS' | 'REFUNDS' | 'SCANNER';
+export type TabId =
+  | 'METRICS'
+  | 'EVENTS'
+  | 'PROMOS'
+  | 'ORDERS'
+  | 'REFUNDS'
+  | 'SCANNER'
+  | 'STAFF'
+  | 'AUDIT_LOGS';
 
 interface AdminSidebarProps {
   activeTab: TabId;
@@ -40,6 +50,8 @@ interface AdminSidebarProps {
   promosCount?: number;
   ordersCount: number;
   refundsCount?: number;
+  staffCount?: number;
+  auditLogsCount?: number;
   totalRevenue: number;
 }
 
@@ -49,14 +61,16 @@ const ALL_NAV_ITEMS: {
   shortLabel: string;
   icon: typeof BarChart3;
   roles: AdminRole[];
-  group: 'GATE' | 'OPERASI';
+  group: 'GATE' | 'OPERASI' | 'SUPERVISI';
 }[] = [
-  { id: 'SCANNER', label: 'Scanner Gate Masuk', shortLabel: 'Scan Gate', icon: QrCode, roles: ['ADMIN', 'PETUGAS'], group: 'GATE' },
-  { id: 'ORDERS', label: 'Manajemen Pesanan', shortLabel: 'Pesanan', icon: Layers, roles: ['ADMIN', 'PETUGAS'], group: 'GATE' },
-  { id: 'METRICS', label: 'Metrik & Finansial', shortLabel: 'Metrik', icon: BarChart3, roles: ['ADMIN'], group: 'OPERASI' },
-  { id: 'EVENTS', label: 'Postingan Konser', shortLabel: 'Konser', icon: Ticket, roles: ['ADMIN'], group: 'OPERASI' },
-  { id: 'PROMOS', label: 'Kode Promo', shortLabel: 'Promo', icon: Tag, roles: ['ADMIN'], group: 'OPERASI' },
-  { id: 'REFUNDS', label: 'Permohonan Refund', shortLabel: 'Refund', icon: RotateCcw, roles: ['ADMIN'], group: 'OPERASI' },
+  { id: 'SCANNER', label: 'Scanner Gate Masuk', shortLabel: 'Scan Gate', icon: QrCode, roles: ['SUPER_ADMIN', 'ADMIN', 'PETUGAS'], group: 'GATE' },
+  { id: 'ORDERS', label: 'Manajemen Pesanan', shortLabel: 'Pesanan', icon: Layers, roles: ['SUPER_ADMIN', 'ADMIN', 'PETUGAS'], group: 'GATE' },
+  { id: 'METRICS', label: 'Metrik & Finansial', shortLabel: 'Metrik', icon: BarChart3, roles: ['SUPER_ADMIN', 'ADMIN'], group: 'OPERASI' },
+  { id: 'EVENTS', label: 'Postingan Konser', shortLabel: 'Konser', icon: Ticket, roles: ['SUPER_ADMIN', 'ADMIN'], group: 'OPERASI' },
+  { id: 'PROMOS', label: 'Kode Promo', shortLabel: 'Promo', icon: Tag, roles: ['SUPER_ADMIN', 'ADMIN'], group: 'OPERASI' },
+  { id: 'REFUNDS', label: 'Permohonan Refund', shortLabel: 'Refund', icon: RotateCcw, roles: ['SUPER_ADMIN', 'ADMIN'], group: 'OPERASI' },
+  { id: 'STAFF', label: 'Manajemen Staf', shortLabel: 'Staf', icon: Users, roles: ['SUPER_ADMIN'], group: 'SUPERVISI' },
+  { id: 'AUDIT_LOGS', label: 'Log Audit Sistem', shortLabel: 'Audit', icon: History, roles: ['SUPER_ADMIN'], group: 'SUPERVISI' },
 ];
 
 export const AdminSidebar: React.FC<AdminSidebarProps> = ({
@@ -68,6 +82,8 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   promosCount,
   ordersCount,
   refundsCount,
+  staffCount,
+  auditLogsCount,
   totalRevenue,
 }) => {
   const { open, isMobile, setOpenMobile } = useSidebar();
@@ -76,12 +92,15 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   const visibleNavItems = ALL_NAV_ITEMS.filter((item) => item.roles.includes(role));
   const gateItems = visibleNavItems.filter((i) => i.group === 'GATE');
   const opsItems = visibleNavItems.filter((i) => i.group === 'OPERASI');
+  const supervisionItems = visibleNavItems.filter((i) => i.group === 'SUPERVISI');
 
   const getBadgeText = (id: TabId): string => {
     if (id === 'EVENTS') return `${eventsCount}`;
     if (id === 'PROMOS') return `${promosCount || 0}`;
     if (id === 'ORDERS') return `${ordersCount}`;
     if (id === 'REFUNDS') return `${refundsCount || 0}`;
+    if (id === 'STAFF') return `${staffCount || 0}`;
+    if (id === 'AUDIT_LOGS') return `${auditLogsCount || 0}`;
     if (id === 'METRICS' && totalRevenue) return formatIDR(totalRevenue);
     return '';
   };
@@ -147,7 +166,11 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                 SymphoniaTic.
               </span>
               <span className="text-[10px] font-bold text-muted-foreground tracking-wider uppercase block truncate">
-                {role === 'PETUGAS' ? 'Gate Officer' : 'Admin Portal'}
+                {role === 'SUPER_ADMIN'
+                  ? 'Super Admin'
+                  : role === 'PETUGAS'
+                  ? 'Gate Officer'
+                  : 'Admin Portal'}
               </span>
             </div>
           )}
@@ -170,6 +193,13 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
             <SidebarMenu>{opsItems.map(renderNavItem)}</SidebarMenu>
           </SidebarGroup>
         )}
+
+        {supervisionItems.length > 0 && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Supervisi &amp; Keamanan</SidebarGroupLabel>
+            <SidebarMenu>{supervisionItems.map(renderNavItem)}</SidebarMenu>
+          </SidebarGroup>
+        )}
       </SidebarContent>
 
       <SidebarFooter>
@@ -185,7 +215,11 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                 Peran Aktif
               </span>
               <span className="text-xs font-bold text-foreground block truncate">
-                {role === 'PETUGAS' ? 'Petugas Gate Scanner' : 'Administrator Penuh'}
+                {role === 'SUPER_ADMIN'
+                  ? 'Super Administrator'
+                  : role === 'PETUGAS'
+                  ? 'Petugas Gate Scanner'
+                  : 'Administrator Operasional'}
               </span>
             </div>
           </div>
@@ -241,7 +275,7 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
         <SidebarTrigger showLabelOnMobile />
         <div className="min-w-0">
           <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block truncate">
-            {role === 'PETUGAS' ? 'Gate Officer' : 'Admin'}
+            {role === 'SUPER_ADMIN' ? 'Super Admin' : role === 'PETUGAS' ? 'Gate Officer' : 'Admin'}
           </span>
           <span className="text-sm font-bold text-foreground tracking-tight block truncate">
             {currentItem.label}
@@ -281,7 +315,7 @@ export const MobileBottomNav: React.FC<{
   return (
     <nav
       aria-label="Navigasi cepat portal"
-      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-border flex items-center justify-around overflow-x-auto no-scrollbar py-1 px-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))]"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-border flex items-center justify-start sm:justify-around overflow-x-auto no-scrollbar py-1 px-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))]"
     >
       {visibleNavItems.map((item) => {
         const Icon = item.icon;
@@ -292,7 +326,7 @@ export const MobileBottomNav: React.FC<{
             type="button"
             aria-current={isActive ? 'page' : undefined}
             onClick={() => onTabChange(item.id)}
-            className={`relative min-h-[48px] min-w-[52px] flex flex-col items-center justify-center py-1.5 px-2 rounded-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+            className={`relative shrink-0 min-h-[48px] min-w-[62px] flex flex-col items-center justify-center py-1.5 px-2.5 rounded-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
               isActive
                 ? 'text-foreground bg-secondary font-bold'
                 : 'text-muted-foreground hover:text-foreground'

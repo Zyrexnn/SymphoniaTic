@@ -11,7 +11,16 @@ import {
   Sun,
   Moon,
 } from 'lucide-react';
-import type { EventItem, TicketCategory, OrderRecord, AdminMetricsData, AdminRole, PromotionItem } from '../landing/data';
+import type {
+  EventItem,
+  TicketCategory,
+  OrderRecord,
+  AdminMetricsData,
+  AdminRole,
+  PromotionItem,
+  StaffMember,
+  AuditLogItem,
+} from '../landing/data';
 import {
   adminLoginAPI,
   fetchAdminMetricsAPI,
@@ -32,6 +41,13 @@ import {
   updateAdminPromoAPI,
   toggleAdminPromoActiveAPI,
   deleteAdminPromoAPI,
+  fetchAdminStaffAPI,
+  createAdminStaffAPI,
+  updateAdminStaffAPI,
+  toggleAdminStaffStatusAPI,
+  resetAdminStaffPasswordAPI,
+  deleteAdminStaffAPI,
+  fetchAdminAuditLogsAPI,
 } from '../landing/data';
 
 import { AdminThemeProvider, AdminThemeToggle, useAdminTheme } from './AdminThemeContext';
@@ -41,6 +57,9 @@ import { EventsPanel } from './EventsPanel';
 import { PromosPanel } from './PromosPanel';
 import { OrdersPanel } from './OrdersPanel';
 import { RefundsPanel, type RefundRecord } from './RefundsPanel';
+import { StaffPanel } from './StaffPanel';
+import { StaffFormModal, type StaffFormData } from './StaffFormModal';
+import { AuditLogsPanel } from './AuditLogsPanel';
 import { EventFormModal, type EventFormData } from './EventFormModal';
 import { CategoryFormModal } from './CategoryFormModal';
 import { PromoFormModal, type PromoFormData } from './PromoFormModal';
@@ -126,6 +145,14 @@ function toIsoOrNull(localVal?: string): string | null {
 
 const EMPTY_CAT_FORM = { name: '', price: 500000, quota: 50 };
 
+const EMPTY_STAFF_FORM: StaffFormData = {
+  username: '',
+  name: '',
+  email: '',
+  password: '',
+  role: 'PETUGAS',
+};
+
 function createDefaultPromoForm(): PromoFormData {
   const now = new Date();
   const nextMonth = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
@@ -161,9 +188,18 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
   });
   const [currentRole, setCurrentRole] = useState<AdminRole>(() => {
     try {
-      return (sessionStorage.getItem('symphoniatic_admin_role') as AdminRole) || 'ADMIN';
+      const saved = sessionStorage.getItem('symphoniatic_admin_role');
+      if (saved === 'SUPER_ADMIN' || saved === 'ADMIN' || saved === 'PETUGAS') return saved;
+      return 'ADMIN';
     } catch {
       return 'ADMIN';
+    }
+  });
+  const [currentStaffId, setCurrentStaffId] = useState<string>(() => {
+    try {
+      return sessionStorage.getItem('symphoniatic_admin_id') || '';
+    } catch {
+      return '';
     }
   });
   const [username, setUsername] = useState('');
@@ -185,6 +221,8 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
   const [promosList, setPromosList] = useState<PromotionItem[]>([]);
   const [ordersList, setOrdersList] = useState<OrderRecord[]>([]);
   const [refundsList, setRefundsList] = useState<RefundRecord[]>([]);
+  const [staffList, setStaffList] = useState<StaffMember[]>([]);
+  const [auditLogsList, setAuditLogsList] = useState<AuditLogItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [checkingInCode, setCheckingInCode] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -204,10 +242,13 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
   } | null>(null);
   const [showAddPromoModal, setShowAddPromoModal] = useState(false);
   const [editingPromo, setEditingPromo] = useState<PromotionItem | null>(null);
+  const [showAddStaffModal, setShowAddStaffModal] = useState(false);
+  const [editingStaff, setEditingStaff] = useState<StaffMember | null>(null);
 
   const [eventForm, setEventForm] = useState(EMPTY_EVENT_FORM);
   const [catForm, setCatForm] = useState(EMPTY_CAT_FORM);
   const [promoForm, setPromoForm] = useState<PromoFormData>(() => createDefaultPromoForm());
+  const [staffForm, setStaffForm] = useState<StaffFormData>(EMPTY_STAFF_FORM);
 
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [confirmModal, setConfirmModal] = useState<{
@@ -223,23 +264,33 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
     setTimeout(() => setToast(null), 3500);
   };
 
+  const canManageOps = currentRole === 'ADMIN' || currentRole === 'SUPER_ADMIN';
+  const isSuperAdmin = currentRole === 'SUPER_ADMIN';
+
   const refreshData = async () => {
     const activeRole = currentRole;
+    const opsAllowed = activeRole === 'ADMIN' || activeRole === 'SUPER_ADMIN';
+    const superAllowed = activeRole === 'SUPER_ADMIN';
+
     setIsLoading(true);
     setLoadError(null);
     try {
-      const [ords, evts, met, rfds, promosRes] = await Promise.all([
+      const [ords, evts, met, rfds, promosRes, staffRes, auditRes] = await Promise.all([
         fetchAdminOrdersAPI(orderSearch, orderStatusFilter),
         fetchEventsAPI(),
-        activeRole === 'ADMIN' ? fetchAdminMetricsAPI() : Promise.resolve(null),
-        activeRole === 'ADMIN' ? fetchAdminRefundsAPI() : Promise.resolve([]),
-        activeRole === 'ADMIN' ? fetchAdminPromosAPI() : Promise.resolve({ success: true, data: [] }),
+        opsAllowed ? fetchAdminMetricsAPI() : Promise.resolve(null),
+        opsAllowed ? fetchAdminRefundsAPI() : Promise.resolve([]),
+        opsAllowed ? fetchAdminPromosAPI() : Promise.resolve({ success: true, data: [] }),
+        superAllowed ? fetchAdminStaffAPI() : Promise.resolve({ success: true, data: [] }),
+        superAllowed ? fetchAdminAuditLogsAPI() : Promise.resolve({ success: true, data: [] }),
       ]);
       if (ords) setOrdersList(ords);
       if (evts) setEventsList(evts);
       if (met) setMetrics(met);
       if (rfds) setRefundsList(rfds);
       if (promosRes?.success && Array.isArray(promosRes.data)) setPromosList(promosRes.data);
+      if (staffRes?.success && Array.isArray(staffRes.data)) setStaffList(staffRes.data);
+      if (auditRes?.success && Array.isArray(auditRes.data)) setAuditLogsList(auditRes.data);
       if (onEventsUpdated) onEventsUpdated();
     } catch (err) {
       console.error('Error refreshing admin data:', err);
@@ -256,6 +307,8 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
   useEffect(() => {
     if (currentRole === 'PETUGAS' && activeTab !== 'SCANNER' && activeTab !== 'ORDERS') {
       setActiveTab('SCANNER');
+    } else if (currentRole === 'ADMIN' && (activeTab === 'STAFF' || activeTab === 'AUDIT_LOGS')) {
+      setActiveTab('METRICS');
     }
   }, [currentRole, activeTab]);
 
@@ -269,12 +322,20 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
     try {
       const res = await adminLoginAPI(username, password);
       if (res.success && res.data?.token) {
-        const userRole = res.data?.user?.role || (cleanUser === 'petugas' ? 'PETUGAS' : 'ADMIN');
+        const userRole = (res.data?.user?.role ||
+          (cleanUser === 'petugas'
+            ? 'PETUGAS'
+            : cleanUser === 'superadmin'
+            ? 'SUPER_ADMIN'
+            : 'ADMIN')) as AdminRole;
+        const staffId = String(res.data?.user?.id || '');
         try {
           sessionStorage.setItem('symphoniatic_admin_token', res.data.token);
           sessionStorage.setItem('symphoniatic_admin_role', userRole);
+          sessionStorage.setItem('symphoniatic_admin_id', staffId);
         } catch {}
         setCurrentRole(userRole);
+        setCurrentStaffId(staffId);
         setActiveTab(userRole === 'PETUGAS' ? 'SCANNER' : 'METRICS');
         setIsAuthenticated(true);
       } else {
@@ -291,7 +352,11 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
     try {
       sessionStorage.removeItem('symphoniatic_admin_token');
       sessionStorage.removeItem('symphoniatic_admin_role');
+      sessionStorage.removeItem('symphoniatic_admin_id');
     } catch {}
+    setCurrentStaffId('');
+    setStaffList([]);
+    setAuditLogsList([]);
     setIsAuthenticated(false);
   };
 
@@ -734,6 +799,174 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
     });
   };
 
+  const handleExportFinancialCSV = () => {
+    const eventStats = metrics?.eventStats || [];
+    if (eventStats.length === 0 && ordersList.length === 0) {
+      showToast('Belum ada data transaksi finansial untuk diekspor', 'error');
+      return;
+    }
+
+    const lines: string[] = [];
+    lines.push('REKAPITULASI PENDAPATAN PER KONSER');
+    lines.push(['ID Event', 'Judul Konser', 'Tiket Terjual', 'Total Pendapatan (IDR)'].join(','));
+    for (const st of eventStats) {
+      lines.push(
+        [`"${st.eventId}"`, `"${st.title.replace(/"/g, '""')}"`, st.ticketsSold, st.revenue].join(',')
+      );
+    }
+    lines.push('');
+    lines.push('RINGKASAN KEUANGAN SISTEM');
+    lines.push(['Total Pendapatan (IDR)', metrics?.totalRevenue || 0].join(','));
+    lines.push(['Total Tiket Terjual', metrics?.ticketsSold || 0].join(','));
+    lines.push(['Total Pesanan', metrics?.totalOrders || 0].join(','));
+    lines.push('');
+    lines.push('RINCIAN TRANSAKSI TERCATAT');
+    lines.push(['Kode Pesanan', 'Event', 'Pemesan', 'Kategori', 'Jumlah', 'Total (IDR)', 'Status', 'Waktu'].join(','));
+    for (const o of ordersList) {
+      lines.push(
+        [
+          `"${o.orderCode}"`,
+          `"${o.eventTitle.replace(/"/g, '""')}"`,
+          `"${o.userName.replace(/"/g, '""')}"`,
+          `"${o.categoryName}"`,
+          o.quantity,
+          o.totalPrice,
+          `"${o.status}"`,
+          `"${new Date(o.createdAt).toLocaleString('id-ID')}"`,
+        ].join(',')
+      );
+    }
+
+    const csv = 'data:text/csv;charset=utf-8,' + encodeURIComponent(lines.join('\n'));
+    const link = document.createElement('a');
+    link.href = csv;
+    link.download = `SymphoniaTic_Financial_Report_${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('Laporan keuangan CSV berhasil diunduh', 'success');
+  };
+
+  const handleCreateStaff = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      const res = await createAdminStaffAPI({
+        username: staffForm.username.trim(),
+        name: staffForm.name.trim(),
+        email: staffForm.email.trim(),
+        password: staffForm.password,
+        role: staffForm.role,
+      });
+      if (res.success) {
+        setShowAddStaffModal(false);
+        setStaffForm(EMPTY_STAFF_FORM);
+        showToast(res.message || 'Akun staf baru berhasil ditambahkan', 'success');
+        await refreshData();
+      } else {
+        showToast(res.message || 'Gagal menambahkan akun staf', 'error');
+      }
+    } catch {
+      showToast('Terjadi kesalahan koneksi server', 'error');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleUpdateStaff = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingStaff) return;
+    setIsLoading(true);
+    try {
+      const res = await updateAdminStaffAPI(editingStaff.id, {
+        name: staffForm.name.trim(),
+        email: staffForm.email.trim(),
+        role: staffForm.role,
+      });
+      if (res.success) {
+        setEditingStaff(null);
+        setStaffForm(EMPTY_STAFF_FORM);
+        showToast(res.message || 'Data akun staf berhasil diperbarui', 'success');
+        await refreshData();
+      } else {
+        showToast(res.message || 'Gagal memperbarui akun staf', 'error');
+      }
+    } catch {
+      showToast('Terjadi kesalahan koneksi server', 'error');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleToggleStaffStatus = (staff: StaffMember) => {
+    const actionLabel = staff.isActive ? 'Nonaktifkan' : 'Aktifkan';
+    setConfirmModal({
+      title: `${actionLabel} Akun Staf`,
+      message: `${actionLabel} akses login untuk akun "@${staff.username}" (${staff.name})?`,
+      confirmLabel: actionLabel,
+      variant: staff.isActive ? 'danger' : 'default',
+      onConfirm: async () => {
+        setConfirmModal(null);
+        setIsLoading(true);
+        try {
+          const res = await toggleAdminStaffStatusAPI(staff.id);
+          if (res.success) {
+            showToast(res.message || 'Status akun staf diperbarui', 'success');
+            await refreshData();
+          } else {
+            showToast(res.message || 'Gagal mengubah status akun staf', 'error');
+          }
+        } catch {
+          showToast('Terjadi kesalahan koneksi server', 'error');
+        } finally {
+          setIsLoading(false);
+        }
+      },
+    });
+  };
+
+  const handleResetStaffPassword = async (staffId: string, newPassword: string): Promise<boolean> => {
+    try {
+      const res = await resetAdminStaffPasswordAPI(staffId, newPassword);
+      if (res.success) {
+        showToast(res.message || 'Kata sandi staf berhasil direset', 'success');
+        await refreshData();
+        return true;
+      }
+      showToast(res.message || 'Gagal mereset kata sandi staf', 'error');
+      return false;
+    } catch {
+      showToast('Terjadi kesalahan koneksi server', 'error');
+      return false;
+    }
+  };
+
+  const handleDeleteStaff = (staff: StaffMember) => {
+    setConfirmModal({
+      title: 'Hapus Permanen Akun Staf',
+      message: `Hapus akun "@${staff.username}" (${staff.name}) secara permanen? Staf tersebut tidak akan lagi dapat masuk ke portal operasional.`,
+      confirmLabel: 'Hapus Akun',
+      variant: 'danger',
+      onConfirm: async () => {
+        setConfirmModal(null);
+        setIsLoading(true);
+        try {
+          const res = await deleteAdminStaffAPI(staff.id);
+          if (res.success) {
+            showToast(res.message || 'Akun staf berhasil dihapus', 'success');
+            await refreshData();
+          } else {
+            showToast(res.message || 'Gagal menghapus akun staf', 'error');
+          }
+        } catch {
+          showToast('Terjadi kesalahan koneksi server', 'error');
+        } finally {
+          setIsLoading(false);
+        }
+      },
+    });
+  };
+
   if (!isAuthenticated) {
     return (
       <AdminLogin
@@ -775,6 +1008,14 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
     REFUNDS: {
       title: 'Persetujuan Permohonan Refund Tiket',
       subtitle: 'Tinjau pengajuan pengembalian dana penonton',
+    },
+    STAFF: {
+      title: 'Manajemen Akun Staf & Kontrol Akses',
+      subtitle: 'Kelola akun Super Admin, Administrator, dan Petugas Gate secara terpusat',
+    },
+    AUDIT_LOGS: {
+      title: 'Log Audit Aktivitas & Keamanan Sistem',
+      subtitle: 'Rekam jejak kronologis operasi administrasi, transaksi, dan perubahan akses',
     },
   };
 
@@ -821,6 +1062,8 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
         promosCount={promosList.length}
         ordersCount={ordersList.length}
         refundsCount={(refundsList || []).filter((r) => r.status === 'PENDING').length}
+        staffCount={staffList.length}
+        auditLogsCount={auditLogsList.length}
         totalRevenue={metrics?.totalRevenue || 0}
       />
 
@@ -873,7 +1116,11 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
                     aria-hidden="true"
                   />
                   <span className="text-xs font-semibold">
-                    {currentRole === 'PETUGAS' ? 'Petugas Gate' : 'Administrator'}
+                    {currentRole === 'SUPER_ADMIN'
+                      ? 'Super Admin'
+                      : currentRole === 'PETUGAS'
+                      ? 'Petugas Gate'
+                      : 'Administrator'}
                   </span>
                   <ChevronDown size={14} className="text-muted-foreground" aria-hidden="true" />
                 </Button>
@@ -943,16 +1190,17 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
               <GateScannerPanel events={eventsList} onScanSuccess={() => refreshData()} />
             </React.Suspense>
           )}
-          {currentRole === 'ADMIN' && activeTab === 'METRICS' && (
+          {canManageOps && activeTab === 'METRICS' && (
             <React.Suspense fallback={<PanelSkeleton />}>
               <MetricsPanel
                 metrics={metrics}
                 eventsCount={eventsList.length}
                 onGoToOrders={() => setActiveTab('ORDERS')}
+                onExportFinancialCSV={handleExportFinancialCSV}
               />
             </React.Suspense>
           )}
-          {currentRole === 'ADMIN' && activeTab === 'EVENTS' && (
+          {canManageOps && activeTab === 'EVENTS' && (
             <EventsPanel
               events={eventsList}
               isLoading={isLoading}
@@ -1003,7 +1251,7 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
               onDeleteCategory={handleDeleteCategory}
             />
           )}
-          {currentRole === 'ADMIN' && activeTab === 'PROMOS' && (
+          {canManageOps && activeTab === 'PROMOS' && (
             <PromosPanel
               promos={promosList}
               isLoading={isLoading}
@@ -1046,7 +1294,7 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
               onExportCSV={handleExportCSV}
             />
           )}
-          {currentRole === 'ADMIN' && activeTab === 'REFUNDS' && (
+          {canManageOps && activeTab === 'REFUNDS' && (
             <RefundsPanel
               refunds={filteredRefunds}
               isLoading={isLoading}
@@ -1056,6 +1304,33 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
               onStatusFilterChange={setRefundStatusFilter}
               onUpdateStatus={handleUpdateRefundStatus}
             />
+          )}
+          {isSuperAdmin && activeTab === 'STAFF' && (
+            <StaffPanel
+              staffList={staffList}
+              currentStaffId={currentStaffId}
+              isLoading={isLoading}
+              onAddStaff={() => {
+                setStaffForm(EMPTY_STAFF_FORM);
+                setShowAddStaffModal(true);
+              }}
+              onEditStaff={(staff) => {
+                setEditingStaff(staff);
+                setStaffForm({
+                  username: staff.username,
+                  name: staff.name,
+                  email: staff.email,
+                  password: '',
+                  role: staff.role,
+                });
+              }}
+              onToggleStatus={handleToggleStaffStatus}
+              onResetPassword={handleResetStaffPassword}
+              onDeleteStaff={handleDeleteStaff}
+            />
+          )}
+          {isSuperAdmin && activeTab === 'AUDIT_LOGS' && (
+            <AuditLogsPanel logs={auditLogsList} isLoading={isLoading} />
           )}
         </main>
       </SidebarInset>
@@ -1098,6 +1373,20 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
           setEditingPromo(null);
         }}
         onSubmit={editingPromo ? handleUpdatePromo : handleCreatePromo}
+      />
+
+      <StaffFormModal
+        isOpen={showAddStaffModal || !!editingStaff}
+        editingStaff={editingStaff}
+        currentStaffId={currentStaffId}
+        form={staffForm}
+        isLoading={isLoading}
+        onFormChange={setStaffForm}
+        onClose={() => {
+          setShowAddStaffModal(false);
+          setEditingStaff(null);
+        }}
+        onSubmit={editingStaff ? handleUpdateStaff : handleCreateStaff}
       />
 
       {toast && (

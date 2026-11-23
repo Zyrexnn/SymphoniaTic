@@ -88,13 +88,18 @@ fe/
 - **Pengajuan Refund:** Formulir permohonan pengembalian dana terverifikasi OTP email serta pelacakan status pengajuan.
 - **Dashboard Akun:** Mengelola profil, mengganti kata sandi, dan memantau riwayat transaksi.
 
-### 2. Super Administrator (`ADMIN`)
-- **Metrik & Finansial:** Ringkasan pendapatan, tiket terjual, sisa kuota, dan distribusi kategori kursi.
+### 2. Super Administrator (`SUPER_ADMIN`)
+- **Supervisi & Kontrol Akses (RBAC):** Mengelola akun staf operasional (`SUPER_ADMIN`, `ADMIN`, dan `PETUGAS`), mengaktifkan/menonaktifkan akun, serta mereset kata sandi secara dinamis.
+- **Log Audit Sistem:** Memantau jejak aktivitas kronologis (login, perubahan event/promo, persetujuan refund, dan mutasi akun staf) lengkap dengan ekspor CSV.
+- **Hak Akses Penuh:** Memiliki seluruh wewenang Administrator Operasional dan Petugas Gate.
+
+### 3. Administrator Operasional (`ADMIN`)
+- **Metrik & Finansial:** Ringkasan pendapatan, tiket terjual, sisa kuota, distribusi kategori kursi, serta ekspor laporan keuangan CSV.
 - **Manajemen Konser & Kategori:** Membuat, memperbarui, menutup/membuka penjualan tiket, dan menghapus event maupun kategori kursi.
-- **Manajemen Pesanan & Refund:** Melihat seluruh pesanan, mengubah status transaksi, mengekspor data pesanan ke CSV, serta menyetujui atau menolak pengajuan refund.
+- **Manajemen Pesanan, Promo & Refund:** Mengelola kode promo, melihat seluruh pesanan, mengubah status transaksi, mengekspor data pesanan ke CSV, serta menyetujui atau menolak pengajuan refund.
 - **Gate Operations:** Akses penuh ke pemindai QR gate dan check-in manual.
 
-### 3. Petugas Gate (`PETUGAS`)
+### 4. Petugas Gate (`PETUGAS`)
 - **Pemindai QR Gate:** Validasi tiket penonton di pintu masuk menggunakan kamera perangkat atau input kode manual dengan umpan balik audio.
 - **Progres Kehadiran Penonton:** Kartu ringkasan jumlah tiket yang sudah masuk vs total tiket aktif (dapat difilter per konser) yang diperbarui otomatis setiap scan berhasil.
 - **Pencarian Pesanan (*Read-Only*) & Check-in Manual:** Mencari data pesanan penonton berdasarkan nama/email saat QR terkendala di lapangan, disertai tombol **Check-in Manual** dengan konfirmasi. Akses ubah status pembayaran dan ekspor CSV dinonaktifkan sesuai prinsip *Least Privilege*.

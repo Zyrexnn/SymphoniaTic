@@ -97,14 +97,52 @@ export interface OrderRecord {
   venueAddress?: string;
 }
 
-export type AdminRole = 'ADMIN' | 'PETUGAS';
+export type AdminRole = 'SUPER_ADMIN' | 'ADMIN' | 'PETUGAS';
+
+export interface StaffMember {
+  id: string;
+  username: string;
+  name: string;
+  email: string;
+  role: AdminRole;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateStaffPayload {
+  username: string;
+  name: string;
+  email: string;
+  password: string;
+  role: AdminRole;
+  isActive?: boolean;
+}
+
+export interface UpdateStaffPayload {
+  name: string;
+  email: string;
+  role: AdminRole;
+}
+
+export interface AuditLogItem {
+  id: string;
+  actorId: string;
+  actorName: string;
+  actorRole: string;
+  action: string;
+  targetResource: string;
+  details: string;
+  ipAddress: string;
+  createdAt: string;
+}
 
 export interface UserRecord {
   id: string;
   email: string;
   name: string;
   phone?: string;
-  role: 'USER' | 'ADMIN';
+  role: 'USER' | 'ADMIN' | 'SUPER_ADMIN' | 'PETUGAS';
   isVerified: boolean;
   createdAt: string;
   updatedAt: string;
@@ -890,6 +928,87 @@ export const updateRefundStatusAPI = async (refundId: string, status: string, ad
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json', ...getAdminAuthHeaders() },
     body: JSON.stringify({ status, adminNote }),
+  });
+  return res.json();
+};
+
+export const fetchAdminStaffAPI = async (
+  role = '',
+  search = ''
+): Promise<APIResponse<StaffMember[]>> => {
+  const params = new URLSearchParams();
+  if (role && role !== 'ALL') params.append('role', role);
+  if (search) params.append('search', search);
+  const query = params.toString() ? `?${params.toString()}` : '';
+  const res = await fetch(`${getApiBaseUrl()}/admin/staff${query}`, {
+    headers: getAdminAuthHeaders(),
+  });
+  return res.json();
+};
+
+export const createAdminStaffAPI = async (
+  payload: CreateStaffPayload
+): Promise<APIResponse<StaffMember>> => {
+  const res = await fetch(`${getApiBaseUrl()}/admin/staff`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAdminAuthHeaders() },
+    body: JSON.stringify(payload),
+  });
+  return res.json();
+};
+
+export const updateAdminStaffAPI = async (
+  id: string,
+  payload: UpdateStaffPayload
+): Promise<APIResponse<StaffMember>> => {
+  const res = await fetch(`${getApiBaseUrl()}/admin/staff/${encodeURIComponent(id)}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getAdminAuthHeaders() },
+    body: JSON.stringify(payload),
+  });
+  return res.json();
+};
+
+export const toggleAdminStaffStatusAPI = async (
+  id: string
+): Promise<APIResponse<StaffMember>> => {
+  const res = await fetch(`${getApiBaseUrl()}/admin/staff/${encodeURIComponent(id)}/status`, {
+    method: 'PATCH',
+    headers: getAdminAuthHeaders(),
+  });
+  return res.json();
+};
+
+export const resetAdminStaffPasswordAPI = async (
+  id: string,
+  newPassword: string
+): Promise<APIResponse<null>> => {
+  const res = await fetch(`${getApiBaseUrl()}/admin/staff/${encodeURIComponent(id)}/reset-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAdminAuthHeaders() },
+    body: JSON.stringify({ newPassword }),
+  });
+  return res.json();
+};
+
+export const deleteAdminStaffAPI = async (id: string): Promise<APIResponse<null>> => {
+  const res = await fetch(`${getApiBaseUrl()}/admin/staff/${encodeURIComponent(id)}`, {
+    method: 'DELETE',
+    headers: getAdminAuthHeaders(),
+  });
+  return res.json();
+};
+
+export const fetchAdminAuditLogsAPI = async (
+  action = '',
+  search = ''
+): Promise<APIResponse<AuditLogItem[]>> => {
+  const params = new URLSearchParams();
+  if (action && action !== 'ALL') params.append('action', action);
+  if (search) params.append('search', search);
+  const query = params.toString() ? `?${params.toString()}` : '';
+  const res = await fetch(`${getApiBaseUrl()}/admin/audit-logs${query}`, {
+    headers: getAdminAuthHeaders(),
   });
   return res.json();
 };

@@ -502,18 +502,48 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <Progress
-              value={attendancePct}
-              aria-label="Persentase kehadiran penonton"
-              indicatorClassName="bg-[#156E3F] dark:bg-emerald-500"
-            />
+          <div className="space-y-3">
             {attendance && (
-              <div className="flex justify-between items-center text-[11px] font-mono text-muted-foreground tabular-nums">
-                <span>Sudah Masuk: {attendance.totalCheckedIn}</span>
-                <span>Belum Masuk: {attendance.remainingCheckIn}</span>
+              <div className="grid grid-cols-3 gap-px bg-border border border-border">
+                <div className="bg-background p-3">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">
+                    Total Tiket
+                  </span>
+                  <span className="font-display text-xl sm:text-2xl font-extrabold text-foreground tabular-nums block mt-0.5">
+                    {attendance.totalTicketsIssued}
+                  </span>
+                </div>
+                <div className="bg-background p-3">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#156E3F] dark:text-emerald-400 block">
+                    Sudah Masuk
+                  </span>
+                  <span className="font-display text-xl sm:text-2xl font-extrabold text-[#156E3F] dark:text-emerald-300 tabular-nums block mt-0.5">
+                    {attendance.totalCheckedIn}
+                  </span>
+                </div>
+                <div className="bg-background p-3">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">
+                    Belum Masuk
+                  </span>
+                  <span className="font-display text-xl sm:text-2xl font-extrabold text-foreground tabular-nums block mt-0.5">
+                    {attendance.remainingCheckIn}
+                  </span>
+                </div>
               </div>
             )}
+            <div className="space-y-1.5">
+              <Progress
+                value={attendancePct}
+                aria-label="Persentase kehadiran penonton"
+                indicatorClassName="bg-[#156E3F] dark:bg-emerald-500"
+              />
+              {attendance && (
+                <div className="flex justify-between items-center text-[11px] font-mono text-muted-foreground tabular-nums">
+                  <span>Progres Masuk Gate</span>
+                  <span className="font-semibold text-foreground">{attendance.checkInPercentage}%</span>
+                </div>
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -604,7 +634,7 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
                 type="submit"
                 variant="dark"
                 disabled={!manualCode || isProcessing}
-                className="shrink-0"
+                className="shrink-0 min-h-[44px]"
               >
                 {isProcessing ? 'Verifikasi...' : 'Cek Manual'}
               </Button>
@@ -628,37 +658,37 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
             {scanResult ? (
               <div
                 role="status"
-                className={`p-5 rounded-none border space-y-4 ${
+                className={`p-5 rounded-none border-2 space-y-4 ${
                   scanResult.type === 'SUCCESS'
-                    ? 'border-[#156E3F]/35 bg-[#156E3F]/10 dark:border-emerald-500/40 dark:bg-emerald-950/35'
+                    ? 'border-[#156E3F] bg-[#156E3F]/10 dark:border-emerald-400 dark:bg-emerald-950/40'
                     : scanResult.type === 'ALREADY_USED'
-                    ? 'border-[#8A5A00]/35 bg-[#8A5A00]/10 dark:border-amber-500/40 dark:bg-amber-950/35'
-                    : 'border-[#C81E1E]/35 bg-[#C81E1E]/10 dark:border-rose-500/40 dark:bg-rose-950/35'
+                    ? 'border-[#8A5A00] bg-[#8A5A00]/10 dark:border-amber-400 dark:bg-amber-950/40'
+                    : 'border-[#C81E1E] bg-[#C81E1E]/10 dark:border-rose-400 dark:bg-rose-950/40'
                 }`}
               >
                 <div className="flex items-start gap-3">
                   {scanResult.type === 'SUCCESS' ? (
                     <CheckCircle2
-                      size={24}
+                      size={26}
                       className="text-[#156E3F] dark:text-emerald-400 shrink-0"
                       aria-hidden="true"
                     />
                   ) : scanResult.type === 'ALREADY_USED' ? (
                     <Clock
-                      size={24}
+                      size={26}
                       className="text-[#8A5A00] dark:text-amber-400 shrink-0"
                       aria-hidden="true"
                     />
                   ) : (
                     <AlertCircle
-                      size={24}
+                      size={26}
                       className="text-[#C81E1E] dark:text-rose-400 shrink-0"
                       aria-hidden="true"
                     />
                   )}
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <h3
-                      className={`text-sm font-semibold tracking-wide m-0 ${
+                      className={`text-sm font-bold tracking-wide m-0 ${
                         scanResult.type === 'SUCCESS'
                           ? 'text-[#156E3F] dark:text-emerald-300'
                           : scanResult.type === 'ALREADY_USED'
@@ -692,22 +722,26 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
                         {scanResult.order.checkedInAttendee || scanResult.order.userName}
                       </span>
                     </div>
-                    <div>
-                      <span className="text-[11px] text-muted-foreground uppercase block">
-                        Kategori &amp; Kursi
-                      </span>
-                      <span className="text-foreground">
-                        {scanResult.order.categoryName} ({scanResult.order.quantity}x)
-                        {scanResult.order.checkedInSeat || scanResult.order.seatNumbers
-                          ? ` · ${scanResult.order.checkedInSeat || scanResult.order.seatNumbers}`
-                          : ''}
-                      </span>
+                    <div className="col-span-2 flex flex-wrap items-center justify-between gap-2 border border-border bg-card p-2.5">
+                      <div>
+                        <span className="text-[10px] text-muted-foreground uppercase block">
+                          Kategori &amp; Jumlah
+                        </span>
+                        <span className="text-foreground font-medium">
+                          {scanResult.order.categoryName} ({scanResult.order.quantity}x)
+                        </span>
+                      </div>
+                      {(scanResult.order.checkedInSeat || scanResult.order.seatNumbers) && (
+                        <span className="inline-flex items-center px-2.5 py-1 bg-[#141413] text-[#D4FF2A] font-mono text-sm font-bold tracking-wider">
+                          {scanResult.order.checkedInSeat || scanResult.order.seatNumbers}
+                        </span>
+                      )}
                     </div>
-                    <div>
+                    <div className="col-span-2">
                       <span className="text-[11px] text-muted-foreground uppercase block">
                         Event Konser
                       </span>
-                      <span className="text-foreground truncate block">
+                      <span className="text-foreground truncate block font-medium">
                         {scanResult.order.eventTitle}
                       </span>
                     </div>
@@ -730,6 +764,15 @@ export const GateScannerPanel: React.FC<GateScannerPanelProps> = ({
                     )}
                   </div>
                 )}
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setScanResult(null)}
+                  className="w-full min-h-[44px]"
+                >
+                  Bersihkan &amp; Scan Berikutnya
+                </Button>
               </div>
             ) : (
               <div className="p-8 text-center border border-dashed border-border-strong rounded-none text-xs text-muted-foreground bg-background">

@@ -160,3 +160,137 @@ test('responsive viewports prevent horizontal overflow and expose tablet search 
     searchRegion.getByRole('textbox', { name: /Cari konser/i })
   ).toBeFocused();
 });
+
+test('admin portal renders 3-role login, super admin supervision panels, and zero mobile overflow', async ({
+  page,
+}) => {
+  await page.route('**/api/v1/admin/login', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: true,
+        message: 'Login SUPER_ADMIN berhasil',
+        data: {
+          token: 'mock-super-admin-jwt',
+          user: {
+            id: 'staff-superadmin-1',
+            email: 'superadmin@symphoniatic.id',
+            name: 'Kepala Penyelenggara (Super Admin)',
+            role: 'SUPER_ADMIN',
+            isVerified: true,
+          },
+        },
+      }),
+    });
+  });
+
+  await page.route('**/api/v1/admin/dashboard', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: true,
+        data: { totalRevenue: 1500000, ticketsSold: 2, remainingQuota: 50, totalEvents: 3, totalOrders: 1 },
+      }),
+    });
+  });
+
+  await page.route('**/api/v1/admin/orders*', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: true, data: [] }) });
+  });
+
+  await page.route('**/api/v1/admin/refunds', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: true, data: [] }) });
+  });
+
+  await page.route('**/api/v1/admin/promos', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: true, data: [] }) });
+  });
+
+  await page.route('**/api/v1/admin/staff*', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: true,
+        data: [
+          {
+            id: 'staff-superadmin-1',
+            username: 'superadmin',
+            name: 'Kepala Penyelenggara',
+            email: 'superadmin@symphoniatic.id',
+            role: 'SUPER_ADMIN',
+            isActive: true,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+          {
+            id: 'staff-petugas-1',
+            username: 'petugas',
+            name: 'Petugas Gate Utama',
+            email: 'petugas@symphoniatic.id',
+            role: 'PETUGAS',
+            isActive: true,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+        ],
+      }),
+    });
+  });
+
+  await page.route('**/api/v1/admin/audit-logs*', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: true,
+        data: [
+          {
+            id: 'audit-smoke-1',
+            actorId: 'staff-superadmin-1',
+            actorName: 'superadmin@symphoniatic.id',
+            actorRole: 'SUPER_ADMIN',
+            action: 'ADMIN_LOGIN',
+            targetResource: 'auth:superadmin',
+            details: 'Login portal operasional sebagai SUPER_ADMIN',
+            ipAddress: '127.0.0.1',
+            createdAt: new Date().toISOString(),
+          },
+        ],
+      }),
+    });
+  });
+
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/admin');
+
+  await expect(page.getByRole('tab', { name: 'Super Admin' })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByRole('tab', { name: 'Admin', exact: true })).toBeVisible();
+  await expect(page.getByRole('tab', { name: 'Petugas' })).toBeVisible();
+
+  await page.getByRole('tab', { name: 'Super Admin' }).click();
+  await page.getByLabel('Username Staf').fill('superadmin');
+  await page.getByRole('textbox', { name: 'Kata Sandi' }).fill('123');
+  await page.locator('form button[type="submit"]').click();
+
+  await expect(page.getByText('Manajemen Staf')).toBeVisible({ timeout: 15000 });
+  await expect(page.getByText('Log Audit Sistem')).toBeVisible();
+
+  await page.getByRole('button', { name: /Manajemen Staf/i }).click();
+  const staffTable = page.getByRole('table');
+  await expect(staffTable.getByText('@superadmin')).toBeVisible();
+  await expect(staffTable.getByText('Anda')).toBeVisible();
+  await expect(staffTable.getByRole('button', { name: 'Nonaktifkan superadmin' })).toBeDisabled();
+
+  await page.getByRole('button', { name: /Log Audit Sistem/i }).click();
+  await expect(page.getByRole('table').getByText('ADMIN_LOGIN')).toBeVisible();
+
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.waitForTimeout(200);
+  const noOverflow = await page.evaluate(
+    () => document.documentElement.scrollWidth <= window.innerWidth
+  );
+  expect(noOverflow).toBeTruthy();
+});

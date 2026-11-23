@@ -10,7 +10,9 @@ import {
   AlertCircle,
   ShieldCheck,
   QrCode,
+  Crown,
 } from 'lucide-react';
+import type { AdminRole } from '../landing/data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -29,7 +31,7 @@ interface AdminLoginProps {
   onSubmit: (e: React.FormEvent) => void;
 }
 
-type RoleScope = 'ADMIN' | 'PETUGAS';
+type RoleScope = AdminRole;
 
 export const AdminLogin: React.FC<AdminLoginProps> = ({
   username,
@@ -41,20 +43,26 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
   onSubmit,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
-  const [roleScope, setRoleScope] = useState<RoleScope>(() =>
-    username.trim().toLowerCase() === 'petugas' ? 'PETUGAS' : 'ADMIN'
-  );
+  const [roleScope, setRoleScope] = useState<RoleScope>(() => {
+    const clean = username.trim().toLowerCase();
+    if (clean === 'petugas') return 'PETUGAS';
+    if (clean === 'superadmin') return 'SUPER_ADMIN';
+    return 'ADMIN';
+  });
   const usernameId = useId();
   const passwordId = useId();
 
   const handleRoleScopeChange = (val: string) => {
-    const nextRole = val === 'PETUGAS' ? 'PETUGAS' : 'ADMIN';
-    setRoleScope(nextRole);
+    if (val === 'PETUGAS' || val === 'SUPER_ADMIN' || val === 'ADMIN') {
+      setRoleScope(val);
+    }
   };
 
   const applyDemoCredentials = (targetRole: RoleScope) => {
     setRoleScope(targetRole);
-    onUsernameChange(targetRole === 'PETUGAS' ? 'petugas' : 'admin');
+    const demoUser =
+      targetRole === 'SUPER_ADMIN' ? 'superadmin' : targetRole === 'PETUGAS' ? 'petugas' : 'admin';
+    onUsernameChange(demoUser);
     onPasswordChange('123');
   };
 
@@ -98,18 +106,30 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
           <div className="grid grid-cols-1 gap-3 border border-white/15 bg-[#141413]/85 rounded-none p-4">
             <div className="flex items-start gap-3">
               <div className="w-8 h-8 rounded-none bg-[#D4FF2A] text-[#141413] flex items-center justify-center shrink-0 mt-0.5">
-                <ShieldCheck size={16} aria-hidden="true" />
+                <Crown size={16} aria-hidden="true" />
               </div>
               <div>
-                <p className="text-xs font-bold text-[#F4F3EF] m-0">Administrator</p>
+                <p className="text-xs font-bold text-[#F4F3EF] m-0">Super Admin</p>
                 <p className="text-xs text-[#D8D6CE] mt-0.5 m-0 leading-relaxed">
-                  Kelola metrik pendapatan, jadwal konser, kuota kursi, pesanan, dan tinjauan refund.
+                  Supervisi penuh, kelola akun staf RBAC, pantau log audit, serta ekspor laporan keuangan.
                 </p>
               </div>
             </div>
             <div className="h-px bg-white/15" />
             <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-none bg-white/15 text-[#F4F3EF] flex items-center justify-center shrink-0 mt-0.5">
+              <div className="w-8 h-8 rounded-none bg-white/20 text-[#F4F3EF] flex items-center justify-center shrink-0 mt-0.5">
+                <ShieldCheck size={16} aria-hidden="true" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-[#F4F3EF] m-0">Administrator</p>
+                <p className="text-xs text-[#D8D6CE] mt-0.5 m-0 leading-relaxed">
+                  Kelola metrik pendapatan, jadwal konser, kuota kursi, promo, pesanan, dan tinjauan refund.
+                </p>
+              </div>
+            </div>
+            <div className="h-px bg-white/15" />
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-none bg-white/10 text-[#F4F3EF] flex items-center justify-center shrink-0 mt-0.5">
                 <QrCode size={16} aria-hidden="true" />
               </div>
               <div>
@@ -165,7 +185,11 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
                   </div>
                 </div>
                 <Badge variant="outline" className="font-mono text-[10px]">
-                  {roleScope === 'PETUGAS' ? 'GATE ACCESS' : 'ADMIN ACCESS'}
+                  {roleScope === 'SUPER_ADMIN'
+                    ? 'SUPER ADMIN'
+                    : roleScope === 'PETUGAS'
+                    ? 'GATE ACCESS'
+                    : 'ADMIN ACCESS'}
                 </Badge>
               </div>
 
@@ -174,19 +198,24 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
                   Masuk Panel Operasional
                 </h1>
                 <p className="text-sm text-muted-foreground mt-1.5 mb-0 leading-relaxed">
-                  {roleScope === 'PETUGAS'
+                  {roleScope === 'SUPER_ADMIN'
+                    ? 'Kendali penuh manajemen akun staf RBAC, audit keamanan, dan laporan konser.'
+                    : roleScope === 'PETUGAS'
                     ? 'Akses khusus petugas pintu masuk untuk pemindaian QR dan verifikasi penonton.'
                     : 'Kelola pertunjukan, kuota kategori kursi, laporan transaksi, dan refund.'}
                 </p>
               </div>
 
               <Tabs value={roleScope} onValueChange={handleRoleScopeChange} className="pt-1">
-                <TabsList className="grid w-full grid-cols-2 h-11 p-1">
-                  <TabsTrigger value="ADMIN" className="min-h-[36px] text-xs font-bold uppercase tracking-wider">
-                    Administrator
+                <TabsList className="grid w-full grid-cols-3 h-11 p-1">
+                  <TabsTrigger value="SUPER_ADMIN" className="min-h-[36px] text-[11px] font-bold uppercase tracking-wider">
+                    Super Admin
                   </TabsTrigger>
-                  <TabsTrigger value="PETUGAS" className="min-h-[36px] text-xs font-bold uppercase tracking-wider">
-                    Petugas Gate
+                  <TabsTrigger value="ADMIN" className="min-h-[36px] text-[11px] font-bold uppercase tracking-wider">
+                    Admin
+                  </TabsTrigger>
+                  <TabsTrigger value="PETUGAS" className="min-h-[36px] text-[11px] font-bold uppercase tracking-wider">
+                    Petugas
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
@@ -217,7 +246,13 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
                       type="text"
                       required
                       autoComplete="username"
-                      placeholder={roleScope === 'PETUGAS' ? 'petugas' : 'admin'}
+                      placeholder={
+                        roleScope === 'SUPER_ADMIN'
+                          ? 'superadmin'
+                          : roleScope === 'PETUGAS'
+                          ? 'petugas'
+                          : 'admin'
+                      }
                       value={username}
                       onChange={(e) => onUsernameChange(e.target.value)}
                       className="pl-10"
@@ -270,7 +305,11 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
                     <>
                       <LogIn size={16} aria-hidden="true" />
                       <span>
-                        {roleScope === 'PETUGAS' ? 'Masuk Konsol Gate' : 'Masuk ke Dashboard Admin'}
+                        {roleScope === 'SUPER_ADMIN'
+                          ? 'Masuk Konsol Super Admin'
+                          : roleScope === 'PETUGAS'
+                          ? 'Masuk Konsol Gate'
+                          : 'Masuk ke Dashboard Admin'}
                       </span>
                     </>
                   )}
@@ -281,19 +320,33 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
                 <p className="text-xs font-medium text-muted-foreground m-0">
                   Isi cepat akun demo lokal:
                 </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <Button
+                    type="button"
+                    variant={roleScope === 'SUPER_ADMIN' ? 'secondary' : 'outline'}
+                    size="sm"
+                    onClick={() => applyDemoCredentials('SUPER_ADMIN')}
+                    className="min-h-[44px] justify-between px-2.5"
+                  >
+                    <span className="flex items-center gap-1.5 text-xs">
+                      <Crown size={13} aria-hidden="true" />
+                      <span>Super</span>
+                    </span>
+                    <span className="font-mono text-[10px] text-muted-foreground">superadmin</span>
+                  </Button>
+
                   <Button
                     type="button"
                     variant={roleScope === 'ADMIN' ? 'secondary' : 'outline'}
                     size="sm"
                     onClick={() => applyDemoCredentials('ADMIN')}
-                    className="min-h-[44px] justify-between px-3"
+                    className="min-h-[44px] justify-between px-2.5"
                   >
                     <span className="flex items-center gap-1.5 text-xs">
                       <KeyRound size={13} aria-hidden="true" />
                       <span>Admin</span>
                     </span>
-                    <span className="font-mono text-[11px] text-muted-foreground">admin / 123</span>
+                    <span className="font-mono text-[10px] text-muted-foreground">admin</span>
                   </Button>
 
                   <Button
@@ -301,13 +354,13 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
                     variant={roleScope === 'PETUGAS' ? 'secondary' : 'outline'}
                     size="sm"
                     onClick={() => applyDemoCredentials('PETUGAS')}
-                    className="min-h-[44px] justify-between px-3"
+                    className="min-h-[44px] justify-between px-2.5"
                   >
                     <span className="flex items-center gap-1.5 text-xs">
                       <KeyRound size={13} aria-hidden="true" />
                       <span>Petugas</span>
                     </span>
-                    <span className="font-mono text-[11px] text-muted-foreground">petugas / 123</span>
+                    <span className="font-mono text-[10px] text-muted-foreground">petugas</span>
                   </Button>
                 </div>
               </div>
