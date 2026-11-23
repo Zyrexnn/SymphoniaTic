@@ -167,6 +167,34 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
 
   const tierMap = useMemo(() => getCategoryTierMap(categories), [categories]);
 
+  const sectionShortcuts = useMemo(() => {
+    const items = [
+      { id: 'pilih-tiket', label: 'Tiket & Kategori' },
+      { id: 'catatan-program', label: 'Catatan Program' },
+      { id: 'di-atas-panggung', label: 'Di Atas Panggung' },
+      { id: 'rangkaian-acara', label: 'Rangkaian Acara' },
+      { id: 'lokasi-denah', label: 'Gedung & Denah' },
+      { id: 'syarat-ketentuan', label: 'Ketentuan' },
+    ];
+    if (otherEvents.length > 0) {
+      items.push({ id: 'pertunjukan-lainnya', label: 'Lainnya' });
+    }
+    return items;
+  }, [otherEvents.length]);
+
+  const [activeSection, setActiveSection] = useState<string>('pilih-tiket');
+
+  const handleTabSelect = (sectionId: string, scrollToTabs = false) => {
+    setActiveSection(sectionId);
+    if (scrollToTabs && typeof window !== 'undefined') {
+      const tabBar = document.getElementById('concert-tabs');
+      if (tabBar) {
+        const y = tabBar.getBoundingClientRect().top + window.scrollY - 64;
+        window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F4F3EF] text-[#141413]">
@@ -266,6 +294,10 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
               <div className="flex flex-wrap items-center gap-2.5">
                 <a
                   href="#pilih-tiket"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleTabSelect('pilih-tiket', true);
+                  }}
                   className="min-h-[44px] inline-flex items-center gap-2 rounded-none bg-[#D4FF2A] px-5 py-2 text-xs font-bold uppercase tracking-wider text-[#141413] hover:bg-[#C2EE1A] transition-colors"
                 >
                   <span>Pilih Tiket</span>
@@ -296,9 +328,53 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
         </div>
       </section>
 
-      {/* Section 2: "Pilih Tiket Anda" (Pick your way in - Flush 3-Column Tier Grid) */}
-      <section id="pilih-tiket" className="bg-[#F4F3EF] border-b border-[#DFDDD6] scroll-mt-20">
-        <div className="mx-auto max-w-[1360px] border-x border-[#DFDDD6] px-5 sm:px-8 lg:px-10 py-14 sm:py-20">
+      {/* Sticky Section Tab Navigation */}
+      <nav
+        id="concert-tabs"
+        role="tablist"
+        aria-label="Tab bagian detail konser"
+        className="sticky top-[64px] z-30 bg-[#F4F3EF] border-b border-[#DFDDD6]"
+      >
+        <div className="mx-auto max-w-[1360px] border-x border-[#DFDDD6] flex items-center justify-between gap-2">
+          <div className="flex items-center overflow-x-auto no-scrollbar divide-x divide-[#DFDDD6]">
+            {sectionShortcuts.map((item) => {
+              const isActive = activeSection === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  aria-controls={item.id}
+                  onClick={() => handleTabSelect(item.id)}
+                  className={`min-h-[48px] px-4 sm:px-5 inline-flex items-center whitespace-nowrap text-[11px] font-bold uppercase tracking-[0.12em] transition-colors shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413] ${
+                    isActive
+                      ? 'bg-[#141413] text-[#D4FF2A]'
+                      : 'bg-transparent text-[#52514D] hover:text-[#141413] hover:bg-white'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              );
+            })}
+          </div>
+          {!isClosed && !isAllSoldOut && activeSection !== 'pilih-tiket' && (
+            <button
+              type="button"
+              onClick={() => handleTabSelect('pilih-tiket', true)}
+              className="hidden md:inline-flex items-center gap-1.5 min-h-[48px] px-5 bg-[#D4FF2A] text-[#141413] border-l border-[#DFDDD6] text-[11px] font-extrabold uppercase tracking-[0.12em] hover:bg-[#c2eb22] transition-colors shrink-0 cursor-pointer"
+            >
+              <span>Beli Tiket</span>
+              <ArrowUpRight size={14} aria-hidden="true" />
+            </button>
+          )}
+        </div>
+      </nav>
+
+      {/* Section 2: "Pilih Tiket Anda" */}
+      {activeSection === 'pilih-tiket' && (
+      <section id="pilih-tiket" role="tabpanel" className="bg-[#F4F3EF] border-b border-[#DFDDD6]">
+        <div className="mx-auto max-w-[1360px] border-x border-[#DFDDD6] px-5 sm:px-8 lg:px-10 py-10 sm:py-14">
           <SectionHeading
             eyebrow="Tiket & Kategori"
             title="Pilih cara Anda menonton."
@@ -502,10 +578,12 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
           </div>
         </div>
       </section>
+      )}
 
       {/* Section 3: Editorial Synopsis Split */}
-      <section className="bg-[#F4F3EF] border-b border-[#DFDDD6]">
-        <div className="mx-auto max-w-[1360px] border-x border-[#DFDDD6] px-5 sm:px-8 lg:px-10 py-14 sm:py-20">
+      {activeSection === 'catatan-program' && (
+      <section id="catatan-program" role="tabpanel" className="bg-[#F4F3EF] border-b border-[#DFDDD6]">
+        <div className="mx-auto max-w-[1360px] border-x border-[#DFDDD6] px-5 sm:px-8 lg:px-10 py-10 sm:py-14">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
             <div className="lg:col-span-4 space-y-4">
               <p className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-[#141413] m-0">
@@ -539,10 +617,12 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
           </div>
         </div>
       </section>
+      )}
 
       {/* Section 4: Dark Band - "Di Atas Panggung" (Who's on stage) */}
-      <section className="bg-[#141413] text-[#F4F3EF] border-b border-white/15">
-        <div className="mx-auto max-w-[1360px] border-x border-white/15 px-5 sm:px-8 lg:px-10 py-14 sm:py-20">
+      {activeSection === 'di-atas-panggung' && (
+      <section id="di-atas-panggung" role="tabpanel" className="bg-[#141413] text-[#F4F3EF] border-b border-white/15">
+        <div className="mx-auto max-w-[1360px] border-x border-white/15 px-5 sm:px-8 lg:px-10 py-10 sm:py-14">
           <SectionHeading
             eyebrow="Di Atas Panggung"
             title="Ansambel & Konduktor"
@@ -596,10 +676,12 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
           </div>
         </div>
       </section>
+      )}
 
       {/* Section 5: "Rangkaian Acara" (How the night runs - Hairline Timetable) */}
-      <section className="bg-[#F4F3EF] border-b border-[#DFDDD6]">
-        <div className="mx-auto max-w-[1360px] border-x border-[#DFDDD6] px-5 sm:px-8 lg:px-10 py-14 sm:py-20">
+      {activeSection === 'rangkaian-acara' && (
+      <section id="rangkaian-acara" role="tabpanel" className="bg-[#F4F3EF] border-b border-[#DFDDD6]">
+        <div className="mx-auto max-w-[1360px] border-x border-[#DFDDD6] px-5 sm:px-8 lg:px-10 py-10 sm:py-14">
           <SectionHeading
             eyebrow="Rangkaian Acara"
             title="Alur malam pertunjukan."
@@ -632,10 +714,12 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
           </div>
         </div>
       </section>
+      )}
 
-      {/* Section 6: Venue, Interactive Seating Plan & "Sebelum Anda Datang" */}
-      <section className="bg-[#F4F3EF] border-b border-[#DFDDD6]">
-        <div className="mx-auto max-w-[1360px] border-x border-[#DFDDD6] px-5 sm:px-8 lg:px-10 py-14 sm:py-20">
+      {/* Section 6: Venue & Interactive Seating Plan */}
+      {activeSection === 'lokasi-denah' && (
+      <section id="lokasi-denah" role="tabpanel" className="bg-[#F4F3EF] border-b border-[#DFDDD6]">
+        <div className="mx-auto max-w-[1360px] border-x border-[#DFDDD6] px-5 sm:px-8 lg:px-10 py-10 sm:py-14">
           <SectionHeading
             eyebrow="Gedung & Denah Kursi"
             title={event.venue}
@@ -734,46 +818,45 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
             </div>
           </div>
 
-          {/* "Sebelum Anda Datang" (Before you go 2x2 Grid) */}
-          <div id="syarat-ketentuan" className="scroll-mt-24 pt-10 border-t border-[#DFDDD6]">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-              <div className="lg:col-span-4">
-                <p className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-[#141413] m-0">
-                  <span className="inline-block w-1.5 h-1.5 bg-[#141413]" aria-hidden="true" />
-                  <span>Tata Tertib</span>
-                </p>
-                <h3 className="mt-2 font-display text-2xl sm:text-3xl font-extrabold tracking-[-0.035em] text-[#141413] m-0">
-                  Sebelum Anda datang
-                </h3>
-              </div>
+        </div>
+      </section>
+      )}
 
-              <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-px bg-[#DFDDD6] border border-[#DFDDD6]">
-                {CONCERT_RULES.map((rule) => {
-                  const Icon = rule.icon;
-                  return (
-                    <div key={rule.title} className="bg-white p-5 sm:p-6">
-                      <div className="flex items-center gap-2 mb-2 text-[#141413]">
-                        <Icon size={15} strokeWidth={2} aria-hidden="true" />
-                        <span className="text-xs font-bold uppercase tracking-wider">
-                          {rule.title}
-                        </span>
-                      </div>
-                      <p className="text-xs sm:text-sm text-[#52514D] leading-relaxed m-0">
-                        {rule.desc}
-                      </p>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+      {/* Section 6B: "Sebelum Anda Datang" (Ketentuan Tab) */}
+      {activeSection === 'syarat-ketentuan' && (
+      <section id="syarat-ketentuan" role="tabpanel" className="bg-[#F4F3EF] border-b border-[#DFDDD6]">
+        <div className="mx-auto max-w-[1360px] border-x border-[#DFDDD6] px-5 sm:px-8 lg:px-10 py-10 sm:py-14">
+          <SectionHeading
+            eyebrow="Tata Tertib"
+            title="Sebelum Anda datang."
+            support="Perhatikan ketentuan resmi pemesanan, jadwal pintu masuk, dan aturan selama pertunjukan berlangsung."
+          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-[#DFDDD6] border border-[#DFDDD6]">
+            {CONCERT_RULES.map((rule) => {
+              const Icon = rule.icon;
+              return (
+                <div key={rule.title} className="bg-white p-5 sm:p-6">
+                  <div className="flex items-center gap-2 mb-2 text-[#141413]">
+                    <Icon size={15} strokeWidth={2} aria-hidden="true" />
+                    <span className="text-xs font-bold uppercase tracking-wider">
+                      {rule.title}
+                    </span>
+                  </div>
+                  <p className="text-xs sm:text-sm text-[#52514D] leading-relaxed m-0">
+                    {rule.desc}
+                  </p>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
+      )}
 
       {/* Section 7: Organizer Strip & "Pertunjukan Lainnya" */}
-      {otherEvents.length > 0 && (
-        <section className="bg-[#F4F3EF]">
-          <div className="mx-auto max-w-[1360px] border-x border-[#DFDDD6] px-5 sm:px-8 lg:px-10 py-14 sm:py-20">
+      {activeSection === 'pertunjukan-lainnya' && otherEvents.length > 0 && (
+        <section id="pertunjukan-lainnya" role="tabpanel" className="bg-[#F4F3EF]">
+          <div className="mx-auto max-w-[1360px] border-x border-[#DFDDD6] px-5 sm:px-8 lg:px-10 py-10 sm:py-14">
             <div className="mb-12 border border-[#DFDDD6] bg-white p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-3 min-w-0">
                 <div className="h-10 w-10 bg-[#141413] text-[#D4FF2A] font-display font-extrabold text-lg flex items-center justify-center shrink-0">

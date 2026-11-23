@@ -143,14 +143,14 @@
     scroll-padding-bottom: 96px;
     background: var(--background);
     color: var(--foreground);
-    overflow-x: hidden;
+    overflow-x: clip;
     width: 100%;
   }
 
   body {
     margin: 0;
     padding: 0;
-    overflow-x: hidden;
+    overflow-x: clip;
     background: var(--background);
     color: var(--foreground);
     font-family: var(--font-sans);
