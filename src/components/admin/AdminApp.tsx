@@ -393,7 +393,7 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
         categoryBadgeColor: eventForm.categoryBadgeColor,
         image:
           eventForm.image ||
-          'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?q=80&w=1000&auto=format&fit=crop',
+          '/images/concerts/symphony-no-5.jpg',
         audioUrl: eventForm.audioUrl || '',
         conductor: eventForm.conductor,
         subtitle: eventForm.subtitle,
@@ -1330,7 +1330,7 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
             />
           )}
           {isSuperAdmin && activeTab === 'AUDIT_LOGS' && (
-            <AuditLogsPanel logs={auditLogsList} isLoading={isLoading} />
+            <AuditLogsPanel logs={auditLogsList} isLoading={isLoading} onNotify={showToast} />
           )}
         </main>
       </SidebarInset>

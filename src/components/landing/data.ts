@@ -134,6 +134,41 @@ export interface AuditLogItem {
   targetResource: string;
   details: string;
   ipAddress: string;
+  category?: 'OPERATIONAL' | 'AUTH' | 'SECURITY' | string;
+  severity?: 'INFO' | 'WARN' | 'CRITICAL' | string;
+  statusCode?: number;
+  userAgent?: string;
+  createdAt: string;
+}
+
+export interface AuditLogSearchParams {
+  category?: string;
+  severity?: string;
+  action?: string;
+  role?: string;
+  ip?: string;
+  search?: string;
+  from?: string;
+  to?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface AuditLogPageData {
+  items: AuditLogItem[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export interface BlockedIPItem {
+  id: string;
+  ipAddress: string;
+  reason: string;
+  blockedBy: string;
+  isAuto: boolean;
+  isActive: boolean;
+  expiresAt?: string;
   createdAt: string;
 }
 
@@ -219,7 +254,7 @@ export const CONCERT_EVENTS: EventItem[] = [
     openGate: "18:00 WIB",
     category: "SIMFONI",
     categoryBadgeColor: "bg-white/10 text-white border-white/20",
-    image: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&w=1200&q=80",
+    image: "/images/concerts/symphony-no-5.jpg",
     audioUrl: "/audio/Ludwig van Beethoven - Symphony n.5 in C minor, Op.67, I.Allegro con brio.mp3",
     organizer: "Royal Philharmonic Foundation & SymphoniaTic Events",
     description: "Mahakarya simfoni Ludwig van Beethoven yang sangat terkenal. Menampilkan irama 4 ketukan ikonik Allegro con brio dengan kolaborasi 90 musisi orkestra simfoni profesional.",
@@ -250,7 +285,7 @@ export const CONCERT_EVENTS: EventItem[] = [
     openGate: "18:30 WIB",
     category: "KAMAR MUSIK",
     categoryBadgeColor: "bg-white/10 text-white border-white/20",
-    image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1200&q=80",
+    image: "/images/concerts/viva-la-vida.jpg",
     audioUrl: "/audio/coldplay - Viva La Vida I COLDPLAY & OASIS AND BAND MUSIC ORCHESTRA FESTA.mp3",
     organizer: "Jakarta Chamber Society & Modern Orchestra",
     description: "Reinterpretasi megah lagu hit Viva La Vida yang dibawakan oleh gabungan tim orkestra simfoni dan ansambel string modern.",
@@ -279,7 +314,7 @@ export const CONCERT_EVENTS: EventItem[] = [
     openGate: "17:30 WIB",
     category: "BALET & OPERA",
     categoryBadgeColor: "bg-white/10 text-white border-white/20",
-    image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80",
+    image: "/images/concerts/winner-takes-it-all.jpg",
     audioUrl: "/audio/ABBA - The Winner Takes It All  Epic Orchestra (2020).mp3",
     organizer: "Indonesian Classical Ballet Theatre",
     description: "Aransemen epik orkestra dari lagu legendaris ABBA 'The Winner Takes It All' diiringi koreografi tarian balet simfoni kolosal.",
@@ -308,7 +343,7 @@ export const CONCERT_EVENTS: EventItem[] = [
     openGate: "17:30 WIB",
     category: "NUSANTARA SYMPHONY",
     categoryBadgeColor: "bg-white/10 text-white border-white/20",
-    image: "https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?auto=format&fit=crop&w=1200&q=80",
+    image: "/images/concerts/laskar-pelangi.jpg",
     audioUrl: "/audio/Laskar Pelangi  TRUST (Trinity Youth Symphony Orchestra).mp3",
     organizer: "TRUST Orchestra & SymphoniaTic Events",
     description: "Aransemen orkestra simfoni memukau dari lagu kebangsaan legendaris Laskar Pelangi karya Nidji, dibawakan secara megah oleh Trinity Youth Symphony Orchestra.",
@@ -327,10 +362,10 @@ export const CONCERT_EVENTS: EventItem[] = [
 ];
 
 export const ARTISTS_LINEUP = [
-  { name: "Royal Philharmonic Orchestra", genre: "Orkestra Simfoni Utama", image: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&w=500&q=80", shows: "12 Konser Musim Ini" },
-  { name: "Vienna Choir Soloists", genre: "Paduan Suara Koral & Opera", image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=500&q=80", shows: "8 Pertunjukan Mandiri" },
-  { name: "Max Richter & Chamber Group", genre: "Neoklasik & Musik Ambient", image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=500&q=80", shows: "6 Tur Spesial" },
-  { name: "London Symphony Orchestra", genre: "Simfoni Internasional", image: "https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?auto=format&fit=crop&w=500&q=80", shows: "15 Jadwal Dunia" },
+  { name: "Royal Philharmonic Orchestra", genre: "Orkestra Simfoni Utama", image: "/images/concerts/symphony-no-5.jpg", shows: "12 Konser Musim Ini" },
+  { name: "Vienna Choir Soloists", genre: "Paduan Suara Koral & Opera", image: "/images/venues/tim-hall.jpg", shows: "8 Pertunjukan Mandiri" },
+  { name: "Max Richter & Chamber Group", genre: "Neoklasik & Musik Ambient", image: "/images/textures/cello-stage.jpg", shows: "6 Tur Spesial" },
+  { name: "London Symphony Orchestra", genre: "Simfoni Internasional", image: "/images/venues/aula-simfonia.jpg", shows: "15 Jadwal Dunia" },
 ];
 
 export const FAQS = [
@@ -447,7 +482,7 @@ export const fetchEventsAPI = async (): Promise<EventItem[]> => {
           openGate: resolvedOpenGate,
           category: evt.category || 'SIMFONI UTAMA',
           categoryBadgeColor: evt.categoryBadgeColor || 'bg-white/10 text-white border-white/20',
-          image: evt.image || 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?q=80&w=1000&auto=format&fit=crop',
+          image: evt.image || '/images/concerts/symphony-no-5.jpg',
           audioUrl: evt.audioUrl || '',
           organizer: evt.organizer || 'SymphoniaTic Production',
           description: evt.description,
@@ -1010,6 +1045,62 @@ export const fetchAdminAuditLogsAPI = async (
   const res = await fetch(`${getApiBaseUrl()}/admin/audit-logs${query}`, {
     headers: getAdminAuthHeaders(),
   });
+  return res.json();
+};
+
+export const searchAdminAuditLogsAPI = async (
+  filters: AuditLogSearchParams = {}
+): Promise<APIResponse<AuditLogPageData>> => {
+  const params = new URLSearchParams();
+  if (filters.category && filters.category !== 'ALL') params.append('category', filters.category);
+  if (filters.severity && filters.severity !== 'ALL') params.append('severity', filters.severity);
+  if (filters.action && filters.action !== 'ALL') params.append('action', filters.action);
+  if (filters.role && filters.role !== 'ALL') params.append('role', filters.role);
+  if (filters.ip?.trim()) params.append('ip', filters.ip.trim());
+  if (filters.search?.trim()) params.append('search', filters.search.trim());
+  if (filters.from) params.append('from', filters.from);
+  if (filters.to) params.append('to', filters.to);
+  if (filters.page && filters.page > 0) params.append('page', String(filters.page));
+  if (filters.limit && filters.limit > 0) params.append('limit', String(filters.limit));
+
+  const query = params.toString() ? `?${params.toString()}` : '';
+  const res = await fetch(`${getApiBaseUrl()}/admin/audit-logs/search${query}`, {
+    headers: getAdminAuthHeaders(),
+  });
+  return res.json();
+};
+
+export const fetchBlockedIPsAPI = async (
+  activeOnly = true
+): Promise<APIResponse<BlockedIPItem[]>> => {
+  const res = await fetch(
+    `${getApiBaseUrl()}/admin/security/blocked-ips?activeOnly=${activeOnly ? 'true' : 'false'}`,
+    { headers: getAdminAuthHeaders() }
+  );
+  return res.json();
+};
+
+export const blockIPAPI = async (payload: {
+  ipAddress: string;
+  reason: string;
+  durationMinutes: number;
+}): Promise<APIResponse<BlockedIPItem>> => {
+  const res = await fetch(`${getApiBaseUrl()}/admin/security/blocked-ips`, {
+    method: 'POST',
+    headers: getAdminAuthHeaders(),
+    body: JSON.stringify(payload),
+  });
+  return res.json();
+};
+
+export const unblockIPAPI = async (idOrIp: string): Promise<APIResponse<null>> => {
+  const res = await fetch(
+    `${getApiBaseUrl()}/admin/security/blocked-ips/${encodeURIComponent(idOrIp)}`,
+    {
+      method: 'DELETE',
+      headers: getAdminAuthHeaders(),
+    }
+  );
   return res.json();
 };
 

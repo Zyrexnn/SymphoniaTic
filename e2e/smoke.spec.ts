@@ -240,27 +240,86 @@ test('admin portal renders 3-role login, super admin supervision panels, and zer
     });
   });
 
-  await page.route('**/api/v1/admin/audit-logs*', async (route) => {
+  const mockAuditItems = [
+    {
+      id: 'audit-smoke-1',
+      actorId: 'staff-superadmin-1',
+      actorName: 'superadmin@symphoniatic.id',
+      actorRole: 'SUPER_ADMIN',
+      action: 'ADMIN_LOGIN',
+      targetResource: 'auth:superadmin',
+      details: 'Login portal operasional sebagai SUPER_ADMIN',
+      ipAddress: '127.0.0.1',
+      category: 'AUTH',
+      severity: 'INFO',
+      statusCode: 200,
+      createdAt: new Date().toISOString(),
+    },
+  ];
+
+  await page.route('**/api/v1/admin/audit-logs/search*', async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify({
         success: true,
-        data: [
-          {
-            id: 'audit-smoke-1',
-            actorId: 'staff-superadmin-1',
-            actorName: 'superadmin@symphoniatic.id',
-            actorRole: 'SUPER_ADMIN',
-            action: 'ADMIN_LOGIN',
-            targetResource: 'auth:superadmin',
-            details: 'Login portal operasional sebagai SUPER_ADMIN',
-            ipAddress: '127.0.0.1',
-            createdAt: new Date().toISOString(),
-          },
-        ],
+        data: { items: mockAuditItems, total: mockAuditItems.length, page: 1, limit: 25 },
       }),
     });
+  });
+
+  await page.route('**/api/v1/admin/audit-logs*', async (route) => {
+    if (route.request().url().includes('/audit-logs/search')) {
+      await route.fallback();
+      return;
+    }
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ success: true, data: mockAuditItems }),
+    });
+  });
+
+  const mockBlockedList: Array<Record<string, unknown>> = [];
+  await page.route('**/api/v1/admin/security/blocked-ips**', async (route) => {
+    const method = route.request().method();
+    if (method === 'GET') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: true, data: mockBlockedList }),
+      });
+      return;
+    }
+    if (method === 'POST') {
+      const payload = route.request().postDataJSON() as { ipAddress: string; reason: string; durationMinutes: number };
+      const created = {
+        id: 'blk-smoke-1',
+        ipAddress: payload.ipAddress,
+        reason: payload.reason,
+        blockedBy: 'superadmin@symphoniatic.id',
+        isAuto: false,
+        isActive: true,
+        createdAt: new Date().toISOString(),
+      };
+      mockBlockedList.push(created);
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: true, message: `Alamat IP ${payload.ipAddress} berhasil diblokir`, data: created }),
+      });
+      return;
+    }
+    if (method === 'DELETE') {
+      const target = decodeURIComponent(route.request().url().split('/').pop() || '');
+      const idx = mockBlockedList.findIndex((item) => item.ipAddress === target || item.id === target);
+      if (idx >= 0) mockBlockedList.splice(idx, 1);
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: true, message: 'Blokir alamat IP berhasil dibuka' }),
+      });
+    }
   });
 
   await page.setViewportSize({ width: 1280, height: 800 });
@@ -286,6 +345,16 @@ test('admin portal renders 3-role login, super admin supervision panels, and zer
 
   await page.getByRole('button', { name: /Log Audit Sistem/i }).click();
   await expect(page.getByRole('table').getByText('ADMIN_LOGIN')).toBeVisible();
+  await expect(page.getByRole('table').getByText('INFO')).toBeVisible();
+
+  await page.getByRole('button', { name: /IP Diblokir/i }).click();
+  await page.getByLabel('Alamat IP').fill('203.0.113.99');
+  await page.getByLabel('Alasan Pemblokiran').fill('Simulasi serangan E2E');
+  await page.getByRole('button', { name: 'Blokir IP' }).click();
+  await expect(page.getByRole('table').getByText('203.0.113.99')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Buka Blokir' }).click();
+  await expect(page.getByText('Tidak Ada IP yang Diblokir')).toBeVisible();
 
   await page.setViewportSize({ width: 375, height: 812 });
   await page.waitForTimeout(200);
