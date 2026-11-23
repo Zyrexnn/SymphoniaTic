@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import { CONCERT_EVENTS, fetchEventsAPI, getUserOrdersAPI, getApiBaseUrl } from './landing/data';
+import { CONCERT_EVENTS, fetchEventsAPI, getUserOrdersAPI, getApiBaseUrl, readPendingBookingDraft } from './landing/data';
 import type { EventItem, TicketCategory, OrderRecord } from './landing/data';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 
@@ -111,6 +111,20 @@ const App: React.FC = () => {
     if (eventsError) return [];
     return CONCERT_EVENTS;
   }, [liveEvents, eventsError]);
+
+  useEffect(() => {
+    if (bookingEvent || displayEvents.length === 0) return;
+    const draft = readPendingBookingDraft();
+    if (!draft) return;
+    const targetEvent = displayEvents.find((e) => String(e.id) === String(draft.eventId));
+    if (!targetEvent) return;
+    const targetCat =
+      targetEvent.categories.find((c) => c.id === draft.categoryId) || targetEvent.categories[0];
+    if (targetCat) {
+      setBookingEvent(targetEvent);
+      setBookingCategory(targetCat);
+    }
+  }, [displayEvents, bookingEvent]);
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 24);

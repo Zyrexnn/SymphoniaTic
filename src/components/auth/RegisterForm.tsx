@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from '@/context/AuthContext';
 import {
   requestRegisterOtpAPI,
   verifyRegisterOtpAPI,
+  resolveSafeAuthRedirect,
 } from '@/components/landing/data';
 import {
   Field,
@@ -88,7 +89,7 @@ function RegisterFormInner() {
       );
       if (res.success && res.data?.token) {
         login(res.data.user, res.data.token);
-        window.location.href = '/dashboard';
+        window.location.href = resolveSafeAuthRedirect('/dashboard');
       } else {
         setError(res.message || 'Verifikasi gagal.');
       }
@@ -97,6 +98,11 @@ function RegisterFormInner() {
     }
     setLoading(false);
   };
+
+  const loginHref =
+    typeof window !== 'undefined' && window.location.search
+      ? `/login${window.location.search}`
+      : '/login';
 
   return (
     <div className="min-h-[100dvh] w-full flex flex-col lg:flex-row bg-[#F4F3EF] text-[#141413]">
@@ -224,7 +230,7 @@ function RegisterFormInner() {
           <div className="mt-10 pt-6 border-t border-[#DFDDD6] text-sm text-[#52514D]">
             Sudah punya akun?{' '}
             <a
-              href="/login"
+              href={loginHref}
               className="text-[#141413] underline underline-offset-4 hover:bg-[#D4FF2A] px-1 font-bold"
             >
               Masuk di sini

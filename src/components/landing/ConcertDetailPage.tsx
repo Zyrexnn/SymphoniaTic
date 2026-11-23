@@ -14,7 +14,7 @@ import {
   Users,
   Sparkles,
 } from 'lucide-react';
-import { CONCERT_EVENTS, fetchEventsAPI, formatIDR, formatSalesEndLabel } from './data';
+import { CONCERT_EVENTS, fetchEventsAPI, formatIDR, formatSalesEndLabel, readPendingBookingDraft } from './data';
 import type { EventItem, TicketCategory, OrderRecord } from './data';
 import { BookingModal, ETicketConfirmation } from './Modals';
 import { Footer } from './Footer';
@@ -32,7 +32,7 @@ interface Props {
 const CONCERT_RULES = [
   {
     title: 'Batas Pemesanan Resmi',
-    desc: 'Maksimal 4 tiket per akun dalam satu transaksi resmi SymphoniaTic.',
+    desc: 'Maksimal 4 tiket per akun anggota (atau 2 tiket untuk tamu tanpa login) dalam satu transaksi resmi SymphoniaTic.',
     icon: Ticket,
   },
   {
@@ -129,7 +129,22 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
   const categories = event?.categories || [];
   const selectedCat = categories.find((c) => c.id === selectedCatId) || categories[0];
   const selectedRemaining = selectedCat ? getCatRemaining(selectedCat) : 0;
-  const maxAllowed = Math.min(4, Math.max(0, selectedRemaining));
+  const userMaxLimit = user ? 4 : 2;
+  const maxAllowed = Math.min(userMaxLimit, Math.max(0, selectedRemaining));
+
+  useEffect(() => {
+    if (!event || bookingEvent) return;
+    const draft = readPendingBookingDraft(String(event.id));
+    if (!draft) return;
+    const matchedCat =
+      event.categories.find((c) => c.id === draft.categoryId) || event.categories[0];
+    if (matchedCat) {
+      setSelectedCatId(matchedCat.id);
+      setBookingEvent(event);
+      setBookingCategory(matchedCat);
+      setBookingQuantity(Math.min(user ? 4 : 2, Math.max(1, draft.quantity || 1)));
+    }
+  }, [event, bookingEvent, user]);
 
   useEffect(() => {
     if (maxAllowed > 0 && qty > maxAllowed) {
@@ -332,7 +347,7 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
               const isSelected = selectedCat?.id === cat.id;
               const isDarkTier = idx === 0 && !isSelected && !catSoldOut;
               const tierMeta = tierMap.get(cat.id);
-              const catMax = Math.min(4, Math.max(0, rem));
+              const catMax = Math.min(userMaxLimit, Math.max(0, rem));
 
               return (
                 <div

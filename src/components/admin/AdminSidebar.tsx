@@ -9,6 +9,7 @@ import {
   RotateCcw,
   QrCode,
   ShieldCheck,
+  Tag,
 } from 'lucide-react';
 import { formatIDR, type AdminRole } from '../landing/data';
 import {
@@ -28,7 +29,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { AdminThemeToggle } from './AdminThemeContext';
 
-export type TabId = 'METRICS' | 'EVENTS' | 'ORDERS' | 'REFUNDS' | 'SCANNER';
+export type TabId = 'METRICS' | 'EVENTS' | 'PROMOS' | 'ORDERS' | 'REFUNDS' | 'SCANNER';
 
 interface AdminSidebarProps {
   activeTab: TabId;
@@ -36,6 +37,7 @@ interface AdminSidebarProps {
   onTabChange: (tab: TabId) => void;
   onLogout: () => void;
   eventsCount: number;
+  promosCount?: number;
   ordersCount: number;
   refundsCount?: number;
   totalRevenue: number;
@@ -53,6 +55,7 @@ const ALL_NAV_ITEMS: {
   { id: 'ORDERS', label: 'Manajemen Pesanan', shortLabel: 'Pesanan', icon: Layers, roles: ['ADMIN', 'PETUGAS'], group: 'GATE' },
   { id: 'METRICS', label: 'Metrik & Finansial', shortLabel: 'Metrik', icon: BarChart3, roles: ['ADMIN'], group: 'OPERASI' },
   { id: 'EVENTS', label: 'Postingan Konser', shortLabel: 'Konser', icon: Ticket, roles: ['ADMIN'], group: 'OPERASI' },
+  { id: 'PROMOS', label: 'Kode Promo', shortLabel: 'Promo', icon: Tag, roles: ['ADMIN'], group: 'OPERASI' },
   { id: 'REFUNDS', label: 'Permohonan Refund', shortLabel: 'Refund', icon: RotateCcw, roles: ['ADMIN'], group: 'OPERASI' },
 ];
 
@@ -62,6 +65,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   onTabChange,
   onLogout,
   eventsCount,
+  promosCount,
   ordersCount,
   refundsCount,
   totalRevenue,
@@ -75,6 +79,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
 
   const getBadgeText = (id: TabId): string => {
     if (id === 'EVENTS') return `${eventsCount}`;
+    if (id === 'PROMOS') return `${promosCount || 0}`;
     if (id === 'ORDERS') return `${ordersCount}`;
     if (id === 'REFUNDS') return `${refundsCount || 0}`;
     if (id === 'METRICS' && totalRevenue) return formatIDR(totalRevenue);
@@ -276,7 +281,7 @@ export const MobileBottomNav: React.FC<{
   return (
     <nav
       aria-label="Navigasi cepat portal"
-      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-border flex items-center justify-around py-1 px-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))]"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-border flex items-center justify-around overflow-x-auto no-scrollbar py-1 px-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))]"
     >
       {visibleNavItems.map((item) => {
         const Icon = item.icon;

@@ -5,6 +5,7 @@ import {
   passwordLoginAPI,
   requestLoginOtpAPI,
   verifyLoginOtpAPI,
+  resolveSafeAuthRedirect,
 } from '@/components/landing/data';
 import {
   Field,
@@ -68,7 +69,7 @@ function LoginFormInner() {
       const res = await passwordLoginAPI(email.trim(), password);
       if (res.success && res.data?.token) {
         login(res.data.user, res.data.token);
-        window.location.href = '/dashboard';
+        window.location.href = resolveSafeAuthRedirect('/dashboard');
       } else {
         setError(res.message || 'Email atau password salah.');
       }
@@ -108,7 +109,7 @@ function LoginFormInner() {
       const res = await verifyLoginOtpAPI(otpEmail.trim(), otpCode.trim());
       if (res.success && res.data?.token) {
         login(res.data.user, res.data.token);
-        window.location.href = '/dashboard';
+        window.location.href = resolveSafeAuthRedirect('/dashboard');
       } else {
         setError(res.message || 'Kode OTP tidak valid.');
       }
@@ -117,6 +118,11 @@ function LoginFormInner() {
     }
     setLoading(false);
   };
+
+  const registerHref =
+    typeof window !== 'undefined' && window.location.search
+      ? `/register${window.location.search}`
+      : '/register';
 
   return (
     <div className="min-h-[100dvh] w-full flex flex-col lg:flex-row bg-[#F4F3EF] text-[#141413]">
@@ -290,7 +296,7 @@ function LoginFormInner() {
             </a>
             <span>
               Belum punya akun?{' '}
-              <a href="/register" className="text-[#141413] underline underline-offset-4 hover:bg-[#D4FF2A] px-1 font-bold">
+              <a href={registerHref} className="text-[#141413] underline underline-offset-4 hover:bg-[#D4FF2A] px-1 font-bold">
                 Daftar di sini
               </a>
             </span>

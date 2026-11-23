@@ -15,10 +15,22 @@ import {
   MapPin,
   Clock,
   ExternalLink,
+  Tag,
+  LogIn,
 } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
-import { formatIDR, createOrderAPI, lookupTicketAPI, getEventSeatsAPI } from './data';
-import type { EventItem, TicketCategory, OrderRecord, SeatItem } from './data';
+import {
+  formatIDR,
+  createOrderAPI,
+  lookupTicketAPI,
+  getEventSeatsAPI,
+  validatePromoAPI,
+  fetchActivePromosAPI,
+  savePendingBookingDraft,
+  readPendingBookingDraft,
+  clearPendingBookingDraft,
+} from './data';
+import type { EventItem, TicketCategory, OrderRecord, SeatItem, ValidatePromoResult, PromotionItem } from './data';
 import { useAuth } from '@/context/AuthContext';
 import { resolveOrderTickets, downloadOrderPNG, downloadOrderPDF } from '@/lib/ticketCanvas';
 import { FullscreenWorkspace } from '@/components/ui/fullscreen-sheet';
@@ -43,7 +55,15 @@ export const BookingModal: React.FC<BookingProps> = ({
 }) => {
   const { user } = useAuth();
   const formId = useId();
+  const [initialDraft] = useState(() => readPendingBookingDraft(String(event.id)));
   const [selectedCat, setSelectedCat] = useState<TicketCategory>(() => {
+    if (initialDraft?.categoryId) {
+      const draftedCat = event.categories.find((c) => c.id === initialDraft.categoryId);
+      if (draftedCat) {
+        const draftedRem = typeof draftedCat.remainingQuota === 'number' ? draftedCat.remainingQuota : draftedCat.quota;
+        if (draftedRem > 0) return draftedCat;
+      }
+    }
     const initRem = typeof initialCategory.remainingQuota === 'number' ? initialCategory.remainingQuota : initialCategory.quota;
     if (initRem > 0) return initialCategory;
     const firstAvailable = event.categories.find((c) => {
@@ -52,16 +72,39 @@ export const BookingModal: React.FC<BookingProps> = ({
     });
     return firstAvailable || initialCategory;
   });
-  const [quantity, setQuantity] = useState(initialQuantity);
+  const [quantity, setQuantity] = useState(() => initialDraft?.quantity || initialQuantity);
   const [userName, setUserName] = useState(user?.name || '');
   const [userEmail, setUserEmail] = useState(user?.email || '');
-  const [attendeeNames, setAttendeeNames] = useState<string[]>([]);
+  const [attendeeNames, setAttendeeNames] = useState<string[]>(() => initialDraft?.attendeeNames || []);
   const [eventSeats, setEventSeats] = useState<SeatItem[]>([]);
   const [seatsLoading, setSeatsLoading] = useState(true);
   const [seatsError, setSeatsError] = useState('');
-  const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
+  const [selectedSeats, setSelectedSeats] = useState<string[]>(() => initialDraft?.selectedSeats || []);
+  const [promoCodeInput, setPromoCodeInput] = useState(() => initialDraft?.promoCodeInput || '');
+  const [appliedPromo, setAppliedPromo] = useState<ValidatePromoResult | null>(null);
+  const [activePromos, setActivePromos] = useState<PromotionItem[]>([]);
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [promoError, setPromoError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (initialDraft) {
+      clearPendingBookingDraft();
+    }
+  }, [initialDraft]);
+
+  useEffect(() => {
+    let mounted = true;
+    fetchActivePromosAPI()
+      .then((list) => {
+        if (mounted) setActivePromos(list);
+      })
+      .catch(() => {});
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const loadEventSeats = async () => {
     setSeatsLoading(true);
@@ -148,13 +191,82 @@ export const BookingModal: React.FC<BookingProps> = ({
 
   const selectedRemaining = getRemainingQuota(selectedCat);
   const isSelectedSoldOut = selectedRemaining <= 0;
-  const maxAllowedTickets = Math.min(4, Math.max(0, selectedRemaining));
+  const userMaxLimit = user ? 4 : 2;
+  const maxAllowedTickets = Math.min(userMaxLimit, Math.max(0, selectedRemaining));
 
   useEffect(() => {
     if (maxAllowedTickets > 0 && quantity > maxAllowedTickets) {
       setQuantity(maxAllowedTickets);
     }
   }, [maxAllowedTickets, quantity]);
+
+  const rawSubtotal = selectedCat.price * quantity;
+
+  const applyPromoCode = async (codeToApply: string, targetSubtotal: number) => {
+    const cleanCode = codeToApply.trim().toUpperCase();
+    if (!cleanCode) {
+      setPromoError('Masukkan kode promo terlebih dahulu.');
+      return;
+    }
+    setPromoLoading(true);
+    setPromoError(null);
+    try {
+      const res = await validatePromoAPI(cleanCode, targetSubtotal);
+      if (res.success && res.data?.valid) {
+        setAppliedPromo(res.data);
+        setPromoCodeInput(res.data.code);
+      } else {
+        setAppliedPromo(null);
+        setPromoError(res.message || 'Kode promo tidak berlaku untuk transaksi ini.');
+      }
+    } catch {
+      setPromoError('Gagal memvalidasi kode promo. Periksa koneksi Anda.');
+    } finally {
+      setPromoLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user && initialDraft?.promoCodeInput?.trim()) {
+      applyPromoCode(initialDraft.promoCodeInput, rawSubtotal);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (!appliedPromo) return;
+    let active = true;
+    validatePromoAPI(appliedPromo.code, rawSubtotal)
+      .then((res) => {
+        if (!active) return;
+        if (res.success && res.data?.valid) {
+          setAppliedPromo(res.data);
+          setPromoError(null);
+        } else {
+          setAppliedPromo(null);
+          setPromoError(res.message || 'Syarat promo tidak terpenuhi setelah perubahan pesanan.');
+        }
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [selectedCat.id, quantity]);
+
+  const handleSaveDraftAndLogin = () => {
+    savePendingBookingDraft({
+      eventId: String(event.id),
+      categoryId: selectedCat.id,
+      quantity,
+      selectedSeats,
+      attendeeNames,
+      promoCodeInput: promoCodeInput.trim(),
+    });
+    const currentPath =
+      typeof window !== 'undefined'
+        ? `${window.location.pathname}${window.location.search}`
+        : '/';
+    window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -189,10 +301,12 @@ export const BookingModal: React.FC<BookingProps> = ({
         quantity,
         userName: userName.trim(),
         userEmail: userEmail.trim(),
+        promoCode: appliedPromo ? appliedPromo.code : undefined,
         seatNumbers: selectedSeats.length > 0 ? selectedSeats : undefined,
         attendeeNames: resolvedAttendees,
       });
       if (res.success && res.data) {
+        clearPendingBookingDraft();
         onSubmit({
           ...res.data,
           openGate: res.data.openGate || event.openGate,
@@ -209,7 +323,8 @@ export const BookingModal: React.FC<BookingProps> = ({
     }
   };
 
-  const totalPrice = selectedCat.price * quantity;
+  const discountAmount = appliedPromo?.discountAmount ?? 0;
+  const totalPrice = Math.max(0, rawSubtotal - discountAmount);
   const tierMap = useMemo(() => getCategoryTierMap(event.categories || []), [event.categories]);
   const selectedTierMeta = tierMap.get(selectedCat.id);
   const seatsReady = eventSeats.length === 0 || selectedSeats.length === quantity;
@@ -422,11 +537,26 @@ export const BookingModal: React.FC<BookingProps> = ({
             </section>
 
             <section className="rounded-none border border-[#DFDDD6] bg-white p-5 sm:p-6 space-y-4">
-              <div>
-                <h3 className="text-sm font-bold uppercase tracking-wider text-[#141413] m-0">2. Jumlah Tiket</h3>
-                <p className="text-xs text-[#52514D] mt-0.5 m-0">
-                  {isSelectedSoldOut ? 'Kategori ini sedang habis' : `Maksimal ${maxAllowedTickets} tiket per transaksi`}
-                </p>
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-[#141413] m-0">2. Jumlah Tiket</h3>
+                  <p className="text-xs text-[#52514D] mt-0.5 m-0">
+                    {isSelectedSoldOut
+                      ? 'Kategori ini sedang habis'
+                      : user
+                      ? `Kuota Anggota: maksimal ${maxAllowedTickets} tiket per transaksi`
+                      : `Pembelian Tamu: maksimal ${maxAllowedTickets} tiket per transaksi`}
+                  </p>
+                </div>
+                <span
+                  className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 border ${
+                    user
+                      ? 'bg-[#D4FF2A] text-[#141413] border-[#141413]'
+                      : 'bg-[#F4F3EF] text-[#52514D] border-[#DFDDD6]'
+                  }`}
+                >
+                  {user ? 'Anggota (Maks 4)' : 'Tamu (Maks 2)'}
+                </span>
               </div>
 
               {isSelectedSoldOut ? (
@@ -434,30 +564,44 @@ export const BookingModal: React.FC<BookingProps> = ({
                   Kategori kursi ini telah habis dipesan. Silakan pilih kategori lain.
                 </div>
               ) : (
-                <div className="grid grid-cols-4 gap-2">
-                  {[1, 2, 3, 4].map((num) => {
-                    const isDisabled = num > maxAllowedTickets;
-                    const active = quantity === num;
-                    return (
+                <>
+                  <div className="grid grid-cols-4 gap-2">
+                    {[1, 2, 3, 4].map((num) => {
+                      const isDisabled = num > maxAllowedTickets;
+                      const active = quantity === num;
+                      return (
+                        <button
+                          type="button"
+                          key={num}
+                          disabled={isDisabled}
+                          aria-pressed={active}
+                          onClick={() => setQuantity(num)}
+                          className={`min-h-[48px] py-2.5 rounded-none text-sm font-bold transition-colors border tabular-nums ${
+                            isDisabled
+                              ? 'opacity-45 bg-[#EAE8E1] border-[#DFDDD6] text-[#6E6D68] cursor-not-allowed'
+                              : active
+                              ? 'bg-[#141413] text-[#D4FF2A] border-[#141413]'
+                              : 'bg-[#F4F3EF] text-[#141413] border-[#DFDDD6] hover:border-[#141413]'
+                          }`}
+                        >
+                          {num}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {!user && selectedRemaining > 2 && (
+                    <div className="p-3 bg-[#F4F3EF] border border-[#DFDDD6] rounded-none flex flex-wrap items-center justify-between gap-2 text-xs text-[#52514D]">
+                      <span>Butuh 3 atau 4 tiket sekaligus? Masuk ke akun untuk membuka kuota penuh hingga 4 kursi.</span>
                       <button
                         type="button"
-                        key={num}
-                        disabled={isDisabled}
-                        aria-pressed={active}
-                        onClick={() => setQuantity(num)}
-                        className={`min-h-[48px] py-2.5 rounded-none text-sm font-bold transition-colors border tabular-nums ${
-                          isDisabled
-                            ? 'opacity-45 bg-[#EAE8E1] border-[#DFDDD6] text-[#6E6D68]'
-                            : active
-                            ? 'bg-[#141413] text-[#D4FF2A] border-[#141413]'
-                            : 'bg-[#F4F3EF] text-[#141413] border-[#DFDDD6] hover:border-[#141413]'
-                        }`}
+                        onClick={handleSaveDraftAndLogin}
+                        className="font-bold text-[#141413] underline underline-offset-4 hover:bg-[#D4FF2A] px-1.5 py-0.5 transition-colors shrink-0"
                       >
-                        {num}
+                        Masuk Sekarang
                       </button>
-                    );
-                  })}
-                </div>
+                    </div>
+                  )}
+                </>
               )}
             </section>
 
@@ -528,6 +672,160 @@ export const BookingModal: React.FC<BookingProps> = ({
                   </div>
                 </div>
               )}
+            </section>
+
+            <section className="rounded-none border border-[#DFDDD6] bg-white p-5 sm:p-6 space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-[#141413] m-0 flex items-center gap-2">
+                    <Tag className="w-4 h-4 text-[#141413]" aria-hidden="true" />
+                    <span>4. Kode Promo &amp; Voucher Anggota</span>
+                  </h3>
+                  <p className="text-xs text-[#52514D] mt-0.5 m-0">
+                    Potongan harga otomatis berlaku bagi pemegang akun SymphoniaTic.
+                  </p>
+                </div>
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 bg-[#D4FF2A] text-[#141413] border border-[#141413]">
+                  Khusus Anggota
+                </span>
+              </div>
+
+              {(() => {
+                const publicPromos = activePromos.filter((p) => !p.isMemberOnly);
+                const memberPromos = activePromos.filter((p) => p.isMemberOnly);
+                const visibleChips = user ? activePromos : publicPromos;
+
+                return (
+                  <div className="space-y-3">
+                    {!user && (
+                      <div className="p-4 bg-[#F4F3EF] border border-[#141413] rounded-none space-y-3">
+                        <p className="text-xs sm:text-sm text-[#141413] m-0 leading-relaxed">
+                          {memberPromos.length > 0 ? (
+                            <>
+                              Masuk atau daftar akun untuk mengklaim promo anggota aktif:{' '}
+                              {memberPromos.slice(0, 3).map((p, idx) => (
+                                <React.Fragment key={p.id}>
+                                  {idx > 0 && ', '}
+                                  <strong className="font-mono bg-[#D4FF2A] px-1">{p.code}</strong>
+                                </React.Fragment>
+                              ))}
+                              . Pilihan kursi Anda akan tetap tersimpan.
+                            </>
+                          ) : (
+                            'Anda sedang memesan sebagai tamu. Masuk atau daftar akun untuk memakai kode promo anggota yang berlaku. Pilihan kursi Anda akan tetap tersimpan.'
+                          )}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={handleSaveDraftAndLogin}
+                          className="min-h-[44px] px-4 py-2.5 bg-[#141413] text-[#F4F3EF] hover:bg-[#2A2A28] text-xs font-bold uppercase tracking-wider rounded-none inline-flex items-center gap-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413]"
+                        >
+                          <LogIn className="w-4 h-4 text-[#D4FF2A]" aria-hidden="true" />
+                          <span>Masuk untuk Pakai Promo</span>
+                        </button>
+                      </div>
+                    )}
+
+                    {(user || publicPromos.length > 0) && (
+                      <div className="space-y-3">
+                        <div className="flex flex-col sm:flex-row gap-2">
+                          <input
+                            type="text"
+                            value={promoCodeInput}
+                            onChange={(e) => {
+                              setPromoCodeInput(e.target.value.toUpperCase());
+                              if (promoError) setPromoError(null);
+                            }}
+                            placeholder={
+                              visibleChips.length > 0
+                                ? `Masukkan kode promo (misal: ${visibleChips[0].code})`
+                                : 'Masukkan kode promo Anda'
+                            }
+                            disabled={promoLoading}
+                            className={`${fieldInputLight} flex-1 font-mono uppercase`}
+                            aria-label="Kode promo"
+                          />
+                          {appliedPromo ? (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setAppliedPromo(null);
+                                setPromoCodeInput('');
+                                setPromoError(null);
+                              }}
+                              className="min-h-[44px] px-5 py-2.5 rounded-none border border-[#141413] bg-white text-[#141413] hover:bg-[#EAE8E1] text-xs font-bold uppercase tracking-wider shrink-0 transition-colors"
+                            >
+                              Hapus
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              disabled={promoLoading || !promoCodeInput.trim()}
+                              onClick={() => applyPromoCode(promoCodeInput, rawSubtotal)}
+                              className="min-h-[44px] px-5 py-2.5 rounded-none bg-[#141413] text-[#F4F3EF] hover:bg-[#2A2A28] disabled:opacity-45 text-xs font-bold uppercase tracking-wider shrink-0 inline-flex items-center justify-center gap-2 transition-colors"
+                            >
+                              {promoLoading ? (
+                                <>
+                                  <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
+                                  <span>Memeriksa</span>
+                                </>
+                              ) : (
+                                <span>Terapkan</span>
+                              )}
+                            </button>
+                          )}
+                        </div>
+
+                        {!appliedPromo && visibleChips.length > 0 && (
+                          <div className="flex flex-wrap items-center gap-2 text-xs text-[#52514D]">
+                            <span>Promo aktif:</span>
+                            {visibleChips.map((promo) => (
+                              <button
+                                key={promo.id}
+                                type="button"
+                                onClick={() => {
+                                  setPromoCodeInput(promo.code);
+                                  applyPromoCode(promo.code, rawSubtotal);
+                                }}
+                                title={promo.description || promo.code}
+                                className="min-h-[32px] px-2.5 py-1 border border-[#DFDDD6] bg-[#F4F3EF] hover:border-[#141413] hover:bg-[#D4FF2A] text-[#141413] font-mono font-bold text-[11px] rounded-none transition-colors"
+                              >
+                                {promo.code} (
+                                {promo.discountType === 'PERCENTAGE'
+                                  ? `${promo.discountValue}%`
+                                  : formatIDR(promo.discountValue)}
+                                )
+                              </button>
+                            ))}
+                          </div>
+                        )}
+
+                        {promoError && (
+                          <div role="alert" className="p-3 bg-[#C81E1E]/10 border border-[#C81E1E] text-[#C81E1E] text-xs rounded-none flex items-center gap-2">
+                            <AlertCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
+                            <span>{promoError}</span>
+                          </div>
+                        )}
+
+                        {appliedPromo && (
+                          <div className="p-3.5 bg-[#156E3F]/10 border border-[#156E3F] text-[#156E3F] text-xs rounded-none flex items-center justify-between gap-3">
+                            <div className="flex items-start gap-2">
+                              <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" aria-hidden="true" />
+                              <div>
+                                <span className="font-bold font-mono block">{appliedPromo.code} Aktif</span>
+                                <span className="text-[#141413]">{appliedPromo.description}</span>
+                              </div>
+                            </div>
+                            <span className="font-mono font-bold tabular-nums shrink-0">
+                              -{formatIDR(appliedPromo.discountAmount)}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
             </section>
           </div>
 
@@ -608,9 +906,23 @@ export const BookingModal: React.FC<BookingProps> = ({
                   </div>
                 </div>
 
-                <div className="border-t border-[#DFDDD6] pt-4 flex items-center justify-between gap-3">
-                  <span className="text-sm font-bold text-[#52514D]">Total Pembayaran</span>
-                  <span className="font-display text-2xl font-extrabold text-[#141413] tabular-nums">{formatIDR(totalPrice)}</span>
+                <div className="border-t border-[#DFDDD6] pt-4 space-y-2">
+                  {appliedPromo && (
+                    <>
+                      <div className="flex justify-between gap-3 text-xs text-[#52514D]">
+                        <span>Subtotal</span>
+                        <span className="font-mono tabular-nums">{formatIDR(rawSubtotal)}</span>
+                      </div>
+                      <div className="flex justify-between gap-3 text-xs font-bold text-[#156E3F]">
+                        <span>Diskon Promo ({appliedPromo.code})</span>
+                        <span className="font-mono tabular-nums">-{formatIDR(discountAmount)}</span>
+                      </div>
+                    </>
+                  )}
+                  <div className="flex items-center justify-between gap-3 pt-1">
+                    <span className="text-sm font-bold text-[#52514D]">Total Pembayaran</span>
+                    <span className="font-display text-2xl font-extrabold text-[#141413] tabular-nums">{formatIDR(totalPrice)}</span>
+                  </div>
                 </div>
 
                 <button
@@ -778,6 +1090,11 @@ export const ETicketConfirmation: React.FC<ConfirmProps> = ({ order, onClose }) 
                 <div>
                   <span className="text-xs text-[#6E6D68] block mb-0.5">Total Pembayaran</span>
                   <span className="font-bold text-[#141413] tabular-nums">{formatIDR(order.totalPrice)}</span>
+                  {order.discountAmount && order.discountAmount > 0 ? (
+                    <span className="block text-[11px] font-mono text-[#156E3F] font-semibold mt-0.5">
+                      Hemat {formatIDR(order.discountAmount)} ({order.promoCode})
+                    </span>
+                  ) : null}
                 </div>
               </div>
             </div>

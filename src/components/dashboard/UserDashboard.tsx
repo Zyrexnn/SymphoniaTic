@@ -2,15 +2,15 @@ import React, { useEffect, useState, useCallback, useMemo, useId } from 'react';
 import {
   LayoutDashboard, Ticket as TicketIcon, RefreshCw, LogOut, ArrowLeft,
   ShoppingBag, CalendarClock, CheckCircle2, AlertCircle, Loader2, Download, Copy, Check, QrCode,
-  ExternalLink, Eye, EyeOff, ShieldCheck, Lock, UserCheck, ChevronRight
+  ExternalLink, Eye, EyeOff, ShieldCheck, Lock, UserCheck, ChevronRight, Tag
 } from 'lucide-react';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { QRCodeCanvas, QRCodeSVG } from 'qrcode.react';
 import {
   getUserDashboardSummaryAPI, getUserOrdersAPI, getUserRefundsAPI,
-  updateUserProfileAPI, changeUserPasswordAPI, formatIDR,
+  updateUserProfileAPI, changeUserPasswordAPI, submitUserRefundAPI, fetchActivePromosAPI, formatIDR,
 } from '@/components/landing/data';
-import type { UserDashboardSummary, OrderRecord, RefundRecord } from '@/components/landing/data';
+import type { UserDashboardSummary, OrderRecord, RefundRecord, PromotionItem } from '@/components/landing/data';
 import { resolveOrderTickets, downloadOrderPNG, downloadOrderPDF } from '@/lib/ticketCanvas';
 import { FullscreenWorkspace } from '@/components/ui/fullscreen-sheet';
 import { TextInputField, fieldInputLight, FormField } from '@/components/ui/form-controls';
@@ -256,7 +256,147 @@ function TicketModal({ order, onClose }: { order: OrderRecord; onClose: () => vo
   );
 }
 
-function TicketCard({ order, onOpenModal }: { order: OrderRecord; onOpenModal: (order: OrderRecord) => void }) {
+function DirectRefundModal({
+  order,
+  onClose,
+  onSubmitted,
+}: {
+  order: OrderRecord;
+  onClose: () => void;
+  onSubmitted: (message: string) => void;
+}) {
+  const [bankName, setBankName] = useState('');
+  const [accountNumber, setAccountNumber] = useState('');
+  const [accountHolder, setAccountHolder] = useState(order.userName || '');
+  const [reason, setReason] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    if (!bankName.trim() || !accountNumber.trim() || !accountHolder.trim()) {
+      setError('Nama bank, nomor rekening, dan nama pemilik rekening wajib diisi.');
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const res = await submitUserRefundAPI(order.orderCode, {
+        bankName: bankName.trim(),
+        accountNumber: accountNumber.trim(),
+        accountHolder: accountHolder.trim(),
+        reason: reason.trim(),
+      });
+      if (res.success) {
+        onSubmitted(res.message || 'Pengajuan refund berhasil dikirim tanpa perlu verifikasi OTP tambahan.');
+      } else {
+        setError(res.message || 'Gagal mengajukan pengembalian dana.');
+      }
+    } catch {
+      setError('Gagal terhubung ke server backend.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <FullscreenWorkspace
+      isOpen={true}
+      onClose={onClose}
+      theme="light"
+      eyebrow="Refund 1-Klik Anggota"
+      title={`Pengembalian Dana ${order.orderCode}`}
+      subtitle={`${order.eventTitle} · ${formatIDR(order.totalPrice)}`}
+      maxWidthClass="max-w-xl"
+      backLabel="Batal"
+    >
+      <form onSubmit={handleSubmit} className="bg-white border border-[#141413] rounded-none p-6 sm:p-8 space-y-5">
+        <div className="p-3.5 bg-[#F4F3EF] border border-[#DFDDD6] rounded-none flex items-start gap-2.5 text-xs text-[#52514D]">
+          <ShieldCheck className="w-4 h-4 text-[#156E3F] shrink-0 mt-0.5" aria-hidden="true" />
+          <span>
+            Karena Anda masuk sebagai anggota terverifikasi, permohonan refund diproses langsung tanpa kode OTP email tambahan.
+          </span>
+        </div>
+
+        {error && (
+          <div role="alert" className="p-3.5 bg-[#C81E1E]/10 border border-[#C81E1E] text-[#C81E1E] text-xs rounded-none flex items-start gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" aria-hidden="true" />
+            <span>{error}</span>
+          </div>
+        )}
+
+        <TextInputField
+          theme="light"
+          label="Nama Bank Tujuan"
+          required
+          placeholder="Contoh: BCA, Mandiri, BNI, BRI"
+          value={bankName}
+          onValueChange={setBankName}
+        />
+
+        <TextInputField
+          theme="light"
+          label="Nomor Rekening"
+          required
+          placeholder="Masukkan nomor rekening penerima"
+          value={accountNumber}
+          onValueChange={(val) => setAccountNumber(val.replace(/[^\d\s-]/g, ''))}
+        />
+
+        <TextInputField
+          theme="light"
+          label="Nama Pemilik Rekening"
+          required
+          placeholder="Nama sesuai buku tabungan"
+          value={accountHolder}
+          onValueChange={setAccountHolder}
+        />
+
+        <TextInputField
+          theme="light"
+          label="Alasan Pengajuan Refund (Opsional)"
+          placeholder="Contoh: Perubahan jadwal pribadi"
+          value={reason}
+          onValueChange={setReason}
+        />
+
+        <div className="pt-2 flex flex-col sm:flex-row gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="min-h-[46px] flex-1 py-2.5 px-4 text-xs font-bold uppercase tracking-wider text-[#141413] bg-[#F4F3EF] border border-[#141413] hover:bg-[#EAE8E1] rounded-none transition-colors"
+          >
+            Batal
+          </button>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="min-h-[46px] flex-1 py-2.5 px-4 text-xs font-bold uppercase tracking-wider text-[#141413] bg-[#D4FF2A] border border-[#141413] hover:bg-[#C2EE1A] disabled:opacity-45 rounded-none inline-flex items-center justify-center gap-2 transition-colors"
+          >
+            {submitting ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+                <span>Mengirim...</span>
+              </>
+            ) : (
+              <span>Kirim Pengajuan Refund</span>
+            )}
+          </button>
+        </div>
+      </form>
+    </FullscreenWorkspace>
+  );
+}
+
+function TicketCard({
+  order,
+  onOpenModal,
+  onRequestRefund,
+}: {
+  order: OrderRecord;
+  onOpenModal: (order: OrderRecord) => void;
+  onRequestRefund?: (order: OrderRecord) => void;
+}) {
   const [downloading, setDownloading] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -302,6 +442,12 @@ function TicketCard({ order, onOpenModal }: { order: OrderRecord; onOpenModal: (
           </span>
         </div>
         <div className="flex flex-wrap items-center gap-2.5">
+          {order.discountAmount && order.discountAmount > 0 ? (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-mono font-bold border border-[#156E3F]/30 bg-[#156E3F]/10 text-[#156E3F] rounded-none">
+              <Tag className="w-3 h-3" aria-hidden="true" />
+              {order.promoCode ? `${order.promoCode} (-${formatIDR(order.discountAmount)})` : `Hemat ${formatIDR(order.discountAmount)}`}
+            </span>
+          ) : null}
           <span className="text-sm font-mono text-[#141413] font-bold tabular-nums">{formatIDR(order.totalPrice)}</span>
           <StatusBadge status={order.status} />
         </div>
@@ -389,12 +535,12 @@ function TicketCard({ order, onOpenModal }: { order: OrderRecord; onOpenModal: (
         </div>
       </div>
 
-      <div className="p-4 bg-[#F4F3EF] border-t border-[#DFDDD6] grid grid-cols-2 gap-2.5">
+      <div className="p-4 bg-[#F4F3EF] border-t border-[#DFDDD6] flex flex-wrap gap-2.5">
         <button
           type="button"
           onClick={dlPNG}
           disabled={!!downloading}
-          className="min-h-[44px] inline-flex items-center justify-center gap-1.5 py-2.5 text-xs font-bold uppercase tracking-wider text-[#141413] bg-white border border-[#141413] hover:bg-[#EAE8E1] rounded-none transition-colors disabled:opacity-40"
+          className="flex-1 min-w-[110px] min-h-[44px] inline-flex items-center justify-center gap-1.5 py-2.5 text-xs font-bold uppercase tracking-wider text-[#141413] bg-white border border-[#141413] hover:bg-[#EAE8E1] rounded-none transition-colors disabled:opacity-40"
         >
           <Download className="w-3.5 h-3.5" strokeWidth={1.8} aria-hidden="true" />
           <span>{downloading === 'PNG' ? '...' : 'PNG Pass'}</span>
@@ -403,11 +549,21 @@ function TicketCard({ order, onOpenModal }: { order: OrderRecord; onOpenModal: (
           type="button"
           onClick={dlPDF}
           disabled={!!downloading}
-          className="min-h-[44px] inline-flex items-center justify-center gap-1.5 py-2.5 text-xs font-bold uppercase tracking-wider text-[#141413] bg-[#D4FF2A] border border-[#141413] hover:bg-[#C2EE1A] rounded-none transition-colors disabled:opacity-40"
+          className="flex-1 min-w-[110px] min-h-[44px] inline-flex items-center justify-center gap-1.5 py-2.5 text-xs font-bold uppercase tracking-wider text-[#141413] bg-[#D4FF2A] border border-[#141413] hover:bg-[#C2EE1A] rounded-none transition-colors disabled:opacity-40"
         >
           <Download className="w-3.5 h-3.5" strokeWidth={1.8} aria-hidden="true" />
           <span>{downloading === 'PDF' ? '...' : 'PDF Document'}</span>
         </button>
+        {onRequestRefund && ['ISSUED', 'VERIFIED', 'REMINDED'].includes(order.status.toUpperCase()) && (
+          <button
+            type="button"
+            onClick={() => onRequestRefund(order)}
+            className="w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center gap-1.5 py-2.5 px-4 text-xs font-bold uppercase tracking-wider text-[#C81E1E] bg-white border border-[#C81E1E] hover:bg-[#C81E1E] hover:text-white rounded-none transition-colors"
+          >
+            <RefreshCw className="w-3.5 h-3.5" strokeWidth={1.8} aria-hidden="true" />
+            <span>Ajukan Refund</span>
+          </button>
+        )}
       </div>
     </div>
   );
@@ -642,6 +798,8 @@ function OrdersPanel() {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState('');
   const [selectedTicket, setSelectedTicket] = useState<OrderRecord | null>(null);
+  const [refundOrder, setRefundOrder] = useState<OrderRecord | null>(null);
+  const [refundSuccessMsg, setRefundSuccessMsg] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -691,6 +849,22 @@ function OrdersPanel() {
         ))}
       </div>
 
+      {refundSuccessMsg && (
+        <div role="status" className="p-4 bg-[#156E3F]/10 border border-[#156E3F] text-[#156E3F] text-xs sm:text-sm rounded-none flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 shrink-0" aria-hidden="true" />
+            <span>{refundSuccessMsg}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setRefundSuccessMsg(null)}
+            className="text-xs font-bold uppercase tracking-wider underline shrink-0"
+          >
+            Tutup
+          </button>
+        </div>
+      )}
+
       {loading ? (
         <div className="py-20 flex flex-col items-center justify-center text-center">
           <Loader2 className="w-6 h-6 text-[#141413] animate-spin mb-3" strokeWidth={1.8} aria-hidden="true" />
@@ -718,12 +892,28 @@ function OrdersPanel() {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {orders.map((o) => (
-            <TicketCard key={o.id} order={o} onOpenModal={(ord) => setSelectedTicket(ord)} />
+            <TicketCard
+              key={o.id}
+              order={o}
+              onOpenModal={(ord) => setSelectedTicket(ord)}
+              onRequestRefund={(ord) => setRefundOrder(ord)}
+            />
           ))}
         </div>
       )}
 
       {selectedTicket && <TicketModal order={selectedTicket} onClose={() => setSelectedTicket(null)} />}
+      {refundOrder && (
+        <DirectRefundModal
+          order={refundOrder}
+          onClose={() => setRefundOrder(null)}
+          onSubmitted={(msg) => {
+            setRefundOrder(null);
+            setRefundSuccessMsg(msg);
+            load();
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -803,7 +993,9 @@ function RefundsPanel() {
                 <span className="text-base font-mono text-[#141413] font-bold">{r.orderCode}</span>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-base font-mono text-[#141413] font-bold tabular-nums">{formatIDR(r.amount)}</span>
+                <span className="text-base font-mono text-[#141413] font-bold tabular-nums">
+                  {formatIDR(r.refundAmount ?? r.amount)}
+                </span>
                 <span className={`inline-flex items-center px-3 py-1 text-xs font-mono uppercase tracking-wider border rounded-none font-bold ${conf.style}`}>
                   {conf.label}
                 </span>
@@ -1095,6 +1287,13 @@ function ProfilePanel() {
 function DashboardInner() {
   const { user, status, logout } = useAuth();
   const [tab, setTab] = useState<Tab>('summary');
+  const [activePromos, setActivePromos] = useState<PromotionItem[]>([]);
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      fetchActivePromosAPI().then(setActivePromos).catch(() => {});
+    }
+  }, [status]);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -1168,6 +1367,55 @@ function DashboardInner() {
             <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-mono uppercase tracking-wider border border-[#141413] text-[#141413] bg-[#D4FF2A] rounded-none font-bold">
               <ShieldCheck className="w-4 h-4" aria-hidden="true" /> Akun Terverifikasi
             </span>
+          </div>
+        </div>
+
+        <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-px bg-[#DFDDD6] border border-[#141413]">
+          <div className="bg-white p-4 flex items-start gap-3">
+            <Tag className="w-4 h-4 text-[#141413] shrink-0 mt-0.5" aria-hidden="true" />
+            <div>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#141413] block">
+                Akses Kode Promo
+              </span>
+              <p className="text-xs text-[#52514D] mt-0.5 mb-0">
+                {activePromos.length > 0 ? (
+                  <>
+                    Tersedia saat ini:{' '}
+                    {activePromos.slice(0, 3).map((p, idx) => (
+                      <React.Fragment key={p.id}>
+                        {idx > 0 && ', '}
+                        <strong className="font-mono text-[#141413]">{p.code}</strong>
+                      </React.Fragment>
+                    ))}
+                    .
+                  </>
+                ) : (
+                  'Masukkan kode promo anggota yang berlaku saat melakukan pemesanan tiket.'
+                )}
+              </p>
+            </div>
+          </div>
+          <div className="bg-white p-4 flex items-start gap-3">
+            <TicketIcon className="w-4 h-4 text-[#141413] shrink-0 mt-0.5" aria-hidden="true" />
+            <div>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#141413] block">
+                Kuota Hingga 4 Tiket
+              </span>
+              <p className="text-xs text-[#52514D] mt-0.5 mb-0">
+                Pemesanan lebih leluasa hingga 4 kursi per transaksi (tamu dibatasi 2 tiket).
+              </p>
+            </div>
+          </div>
+          <div className="bg-white p-4 flex items-start gap-3">
+            <RefreshCw className="w-4 h-4 text-[#141413] shrink-0 mt-0.5" aria-hidden="true" />
+            <div>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#141413] block">
+                Refund 1-Klik Tanpa OTP
+              </span>
+              <p className="text-xs text-[#52514D] mt-0.5 mb-0">
+                Ajukan pengembalian dana langsung dari daftar tiket tanpa verifikasi OTP email.
+              </p>
+            </div>
           </div>
         </div>
 

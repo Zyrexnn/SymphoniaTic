@@ -76,6 +76,8 @@ export interface OrderRecord {
   categoryName: string;
   quantity: number;
   totalPrice: number;
+  promoCode?: string;
+  discountAmount?: number;
   userName: string;
   userEmail: string;
   qrCode: string;
@@ -128,7 +130,8 @@ export interface RefundRecord {
   accountNumber: string;
   accountHolder: string;
   reason: string;
-  amount: number;
+  amount?: number;
+  refundAmount?: number;
   adminNote?: string;
   createdAt: string;
   updatedAt: string;
@@ -460,12 +463,84 @@ export const getEventSeatsAPI = async (eventId: string): Promise<APIResponse<Sea
   return res.json();
 };
 
+export interface ValidatePromoResult {
+  valid: boolean;
+  code: string;
+  description: string;
+  discountType: 'PERCENTAGE' | 'FIXED';
+  discountAmount: number;
+  finalTotal: number;
+}
+
+export interface PromotionItem {
+  id: string;
+  code: string;
+  description: string;
+  discountType: 'PERCENTAGE' | 'FIXED';
+  discountValue: number;
+  minOrderAmount: number;
+  maxDiscount: number;
+  isMemberOnly: boolean;
+  isActive: boolean;
+  quota: number;
+  remainingQuota: number;
+  usedCount: number;
+  validFrom: string;
+  validUntil: string;
+  createdAt?: string;
+}
+
+export interface PromoFormPayload {
+  code: string;
+  description: string;
+  discountType: 'PERCENTAGE' | 'FIXED';
+  discountValue: number;
+  minOrderAmount: number;
+  maxDiscount: number;
+  isMemberOnly: boolean;
+  isActive: boolean;
+  quota: number;
+  validFrom: string;
+  validUntil: string;
+}
+
+export const fetchActivePromosAPI = async (): Promise<PromotionItem[]> => {
+  try {
+    const res = await fetch(`${getApiBaseUrl()}/promos/active`);
+    const data = await res.json();
+    if (data.success && Array.isArray(data.data)) {
+      return data.data;
+    }
+    return [];
+  } catch {
+    return [];
+  }
+};
+
+export const validatePromoAPI = async (
+  promoCode: string,
+  subtotal: number
+): Promise<APIResponse<ValidatePromoResult>> => {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  const userToken = getUserToken();
+  if (userToken) {
+    headers['Authorization'] = `Bearer ${userToken}`;
+  }
+  const res = await fetch(`${getApiBaseUrl()}/promos/validate`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ promoCode, subtotal }),
+  });
+  return res.json();
+};
+
 export const createOrderAPI = async (payload: {
   eventId: string;
   ticketCategoryId: string;
   quantity: number;
   userName: string;
   userEmail: string;
+  promoCode?: string;
   seatNumbers?: string[];
   attendeeNames?: string[];
 }) => {
@@ -607,6 +682,47 @@ export const toggleEventCloseAPI = async (eventId: string | number) => {
   const cleanId = String(eventId).trim();
   const res = await fetch(`${getApiBaseUrl()}/admin/events/${cleanId}/toggle-close`, {
     method: 'PATCH',
+    headers: getAdminAuthHeaders(),
+  });
+  return res.json();
+};
+
+export const fetchAdminPromosAPI = async (): Promise<APIResponse<PromotionItem[]>> => {
+  const res = await fetch(`${getApiBaseUrl()}/admin/promos`, {
+    headers: getAdminAuthHeaders(),
+  });
+  return res.json();
+};
+
+export const createAdminPromoAPI = async (payload: PromoFormPayload): Promise<APIResponse<PromotionItem>> => {
+  const res = await fetch(`${getApiBaseUrl()}/admin/promos`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAdminAuthHeaders() },
+    body: JSON.stringify(payload),
+  });
+  return res.json();
+};
+
+export const updateAdminPromoAPI = async (id: string, payload: PromoFormPayload): Promise<APIResponse<PromotionItem>> => {
+  const res = await fetch(`${getApiBaseUrl()}/admin/promos/${encodeURIComponent(id)}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getAdminAuthHeaders() },
+    body: JSON.stringify(payload),
+  });
+  return res.json();
+};
+
+export const toggleAdminPromoActiveAPI = async (id: string): Promise<APIResponse<{ isActive: boolean }>> => {
+  const res = await fetch(`${getApiBaseUrl()}/admin/promos/${encodeURIComponent(id)}/toggle-active`, {
+    method: 'PATCH',
+    headers: getAdminAuthHeaders(),
+  });
+  return res.json();
+};
+
+export const deleteAdminPromoAPI = async (id: string): Promise<APIResponse<null>> => {
+  const res = await fetch(`${getApiBaseUrl()}/admin/promos/${encodeURIComponent(id)}`, {
+    method: 'DELETE',
     headers: getAdminAuthHeaders(),
   });
   return res.json();
@@ -837,5 +953,77 @@ export const getUserOrderByCodeAPI = (orderCode: string): Promise<APIResponse<Or
 
 export const getUserRefundsAPI = (): Promise<APIResponse<RefundRecord[]>> =>
   authFetch('/user/refunds').then(r => r.json());
+
+export const submitUserRefundAPI = (
+  orderCode: string,
+  payload: { bankName: string; accountNumber: string; accountHolder: string; reason: string }
+): Promise<APIResponse<RefundRecord>> =>
+  authFetch(`/user/orders/${encodeURIComponent(orderCode)}/refund`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  }).then(r => r.json());
+
+export const PENDING_BOOKING_STORAGE_KEY = 'symphoniatic_pending_booking';
+
+export interface PendingBookingDraft {
+  eventId: string;
+  categoryId: string;
+  quantity: number;
+  selectedSeats: string[];
+  attendeeNames: string[];
+  promoCodeInput?: string;
+  createdAt: number;
+}
+
+export const savePendingBookingDraft = (draft: Omit<PendingBookingDraft, 'createdAt'>): void => {
+  try {
+    if (typeof window === 'undefined') return;
+    sessionStorage.setItem(
+      PENDING_BOOKING_STORAGE_KEY,
+      JSON.stringify({ ...draft, createdAt: Date.now() })
+    );
+  } catch {}
+};
+
+export const readPendingBookingDraft = (eventId?: string): PendingBookingDraft | null => {
+  try {
+    if (typeof window === 'undefined') return null;
+    const raw = sessionStorage.getItem(PENDING_BOOKING_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as PendingBookingDraft;
+    // Kedaluwarsa otomatis setelah 30 menit agar tidak membuka modal lama secara tak terduga
+    if (!parsed?.eventId || Date.now() - (parsed.createdAt || 0) > 30 * 60 * 1000) {
+      sessionStorage.removeItem(PENDING_BOOKING_STORAGE_KEY);
+      return null;
+    }
+    if (eventId && String(parsed.eventId) !== String(eventId)) {
+      return null;
+    }
+    return parsed;
+  } catch {
+    return null;
+  }
+};
+
+export const clearPendingBookingDraft = (): void => {
+  try {
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem(PENDING_BOOKING_STORAGE_KEY);
+    }
+  } catch {}
+};
+
+export const resolveSafeAuthRedirect = (fallback = '/dashboard'): string => {
+  try {
+    if (typeof window === 'undefined') return fallback;
+    const target = new URLSearchParams(window.location.search).get('redirect') || '';
+    if (target.startsWith('/') && !target.startsWith('//')) {
+      return target;
+    }
+    return fallback;
+  } catch {
+    return fallback;
+  }
+};
 
 

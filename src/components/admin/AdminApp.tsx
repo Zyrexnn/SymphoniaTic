@@ -11,7 +11,7 @@ import {
   Sun,
   Moon,
 } from 'lucide-react';
-import type { EventItem, TicketCategory, OrderRecord, AdminMetricsData, AdminRole } from '../landing/data';
+import type { EventItem, TicketCategory, OrderRecord, AdminMetricsData, AdminRole, PromotionItem } from '../landing/data';
 import {
   adminLoginAPI,
   fetchAdminMetricsAPI,
@@ -27,16 +27,23 @@ import {
   fetchAdminRefundsAPI,
   updateRefundStatusAPI,
   checkInTicketAPI,
+  fetchAdminPromosAPI,
+  createAdminPromoAPI,
+  updateAdminPromoAPI,
+  toggleAdminPromoActiveAPI,
+  deleteAdminPromoAPI,
 } from '../landing/data';
 
 import { AdminThemeProvider, AdminThemeToggle, useAdminTheme } from './AdminThemeContext';
 import { AdminLogin } from './AdminLogin';
 import { AdminSidebar, MobileHeader, MobileBottomNav, type TabId } from './AdminSidebar';
 import { EventsPanel } from './EventsPanel';
+import { PromosPanel } from './PromosPanel';
 import { OrdersPanel } from './OrdersPanel';
 import { RefundsPanel, type RefundRecord } from './RefundsPanel';
 import { EventFormModal, type EventFormData } from './EventFormModal';
 import { CategoryFormModal } from './CategoryFormModal';
+import { PromoFormModal, type PromoFormData } from './PromoFormModal';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const MetricsPanel = React.lazy(() => import('./MetricsPanel').then((m) => ({ default: m.MetricsPanel })));
@@ -119,6 +126,24 @@ function toIsoOrNull(localVal?: string): string | null {
 
 const EMPTY_CAT_FORM = { name: '', price: 500000, quota: 50 };
 
+function createDefaultPromoForm(): PromoFormData {
+  const now = new Date();
+  const nextMonth = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+  return {
+    code: '',
+    description: '',
+    discountType: 'PERCENTAGE',
+    discountValue: 10,
+    minOrderAmount: 100000,
+    maxDiscount: 50000,
+    isMemberOnly: true,
+    isActive: true,
+    quota: 100,
+    validFrom: toLocalDateTimeInput(now.toISOString()),
+    validUntil: toLocalDateTimeInput(nextMonth.toISOString()),
+  };
+}
+
 interface AdminAppProps {
   onClose?: () => void;
   onEventsUpdated?: () => void;
@@ -157,6 +182,7 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
 
   const [metrics, setMetrics] = useState<AdminMetricsData | null>(null);
   const [eventsList, setEventsList] = useState<EventItem[]>([]);
+  const [promosList, setPromosList] = useState<PromotionItem[]>([]);
   const [ordersList, setOrdersList] = useState<OrderRecord[]>([]);
   const [refundsList, setRefundsList] = useState<RefundRecord[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -176,9 +202,12 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
     eventId: string;
     cat: TicketCategory;
   } | null>(null);
+  const [showAddPromoModal, setShowAddPromoModal] = useState(false);
+  const [editingPromo, setEditingPromo] = useState<PromotionItem | null>(null);
 
   const [eventForm, setEventForm] = useState(EMPTY_EVENT_FORM);
   const [catForm, setCatForm] = useState(EMPTY_CAT_FORM);
+  const [promoForm, setPromoForm] = useState<PromoFormData>(() => createDefaultPromoForm());
 
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [confirmModal, setConfirmModal] = useState<{
@@ -199,16 +228,18 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
     setIsLoading(true);
     setLoadError(null);
     try {
-      const [ords, evts, met, rfds] = await Promise.all([
+      const [ords, evts, met, rfds, promosRes] = await Promise.all([
         fetchAdminOrdersAPI(orderSearch, orderStatusFilter),
         fetchEventsAPI(),
         activeRole === 'ADMIN' ? fetchAdminMetricsAPI() : Promise.resolve(null),
         activeRole === 'ADMIN' ? fetchAdminRefundsAPI() : Promise.resolve([]),
+        activeRole === 'ADMIN' ? fetchAdminPromosAPI() : Promise.resolve({ success: true, data: [] }),
       ]);
       if (ords) setOrdersList(ords);
       if (evts) setEventsList(evts);
       if (met) setMetrics(met);
       if (rfds) setRefundsList(rfds);
+      if (promosRes?.success && Array.isArray(promosRes.data)) setPromosList(promosRes.data);
       if (onEventsUpdated) onEventsUpdated();
     } catch (err) {
       console.error('Error refreshing admin data:', err);
@@ -589,6 +620,120 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
     }
   };
 
+  const buildPromoPayload = () => {
+    const validFromIso = toIsoOrNull(promoForm.validFrom);
+    const validUntilIso = toIsoOrNull(promoForm.validUntil);
+    if (!validFromIso || !validUntilIso) {
+      return null;
+    }
+    return {
+      code: promoForm.code.trim().toUpperCase(),
+      description: promoForm.description.trim(),
+      discountType: promoForm.discountType,
+      discountValue: Number(promoForm.discountValue),
+      minOrderAmount: Number(promoForm.minOrderAmount) || 0,
+      maxDiscount: promoForm.discountType === 'PERCENTAGE' ? Number(promoForm.maxDiscount) || 0 : 0,
+      isMemberOnly: promoForm.isMemberOnly,
+      isActive: promoForm.isActive,
+      quota: Number(promoForm.quota),
+      validFrom: validFromIso,
+      validUntil: validUntilIso,
+    };
+  };
+
+  const handleCreatePromo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const payload = buildPromoPayload();
+    if (!payload) {
+      showToast('Format tanggal mulai dan berakhir promo tidak valid', 'error');
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const res = await createAdminPromoAPI(payload);
+      if (res.success) {
+        setShowAddPromoModal(false);
+        setPromoForm(createDefaultPromoForm());
+        showToast('Kode promo kustom berhasil dibuat', 'success');
+        await refreshData();
+      } else {
+        showToast(res.message || 'Gagal membuat kode promo', 'error');
+      }
+    } catch {
+      showToast('Terjadi kesalahan koneksi server', 'error');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleUpdatePromo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingPromo) return;
+    const payload = buildPromoPayload();
+    if (!payload) {
+      showToast('Format tanggal mulai dan berakhir promo tidak valid', 'error');
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const res = await updateAdminPromoAPI(editingPromo.id, payload);
+      if (res.success) {
+        setEditingPromo(null);
+        showToast('Kode promo berhasil diperbarui', 'success');
+        await refreshData();
+      } else {
+        showToast(res.message || 'Gagal memperbarui kode promo', 'error');
+      }
+    } catch {
+      showToast('Terjadi kesalahan koneksi server', 'error');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleTogglePromoActive = async (id: string) => {
+    setIsLoading(true);
+    try {
+      const res = await toggleAdminPromoActiveAPI(id);
+      if (res.success) {
+        showToast(res.message || 'Status aktif promo diperbarui', 'success');
+        await refreshData();
+      } else {
+        showToast(res.message || 'Gagal mengubah status promo', 'error');
+      }
+    } catch {
+      showToast('Terjadi kesalahan koneksi server', 'error');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDeletePromo = (id: string, code: string) => {
+    setConfirmModal({
+      title: 'Hapus Kode Promo',
+      message: `Hapus kode promo "${code}" secara permanen? Pembeli tidak akan dapat menukarkan kode ini lagi.`,
+      confirmLabel: 'Hapus Promo',
+      variant: 'danger',
+      onConfirm: async () => {
+        setConfirmModal(null);
+        setIsLoading(true);
+        try {
+          const res = await deleteAdminPromoAPI(id);
+          if (res.success) {
+            showToast('Kode promo berhasil dihapus', 'success');
+            await refreshData();
+          } else {
+            showToast(res.message || 'Gagal menghapus kode promo', 'error');
+          }
+        } catch {
+          showToast('Terjadi kesalahan koneksi server', 'error');
+        } finally {
+          setIsLoading(false);
+        }
+      },
+    });
+  };
+
   if (!isAuthenticated) {
     return (
       <AdminLogin
@@ -615,6 +760,10 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
     EVENTS: {
       title: 'Manajemen Postingan Tiket Konser',
       subtitle: 'Kelola konser, jadwal open gate, dan kategori kursi',
+    },
+    PROMOS: {
+      title: 'Manajemen Kode Promo & Voucher',
+      subtitle: 'Buat kode promo kustom, kuota penukaran, dan syarat keanggotaan',
     },
     ORDERS: {
       title: 'Pengelolaan Pesanan & Laporan Transaksi',
@@ -669,6 +818,7 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
         onTabChange={setActiveTab}
         onLogout={handleLogout}
         eventsCount={eventsList.length}
+        promosCount={promosList.length}
         ordersCount={ordersList.length}
         refundsCount={(refundsList || []).filter((r) => r.status === 'PENDING').length}
         totalRevenue={metrics?.totalRevenue || 0}
@@ -853,6 +1003,34 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
               onDeleteCategory={handleDeleteCategory}
             />
           )}
+          {currentRole === 'ADMIN' && activeTab === 'PROMOS' && (
+            <PromosPanel
+              promos={promosList}
+              isLoading={isLoading}
+              onAddPromo={() => {
+                setPromoForm(createDefaultPromoForm());
+                setShowAddPromoModal(true);
+              }}
+              onEditPromo={(promo) => {
+                setEditingPromo(promo);
+                setPromoForm({
+                  code: promo.code,
+                  description: promo.description || '',
+                  discountType: promo.discountType,
+                  discountValue: promo.discountValue,
+                  minOrderAmount: promo.minOrderAmount || 0,
+                  maxDiscount: promo.maxDiscount || 0,
+                  isMemberOnly: promo.isMemberOnly,
+                  isActive: promo.isActive,
+                  quota: promo.quota,
+                  validFrom: toLocalDateTimeInput(promo.validFrom),
+                  validUntil: toLocalDateTimeInput(promo.validUntil),
+                });
+              }}
+              onToggleActive={handleTogglePromoActive}
+              onDeletePromo={handleDeletePromo}
+            />
+          )}
           {activeTab === 'ORDERS' && (
             <OrdersPanel
               orders={ordersList}
@@ -907,6 +1085,19 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
         onCloseEdit={() => setEditingCategory(null)}
         onAddSubmit={handleAddCategory}
         onEditSubmit={handleUpdateCategory}
+      />
+
+      <PromoFormModal
+        isOpen={showAddPromoModal || !!editingPromo}
+        editingPromo={editingPromo}
+        form={promoForm}
+        isLoading={isLoading}
+        onFormChange={setPromoForm}
+        onClose={() => {
+          setShowAddPromoModal(false);
+          setEditingPromo(null);
+        }}
+        onSubmit={editingPromo ? handleUpdatePromo : handleCreatePromo}
       />
 
       {toast && (
