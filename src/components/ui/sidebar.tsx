@@ -78,7 +78,7 @@ function SidebarProvider({
           data-slot="sidebar-wrapper"
           data-state={open ? "expanded" : "collapsed"}
           className={cn(
-            "group/sidebar-wrapper flex min-h-screen w-full bg-background text-foreground",
+            "group/sidebar-wrapper flex min-h-screen md:h-screen md:overflow-hidden w-full bg-background text-foreground",
             className
           )}
         >
@@ -120,7 +120,7 @@ function Sidebar({
       data-slot="sidebar"
       data-state={open ? "expanded" : "collapsed"}
       className={cn(
-        "hidden md:flex shrink-0 flex-col sticky top-0 h-screen border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-[width] duration-200 ease-out overflow-hidden",
+        "hidden md:flex shrink-0 flex-col h-full border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-[width] duration-200 ease-out overflow-hidden",
         open ? "w-[268px]" : "w-[76px]",
         className
       )}
@@ -276,7 +276,7 @@ function SidebarInset({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="sidebar-inset"
-      className={cn("flex min-w-0 flex-1 flex-col bg-background", className)}
+      className={cn("flex min-w-0 flex-1 flex-col bg-background md:h-full md:overflow-y-auto", className)}
       {...props}
     />
   );
