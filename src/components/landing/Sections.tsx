@@ -81,7 +81,7 @@ export const BentoSection: React.FC<SectionProps> = ({
 
   return (
     <div className="bg-[#F4F3EF] text-[#141413]">
-      <section className="border-b border-[#DFDDD6]">
+      <section id="kurasi" className="scroll-mt-20 border-b border-[#DFDDD6]">
         <div className="mx-auto max-w-[1360px] border-x border-[#DFDDD6] px-5 sm:px-8 lg:px-10 py-14 sm:py-20">
           <SectionHeading
             eyebrow="Kurasi Musim Ini"

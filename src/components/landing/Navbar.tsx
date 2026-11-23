@@ -64,7 +64,8 @@ const SearchPill: React.FC<{
   className?: string;
   onDark?: boolean;
   onNavigate?: () => void;
-}> = ({ className = '', onDark = false, onNavigate }) => {
+  autoFocus?: boolean;
+}> = ({ className = '', onDark = false, onNavigate, autoFocus = false }) => {
   const [q, setQ] = useState('');
 
   const submit = (e: React.FormEvent) => {
@@ -78,16 +79,16 @@ const SearchPill: React.FC<{
     <form
       onSubmit={submit}
       role="search"
-      className={`group flex items-center rounded-none border transition-colors ${
+      className={`group flex h-11 items-center rounded-none border transition-colors ${
         onDark
-          ? 'bg-[#1C1C1A]/90 border-white/20 focus-within:border-[#D4FF2A]'
+          ? 'bg-[#1C1C1A]/90 border-white/25 focus-within:border-[#D4FF2A]'
           : 'bg-white border-[#DFDDD6] focus-within:border-[#141413]'
       } ${className}`}
     >
       <button
         type="submit"
         aria-label="Cari konser"
-        className={`min-h-[40px] pl-3 pr-1.5 flex items-center transition-colors ${
+        className={`h-11 pl-3 pr-1.5 flex items-center transition-colors ${
           onDark
             ? 'text-[#D8D6CE] group-focus-within:text-[#D4FF2A]'
             : 'text-[#6E6D68] group-focus-within:text-[#141413]'
@@ -101,6 +102,7 @@ const SearchPill: React.FC<{
         onChange={(e) => setQ(e.target.value)}
         placeholder="Cari konser..."
         aria-label="Cari konser, artis, atau venue"
+        autoFocus={autoFocus}
         className={`bg-transparent py-2 pr-3 text-xs font-medium outline-none truncate min-w-0 flex-1 ${
           onDark
             ? 'text-[#F4F3EF] placeholder-[#B8B6AE]'
@@ -124,6 +126,7 @@ export const Header: React.FC<HeaderProps> = ({
   const [currentPath, setCurrentPath] = useState('');
   const [internalScrolled, setInternalScrolled] = useState(false);
   const [internalMenuOpen, setInternalMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -143,13 +146,22 @@ export const Header: React.FC<HeaderProps> = ({
   const onDarkHero = variant === 'overlay' && !scrolled;
 
   useEffect(() => {
-    if (!menuOpen) return;
+    if (menuOpen && searchOpen) {
+      setSearchOpen(false);
+    }
+  }, [menuOpen, searchOpen]);
+
+  useEffect(() => {
+    if (!menuOpen && !searchOpen) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') handleToggleMenu();
+      if (e.key === 'Escape') {
+        if (searchOpen) setSearchOpen(false);
+        if (menuOpen) handleToggleMenu();
+      }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [menuOpen, handleToggleMenu]);
+  }, [menuOpen, searchOpen, handleToggleMenu]);
 
   const isAdmin = user?.role === 'ADMIN';
 
@@ -165,7 +177,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="w-full flex items-center justify-between gap-4 mx-auto max-w-[1360px] px-4 sm:px-8 lg:px-10">
           <BrandMark onDark={onDarkHero} />
 
-          <nav className="hidden lg:flex items-center gap-6" aria-label="Navigasi utama">
+          <nav className="hidden lg:flex items-center gap-5 xl:gap-6" aria-label="Navigasi utama">
             {mainNavItems.map((item) => {
               const isActive =
                 item.href === '/'
@@ -201,6 +213,28 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="hidden xl:block">
               <SearchPill className="w-48 2xl:w-56" onDark={onDarkHero} />
             </div>
+
+            <button
+              type="button"
+              onClick={() => setSearchOpen((prev) => !prev)}
+              aria-expanded={searchOpen}
+              aria-label={searchOpen ? 'Tutup pencarian konser' : 'Buka pencarian konser'}
+              className={`xl:hidden inline-flex h-11 w-11 items-center justify-center rounded-none border transition-colors focus-visible:outline-none focus-visible:ring-2 ${
+                onDarkHero
+                  ? searchOpen
+                    ? 'bg-[#D4FF2A] border-[#D4FF2A] text-[#141413] focus-visible:ring-[#D4FF2A]'
+                    : 'bg-[#1C1C1A] border-white/25 text-[#F4F3EF] hover:border-[#D4FF2A] focus-visible:ring-[#D4FF2A]'
+                  : searchOpen
+                  ? 'bg-[#141413] border-[#141413] text-[#D4FF2A] focus-visible:ring-[#141413]'
+                  : 'bg-white border-[#DFDDD6] text-[#141413] hover:border-[#141413] focus-visible:ring-[#141413]'
+              }`}
+            >
+              {searchOpen ? (
+                <X size={16} strokeWidth={2} aria-hidden="true" />
+              ) : (
+                <Search size={16} strokeWidth={2} aria-hidden="true" />
+              )}
+            </button>
 
             {ordersCount > 0 && onOpenOrders && (
               <button
@@ -274,10 +308,10 @@ export const Header: React.FC<HeaderProps> = ({
               <div className="hidden sm:flex items-center gap-2">
                 <a
                   href="/login"
-                  className={`min-h-[44px] inline-flex items-center gap-1.5 rounded-none px-3.5 py-2 text-xs font-semibold uppercase tracking-wider transition-colors focus-visible:outline-none focus-visible:ring-2 ${
+                  className={`min-h-[44px] inline-flex items-center gap-1.5 rounded-none border px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors focus-visible:outline-none focus-visible:ring-2 ${
                     onDarkHero
-                      ? 'text-[#D8D6CE] hover:text-[#F4F3EF] focus-visible:ring-[#D4FF2A]'
-                      : 'text-[#52514D] hover:text-[#141413] hover:bg-[#EAE8E1] focus-visible:ring-[#141413]'
+                      ? 'bg-[#1C1C1A] border-white/25 text-[#F4F3EF] hover:border-[#D4FF2A] focus-visible:ring-[#D4FF2A]'
+                      : 'bg-white border-[#DFDDD6] text-[#141413] hover:border-[#141413] focus-visible:ring-[#141413]'
                   }`}
                 >
                   <User size={14} strokeWidth={2} aria-hidden="true" />
@@ -285,10 +319,10 @@ export const Header: React.FC<HeaderProps> = ({
                 </a>
                 <a
                   href="/register"
-                  className={`min-h-[44px] inline-flex items-center gap-1.5 rounded-none px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors focus-visible:outline-none focus-visible:ring-2 ${
+                  className={`min-h-[44px] inline-flex items-center gap-1.5 rounded-none border px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors focus-visible:outline-none focus-visible:ring-2 ${
                     onDarkHero
-                      ? 'bg-[#D4FF2A] text-[#141413] hover:bg-[#C2EE1A] focus-visible:ring-[#D4FF2A]'
-                      : 'bg-[#141413] text-[#F4F3EF] hover:bg-[#2A2A28] focus-visible:ring-[#141413]'
+                      ? 'bg-[#D4FF2A] border-[#D4FF2A] text-[#141413] hover:bg-[#C2EE1A] focus-visible:ring-[#D4FF2A]'
+                      : 'bg-[#141413] border-[#141413] text-[#F4F3EF] hover:bg-[#2A2A28] focus-visible:ring-[#141413]'
                   }`}
                 >
                   <span>Daftar</span>
@@ -318,6 +352,39 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
       </header>
+
+      {searchOpen && (
+        <div
+          role="region"
+          aria-label="Panel pencarian konser"
+          className={`fixed top-[64px] left-0 right-0 z-30 border-b xl:hidden ${
+            onDarkHero
+              ? 'bg-[#141413] border-white/20'
+              : 'bg-[#F4F3EF] border-[#DFDDD6]'
+          }`}
+        >
+          <div className="mx-auto max-w-[1360px] px-4 sm:px-8 lg:px-10 py-3 flex items-center gap-2">
+            <SearchPill
+              autoFocus
+              className="flex-1"
+              onDark={onDarkHero}
+              onNavigate={() => setSearchOpen(false)}
+            />
+            <button
+              type="button"
+              onClick={() => setSearchOpen(false)}
+              aria-label="Tutup pencarian"
+              className={`h-11 px-4 rounded-none border text-xs font-semibold uppercase tracking-wider transition-colors focus-visible:outline-none focus-visible:ring-2 ${
+                onDarkHero
+                  ? 'bg-[#1C1C1A] border-white/25 text-[#F4F3EF] hover:border-[#D4FF2A] focus-visible:ring-[#D4FF2A]'
+                  : 'bg-white border-[#DFDDD6] text-[#141413] hover:border-[#141413] focus-visible:ring-[#141413]'
+              }`}
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
+      )}
 
       {menuOpen && (
         <div

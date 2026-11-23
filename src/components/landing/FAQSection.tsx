@@ -13,7 +13,7 @@ export default function FAQSection() {
     <>
       <section className="bg-[#F4F3EF] border-b border-[#DFDDD6]">
         <div className="mx-auto max-w-[1360px] border-x border-[#DFDDD6] px-5 sm:px-8 lg:px-10 py-14 sm:py-20">
-          <div id="faq" className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+          <div id="faq" className="scroll-mt-24 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
             <div className="lg:col-span-4">
               <p className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-[#141413] m-0">
                 <span className="inline-block w-1.5 h-1.5 bg-[#141413]" aria-hidden="true" />

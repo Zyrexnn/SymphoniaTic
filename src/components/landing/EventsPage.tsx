@@ -479,11 +479,11 @@ const EventsPageContent: React.FC = () => {
         </section>
       )}
 
-      <section className="mx-auto max-w-[1360px] border-x border-[#DFDDD6] px-5 sm:px-8 lg:px-10 pb-20">
+      <section className="scroll-mt-24 mx-auto max-w-[1360px] border-x border-[#DFDDD6] px-5 sm:px-8 lg:px-10 pb-20">
         {isLoading && sourceEvents.length === 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-[#DFDDD6] border border-[#DFDDD6]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white p-4 space-y-4 animate-pulse">
+              <div key={i} className="border border-[#DFDDD6] bg-white p-4 space-y-4 animate-pulse">
                 <div className="aspect-[16/10] bg-[#EAE8E1]" />
                 <div className="h-5 bg-[#EAE8E1] w-3/4" />
                 <div className="h-4 bg-[#EAE8E1] w-1/2" />
@@ -491,14 +491,13 @@ const EventsPageContent: React.FC = () => {
             ))}
           </div>
         ) : mainEvents.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-[#DFDDD6] border border-[#DFDDD6]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
             {mainEvents.map((event) => (
               <ConcertCard
                 key={String(event.id)}
                 event={event}
                 saved={favorites.has(String(event.id))}
                 onToggleSave={() => toggleSave(event.id)}
-                className="border-0"
               />
             ))}
           </div>

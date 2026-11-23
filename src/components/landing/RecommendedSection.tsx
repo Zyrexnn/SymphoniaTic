@@ -45,7 +45,7 @@ const matchesCategory = (category: string, tab: FilterTab): boolean => {
 };
 
 const SkeletonCard: React.FC = () => (
-  <div className="flex flex-col h-full bg-white p-4 animate-pulse">
+  <div className="flex flex-col h-full border border-[#DFDDD6] bg-white p-4 animate-pulse">
     <div className="aspect-[16/10] w-full bg-[#EAE8E1]" />
     <div className="pt-5 flex-1 flex flex-col justify-between space-y-5">
       <div className="space-y-2.5">
@@ -204,7 +204,7 @@ export const RecommendedSection: React.FC<RecommendedProps> = ({
   const restEvents = filteredEvents.slice(1);
 
   return (
-    <section id="jadwal" className="bg-[#F4F3EF] border-b border-[#DFDDD6]">
+    <section id="jadwal" className="scroll-mt-20 bg-[#F4F3EF] border-b border-[#DFDDD6]">
       <div className="mx-auto max-w-[1360px] border-x border-[#DFDDD6] px-5 sm:px-8 lg:px-10 py-14 sm:py-20">
         <SectionHeading
           eyebrow="Agenda Pertunjukan"
@@ -233,7 +233,7 @@ export const RecommendedSection: React.FC<RecommendedProps> = ({
         </Tabs>
 
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-[#DFDDD6] border border-[#DFDDD6]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
             <SkeletonCard />
             <SkeletonCard />
             <SkeletonCard />
@@ -273,13 +273,12 @@ export const RecommendedSection: React.FC<RecommendedProps> = ({
             )}
 
             {restEvents.length > 0 && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-[#DFDDD6] border border-[#DFDDD6]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
                 {restEvents.map((ev) => (
                   <ConcertCard
                     key={ev.id}
                     event={ev}
                     onBuyTicket={onBuyTicket}
-                    className="border-0"
                   />
                 ))}
               </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapPin, Clock, Heart } from 'lucide-react';
+import { MapPin, Clock, Heart, ArrowUpRight } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -116,7 +116,18 @@ export const ConcertCard: React.FC<ConcertCardProps> = ({
             {event.category || 'Simfoni'}
           </span>
 
-          {onToggleSave ? (
+          {parsed.day && (
+            <div className="absolute top-2.5 right-2.5 rounded-none border border-[#141413]/15 bg-[#D4FF2A] px-2.5 py-1.5 text-center text-[#141413]">
+              <span className="block font-display text-lg font-extrabold leading-none tabular-nums">
+                {parsed.day}
+              </span>
+              <span className="block mt-0.5 text-[9px] font-bold uppercase tracking-wider">
+                {parsed.month} {parsed.year}
+              </span>
+            </div>
+          )}
+
+          {onToggleSave && (
             <button
               type="button"
               onClick={(e) => {
@@ -126,7 +137,7 @@ export const ConcertCard: React.FC<ConcertCardProps> = ({
               }}
               aria-label={saved ? 'Hapus dari favorit' : 'Simpan ke favorit'}
               aria-pressed={saved}
-              className="absolute top-2.5 right-2.5 z-10 flex h-10 w-10 items-center justify-center rounded-none bg-white border border-[#141413]/20 transition-colors hover:border-[#141413] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413]"
+              className="absolute bottom-2.5 left-2.5 z-10 flex h-11 w-11 items-center justify-center rounded-none bg-white/95 border border-[#141413]/25 transition-colors hover:border-[#141413] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413]"
             >
               <Heart
                 size={15}
@@ -135,16 +146,7 @@ export const ConcertCard: React.FC<ConcertCardProps> = ({
                 aria-hidden="true"
               />
             </button>
-          ) : parsed.day ? (
-            <div className="absolute top-2.5 right-2.5 rounded-none bg-[#D4FF2A] px-2.5 py-1.5 text-center text-[#141413]">
-              <span className="block font-display text-lg font-extrabold leading-none tabular-nums">
-                {parsed.day}
-              </span>
-              <span className="block mt-0.5 text-[9px] font-bold uppercase tracking-wider">
-                {parsed.month} {parsed.year}
-              </span>
-            </div>
-          ) : null}
+          )}
         </div>
       </div>
 
@@ -153,10 +155,7 @@ export const ConcertCard: React.FC<ConcertCardProps> = ({
           <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
             <span className="inline-flex items-center gap-1.5 text-xs text-[#52514D] tabular-nums font-medium">
               <Clock size={12} className="text-[#141413] shrink-0" aria-hidden="true" />
-              <span>
-                {onToggleSave && parsed.day ? `${event.date} · ` : ''}
-                {event.time}
-              </span>
+              <span>{event.time}</span>
             </span>
             <Badge variant="outline" className={`text-[10px] font-bold ${status.className}`}>
               {status.label}
@@ -167,16 +166,16 @@ export const ConcertCard: React.FC<ConcertCardProps> = ({
             href={`/concert/${event.id}`}
             className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413]"
           >
-            <h3 className="font-display text-xl sm:text-2xl font-bold leading-[1.08] tracking-[-0.03em] text-[#141413] line-clamp-2 group-hover:underline decoration-2 underline-offset-4 m-0">
+            <h3 className="font-display text-xl sm:text-2xl font-bold leading-[1.08] tracking-[-0.03em] text-[#141413] min-h-[2.75rem] sm:min-h-[3.25rem] line-clamp-2 group-hover:underline decoration-2 underline-offset-4 m-0">
               {event.title}
             </h3>
           </a>
 
-          <p className="mt-2 text-xs text-[#52514D] line-clamp-1 m-0">
+          <p className="mt-2 text-xs text-[#52514D] min-h-[1.25rem] line-clamp-1 m-0">
             {event.conductor && event.conductor !== '-' ? `${event.artist} · ${event.conductor}` : event.artist}
           </p>
 
-          <div className="mt-2 flex items-center gap-1.5 text-xs text-[#6E6D68]">
+          <div className="mt-2 flex items-center gap-1.5 text-xs text-[#6E6D68] min-h-[1.25rem]">
             <MapPin size={12} className="text-[#6E6D68] shrink-0" aria-hidden="true" />
             <span className="truncate">{event.venue}</span>
           </div>
@@ -189,14 +188,18 @@ export const ConcertCard: React.FC<ConcertCardProps> = ({
               <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#6E6D68] m-0">
                 Mulai dari
               </p>
-              <p className="text-base sm:text-lg font-extrabold text-[#141413] truncate tabular-nums m-0 mt-0.5">
+              <p
+                className={`text-base sm:text-lg font-extrabold truncate tabular-nums m-0 mt-0.5 ${
+                  status.isSoldOut ? 'text-[#6E6D68] line-through decoration-[#6E6D68]/70' : 'text-[#141413]'
+                }`}
+              >
                 {formatIDR(minPrice)}
               </p>
             </div>
 
             {status.isSoldOut ? (
               <Button type="button" variant="secondary" disabled className="shrink-0">
-                {event.isClosed ? 'Tutup' : 'Habis'}
+                {event.isClosed ? 'Penjualan Tutup' : 'Tiket Habis'}
               </Button>
             ) : onBuyTicket ? (
               <Button
@@ -205,11 +208,15 @@ export const ConcertCard: React.FC<ConcertCardProps> = ({
                 onClick={() => onBuyTicket(event)}
                 className="shrink-0"
               >
-                Pesan Tiket
+                <span>Pesan Tiket</span>
+                <ArrowUpRight size={15} strokeWidth={2.2} aria-hidden="true" />
               </Button>
             ) : (
               <Button asChild variant="lime" className="shrink-0">
-                <a href={`/concert/${event.id}`}>Lihat Tiket</a>
+                <a href={`/concert/${event.id}`}>
+                  <span>Lihat Tiket</span>
+                  <ArrowUpRight size={15} strokeWidth={2.2} aria-hidden="true" />
+                </a>
               </Button>
             )}
           </div>

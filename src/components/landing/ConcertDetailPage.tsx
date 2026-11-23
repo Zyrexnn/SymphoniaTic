@@ -790,7 +790,7 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
               actionHref="/events"
             />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-[#DFDDD6] border border-[#DFDDD6]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
               {otherEvents.map((ev) => (
                 <ConcertCard
                   key={ev.id}
@@ -799,7 +799,6 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
                     const cat = target.categories?.[0];
                     if (cat) openBookingWithCategory(target, cat, 1);
                   }}
-                  className="border-0"
                 />
               ))}
             </div>
