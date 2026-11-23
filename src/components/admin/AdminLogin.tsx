@@ -70,7 +70,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({
     <div className="min-h-[100dvh] w-full flex flex-col lg:flex-row bg-background text-foreground font-sans">
       <aside className="hidden lg:flex lg:w-[44%] relative flex-col justify-between p-10 xl:p-14 overflow-hidden bg-[#141413] text-[#F4F3EF] border-r border-[#141413]">
         <img
-          src="/assets/login-image-hd.jpeg"
+          src="/assets/login-image.svg"
           alt="Suasana ruang konser orkestra simfoni"
           width={1200}
           height={1600}

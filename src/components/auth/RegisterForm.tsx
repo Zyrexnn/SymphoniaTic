@@ -241,7 +241,7 @@ function RegisterFormInner() {
 
       <div className="hidden lg:flex lg:w-[44%] relative flex-col justify-between p-10 xl:p-14 overflow-hidden order-1 lg:order-2 bg-[#141413] text-[#F4F3EF] border-l border-[#141413]">
         <img
-          src="/assets/register-image.jpg"
+          src="/assets/register-image.svg"
           alt="Pertunjukan orkestra klasik"
           className="absolute inset-0 w-full h-full object-cover"
         />
