@@ -41,19 +41,19 @@ export const DRESS_CODES: DressCode[] = [
     label: 'Formal',
     name: 'Black Tie',
     description: 'Jas gelap lengkap dengan dasi, gaun malam, atau kebaya formal. Direkomendasikan untuk kursi VIP dan premiere.',
-    image: 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&w=900&q=80',
+    image: '/images/dresscode/black-tie.jpg',
   },
   {
     label: 'Most Common',
     name: 'Smart Casual',
     description: 'Kemeja rapi, celana bahan, blazer, atau batik modern. Pilihan paling umum dan diterima di semua kategori kursi.',
-    image: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=900&q=80',
+    image: '/images/dresscode/smart-casual.jpg',
   },
   {
     label: 'Accepted',
     name: 'Casual Rapi',
     description: 'Kaos polos, denim gelap, sneaker bersih. Diterima untuk konser neoklasik, namun hindari sandal dan celana pendek.',
-    image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=900&q=80',
+    image: '/images/dresscode/casual-rapi.jpg',
   },
 ];
 
@@ -75,7 +75,7 @@ export const COMPOSERS: Composer[] = [
     country: 'Jerman',
     context: 'Bapak simfoni modern. Mulai kehilangan pendengaran sekitar 1798, kondisi yang justru memperdalam ekspresi karyanya. Symphony No. 5 ditulis 1804 sampai 1808 di tengah pergolakan Perang Napoleon. Motif empat nada pembuka menjadi salah satu ikon musik paling dikenal dunia.',
     works: ['Symphony No. 5 in C minor, Op. 67', 'Symphony No. 9 "Ode to Joy"', 'Piano Sonata No. 14 "Moonlight"', 'Für Elise'],
-    image: 'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?auto=format&fit=crop&w=1100&q=80',
+    image: '/images/composers/beethoven.jpg',
   },
   {
     name: 'Wolfgang Amadeus Mozart',
@@ -84,7 +84,7 @@ export const COMPOSERS: Composer[] = [
     country: 'Austria',
     context: 'Prodigy yang mulai komposisi usia 5 tahun. Menggabungkan keindahan melodi dengan struktur formal yang sempurna. Wafat di usia 35 tahun, meninggalkan lebih dari 600 karya. Requiem terakhirnya sempat tak terselesaikan.',
     works: ['Symphony No. 40 in G minor', 'Piano Concerto No. 21', 'Eine kleine Nachtmusik', 'Requiem in D minor'],
-    image: 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&w=1100&q=80',
+    image: '/images/composers/mozart.jpg',
   },
   {
     name: 'Frédéric Chopin',
@@ -93,7 +93,7 @@ export const COMPOSERS: Composer[] = [
     country: 'Polandia',
     context: 'Penyair piano. Hampir seluruh karyanya ditulis untuk piano solo. Tinggal di Paris sebagian besar hidupnya. Nocturne-nya menggabungkan lirisitas vokal dengan harmoni inovatif. Meninggal muda di usia 39 tahun.',
     works: ['Nocturne Op. 9 No. 2', 'Ballade No. 1 in G minor', 'Fantaisie-Impromptu', 'Revolutionary Étude'],
-    image: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1100&q=80',
+    image: '/images/composers/chopin.jpg',
   },
   {
     name: 'Antonio Vivaldi',
@@ -102,7 +102,7 @@ export const COMPOSERS: Composer[] = [
     country: 'Italia',
     context: 'Padre merah dari Venesia. Menulis lebih dari 500 konser, termasuk The Four Seasons yang kembali programatik paling terkenal. Menjadi pastor namun berhenti melayani misa karena alasan kesehatan, lalu mengabdikan diri pada musik.',
     works: ['The Four Seasons', 'Gloria in D', 'Lute Concerto in D', 'Violin Concerto in A minor'],
-    image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1100&q=80',
+    image: '/images/composers/vivaldi.jpg',
   },
 ];
 

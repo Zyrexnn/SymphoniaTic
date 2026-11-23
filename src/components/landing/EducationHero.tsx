@@ -2,8 +2,7 @@ import React from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { Reveal } from './Reveal';
 
-const HERO_IMAGE =
-  'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?auto=format&fit=crop&w=1400&q=80';
+const HERO_IMAGE = '/images/venues/aula-simfonia.jpg';
 
 const META = ['Classical Music', 'Concert Guide', '2026-2027'];
 

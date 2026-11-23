@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 
-const CLASSICAL_HERO_IMAGE =
-  'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&w=1600&q=85';
-const FALLBACK_IMAGE = '/poster_1.jpg';
+const CLASSICAL_HERO_IMAGE = '/images/concerts/symphony-no-5.jpg';
+const FALLBACK_IMAGE = '/images/venues/aula-simfonia.jpg';
 
 export const BoomerangVideoBg: React.FC = () => {
   const [src, setSrc] = useState(CLASSICAL_HERO_IMAGE);
