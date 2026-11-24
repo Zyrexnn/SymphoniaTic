@@ -43,6 +43,12 @@ export interface EventItem {
   rundown: RundownItem[];
   categories: TicketCategory[];
   isClosed?: boolean;
+  status?: 'SCHEDULED' | 'RESCHEDULED' | 'CANCELLED' | 'COMPLETED';
+  cancellationReason?: string;
+  rescheduleReason?: string;
+  originalDate?: string;
+  originalTime?: string;
+  statusUpdatedAt?: string;
   eventDateTime?: string;
   salesEndAt?: string;
 }
@@ -69,6 +75,7 @@ export interface OrderRecord {
   id: string;
   orderCode: string;
   eventId: string;
+  eventStatus?: 'SCHEDULED' | 'RESCHEDULED' | 'CANCELLED' | 'COMPLETED';
   eventTitle: string;
   artist: string;
   venue: string;
@@ -487,6 +494,12 @@ export const fetchEventsAPI = async (): Promise<EventItem[]> => {
           organizer: evt.organizer || 'SymphoniaTic Production',
           description: evt.description,
           isClosed: Boolean(evt.isClosed),
+          status: evt.status || 'SCHEDULED',
+          cancellationReason: evt.cancellationReason || '',
+          rescheduleReason: evt.rescheduleReason || '',
+          originalDate: evt.originalDate || '',
+          originalTime: evt.originalTime || '',
+          statusUpdatedAt: evt.statusUpdatedAt || undefined,
           eventDateTime: evt.eventDateTime || undefined,
           salesEndAt: evt.salesEndAt || undefined,
           rundown: resolvedRundown,
@@ -1221,6 +1234,161 @@ export const clearPendingBookingDraft = (): void => {
       sessionStorage.removeItem(PENDING_BOOKING_STORAGE_KEY);
     }
   } catch {}
+};
+
+export interface CancelEventPayload {
+  reason: string;
+  notifyAttendees: boolean;
+}
+
+export interface RescheduleEventPayload {
+  newDate: string;
+  newTime: string;
+  newOpenGate?: string;
+  reason: string;
+  notifyAttendees: boolean;
+}
+
+export type BroadcastTargetScope = 'ALL_USERS' | 'EVENT_ATTENDEES' | 'CATEGORY_ATTENDEES' | 'ALL_CUSTOMERS';
+export type BroadcastCategory = 'ANNOUNCEMENT' | 'PROMO' | 'EVENT_CANCELLED' | 'EVENT_RESCHEDULED';
+
+export interface CreateBroadcastPayload {
+  targetScope: BroadcastTargetScope;
+  targetEventId?: string;
+  targetCategoryId?: string;
+  category: BroadcastCategory;
+  subject: string;
+  headline: string;
+  bodyText: string;
+  ctaLabel?: string;
+  ctaUrl?: string;
+  promoCode?: string;
+}
+
+export interface EmailBroadcastRecord {
+  id: string;
+  targetScope: BroadcastTargetScope;
+  targetEventId?: string;
+  targetEventName?: string;
+  targetCategoryId?: string;
+  category: BroadcastCategory;
+  subject: string;
+  headline: string;
+  bodyText: string;
+  ctaLabel?: string;
+  ctaUrl?: string;
+  promoCode?: string;
+  totalRecipients: number;
+  sentCount: number;
+  failedCount: number;
+  status: 'PROCESSING' | 'COMPLETED' | 'PARTIAL_FAILED' | 'FAILED';
+  createdBy: string;
+  createdAt: string;
+  completedAt?: string;
+}
+
+export interface BroadcastRecipientRecord {
+  id: string;
+  broadcastId: string;
+  recipientName: string;
+  recipientEmail: string;
+  orderCode?: string;
+  status: 'PENDING' | 'SENT' | 'FAILED';
+  errorMessage?: string;
+  sentAt?: string;
+  createdAt: string;
+}
+
+export interface BatchRefundResult {
+  eventId: string;
+  processedCount: number;
+  skippedCount: number;
+  totalRefundAmount: number;
+}
+
+export const cancelEventAPI = async (eventId: string | number, payload: CancelEventPayload) => {
+  const cleanId = String(eventId).trim();
+  const res = await fetch(`${getApiBaseUrl()}/admin/events/${cleanId}/cancel`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...getAdminAuthHeaders(),
+    },
+    body: JSON.stringify(payload),
+  });
+  return res.json();
+};
+
+export const rescheduleEventAPI = async (eventId: string | number, payload: RescheduleEventPayload) => {
+  const cleanId = String(eventId).trim();
+  const res = await fetch(`${getApiBaseUrl()}/admin/events/${cleanId}/reschedule`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...getAdminAuthHeaders(),
+    },
+    body: JSON.stringify(payload),
+  });
+  return res.json();
+};
+
+export const fetchAdminBroadcastsAPI = async (): Promise<{
+  success: boolean;
+  message?: string;
+  data?: EmailBroadcastRecord[];
+}> => {
+  try {
+    const res = await fetch(`${getApiBaseUrl()}/admin/broadcasts`, {
+      headers: getAdminAuthHeaders(),
+    });
+    return await res.json();
+  } catch {
+    return { success: false, data: [] };
+  }
+};
+
+export const createAdminBroadcastAPI = async (payload: CreateBroadcastPayload) => {
+  const res = await fetch(`${getApiBaseUrl()}/admin/broadcasts`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...getAdminAuthHeaders(),
+    },
+    body: JSON.stringify(payload),
+  });
+  return res.json();
+};
+
+export const fetchBroadcastRecipientsAPI = async (broadcastId: string): Promise<{
+  success: boolean;
+  message?: string;
+  data?: BroadcastRecipientRecord[];
+}> => {
+  const res = await fetch(`${getApiBaseUrl()}/admin/broadcasts/${encodeURIComponent(broadcastId)}/recipients`, {
+    headers: getAdminAuthHeaders(),
+  });
+  return res.json();
+};
+
+export const retryBroadcastAPI = async (broadcastId: string) => {
+  const res = await fetch(`${getApiBaseUrl()}/admin/broadcasts/${encodeURIComponent(broadcastId)}/retry`, {
+    method: 'POST',
+    headers: getAdminAuthHeaders(),
+  });
+  return res.json();
+};
+
+export const batchRefundEventAPI = async (eventId: string | number): Promise<{
+  success: boolean;
+  message?: string;
+  data?: BatchRefundResult;
+}> => {
+  const cleanId = String(eventId).trim();
+  const res = await fetch(`${getApiBaseUrl()}/admin/events/${encodeURIComponent(cleanId)}/batch-refund`, {
+    method: 'POST',
+    headers: getAdminAuthHeaders(),
+  });
+  return res.json();
 };
 
 export const resolveSafeAuthRedirect = (fallback = '/dashboard'): string => {
