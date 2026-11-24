@@ -1,4 +1,4 @@
-import React, { useState, useId } from 'react';
+import React, { useState, useId, useEffect } from 'react';
 import {
   AlertCircle, CheckCircle2, Search, Clock, XCircle, ArrowRight, Info,
   KeyRound, CreditCard, User, RefreshCw, ShieldCheck,
@@ -46,6 +46,19 @@ const RefundPageContent: React.FC = () => {
   const bankInputId = useId();
   const accountNoId = useId();
   const accountHolderId = useId();
+
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const codeFromUrl = params.get('orderCode')?.trim();
+      if (codeFromUrl && !orderCode) {
+        setOrderCode(codeFromUrl.toUpperCase());
+      }
+    } catch {}
+    if (user?.email && !userEmail) {
+      setUserEmail(user.email);
+    }
+  }, [user]);
 
   const handleRequestOTP = async (e?: React.FormEvent) => {
     e?.preventDefault();

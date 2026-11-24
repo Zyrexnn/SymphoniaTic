@@ -203,6 +203,46 @@ export const TicketDetailPage: React.FC<TicketDetailPageProps> = ({ orderCode, c
 
       <main className="max-w-[960px] w-full mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <div className="flex flex-col gap-6 sm:gap-8">
+          {foundOrder.eventStatus === 'CANCELLED' && (
+            <div
+              role="alert"
+              className="p-5 rounded-none border-2 border-[#C81E1E] bg-[#C81E1E]/10 text-[#141413] flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+            >
+              <div className="space-y-1">
+                <p className="m-0 text-xs font-bold uppercase tracking-wider text-[#C81E1E]">
+                  Konser Dibatalkan — Tiket Tidak Berlaku di Gate
+                </p>
+                <p className="m-0 text-xs text-[#141413]/85">
+                  Penyelenggara telah membatalkan konser ini. Anda berhak mengajukan refund penuh tanpa batas waktu 24 jam.
+                </p>
+              </div>
+              <a
+                href={`/refund?orderCode=${encodeURIComponent(foundOrder.orderCode)}`}
+                className="shrink-0 inline-flex items-center justify-center px-4 py-2.5 bg-[#141413] text-[#D4FF2A] text-xs font-bold uppercase tracking-wider rounded-none"
+              >
+                Klaim Refund Penuh
+              </a>
+            </div>
+          )}
+
+          {foundOrder.eventStatus === 'RESCHEDULED' && (
+            <div
+              role="status"
+              className="p-4 rounded-none border border-[#8A5A00] bg-[#8A5A00]/10 text-[#141413] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
+            >
+              <span>
+                <strong>Perubahan Jadwal:</strong> Konser ini dijadwalkan ulang menjadi{' '}
+                <strong>{foundOrder.date}</strong>. Tiket Anda tetap berlaku, atau Anda dapat mengajukan refund jika berhalangan hadir.
+              </span>
+              <a
+                href={`/refund?orderCode=${encodeURIComponent(foundOrder.orderCode)}`}
+                className="shrink-0 underline font-bold text-[#141413]"
+              >
+                Ajukan Refund
+              </a>
+            </div>
+          )}
+
           <div className="p-5 rounded-none border border-[#DFDDD6] bg-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-start gap-3">
               {isCheckedIn ? (

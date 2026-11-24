@@ -29,6 +29,13 @@ export const getTotalRemaining = (event: EventItem): number => {
 };
 
 export const getQuotaStatus = (event: EventItem, remaining: number) => {
+  if (event.status === 'CANCELLED') {
+    return {
+      label: 'Dibatalkan',
+      className: 'bg-[#C81E1E]/10 text-[#C81E1E] border-[#C81E1E]/35',
+      isSoldOut: true,
+    };
+  }
   if (event.isClosed) {
     return {
       label: 'Penjualan Tutup',
@@ -199,7 +206,7 @@ export const ConcertCard: React.FC<ConcertCardProps> = ({
 
             {status.isSoldOut ? (
               <Button type="button" variant="secondary" disabled className="shrink-0">
-                {event.isClosed ? 'Penjualan Tutup' : 'Tiket Habis'}
+                {event.status === 'CANCELLED' ? 'Dibatalkan' : event.isClosed ? 'Penjualan Tutup' : 'Tiket Habis'}
               </Button>
             ) : onBuyTicket ? (
               <Button

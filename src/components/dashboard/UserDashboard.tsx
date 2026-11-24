@@ -558,10 +558,14 @@ function TicketCard({
           <button
             type="button"
             onClick={() => onRequestRefund(order)}
-            className="w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center gap-1.5 py-2.5 px-4 text-xs font-bold uppercase tracking-wider text-[#C81E1E] bg-white border border-[#C81E1E] hover:bg-[#C81E1E] hover:text-white rounded-none transition-colors"
+            className={`w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center gap-1.5 py-2.5 px-4 text-xs font-bold uppercase tracking-wider rounded-none transition-colors ${
+              order.eventStatus === 'CANCELLED'
+                ? 'text-white bg-[#C81E1E] border border-[#C81E1E] hover:bg-[#A01616]'
+                : 'text-[#C81E1E] bg-white border border-[#C81E1E] hover:bg-[#C81E1E] hover:text-white'
+            }`}
           >
             <RefreshCw className="w-3.5 h-3.5" strokeWidth={1.8} aria-hidden="true" />
-            <span>Ajukan Refund</span>
+            <span>{order.eventStatus === 'CANCELLED' ? 'Konser Dibatalkan — Klaim Refund Penuh' : 'Ajukan Refund'}</span>
           </button>
         )}
       </div>
@@ -1083,7 +1087,7 @@ function PasswordInputRow({
           type="button"
           onClick={() => setVisible((v) => !v)}
           aria-label={visible ? `Sembunyikan ${label}` : `Tampilkan ${label}`}
-          className="absolute right-1 top-1/2 -translate-y-1/2 h-10 w-10 inline-flex items-center justify-center text-[#6E6D68] hover:text-[#141413] rounded-none"
+          className="absolute right-0.5 top-1/2 -translate-y-1/2 h-11 w-11 inline-flex items-center justify-center text-[#6E6D68] hover:text-[#141413] rounded-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413]"
         >
           {visible ? <EyeOff size={16} aria-hidden="true" /> : <Eye size={16} aria-hidden="true" />}
         </button>

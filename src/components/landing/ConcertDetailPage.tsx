@@ -233,7 +233,9 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
     );
   }
 
-  const isClosed = !!event.isClosed;
+  const isCancelled = event.status === 'CANCELLED';
+  const isRescheduled = event.status === 'RESCHEDULED';
+  const isClosed = !!event.isClosed || isCancelled;
   const isAllSoldOut = categories.length > 0 && categories.every((c) => getCatRemaining(c) <= 0);
   const isSelectedSoldOut = selectedRemaining <= 0;
   const totalPrice = selectedCat ? selectedCat.price * qty : 0;
@@ -381,7 +383,57 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
             support="Pilih kategori kursi dan jumlah tiket untuk langsung melanjutkan ke pemilihan nomor kursi."
           />
 
-          {isClosed && (
+          {isCancelled && (
+            <div
+              role="alert"
+              className="mb-6 p-5 border-2 border-[#C81E1E] bg-[#C81E1E]/10 text-[#141413] text-xs font-medium flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-none"
+            >
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-[#C81E1E] shrink-0 mt-0.5" aria-hidden="true" />
+                <div className="space-y-1">
+                  <p className="m-0 text-sm font-bold uppercase tracking-wider text-[#C81E1E]">
+                    PERTUNJUKAN DIBATALKAN
+                  </p>
+                  <p className="m-0 text-xs text-[#141413]/90 leading-relaxed">
+                    {event.cancellationReason || 'Pertunjukan ini telah dibatalkan oleh penyelenggara.'}
+                  </p>
+                </div>
+              </div>
+              <a
+                href="/refund"
+                className="shrink-0 inline-flex items-center justify-center px-4 py-2.5 bg-[#141413] text-[#D4FF2A] text-xs font-bold uppercase tracking-wider rounded-none hover:bg-[#2A2A28]"
+              >
+                Ajukan Refund Tiket
+              </a>
+            </div>
+          )}
+
+          {!isCancelled && isRescheduled && (
+            <div
+              role="status"
+              className="mb-6 p-5 border border-[#8A5A00] bg-[#8A5A00]/10 text-[#141413] text-xs font-medium flex items-start gap-3 rounded-none"
+            >
+              <Clock className="w-4 h-4 text-[#8A5A00] shrink-0 mt-0.5" aria-hidden="true" />
+              <div className="space-y-1">
+                <p className="m-0 font-bold uppercase tracking-wider text-[#8A5A00]">
+                  PERUBAHAN JADWAL KONSER
+                </p>
+                <p className="m-0">
+                  Jadwal baru: <strong>{event.date}</strong> pukul <strong>{event.time}</strong>
+                  {event.originalDate ? (
+                    <span className="text-[#52514D] ml-2 line-through">
+                      (Sebelumnya: {event.originalDate} {event.originalTime})
+                    </span>
+                  ) : null}
+                </p>
+                {event.rescheduleReason && (
+                  <p className="m-0 text-[#52514D]">Alasan: {event.rescheduleReason}</p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {isClosed && !isCancelled && (
             <div
               role="alert"
               className="mb-6 p-4 border border-[#8A5A00] bg-[#8A5A00]/10 text-[#141413] text-xs font-medium flex items-start gap-2.5"
@@ -919,7 +971,7 @@ const ConcertDetailContent: React.FC<Props> = ({ eventId }) => {
             type="button"
             onClick={() => selectedCat && openBookingWithCategory(event, selectedCat, qty)}
             disabled={isClosed || isSelectedSoldOut || isAllSoldOut || !selectedCat}
-            className={`shrink-0 inline-flex items-center justify-center gap-2 rounded-none px-4 sm:px-5 py-2.5 text-xs font-bold uppercase tracking-wider min-h-[46px] transition-colors ${
+            className={`shrink-0 inline-flex items-center justify-center gap-2 rounded-none px-4 sm:px-5 py-2.5 text-xs font-bold uppercase tracking-wider min-h-[46px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413] ${
               isClosed || isSelectedSoldOut || isAllSoldOut || !selectedCat
                 ? 'bg-[#EAE8E1] border border-[#DFDDD6] text-[#6E6D68]'
                 : 'bg-[#D4FF2A] text-[#141413] border border-[#141413] hover:bg-[#C2EE1A]'

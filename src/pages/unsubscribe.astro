@@ -1,0 +1,76 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const apiBaseUrl = import.meta.env.PUBLIC_API_BASE_URL || 'http://localhost:8082/api/v1';
+---
+
+<Layout title="Berhenti Berlangganan Promo | SymphoniaTic.">
+  <main class="min-h-screen bg-[#F4F3EF] text-[#141413] flex items-center justify-center px-4 py-12">
+    <div class="w-full max-w-lg bg-white border border-[#141413] rounded-none">
+      <div class="bg-[#141413] px-6 py-5 border-b border-[#141413]">
+        <div class="text-base font-extrabold tracking-[0.2em] text-[#F4F3EF]">SYMPHONIATIC.</div>
+        <span class="inline-block mt-2.5 px-2.5 py-1 bg-[#D4FF2A] text-[#141413] text-[11px] font-mono font-bold uppercase tracking-wider">
+          Preferensi Email Promo
+        </span>
+      </div>
+
+      <div class="p-6 sm:p-8 space-y-5">
+        <h1 id="unsub-title" class="font-display text-2xl font-bold tracking-tight m-0">
+          Memproses Permintaan Anda...
+        </h1>
+        <p id="unsub-message" class="text-sm text-[#52514D] leading-relaxed m-0">
+          Mohon tunggu sebentar, kami sedang memperbarui preferensi langganan email promo Anda.
+        </p>
+
+        <div class="pt-2 border-t border-[#DFDDD6] flex flex-wrap gap-3">
+          <a
+            href="/"
+            class="min-h-[44px] inline-flex items-center justify-center px-5 py-2.5 bg-[#141413] text-[#D4FF2A] text-xs font-bold uppercase tracking-wider rounded-none hover:bg-[#2A2A28]"
+          >
+            Kembali ke Beranda
+          </a>
+          <a
+            href="/events"
+            class="min-h-[44px] inline-flex items-center justify-center px-5 py-2.5 bg-white text-[#141413] border border-[#141413] text-xs font-bold uppercase tracking-wider rounded-none hover:bg-[#EAE8E1]"
+          >
+            Lihat Jadwal Konser
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script define:vars={{ apiBaseUrl }}>
+    (async function () {
+      const titleEl = document.getElementById('unsub-title');
+      const msgEl = document.getElementById('unsub-message');
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token')?.trim() || '';
+
+      if (!token) {
+        if (titleEl) titleEl.textContent = 'Token Tidak Ditemukan';
+        if (msgEl) msgEl.textContent = 'Tautan berhenti berlangganan tidak memiliki token yang valid.';
+        return;
+      }
+
+      try {
+        const res = await fetch(`${apiBaseUrl}/unsubscribe?token=${encodeURIComponent(token)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token }),
+        });
+        const json = await res.json();
+        if (json.success) {
+          if (titleEl) titleEl.textContent = 'Berhasil Berhenti Berlangganan Promo';
+          if (msgEl) msgEl.textContent = json.message;
+        } else {
+          if (titleEl) titleEl.textContent = 'Permintaan Tidak Dapat Diproses';
+          if (msgEl) msgEl.textContent = json.message || 'Token tidak valid atau sudah kedaluwarsa.';
+        }
+      } catch {
+        if (titleEl) titleEl.textContent = 'Gagal Menghubungi Server';
+        if (msgEl) msgEl.textContent = 'Terjadi gangguan jaringan saat memproses preferensi email Anda.';
+      }
+    })();
+  </script>
+</Layout>
