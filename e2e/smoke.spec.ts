@@ -208,6 +208,10 @@ test('admin portal renders 3-role login, super admin supervision panels, and zer
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: true, data: [] }) });
   });
 
+  await page.route('**/api/v1/admin/broadcasts', async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: true, data: [] }) });
+  });
+
   await page.route('**/api/v1/admin/staff*', async (route) => {
     await route.fulfill({
       status: 200,
