@@ -20,6 +20,11 @@ import type {
   PromotionItem,
   StaffMember,
   AuditLogItem,
+  EmailBroadcastRecord,
+  BroadcastRecipientRecord,
+  CancelEventPayload,
+  RescheduleEventPayload,
+  CreateBroadcastPayload,
 } from '../landing/data';
 import {
   adminLoginAPI,
@@ -28,6 +33,9 @@ import {
   createEventAPI,
   updateEventAPI,
   deleteEventAPI,
+  cancelEventAPI,
+  rescheduleEventAPI,
+  batchRefundEventAPI,
   createTicketCategoryAPI,
   updateTicketCategoryAPI,
   deleteTicketCategoryAPI,
@@ -48,12 +56,17 @@ import {
   resetAdminStaffPasswordAPI,
   deleteAdminStaffAPI,
   fetchAdminAuditLogsAPI,
+  fetchAdminBroadcastsAPI,
+  createAdminBroadcastAPI,
+  fetchBroadcastRecipientsAPI,
+  retryBroadcastAPI,
 } from '../landing/data';
 
 import { AdminThemeProvider, AdminThemeToggle, useAdminTheme } from './AdminThemeContext';
 import { AdminLogin } from './AdminLogin';
 import { AdminSidebar, MobileHeader, MobileBottomNav, type TabId } from './AdminSidebar';
 import { EventsPanel } from './EventsPanel';
+import { BroadcastPanel } from './BroadcastPanel';
 import { PromosPanel } from './PromosPanel';
 import { OrdersPanel } from './OrdersPanel';
 import { RefundsPanel, type RefundRecord } from './RefundsPanel';
@@ -223,6 +236,8 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
   const [refundsList, setRefundsList] = useState<RefundRecord[]>([]);
   const [staffList, setStaffList] = useState<StaffMember[]>([]);
   const [auditLogsList, setAuditLogsList] = useState<AuditLogItem[]>([]);
+  const [broadcastsList, setBroadcastsList] = useState<EmailBroadcastRecord[]>([]);
+  const [isBroadcasting, setIsBroadcasting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [checkingInCode, setCheckingInCode] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -259,6 +274,96 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
     onConfirm: () => void;
   } | null>(null);
 
+  const handleCancelEvent = async (id: string, payload: CancelEventPayload): Promise<boolean> => {
+    try {
+      const res = await cancelEventAPI(id, payload);
+      if (!res?.success) {
+        showToast(res?.message || 'Gagal membatalkan konser', 'error');
+        return false;
+      }
+      showToast(res.message || 'Konser berhasil dibatalkan', 'success');
+      await refreshData();
+      return true;
+    } catch {
+      showToast('Terjadi kesalahan jaringan saat membatalkan konser', 'error');
+      return false;
+    }
+  };
+
+  const handleRescheduleEvent = async (id: string, payload: RescheduleEventPayload): Promise<boolean> => {
+    try {
+      const res = await rescheduleEventAPI(id, payload);
+      if (!res?.success) {
+        showToast(res?.message || 'Gagal menjadwalkan ulang konser', 'error');
+        return false;
+      }
+      showToast(res.message || 'Jadwal konser berhasil diperbarui', 'success');
+      await refreshData();
+      return true;
+    } catch {
+      showToast('Terjadi kesalahan jaringan saat memperbarui jadwal', 'error');
+      return false;
+    }
+  };
+
+  const handleSendBroadcast = async (payload: CreateBroadcastPayload): Promise<boolean> => {
+    setIsBroadcasting(true);
+    try {
+      const res = await createAdminBroadcastAPI(payload);
+      if (!res?.success) {
+        showToast(res?.message || 'Gagal mengirim broadcast email', 'error');
+        return false;
+      }
+      showToast(res.message || 'Broadcast email sedang diproses', 'success');
+      await refreshData();
+      return true;
+    } catch {
+      showToast('Terjadi kesalahan jaringan saat mengirim broadcast', 'error');
+      return false;
+    } finally {
+      setIsBroadcasting(false);
+    }
+  };
+
+  const handleBatchRefundEvent = async (id: string, title: string) => {
+    try {
+      const res = await batchRefundEventAPI(id);
+      if (!res?.success) {
+        showToast(res?.message || `Gagal memproses refund massal untuk ${title}`, 'error');
+        return;
+      }
+      const processed = res.data?.processedCount ?? 0;
+      const skipped = res.data?.skippedCount ?? 0;
+      showToast(`Refund massal ${title}: ${processed} disetujui, ${skipped} dilewati`, 'success');
+      await refreshData();
+    } catch {
+      showToast('Terjadi kesalahan jaringan saat memproses refund massal', 'error');
+    }
+  };
+
+  const handleRetryBroadcast = async (broadcastId: string) => {
+    try {
+      const res = await retryBroadcastAPI(broadcastId);
+      if (!res?.success) {
+        showToast(res?.message || 'Gagal mengirim ulang broadcast', 'error');
+        return;
+      }
+      showToast(res.message || 'Pengiriman ulang sedang diproses', 'success');
+      await refreshData();
+    } catch {
+      showToast('Terjadi kesalahan jaringan saat mengirim ulang broadcast', 'error');
+    }
+  };
+
+  const handleFetchBroadcastRecipients = async (broadcastId: string): Promise<BroadcastRecipientRecord[]> => {
+    try {
+      const res = await fetchBroadcastRecipientsAPI(broadcastId);
+      return res?.success && Array.isArray(res.data) ? res.data : [];
+    } catch {
+      return [];
+    }
+  };
+
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3500);
@@ -275,7 +380,7 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
     setIsLoading(true);
     setLoadError(null);
     try {
-      const [ords, evts, met, rfds, promosRes, staffRes, auditRes] = await Promise.all([
+      const [ords, evts, met, rfds, promosRes, staffRes, auditRes, broadcastsRes] = await Promise.all([
         fetchAdminOrdersAPI(orderSearch, orderStatusFilter),
         fetchEventsAPI(),
         opsAllowed ? fetchAdminMetricsAPI() : Promise.resolve(null),
@@ -283,6 +388,7 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
         opsAllowed ? fetchAdminPromosAPI() : Promise.resolve({ success: true, data: [] }),
         superAllowed ? fetchAdminStaffAPI() : Promise.resolve({ success: true, data: [] }),
         superAllowed ? fetchAdminAuditLogsAPI() : Promise.resolve({ success: true, data: [] }),
+        opsAllowed ? fetchAdminBroadcastsAPI().catch(() => ({ success: false, data: [] })) : Promise.resolve({ success: true, data: [] }),
       ]);
       if (ords) setOrdersList(ords);
       if (evts) setEventsList(evts);
@@ -291,6 +397,7 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
       if (promosRes?.success && Array.isArray(promosRes.data)) setPromosList(promosRes.data);
       if (staffRes?.success && Array.isArray(staffRes.data)) setStaffList(staffRes.data);
       if (auditRes?.success && Array.isArray(auditRes.data)) setAuditLogsList(auditRes.data);
+      if (broadcastsRes?.success && Array.isArray(broadcastsRes.data)) setBroadcastsList(broadcastsRes.data);
       if (onEventsUpdated) onEventsUpdated();
     } catch (err) {
       console.error('Error refreshing admin data:', err);
@@ -998,6 +1105,10 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
       title: 'Manajemen Kode Promo & Voucher',
       subtitle: 'Buat kode promo kustom, kuota penukaran, dan syarat keanggotaan',
     },
+    BROADCASTS: {
+      title: 'Broadcast Email Dinamis',
+      subtitle: 'Kirim pengumuman, promo, atau notifikasi jadwal ke peserta konser maupun seluruh akun',
+    },
     ORDERS: {
       title: 'Pengelolaan Pesanan & Laporan Transaksi',
       subtitle:
@@ -1240,6 +1351,9 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
               }}
               onDeleteEvent={handleDeleteEvent}
               onToggleCloseEvent={handleToggleCloseEvent}
+              onCancelEvent={handleCancelEvent}
+              onRescheduleEvent={handleRescheduleEvent}
+              onBatchRefundEvent={handleBatchRefundEvent}
               onAddCategory={(evt) => {
                 setShowAddCategoryModal(evt);
                 setCatForm(EMPTY_CAT_FORM);
@@ -1249,6 +1363,19 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
                 setCatForm({ name: cat.name, price: cat.price, quota: cat.quota });
               }}
               onDeleteCategory={handleDeleteCategory}
+            />
+          )}
+          {canManageOps && activeTab === 'BROADCASTS' && (
+            <BroadcastPanel
+              events={eventsList}
+              promos={promosList}
+              broadcasts={broadcastsList}
+              isLoading={isLoading}
+              isSubmitting={isBroadcasting}
+              onRefresh={refreshData}
+              onSendBroadcast={handleSendBroadcast}
+              onRetryBroadcast={handleRetryBroadcast}
+              onFetchRecipients={handleFetchBroadcastRecipients}
             />
           )}
           {canManageOps && activeTab === 'PROMOS' && (

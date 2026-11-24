@@ -12,6 +12,7 @@ import {
   Tag,
   Users,
   History,
+  Mail,
 } from 'lucide-react';
 import { formatIDR, type AdminRole } from '../landing/data';
 import {
@@ -35,6 +36,7 @@ export type TabId =
   | 'METRICS'
   | 'EVENTS'
   | 'PROMOS'
+  | 'BROADCASTS'
   | 'ORDERS'
   | 'REFUNDS'
   | 'SCANNER'
@@ -68,6 +70,7 @@ const ALL_NAV_ITEMS: {
   { id: 'METRICS', label: 'Metrik & Finansial', shortLabel: 'Metrik', icon: BarChart3, roles: ['SUPER_ADMIN', 'ADMIN'], group: 'OPERASI' },
   { id: 'EVENTS', label: 'Postingan Konser', shortLabel: 'Konser', icon: Ticket, roles: ['SUPER_ADMIN', 'ADMIN'], group: 'OPERASI' },
   { id: 'PROMOS', label: 'Kode Promo', shortLabel: 'Promo', icon: Tag, roles: ['SUPER_ADMIN', 'ADMIN'], group: 'OPERASI' },
+  { id: 'BROADCASTS', label: 'Broadcast Email', shortLabel: 'Email', icon: Mail, roles: ['SUPER_ADMIN', 'ADMIN'], group: 'OPERASI' },
   { id: 'REFUNDS', label: 'Permohonan Refund', shortLabel: 'Refund', icon: RotateCcw, roles: ['SUPER_ADMIN', 'ADMIN'], group: 'OPERASI' },
   { id: 'STAFF', label: 'Manajemen Staf', shortLabel: 'Staf', icon: Users, roles: ['SUPER_ADMIN'], group: 'SUPERVISI' },
   { id: 'AUDIT_LOGS', label: 'Log Audit Sistem', shortLabel: 'Audit', icon: History, roles: ['SUPER_ADMIN'], group: 'SUPERVISI' },
