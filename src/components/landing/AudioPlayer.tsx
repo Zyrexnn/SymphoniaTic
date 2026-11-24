@@ -54,7 +54,6 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   const [isRepeat, setIsRepeat] = useState(false);
 
   const activeTrack = CONCERT_EVENTS[currentTrackIndex] || CONCERT_EVENTS[0];
-  const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   const togglePlay = useCallback(() => {
     const audio = audioRef.current;
@@ -108,165 +107,199 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 px-2 pb-2 sm:px-4 sm:pb-3">
-      <div className="relative mx-auto max-w-6xl overflow-hidden rounded-2xl sm:rounded-3xl border border-white/10 bg-[#171717]/80 p-3 sm:p-4 shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-2xl transition-all duration-300">
-        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-white/[0.04] via-transparent to-white/[0.02] pointer-events-none" />
-
+      <div className="relative mx-auto max-w-6xl overflow-hidden rounded-none border border-white/25 bg-[#141413] p-3 sm:p-4 text-[#F4F3EF]">
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between gap-3 sm:gap-6">
-            
             <div className="flex items-center gap-3 min-w-0 flex-1 md:flex-initial">
-              <div className="relative h-11 w-11 sm:h-14 sm:w-14 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-white/20 via-white/5 to-transparent shadow-inner">
+              <div className="relative h-11 w-11 sm:h-14 sm:w-14 shrink-0 overflow-hidden rounded-none border border-white/20 bg-[#1C1C1A]">
                 {activeTrack.image ? (
-                  <img 
-                    src={activeTrack.image} 
+                  <img
+                    src={activeTrack.image}
                     alt={activeTrack.title}
+                    width={56}
+                    height={56}
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center text-white/60">
-                    <Music className="h-5 w-5" />
+                  <div className="flex h-full w-full items-center justify-center text-[#B8B6AE]">
+                    <Music className="h-5 w-5" aria-hidden="true" />
                   </div>
                 )}
                 {isPlaying && (
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center gap-0.5">
-                    <span className="w-1 h-3 bg-white animate-pulse rounded-full" />
-                    <span className="w-1 h-4 bg-white animate-pulse delay-75 rounded-full" />
-                    <span className="w-1 h-2 bg-white animate-pulse delay-150 rounded-full" />
+                  <div className="absolute inset-0 bg-[#141413]/55 flex items-center justify-center gap-0.5" aria-hidden="true">
+                    <span className="w-1 h-3 bg-[#D4FF2A]" />
+                    <span className="w-1 h-4 bg-[#D4FF2A]" />
+                    <span className="w-1 h-2 bg-[#D4FF2A]" />
                   </div>
                 )}
               </div>
 
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="hidden sm:inline-flex border-white/20 bg-white/5 px-2 py-0 text-[10px] uppercase tracking-wider text-white/70">
+                  <Badge variant="outline" className="hidden sm:inline-flex rounded-none border-white/25 bg-[#1C1C1A] px-2 py-0 text-[10px] uppercase tracking-wider text-[#D8D6CE]">
                     {activeTrack.category || 'Orchestra'}
                   </Badge>
-                  <span className="text-[10px] text-white/40 uppercase tracking-widest sm:hidden">Now Playing</span>
+                  <span className="text-[10px] text-[#B8B6AE] uppercase tracking-widest sm:hidden">Sedang Diputar</span>
                 </div>
-                <h4 className="truncate text-xs sm:text-sm font-semibold tracking-tight text-white mt-0.5">
+                <h4 className="truncate text-xs sm:text-sm font-semibold tracking-tight text-[#F4F3EF] mt-0.5 m-0">
                   {activeTrack.title}
                 </h4>
-                <p className="truncate text-[11px] sm:text-xs text-white/60">
+                <p className="truncate text-[11px] sm:text-xs text-[#B8B6AE] m-0">
                   {activeTrack.artist}
                 </p>
               </div>
 
               <Button
+                type="button"
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsLiked(!isLiked)}
-                className={`hidden md:inline-flex h-8 w-8 rounded-full border border-white/10 bg-white/5 transition-colors ${
-                  isLiked ? 'text-rose-400 border-rose-500/30 bg-rose-500/10' : 'text-white/60 hover:text-white'
+                aria-label={isLiked ? 'Hapus dari favorit' : 'Tandai favorit'}
+                aria-pressed={isLiked}
+                className={`hidden md:inline-flex h-11 w-11 rounded-none border transition-colors focus-visible:ring-2 focus-visible:ring-[#D4FF2A] ${
+                  isLiked
+                    ? 'text-[#141413] border-[#D4FF2A] bg-[#D4FF2A] hover:bg-[#C2EE1A]'
+                    : 'text-[#D8D6CE] border-white/20 bg-[#1C1C1A] hover:border-[#D4FF2A] hover:text-[#D4FF2A]'
                 }`}
                 title="Favorit"
               >
-                <Heart className={`h-4 w-4 ${isLiked ? 'fill-current' : ''}`} />
+                <Heart className={`h-4 w-4 ${isLiked ? 'fill-current' : ''}`} aria-hidden="true" />
               </Button>
             </div>
 
             <div className="hidden md:flex flex-col items-center gap-1.5 flex-1 max-w-md mx-4">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <Button
+                  type="button"
                   variant="ghost"
                   size="icon"
                   onClick={() => setIsShuffle(!isShuffle)}
-                  className={`h-8 w-8 rounded-full transition-colors ${
-                    isShuffle ? 'text-white bg-white/20' : 'text-white/50 hover:text-white'
+                  aria-label="Acak daftar putar"
+                  aria-pressed={isShuffle}
+                  className={`h-11 w-11 rounded-none border transition-colors focus-visible:ring-2 focus-visible:ring-[#D4FF2A] ${
+                    isShuffle
+                      ? 'text-[#141413] bg-[#D4FF2A] border-[#D4FF2A] hover:bg-[#C2EE1A]'
+                      : 'text-[#B8B6AE] border-transparent hover:text-[#F4F3EF] hover:border-white/20'
                   }`}
                   title="Acak Lagu"
                 >
-                  <Shuffle className="h-3.5 w-3.5" />
+                  <Shuffle className="h-4 w-4" aria-hidden="true" />
                 </Button>
 
                 <Button
+                  type="button"
                   variant="ghost"
                   size="icon"
                   onClick={playPrev}
-                  className="h-8 w-8 rounded-full text-white/70 hover:text-white transition-colors"
+                  aria-label="Lagu sebelumnya"
+                  className="h-11 w-11 rounded-none text-[#D8D6CE] hover:text-[#D4FF2A] hover:bg-[#1C1C1A] transition-colors focus-visible:ring-2 focus-visible:ring-[#D4FF2A]"
                   title="Lagu Sebelumnya"
                 >
-                  <SkipBack className="h-4 w-4" />
+                  <SkipBack className="h-4 w-4" aria-hidden="true" />
                 </Button>
 
                 <Button
+                  type="button"
                   onClick={togglePlay}
-                  className="h-10 w-10 rounded-full bg-white text-black hover:bg-white/90 shadow-md transition-transform hover:scale-105 active:scale-95"
+                  aria-label={isPlaying ? 'Jeda audio' : 'Putar audio'}
+                  className="h-11 w-11 rounded-none bg-[#D4FF2A] text-[#141413] hover:bg-[#C2EE1A] transition-colors focus-visible:ring-2 focus-visible:ring-[#D4FF2A] focus-visible:ring-offset-2 focus-visible:ring-offset-[#141413]"
                   title={isPlaying ? 'Pause' : 'Play'}
                 >
-                  {isPlaying ? <Pause className="h-4 w-4 fill-current" /> : <Play className="h-4 w-4 fill-current ml-0.5" />}
+                  {isPlaying ? (
+                    <Pause className="h-4 w-4 fill-current" aria-hidden="true" />
+                  ) : (
+                    <Play className="h-4 w-4 fill-current ml-0.5" aria-hidden="true" />
+                  )}
                 </Button>
 
                 <Button
+                  type="button"
                   variant="ghost"
                   size="icon"
                   onClick={playNext}
-                  className="h-8 w-8 rounded-full text-white/70 hover:text-white transition-colors"
+                  aria-label="Lagu berikutnya"
+                  className="h-11 w-11 rounded-none text-[#D8D6CE] hover:text-[#D4FF2A] hover:bg-[#1C1C1A] transition-colors focus-visible:ring-2 focus-visible:ring-[#D4FF2A]"
                   title="Lagu Berikutnya"
                 >
-                  <SkipForward className="h-4 w-4" />
+                  <SkipForward className="h-4 w-4" aria-hidden="true" />
                 </Button>
 
                 <Button
+                  type="button"
                   variant="ghost"
                   size="icon"
                   onClick={() => setIsRepeat(!isRepeat)}
-                  className={`h-8 w-8 rounded-full transition-colors ${
-                    isRepeat ? 'text-white bg-white/20' : 'text-white/50 hover:text-white'
+                  aria-label="Ulangi lagu"
+                  aria-pressed={isRepeat}
+                  className={`h-11 w-11 rounded-none border transition-colors focus-visible:ring-2 focus-visible:ring-[#D4FF2A] ${
+                    isRepeat
+                      ? 'text-[#141413] bg-[#D4FF2A] border-[#D4FF2A] hover:bg-[#C2EE1A]'
+                      : 'text-[#B8B6AE] border-transparent hover:text-[#F4F3EF] hover:border-white/20'
                   }`}
                   title="Ulangi Lagu"
                 >
-                  <Repeat className="h-3.5 w-3.5" />
+                  <Repeat className="h-4 w-4" aria-hidden="true" />
                 </Button>
               </div>
 
-              <div className="w-full flex items-center gap-2 text-[11px] font-mono text-white/50">
-                <span className="w-8 text-right">{formatTime(currentTime)}</span>
-                <div 
-                  className="relative flex-1 h-1.5 rounded-full bg-white/10 cursor-pointer overflow-hidden group"
-                  onClick={(e) => {
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    const clickX = e.clientX - rect.left;
-                    const newPercent = clickX / rect.width;
-                    onSeek(newPercent * (duration || 1));
-                  }}
-                >
-                  <div 
-                    className="h-full rounded-full bg-gradient-to-r from-white to-white/70 transition-[width] duration-150 group-hover:bg-white"
-                    style={{ width: `${progressPercent}%` }}
-                  />
-                </div>
-                <span className="w-8">{formatTime(duration)}</span>
+              <div className="w-full flex items-center gap-2 text-[11px] font-mono text-[#B8B6AE] tabular-nums">
+                <span className="w-10 text-right">{formatTime(currentTime)}</span>
+                <input
+                  type="range"
+                  min={0}
+                  max={duration || 1}
+                  step={0.5}
+                  value={Math.min(currentTime, duration || 1)}
+                  onChange={(e) => onSeek(parseFloat(e.target.value))}
+                  aria-label="Posisi pemutaran audio"
+                  className="flex-1 cursor-pointer !bg-white/30 accent-[#D4FF2A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4FF2A] focus-visible:ring-offset-2 focus-visible:ring-offset-[#141413]"
+                />
+                <span className="w-10">{formatTime(duration)}</span>
               </div>
             </div>
 
             <div className="flex md:hidden items-center gap-2">
               <Button
+                type="button"
                 onClick={togglePlay}
                 size="icon"
-                className="h-9 w-9 rounded-full bg-white text-black hover:bg-white/90 shadow-md"
+                aria-label={isPlaying ? 'Jeda audio' : 'Putar audio'}
+                className="h-11 w-11 rounded-none bg-[#D4FF2A] text-[#141413] hover:bg-[#C2EE1A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4FF2A] focus-visible:ring-offset-2 focus-visible:ring-offset-[#141413]"
               >
-                {isPlaying ? <Pause className="h-4 w-4 fill-current" /> : <Play className="h-4 w-4 fill-current ml-0.5" />}
+                {isPlaying ? (
+                  <Pause className="h-4 w-4 fill-current" aria-hidden="true" />
+                ) : (
+                  <Play className="h-4 w-4 fill-current ml-0.5" aria-hidden="true" />
+                )}
               </Button>
 
               <Button
+                type="button"
                 variant="ghost"
                 size="icon"
                 onClick={playNext}
-                className="h-9 w-9 rounded-full border border-white/10 text-white/80"
+                aria-label="Lagu berikutnya"
+                className="h-11 w-11 rounded-none border border-white/20 text-[#F4F3EF] hover:border-[#D4FF2A] hover:text-[#D4FF2A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4FF2A] focus-visible:ring-offset-2 focus-visible:ring-offset-[#141413]"
               >
-                <SkipForward className="h-4 w-4" />
+                <SkipForward className="h-4 w-4" aria-hidden="true" />
               </Button>
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="hidden lg:flex items-center gap-2 border-r border-white/10 pr-4 mr-1">
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
+              <div className="hidden lg:flex items-center gap-2 border-r border-white/15 pr-4 mr-1">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
                   onClick={toggleMute}
-                  className="h-8 w-8 rounded-full text-white/60 hover:text-white"
+                  aria-label={isMuted ? 'Aktifkan suara' : 'Bisukan suara'}
+                  className="h-11 w-11 rounded-none text-[#D8D6CE] hover:text-[#D4FF2A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4FF2A] focus-visible:ring-offset-2 focus-visible:ring-offset-[#141413]"
                 >
-                  {isMuted ? <VolumeX className="h-4 w-4 text-rose-400" /> : <Volume2 className="h-4 w-4" />}
+                  {isMuted ? (
+                    <VolumeX className="h-4 w-4 text-[#C81E1E]" aria-hidden="true" />
+                  ) : (
+                    <Volume2 className="h-4 w-4" aria-hidden="true" />
+                  )}
                 </Button>
                 <input
                   type="range"
@@ -275,41 +308,49 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
                   step="0.05"
                   value={isMuted ? 0 : volume}
                   onChange={handleVolumeChange}
-                  className="w-16 cursor-pointer h-1 appearance-none rounded-full bg-white/20 accent-white"
+                  aria-label="Kontrol volume"
+                  className="w-16 cursor-pointer !bg-white/30 accent-[#D4FF2A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4FF2A] focus-visible:ring-offset-2 focus-visible:ring-offset-[#141413]"
                 />
               </div>
 
               <Button
+                type="button"
                 variant="outline"
                 size="sm"
                 onClick={() => setIsExpanded((prev) => !prev)}
-                className={`h-9 rounded-full border-white/20 bg-white/5 px-3 text-xs text-white/80 backdrop-blur hover:bg-white/10 hover:text-white transition-all flex items-center gap-1.5 ${
-                  isExpanded ? 'border-white/40 bg-white/15' : ''
+                aria-expanded={isExpanded}
+                className={`min-h-[44px] rounded-none border px-3 text-xs font-semibold uppercase tracking-wider transition-colors flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4FF2A] focus-visible:ring-offset-2 focus-visible:ring-offset-[#141413] ${
+                  isExpanded
+                    ? 'border-[#D4FF2A] bg-[#D4FF2A] text-[#141413]'
+                    : 'border-white/25 bg-[#1C1C1A] text-[#F4F3EF] hover:border-[#D4FF2A] hover:text-[#D4FF2A]'
                 }`}
               >
-                <Headphones className="h-3.5 w-3.5" />
+                <Headphones className="h-3.5 w-3.5" aria-hidden="true" />
                 <span className="hidden sm:inline">Daftar Putar</span>
-                {isExpanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronUp className="h-3.5 w-3.5" />}
+                {isExpanded ? (
+                  <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
+                ) : (
+                  <ChevronUp className="h-3.5 w-3.5" aria-hidden="true" />
+                )}
               </Button>
             </div>
           </div>
 
-          <div className="md:hidden flex items-center gap-2 text-[10px] font-mono text-white/50 pt-1">
+          <div className="md:hidden min-h-[44px] flex items-center gap-2 text-[10px] font-mono text-[#B8B6AE] tabular-nums">
             <span>{formatTime(currentTime)}</span>
-            <div 
-              className="relative flex-1 h-1.5 rounded-full bg-white/10 cursor-pointer overflow-hidden"
-              onClick={(e) => {
-                const rect = e.currentTarget.getBoundingClientRect();
-                const clickX = e.clientX - rect.left;
-                const newPercent = clickX / rect.width;
-                onSeek(newPercent * (duration || 1));
+            <input
+              type="range"
+              min={0}
+              max={duration || 1}
+              step={0.5}
+              value={Math.min(currentTime, duration || 1)}
+              onChange={(e) => onSeek(parseFloat(e.target.value))}
+              aria-label="Posisi pemutaran audio"
+              className="flex-1 py-4 !h-11 !bg-transparent cursor-pointer accent-[#D4FF2A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4FF2A]"
+              style={{
+                background: 'linear-gradient(rgba(255,255,255,0.3), rgba(255,255,255,0.3)) center / 100% 3px no-repeat',
               }}
-            >
-              <div 
-                className="h-full rounded-full bg-white transition-[width] duration-150"
-                style={{ width: `${progressPercent}%` }}
-              />
-            </div>
+            />
             <span>{formatTime(duration)}</span>
           </div>
         </div>
@@ -320,19 +361,19 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.25, ease: 'easeInOut' }}
-              className="overflow-hidden border-t border-white/10 mt-3 pt-3"
+              transition={{ duration: 0.2, ease: 'easeOut' }}
+              className="overflow-hidden border-t border-white/15 mt-3 pt-3"
             >
               <div className="flex items-center justify-between px-2 pb-2">
-                <span className="text-xs uppercase tracking-[0.2em] font-semibold text-white/60">
+                <span className="text-xs uppercase tracking-[0.16em] font-semibold text-[#D8D6CE]">
                   Daftar Audio Simfoni ({CONCERT_EVENTS.length})
                 </span>
-                <span className="text-xs text-white/40">
+                <span className="text-xs text-[#B8B6AE]">
                   Pilih audio untuk mendengarkan pratinjau
                 </span>
               </div>
 
-              <div className="max-h-60 space-y-2 overflow-y-auto pr-1">
+              <div className="max-h-60 space-y-1.5 overflow-y-auto pr-1">
                 {CONCERT_EVENTS.map((evt, idx) => {
                   const isActive = currentTrackIndex === idx;
 
@@ -341,21 +382,21 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
                       key={evt.id}
                       type="button"
                       onClick={() => playTrack(idx)}
-                      className={`group flex w-full items-center gap-3 rounded-2xl border p-2.5 text-left backdrop-blur-xl transition-all duration-200 cursor-pointer ${
+                      className={`group flex w-full min-h-[52px] items-center gap-3 rounded-none border p-2.5 text-left transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4FF2A] ${
                         isActive
-                          ? "border-white/30 bg-white/15 text-white shadow-lg"
-                          : "border-white/5 bg-white/[0.03] text-white/70 hover:bg-white/[0.08] hover:border-white/20"
+                          ? 'border-[#D4FF2A] bg-[#1C1C1A] text-[#F4F3EF]'
+                          : 'border-white/15 bg-[#141413] text-[#D8D6CE] hover:bg-[#1C1C1A] hover:border-white/30'
                       }`}
                     >
                       <div
-                        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border text-xs font-semibold transition-colors ${
+                        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-none border text-xs font-mono font-bold transition-colors ${
                           isActive
-                            ? "border-white/40 bg-white text-black"
-                            : "border-white/10 bg-white/5 text-white/70 group-hover:border-white/20"
+                            ? 'border-[#D4FF2A] bg-[#D4FF2A] text-[#141413]'
+                            : 'border-white/20 bg-[#1C1C1A] text-[#D8D6CE] group-hover:border-[#D4FF2A]'
                         }`}
                       >
                         {isActive && isPlaying ? (
-                          <Pause className="h-4 w-4 fill-current" />
+                          <Pause className="h-4 w-4 fill-current" aria-hidden="true" />
                         ) : (
                           `${idx + 1}`
                         )}
@@ -363,16 +404,16 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
 
                       <div className="flex flex-1 items-center justify-between gap-3 min-w-0">
                         <div className="min-w-0">
-                          <p className="text-xs sm:text-sm font-semibold truncate text-white">
+                          <p className="text-xs sm:text-sm font-semibold truncate text-[#F4F3EF] m-0">
                             {evt.title}
                           </p>
-                          <p className="text-[11px] truncate text-white/60">
+                          <p className="text-[11px] truncate text-[#B8B6AE] m-0">
                             {evt.artist} · {evt.venue}
                           </p>
                         </div>
-                        <Badge 
-                          variant="outline" 
-                          className="shrink-0 border-white/20 bg-white/5 text-[10px] text-white/70"
+                        <Badge
+                          variant="outline"
+                          className="shrink-0 rounded-none border-white/20 bg-[#1C1C1A] text-[10px] text-[#D8D6CE]"
                         >
                           {evt.category || 'Simfoni'}
                         </Badge>

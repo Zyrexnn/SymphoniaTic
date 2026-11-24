@@ -159,7 +159,7 @@ const RedeemPageContent: React.FC = () => {
                       type="button"
                       onClick={() => setSearchCode('')}
                       aria-label="Hapus kode"
-                      className="absolute right-1 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-none text-[#6E6D68] hover:text-[#141413]"
+                      className="absolute right-0.5 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-none text-[#6E6D68] hover:text-[#141413] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413]"
                     >
                       <X className="h-4 w-4" aria-hidden="true" />
                     </button>

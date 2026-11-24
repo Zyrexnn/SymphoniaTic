@@ -229,7 +229,7 @@ const EventsPageContent: React.FC = () => {
                     type="button"
                     onClick={() => setQuery('')}
                     aria-label="Bersihkan pencarian"
-                    className="absolute right-2 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-none bg-[#EAE8E1] text-[#141413] transition-colors hover:bg-[#D4FF2A]"
+                    className="absolute right-1.5 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-none bg-[#EAE8E1] text-[#141413] transition-colors hover:bg-[#D4FF2A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413]"
                   >
                     <X size={16} strokeWidth={2} aria-hidden="true" />
                   </button>

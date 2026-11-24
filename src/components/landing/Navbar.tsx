@@ -12,6 +12,7 @@ import {
   Search,
 } from 'lucide-react';
 import type { UserRecord } from './data';
+import { isNavItemActive } from '@/lib/navUtils';
 
 interface HeaderProps {
   isScrolled?: boolean;
@@ -81,8 +82,8 @@ const SearchPill: React.FC<{
       role="search"
       className={`group flex h-11 items-center rounded-none border transition-colors ${
         onDark
-          ? 'bg-[#1C1C1A]/90 border-white/25 focus-within:border-[#D4FF2A]'
-          : 'bg-white border-[#DFDDD6] focus-within:border-[#141413]'
+          ? 'bg-[#1C1C1A]/90 border-white/25 focus-within:border-[#D4FF2A] focus-within:ring-2 focus-within:ring-[#D4FF2A]'
+          : 'bg-white border-[#DFDDD6] focus-within:border-[#141413] focus-within:ring-2 focus-within:ring-[#141413]'
       } ${className}`}
     >
       <button
@@ -179,10 +180,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           <nav className="hidden lg:flex items-center gap-5 xl:gap-6" aria-label="Navigasi utama">
             {mainNavItems.map((item) => {
-              const isActive =
-                item.href === '/'
-                  ? currentPath === '/'
-                  : currentPath === item.href || currentPath.startsWith(item.href);
+              const isActive = isNavItemActive(currentPath, item.href);
               return (
                 <a
                   key={item.label}
@@ -418,10 +416,7 @@ export const Header: React.FC<HeaderProps> = ({
             </span>
             <div className="border-t border-[#DFDDD6]">
               {mainNavItems.map((item, idx) => {
-                const isActive =
-                  item.href === '/'
-                    ? currentPath === '/'
-                    : currentPath === item.href || currentPath.startsWith(item.href);
+                const isActive = isNavItemActive(currentPath, item.href);
                 return (
                   <a
                     key={item.label}

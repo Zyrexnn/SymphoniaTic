@@ -85,7 +85,7 @@ function SelectContent({
         data-slot="select-content"
         position={position}
         className={cn(
-          "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-none border border-border-strong bg-popover text-popover-foreground shadow-sm",
+          "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-none border border-border-strong bg-popover text-popover-foreground",
           position === "popper" &&
             "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
           className
@@ -130,7 +130,7 @@ function SelectItem({
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "relative flex w-full min-h-[38px] cursor-pointer items-center rounded-none py-1.5 pr-8 pl-2.5 text-sm outline-none select-none focus:bg-secondary focus:text-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "relative flex w-full min-h-[44px] cursor-pointer items-center rounded-none py-1.5 pr-8 pl-2.5 text-sm outline-none select-none focus:bg-secondary focus:text-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className
       )}
       {...props}

@@ -169,7 +169,11 @@ const App: React.FC = () => {
         onLogout={logout}
       />
 
-      <Hero featuredEvent={displayEvents[0]} onBuyTicket={openBooking} />
+      <Hero
+        featuredEvent={isLoadingEvents && liveEvents.length === 0 ? undefined : displayEvents[0]}
+        isLoading={isLoadingEvents && liveEvents.length === 0}
+        onBuyTicket={openBooking}
+      />
 
       <BentoSection
         events={displayEvents}

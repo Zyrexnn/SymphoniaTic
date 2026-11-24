@@ -809,7 +809,7 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
 
       <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5 text-[11px] text-[#52514D]">
         <span className="inline-flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded-full bg-[#D4FF2A] border-2 border-[#141413] inline-block" aria-hidden="true" />
+          <span className="w-3 h-3 rounded-none bg-[#D4FF2A] border-2 border-[#141413] inline-block" aria-hidden="true" />
           <span>
             {isSelectionMode
               ? `Kursi Dipilih (${selectedSeats.length}/${quantity})`
@@ -817,11 +817,11 @@ export const SeatingPlanVisualizer: React.FC<SeatingPlanVisualizerProps> = ({
           </span>
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded-full bg-[#2B6E68] inline-block" aria-hidden="true" />
+          <span className="w-3 h-3 rounded-none bg-[#2B6E68] inline-block" aria-hidden="true" />
           <span>Kursi Tersedia</span>
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded-full bg-[#EAE8E1] border border-[#6E6D68] inline-block" aria-hidden="true" />
+          <span className="w-3 h-3 rounded-none bg-[#EAE8E1] border border-[#6E6D68] inline-block" aria-hidden="true" />
           <span>Terisi / Terpesan</span>
         </span>
       </div>

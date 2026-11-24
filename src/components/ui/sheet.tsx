@@ -40,14 +40,14 @@ function SheetOverlay({
 }
 
 const sheetVariants = cva(
-  "fixed z-50 flex flex-col gap-4 bg-card text-card-foreground shadow-xl transition-transform duration-200 ease-out",
+  "fixed z-50 flex flex-col gap-4 bg-card text-card-foreground transition-transform duration-200 ease-out",
   {
     variants: {
       side: {
-        top: "inset-x-0 top-0 border-b border-border",
-        bottom: "inset-x-0 bottom-0 border-t border-border",
-        left: "inset-y-0 left-0 h-full w-3/4 max-w-xs border-r border-border",
-        right: "inset-y-0 right-0 h-full w-3/4 max-w-xs border-l border-border",
+        top: "inset-x-0 top-0 border-b border-border-strong",
+        bottom: "inset-x-0 bottom-0 border-t border-border-strong",
+        left: "inset-y-0 left-0 h-full w-3/4 max-w-xs border-r border-border-strong",
+        right: "inset-y-0 right-0 h-full w-3/4 max-w-xs border-l border-border-strong",
       },
     },
     defaultVariants: {
@@ -78,7 +78,7 @@ function SheetContent({
         {showCloseButton && (
           <SheetPrimitive.Close
             aria-label="Tutup panel"
-            className="absolute top-3.5 right-3.5 inline-flex h-10 w-10 items-center justify-center rounded-none border border-border bg-background text-muted-foreground transition-colors hover:border-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="absolute top-3.5 right-3.5 inline-flex h-11 w-11 items-center justify-center rounded-none border border-border bg-background text-muted-foreground transition-colors hover:border-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <X className="size-4" aria-hidden="true" />
           </SheetPrimitive.Close>

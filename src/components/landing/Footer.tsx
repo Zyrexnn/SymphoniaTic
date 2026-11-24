@@ -86,14 +86,14 @@ export const Footer: React.FC = () => {
             <p className="text-[11px] font-bold tracking-[0.16em] uppercase text-[#141413]/75 mb-3 mt-0">
               Program
             </p>
-            <div className="flex flex-col gap-1.5 items-start">
-              <a href="/" className="min-h-[36px] inline-flex items-center text-sm font-semibold text-[#141413] hover:underline no-underline">
+            <div className="flex flex-col gap-1 items-start">
+              <a href="/" className="min-h-[44px] inline-flex items-center text-sm font-semibold text-[#141413] hover:underline no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413]">
                 Beranda
               </a>
-              <a href="/events" className="min-h-[36px] inline-flex items-center text-sm font-semibold text-[#141413] hover:underline no-underline">
+              <a href="/events" className="min-h-[44px] inline-flex items-center text-sm font-semibold text-[#141413] hover:underline no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413]">
                 Jadwal Konser
               </a>
-              <a href="/edukasi" className="min-h-[36px] inline-flex items-center text-sm font-semibold text-[#141413] hover:underline no-underline">
+              <a href="/edukasi" className="min-h-[44px] inline-flex items-center text-sm font-semibold text-[#141413] hover:underline no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413]">
                 Edukasi &amp; Etiket
               </a>
             </div>
@@ -103,14 +103,14 @@ export const Footer: React.FC = () => {
             <p className="text-[11px] font-bold tracking-[0.16em] uppercase text-[#141413]/75 mb-3 mt-0">
               Layanan
             </p>
-            <div className="flex flex-col gap-1.5 items-start">
-              <a href="/redeem" className="min-h-[36px] inline-flex items-center text-sm font-semibold text-[#141413] hover:underline no-underline">
+            <div className="flex flex-col gap-1 items-start">
+              <a href="/redeem" className="min-h-[44px] inline-flex items-center text-sm font-semibold text-[#141413] hover:underline no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413]">
                 Cek E-Ticket
               </a>
-              <a href="/refund" className="min-h-[36px] inline-flex items-center text-sm font-semibold text-[#141413] hover:underline no-underline">
+              <a href="/refund" className="min-h-[44px] inline-flex items-center text-sm font-semibold text-[#141413] hover:underline no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413]">
                 Pengajuan Refund
               </a>
-              <a href="/dashboard" className="min-h-[36px] inline-flex items-center text-sm font-semibold text-[#141413] hover:underline no-underline">
+              <a href="/dashboard" className="min-h-[44px] inline-flex items-center text-sm font-semibold text-[#141413] hover:underline no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413]">
                 Akun &amp; Pesanan
               </a>
             </div>
@@ -120,7 +120,7 @@ export const Footer: React.FC = () => {
             <p className="text-[11px] font-bold tracking-[0.16em] uppercase text-[#141413]/75 mb-3 mt-0">
               Ikuti Kami
             </p>
-            <div className="flex flex-col gap-1.5 items-start">
+            <div className="flex flex-col gap-1 items-start">
               {[
                 { name: 'Instagram', href: 'https://instagram.com' },
                 { name: 'Twitter / X', href: 'https://x.com' },
@@ -131,7 +131,7 @@ export const Footer: React.FC = () => {
                   href={s.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="min-h-[36px] text-sm font-semibold text-[#141413] hover:underline no-underline inline-flex items-center gap-1.5"
+                  className="min-h-[44px] text-sm font-semibold text-[#141413] hover:underline no-underline inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413]"
                 >
                   <span>{s.name}</span>
                   <ExternalLink size={12} strokeWidth={2} aria-hidden="true" />
@@ -144,14 +144,14 @@ export const Footer: React.FC = () => {
             <p className="text-[11px] font-bold tracking-[0.16em] uppercase text-[#141413]/75 mb-3 mt-0">
               Informasi
             </p>
-            <div className="flex flex-col gap-1.5 items-start">
-              <a href="/admin" className="min-h-[36px] inline-flex items-center text-sm font-semibold text-[#141413] hover:underline no-underline">
+            <div className="flex flex-col gap-1 items-start">
+              <a href="/admin" className="min-h-[44px] inline-flex items-center text-sm font-semibold text-[#141413] hover:underline no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413]">
                 Portal Admin
               </a>
               <button
                 type="button"
                 onClick={() => setShowTermsModal(true)}
-                className="min-h-[36px] text-left text-sm font-semibold text-[#141413] hover:underline bg-transparent border-none p-0"
+                className="min-h-[44px] text-left text-sm font-semibold text-[#141413] hover:underline bg-transparent border-none p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#141413]"
               >
                 Syarat &amp; Ketentuan
               </button>

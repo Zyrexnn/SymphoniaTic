@@ -205,8 +205,11 @@
     appearance: none;
     height: 3px;
     background: var(--border-strong);
-    outline: none;
     border-radius: 0px;
+  }
+  input[type="range"]:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 4px;
   }
   input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
