@@ -3,14 +3,21 @@ import { Plus, Trash2, RefreshCw, AlertTriangle, Upload, Image as ImageIcon } fr
 import { formatIDR, type EventItem, type RundownItem } from '../landing/data';
 import {
   calculateDefaultOpenGate,
-  formatTimeString,
   generateDynamicRundown,
+  isSalesCutoffAfterConcert,
   isTimeBefore,
   normalizeTimeString,
   parseDateFlexible,
   parseTimeString,
   shiftTimeMinutes,
 } from '@/lib/timeUtils';
+import {
+  CONCERT_TIME_PRESETS,
+  RUNDOWN_TEMPLATES,
+  applySchedulePreset,
+  buildRundownFromTemplate,
+} from '@/lib/concertSchedulePresets';
+import { DatePickerField, TimePickerField, RundownTimeInput } from './ScheduleFields';
 import { FullscreenWorkspace } from '@/components/ui/fullscreen-sheet';
 import { FormField, TextInputField, TextAreaField } from '@/components/ui/form-controls';
 import { Card } from '@/components/ui/card';
@@ -74,8 +81,6 @@ const GENRE_OPTIONS = [
   'NUSANTARA SYMPHONY',
 ];
 
-const TIMEZONE_OPTIONS = ['WIB', 'WITA', 'WIT'] as const;
-
 export const EventFormModal: React.FC<EventFormModalProps> = ({
   isOpen,
   editingEvent,
@@ -89,6 +94,7 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
   const [isUploading, setIsUploading] = useState(false);
   const [openGateCustomized, setOpenGateCustomized] = useState(false);
   const [rundownCustomized, setRundownCustomized] = useState(false);
+  const [selectedRundownTemplate, setSelectedRundownTemplate] = useState<string>('symphony');
   const { theme } = useAdminTheme();
   const formId = useId();
   const categorySelectId = useId();
@@ -191,21 +197,44 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
   const parsedFormGate = parseTimeString(form.openGate);
   const canApplyCutoffPresets = Boolean(parsedFormDate && parsedFormTime);
 
-  const hasCutoffOrderError = (() => {
-    if (!form.salesEndAt || !parsedFormDate || !parsedFormTime) return false;
-    const cutoffDt = new Date(form.salesEndAt);
-    if (Number.isNaN(cutoffDt.getTime())) return false;
-    const concertDt = new Date(
-      Number(parsedFormDate.year),
-      parsedFormDate.monthIndex,
-      Number(parsedFormDate.day),
-      parsedFormTime.hours,
-      parsedFormTime.minutes,
-      0,
-      0
-    );
-    return cutoffDt.getTime() > concertDt.getTime();
-  })();
+  const hasCutoffOrderError = isSalesCutoffAfterConcert(form.salesEndAt, form.date, form.time);
+
+  const activeTimeZone = parsedFormTime?.timezone ?? 'WIB';
+
+  const handleApplySchedulePreset = (presetId: string) => {
+    if (
+      rundownCustomized &&
+      form.rundown &&
+      form.rundown.length > 0 &&
+      !window.confirm('Rundown yang sudah diubah akan diganti dengan template. Lanjutkan?')
+    ) {
+      return;
+    }
+    const presetResult = applySchedulePreset(presetId, activeTimeZone);
+    if (!presetResult) return;
+    setOpenGateCustomized(false);
+    setRundownCustomized(false);
+    update({
+      time: presetResult.time,
+      openGate: presetResult.openGate,
+      rundown: presetResult.rundown,
+    });
+  };
+
+  const handleApplyRundownTemplate = () => {
+    if (!parsedFormTime) return;
+    if (
+      rundownCustomized &&
+      form.rundown &&
+      form.rundown.length > 0 &&
+      !window.confirm('Rundown yang sudah diubah akan diganti dengan template. Lanjutkan?')
+    ) {
+      return;
+    }
+    const nextRundown = buildRundownFromTemplate(selectedRundownTemplate, form.time, form.openGate);
+    setRundownCustomized(false);
+    update({ rundown: nextRundown });
+  };
 
   const applyCutoffPreset = (preset: 'one_hour_before_gate' | 'at_concert_start' | 'clear') => {
     if (preset === 'clear') {
@@ -368,6 +397,21 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
             <p className="text-xs text-muted-foreground mt-1 m-0">
               Waktu Open Gate harus lebih awal daripada waktu dimulainya konser.
             </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-medium text-muted-foreground mr-1">Template Sesi:</span>
+            {CONCERT_TIME_PRESETS.map((preset) => (
+              <Button
+                key={preset.id}
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => handleApplySchedulePreset(preset.id)}
+              >
+                {preset.label} {preset.time.split(' ')[0]}
+              </Button>
+            ))}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -586,6 +630,29 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2.5">
+              <div className="flex items-center gap-2">
+                <Select value={selectedRundownTemplate} onValueChange={setSelectedRundownTemplate}>
+                  <SelectTrigger aria-label="Pilih template rundown" className="w-[220px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {RUNDOWN_TEMPLATES.map((tpl) => (
+                      <SelectItem key={tpl.id} value={tpl.id}>
+                        {tpl.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={!canSyncRundown}
+                  onClick={handleApplyRundownTemplate}
+                >
+                  Terapkan Template
+                </Button>
+              </div>
               <Button
                 type="button"
                 variant="outline"
@@ -621,19 +688,17 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
                   key={idx}
                   className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center p-3.5 rounded-none border border-border bg-background"
                 >
-                  <Input
-                    type="text"
-                    aria-label={`Waktu item rundown ${idx + 1}`}
-                    placeholder="18:00 WIB"
+                  <RundownTimeInput
+                    ariaLabel={`Waktu item rundown ${idx + 1}`}
                     value={item.time}
-                    onChange={(e) => {
+                    timezone={activeTimeZone}
+                    onChange={(nextTime) => {
                       setRundownCustomized(true);
                       const updated = form.rundown.map((it, i) =>
-                        i === idx ? { ...it, time: e.target.value } : it
+                        i === idx ? { ...it, time: nextTime } : it
                       );
                       update({ rundown: updated });
                     }}
-                    className="sm:w-40 shrink-0 font-mono"
                   />
                   <Input
                     type="text"
@@ -716,128 +781,5 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
         )}
       </form>
     </FullscreenWorkspace>
-  );
-};
-
-interface DatePickerFieldProps {
-  label: string;
-  value: string;
-  onChange: (formattedDate: string) => void;
-}
-
-const DatePickerField: React.FC<DatePickerFieldProps> = ({ label, value, onChange }) => {
-  const inputId = useId();
-  const { theme } = useAdminTheme();
-  const parsed = parseDateFlexible(value);
-  const isoValue = parsed ? parsed.iso : '';
-
-  const handleDateSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawVal = e.target.value;
-    if (!rawVal) {
-      onChange('');
-      return;
-    }
-    const parsedNew = parseDateFlexible(rawVal);
-    onChange(parsedNew ? parsedNew.formattedID : rawVal);
-  };
-
-  return (
-    <FormField
-      theme="auto"
-      label={label}
-      htmlFor={inputId}
-      required
-      hint={value ? `Format tersimpan: ${value}` : 'Pilih tanggal dari kalender'}
-    >
-      <Input
-        id={inputId}
-        type="date"
-        required
-        value={isoValue}
-        onChange={handleDateSelect}
-        className={theme === 'dark' ? '[color-scheme:dark]' : '[color-scheme:light]'}
-      />
-    </FormField>
-  );
-};
-
-interface TimePickerFieldProps {
-  label: string;
-  value: string;
-  onChange: (formattedTime: string) => void;
-  required?: boolean;
-}
-
-const TimePickerField: React.FC<TimePickerFieldProps> = ({
-  label,
-  value,
-  onChange,
-  required = true,
-}) => {
-  const inputId = useId();
-  const { theme } = useAdminTheme();
-  const parsed = parseTimeString(value);
-  const timeValue = parsed ? parsed.raw24 : '';
-  const [fallbackTz, setFallbackTz] = useState<string>('WIB');
-
-  const activeTz =
-    parsed?.timezone && (TIMEZONE_OPTIONS as readonly string[]).includes(parsed.timezone)
-      ? parsed.timezone
-      : fallbackTz;
-
-  const handleTimeSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawVal = e.target.value;
-    if (!rawVal) {
-      onChange('');
-      return;
-    }
-    const parsedInput = parseTimeString(rawVal);
-    if (parsedInput) {
-      onChange(formatTimeString(parsedInput.hours, parsedInput.minutes, activeTz));
-    } else {
-      onChange(`${rawVal} ${activeTz}`);
-    }
-  };
-
-  const handleTzChange = (nextTz: string) => {
-    setFallbackTz(nextTz);
-    if (parsed) {
-      onChange(formatTimeString(parsed.hours, parsed.minutes, nextTz));
-    }
-  };
-
-  return (
-    <FormField
-      theme="auto"
-      label={label}
-      htmlFor={inputId}
-      required={required}
-      hint={value ? `Format tersimpan: ${value}` : undefined}
-    >
-      <div className="flex items-center gap-2">
-        <Input
-          id={inputId}
-          type="time"
-          required={required}
-          value={timeValue}
-          onChange={handleTimeSelect}
-          className={`flex-1 min-w-0 ${
-            theme === 'dark' ? '[color-scheme:dark]' : '[color-scheme:light]'
-          }`}
-        />
-        <Select value={activeTz} onValueChange={handleTzChange}>
-          <SelectTrigger aria-label={`${label} zona waktu`} className="w-[88px] shrink-0">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {TIMEZONE_OPTIONS.map((tz) => (
-              <SelectItem key={tz} value={tz}>
-                {tz}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-    </FormField>
   );
 };

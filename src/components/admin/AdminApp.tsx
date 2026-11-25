@@ -115,7 +115,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { calculateDefaultOpenGate, generateDynamicRundown, isTimeBefore } from '@/lib/timeUtils';
+import {
+  calculateDefaultOpenGate,
+  generateDynamicRundown,
+  isSalesCutoffAfterConcert,
+  isTimeBefore,
+  parseDateFlexible,
+  parseTimeString,
+} from '@/lib/timeUtils';
 
 const EMPTY_EVENT_FORM: EventFormData = {
   title: '',
@@ -480,8 +487,16 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
       showToast('Judul, Musisi, Venue, Tanggal, Waktu Konser, dan Open Gate wajib diisi!', 'error');
       return;
     }
+    if (!parseDateFlexible(eventForm.date) || !parseTimeString(eventForm.time)) {
+      showToast('Format tanggal atau waktu konser belum valid.', 'error');
+      return;
+    }
     if (!isTimeBefore(eventForm.openGate, eventForm.time)) {
       showToast('Waktu Open Gate harus lebih awal dari waktu konser!', 'error');
+      return;
+    }
+    if (isSalesCutoffAfterConcert(eventForm.salesEndAt, eventForm.date, eventForm.time)) {
+      showToast('Batas waktu penjualan tiket tidak boleh melebihi waktu mulai konser.', 'error');
       return;
     }
     setIsLoading(true);
@@ -537,8 +552,16 @@ const AdminAppInner: React.FC<AdminAppProps> = ({ onClose, onEventsUpdated }) =>
   const handleUpdateEvent = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingEvent) return;
+    if (!parseDateFlexible(eventForm.date) || !parseTimeString(eventForm.time)) {
+      showToast('Format tanggal atau waktu konser belum valid.', 'error');
+      return;
+    }
     if (!eventForm.openGate || !eventForm.time || !isTimeBefore(eventForm.openGate, eventForm.time)) {
       showToast('Waktu Open Gate harus lebih awal dari waktu konser!', 'error');
+      return;
+    }
+    if (isSalesCutoffAfterConcert(eventForm.salesEndAt, eventForm.date, eventForm.time)) {
+      showToast('Batas waktu penjualan tiket tidak boleh melebihi waktu mulai konser.', 'error');
       return;
     }
     setIsLoading(true);

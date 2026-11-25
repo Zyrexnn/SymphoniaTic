@@ -254,3 +254,44 @@ export function parseDateFlexible(dateStr?: string | null): ParsedDate | null {
 
   return null;
 }
+
+const ZONE_OFFSETS_HOURS: Record<string, number> = {
+  WIB: 7,
+  WITA: 8,
+  WIT: 9,
+  UTC: 0,
+  GMT: 0,
+};
+
+export function concertInstantMs(date: string, time: string): number | null {
+  const parsedDate = parseDateFlexible(date);
+  const parsedTime = parseTimeString(time);
+  if (!parsedDate || !parsedTime) return null;
+
+  const offsetHours = ZONE_OFFSETS_HOURS[parsedTime.timezone] ?? 7;
+  return (
+    Date.UTC(
+      Number(parsedDate.year),
+      parsedDate.monthIndex,
+      Number(parsedDate.day),
+      parsedTime.hours,
+      parsedTime.minutes,
+      0,
+      0
+    ) -
+    offsetHours * 3600_000
+  );
+}
+
+export function isSalesCutoffAfterConcert(
+  salesEndAt: string,
+  date: string,
+  time: string
+): boolean {
+  if (!salesEndAt) return false;
+  const cutoffMs = new Date(salesEndAt).getTime();
+  if (Number.isNaN(cutoffMs)) return false;
+  const concertMs = concertInstantMs(date, time);
+  if (concertMs === null) return false;
+  return cutoffMs > concertMs;
+}

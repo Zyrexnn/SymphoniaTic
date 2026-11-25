@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { Plus, Edit, Trash2, MapPin, Calendar, Clock, User, Ticket, CalendarClock, Ban, RotateCcw } from 'lucide-react';
+import { Plus, Edit, Trash2, MapPin, Calendar, Clock, User, Ticket, CalendarClock, Ban, RotateCcw, AlertTriangle } from 'lucide-react';
 import type { CancelEventPayload, EventItem, RescheduleEventPayload, TicketCategory } from '../landing/data';
 import { formatIDR, formatSalesEndLabel } from '../landing/data';
+import { calculateDefaultOpenGate, isTimeBefore } from '@/lib/timeUtils';
+import { DatePickerField, TimePickerField } from './ScheduleFields';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -62,6 +64,7 @@ export const EventsPanel: React.FC<EventsPanelProps> = ({
   const [newDate, setNewDate] = useState('');
   const [newTime, setNewTime] = useState('');
   const [newOpenGate, setNewOpenGate] = useState('');
+  const [gateCustomized, setGateCustomized] = useState(false);
   const [rescheduleReason, setRescheduleReason] = useState('');
   const [rescheduleNotify, setRescheduleNotify] = useState(true);
   const [isLifecycleSubmitting, setIsLifecycleSubmitting] = useState(false);
@@ -78,9 +81,14 @@ export const EventsPanel: React.FC<EventsPanelProps> = ({
     setNewDate(evt.date || '');
     setNewTime(evt.time || '');
     setNewOpenGate(evt.openGate || '');
+    setGateCustomized(false);
     setRescheduleReason('');
     setRescheduleNotify(true);
   };
+
+  const hasRescheduleGateOrderError = Boolean(
+    newOpenGate && newTime && !isTimeBefore(newOpenGate, newTime)
+  );
 
   const openCancelModal = (evt: EventItem) => {
     setCancelTarget(evt);
@@ -195,40 +203,42 @@ export const EventsPanel: React.FC<EventsPanelProps> = ({
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={submitReschedule} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="resched-date">Tanggal Baru</Label>
-            <Input
-              id="resched-date"
+          <DatePickerField
+            label="Tanggal Baru"
+            value={newDate}
+            onChange={(formattedDate) => setNewDate(formattedDate)}
+          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <TimePickerField
+              label="Jam Mulai Baru"
               required
-              value={newDate}
-              onChange={(e) => setNewDate(e.target.value)}
-              placeholder="Sabtu, 25 April 2027"
-              className="rounded-none"
+              value={newTime}
+              onChange={(formattedTime) => {
+                setNewTime(formattedTime);
+                if (!gateCustomized && formattedTime) {
+                  setNewOpenGate(calculateDefaultOpenGate(formattedTime));
+                }
+              }}
+            />
+            <TimePickerField
+              label="Open Gate Baru"
+              required={false}
+              value={newOpenGate}
+              onChange={(formattedGate) => {
+                setGateCustomized(Boolean(formattedGate));
+                setNewOpenGate(formattedGate);
+              }}
             />
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label htmlFor="resched-time">Jam Mulai Baru</Label>
-              <Input
-                id="resched-time"
-                required
-                value={newTime}
-                onChange={(e) => setNewTime(e.target.value)}
-                placeholder="20:00 WIB"
-                className="rounded-none"
-              />
+          {hasRescheduleGateOrderError && (
+            <div
+              role="alert"
+              className="p-3 rounded-none border border-[#8A5A00]/35 bg-[#8A5A00]/10 text-[#8A5A00] dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-200 text-xs flex items-start gap-2"
+            >
+              <AlertTriangle size={16} className="shrink-0 mt-0.5" aria-hidden="true" />
+              <span>Waktu Open Gate harus lebih awal dari Jam Mulai Baru.</span>
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="resched-gate">Open Gate Baru (Opsional)</Label>
-              <Input
-                id="resched-gate"
-                value={newOpenGate}
-                onChange={(e) => setNewOpenGate(e.target.value)}
-                placeholder="18:30 WIB"
-                className="rounded-none"
-              />
-            </div>
-          </div>
+          )}
           <div className="space-y-1.5">
             <Label htmlFor="resched-reason">Alasan Perubahan Jadwal</Label>
             <Textarea
@@ -254,7 +264,11 @@ export const EventsPanel: React.FC<EventsPanelProps> = ({
             <Button type="button" variant="outline" onClick={() => setRescheduleTarget(null)} className="rounded-none">
               Batal
             </Button>
-            <Button type="submit" disabled={isLifecycleSubmitting} className="rounded-none">
+            <Button
+              type="submit"
+              disabled={isLifecycleSubmitting || hasRescheduleGateOrderError}
+              className="rounded-none"
+            >
               {isLifecycleSubmitting ? 'Menyimpan...' : 'Simpan Jadwal Baru'}
             </Button>
           </DialogFooter>
